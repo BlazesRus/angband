@@ -1,7 +1,7 @@
 # File: object_base.txt
 #
 # This file is used to initialize object base information for Angband.
-# Object bases correspond to tvals as defined in src/list-tvals.h.
+# Object bases correspond to tvals as defined in SinglePlayerSrc/list-tvals.h.
 
 # === Understanding object_base.txt ===
 

@@ -71,7 +71,7 @@ When submitting pull requests on Github, please ensure that you choose only the 
 
 ## Coding Guidelines
 
-This section describes what Angband code and its documentation should look like.  You may also want to read the old [Angband security guide](/src/doc/security.txt), although the default build configuration no longer uses setgid.
+This section describes what Angband code and its documentation should look like.  You may also want to read the old [Angband security guide](/SinglePlayerSrc/doc/security.txt), although the default build configuration no longer uses setgid.
 
 ### Rules
 

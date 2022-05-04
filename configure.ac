@@ -13,7 +13,7 @@ BUILDSYS_INIT
 
 AC_SUBST(PACKAGE, angband)
 
-AC_CONFIG_HEADERS(src/autoconf.h)
+AC_CONFIG_HEADERS(SinglePlayerSrc/autoconf.h)
 
 
 AC_DEFINE_UNQUOTED(PACKAGE, "$PACKAGE", [Name of package])

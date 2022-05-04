@@ -99,7 +99,7 @@
  * setenv ANGBAND_X11_GAMMA 142
  *
  * # Launch Angband
- * ./src/angband -mx11 -- -n6 &
+ * ./SinglePlayerSrc/angband -mx11 -- -n6 &
  *
  */
 

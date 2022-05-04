@@ -127,7 +127,7 @@ Quit without saving ``X``
 
 Query the dungeon ``q``
   Light up all the grids with a given square flag
-  (see src/list-square-flags.h).
+  (see SinglePlayerSrc/list-square-flags.h).
 
 Query terrain ``F``
   Light up all the grids with a given terrain type

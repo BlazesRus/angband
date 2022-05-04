@@ -69,7 +69,7 @@
 # this tval to be possible for this ego-item.
 
 # 'effect' is for the effect when an item is activated.  Fields are the
-# name of the effect (as found in src/list-effects.h) and possibly one or
+# name of the effect (as found in SinglePlayerSrc/list-effects.h) and possibly one or
 # two parameters to the effect.
 
 # 'dice' provides a random value to be used by an activation effect
@@ -78,7 +78,7 @@
 # activatable item.
 
 # 'flags' is for flags, which can be either object flags (as found in
-# src/list-object-flags.h) or kind flags (src/list-kind-flags.h).  As many
+# SinglePlayerSrc/list-object-flags.h) or kind flags (SinglePlayerSrc/list-kind-flags.h).  As many
 # flags: lines may be used as are needed to specify all the flags, and
 # flags are separated by the '|' symbol.
 

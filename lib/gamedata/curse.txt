@@ -21,9 +21,9 @@
 # object.  If not supplied, the adjustments are all zero.
 
 # 'effect' sets the name of the effect that'll randomly trigger on the cursed
-# object.  The fields are the name of the effect (from src/list-effects.h),
+# object.  The fields are the name of the effect (from SinglePlayerSrc/list-effects.h),
 # the subtype which is either an index or a name (look at effect_subtype()
-# in src/effects.c for more information), the radius, and the other parameter.
+# in SinglePlayerSrc/effects.c for more information), the radius, and the other parameter.
 # The effect name is required.  The others are optional, and the trailing ones
 # that are unused can be omitted.
 
@@ -43,8 +43,8 @@
 # next time the curse effect will happen.
 
 # 'flags' is for the flags that the cursed object will have.  Those flags can
-# either be object flags (as found in src/list-object-flags.h) or element
-# flags (IGNORE_ or HATES_ with an element name from src/list-elements.h
+# either be object flags (as found in SinglePlayerSrc/list-object-flags.h) or element
+# flags (IGNORE_ or HATES_ with an element name from SinglePlayerSrc/list-elements.h
 # appended).  As many 'flags' lines may be used as are needed to specify all
 # of the flags.  More than one flag can be set per line:  use '|' to separate
 # one flag from the next.
@@ -62,7 +62,7 @@
 # use multiple 'conflict' lines to specify that this curse conflicts with
 # more than one other curse.
 
-# 'conflict-flags' lists the object flags (from src/list-object-flags.h) that
+# 'conflict-flags' lists the object flags (from SinglePlayerSrc/list-object-flags.h) that
 # conflict with this curse:  this curse will not appear on an object that has
 # one or more of those flags.  More than one flag can be included on the line:
 # separate them with '|', and more than one 'conflicts-flags' lines may be

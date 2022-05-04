@@ -55,7 +55,7 @@ There are some (IMO) useful changes to the type:
   So no worries about accidentally removing armour penalties.
 * The X: line is gone. Rarity is no longer used, and random flags are now
   done by R: or R2: lines. R: lines specify OFT\_ flag types (sustains, high
-  resists, etc. - now in src/object/list-flag-types.h), while R2: lines
+  resists, etc. - now in SinglePlayerSrc/object/list-flag-types.h), while R2: lines
   allow specification of an exact flag mask. So if you want, you can have an
   affix that adds one of SUST_STR or SUST_CON but nothing else. You cannot
   add pval flags this way though - I wrote a spec for a Z: line to do this,

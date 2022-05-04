@@ -29,7 +29,7 @@ object_base.txt
   This file contains the names and common properties of the basic object
   classes - scroll, sword, ring, and so on.  All objects have an object base.
   Each object base is assigned a 'tval' - a numeric index.  The tvals are
-  defined in src/list-tvals.h.  While adding new object bases is possible,
+  defined in SinglePlayerSrc/list-tvals.h.  While adding new object bases is possible,
   it is unlikely to do much without deeper changes to the game.
 
 object.txt
@@ -184,7 +184,7 @@ player_timed.txt
   confusion) that can apply to the player.  It chiefly contains the messages
   on changes in these effects, and player attributes which prevent the effects.
   To add new timed effects or change the way existing ones operate, you will
-  have to alter src/list-player-timed.h and probably other files, and
+  have to alter SinglePlayerSrc/list-player-timed.h and probably other files, and
   re-compile the game.
 
 projection.txt
@@ -193,8 +193,8 @@ projection.txt
   affecting player, monsters, objects, and/or terrain.  In particular, this
   file defines details of the effects of elemental attacks (such as fire or
   shards) and the effectiveness of corresponding player resistance.  New
-  projections have to be included in src/list-projections.h, and the code to
-  implement their effects put in other source files - src/project-obj.c for
+  projections have to be included in SinglePlayerSrc/list-projections.h, and the code to
+  implement their effects put in other source files - SinglePlayerSrc/project-obj.c for
   effects on objects, and other similarly-named files.
 
 realm.txt
@@ -204,7 +204,7 @@ realm.txt
 summon.txt
   This contains definitions for the types of monsters that can be summoned.
   Adding a new summon type is not yet possible, because the summon spells are
-  hard-coded in src/list-mon-spells.h.
+  hard-coded in SinglePlayerSrc/list-mon-spells.h.
 
 ui_entry.txt
   Defines entries that will be displayed in the second part of the character

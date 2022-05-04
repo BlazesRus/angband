@@ -3,7 +3,7 @@ PROJECT(Angband LANGUAGES C)
 SET(OUR_EXECUTABLE_NAME ${PROJECT_NAME})
 
 # Append the custom modules to the search path.
-LIST(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/src/cmake/modules")
+LIST(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/SinglePlayerSrc/cmake/modules")
 
 OPTION(SUPPORT_GCU_FRONTEND "Support for GCU front end." OFF)
 OPTION(SUPPORT_NCURSES_FRONTEND "Synonym for SUPPORT_GCU_FRONTEND for backwards compatibility." OFF)
@@ -117,7 +117,7 @@ IF(SUPPORT_WINDOWS_FRONTEND)
     ENDIF()
     # Set up the path for the source of the resource file.
     STRING(TOLOWER ${OUR_EXECUTABLE_NAME} OUR_WINDOWS_RC_BASE)
-    STRING(CONCAT src/win/ ${OUR_WINDOWS_RC_BASE} .rc OUR_WINDOWS_RC)
+    STRING(CONCAT SinglePlayerSrc/win/ ${OUR_WINDOWS_RC_BASE} .rc OUR_WINDOWS_RC)
 ENDIF()
 
 # If none of SC_INSTALL, SHARED_INSTALL, and READONLY_INSTALL are set, use
@@ -146,156 +146,156 @@ IF(READONLY_INSTALL)
 ENDIF()
 
 ADD_LIBRARY(OurCoreLib OBJECT
-        src/buildid.c
-        src/cave-map.c
-        src/cave-square.c
-        src/cave-view.c
-        src/cave.c
-        src/cmd-cave.c
-        src/cmd-core.c
-        src/cmd-misc.c
-        src/cmd-obj.c
-        src/cmd-pickup.c
-        src/cmd-spoil.c
-        src/cmd-wizard.c
-        src/datafile.c
-        src/debug.c
-        src/effect-handler-attack.c
-        src/effect-handler-general.c
-        src/effects.c
-        src/effects-info.c
-        src/game-event.c
-        src/game-input.c
-        src/game-world.c
-        src/gen-cave.c
-        src/gen-chunk.c
-        src/gen-monster.c
-        src/gen-room.c
-        src/gen-util.c
-        src/generate.c
-        src/grafmode.c
-        src/guid.c
-        src/init.c
-        src/load.c
-        src/message.c
-        src/mon-attack.c
-        src/mon-blows.c
-        src/mon-desc.c
-        src/mon-group.c
-        src/mon-init.c
-        src/mon-list.c
-        src/mon-lore.c
-        src/mon-make.c
-        src/mon-move.c
-        src/mon-msg.c
-        src/mon-predicate.c
-        src/mon-spell.c
-        src/mon-summon.c
-        src/mon-timed.c
-        src/mon-util.c
-        src/obj-chest.c
-        src/obj-curse.c
-        src/obj-desc.c
-        src/obj-gear.c
-        src/obj-ignore.c
-        src/obj-info.c
-        src/obj-init.c
-        src/obj-knowledge.c
-        src/obj-list.c
-        src/obj-make.c
-        src/obj-pile.c
-        src/obj-power.c
-        src/obj-properties.c
-        src/obj-randart.c
-        src/obj-slays.c
-        src/obj-tval.c
-        src/obj-util.c
-        src/option.c
-        src/parser.c
-        src/player-attack.c
-        src/player-birth.c
-        src/player-calcs.c
-        src/player-class.c
-        src/player-history.c
-        src/player-path.c
-        src/player-properties.c
-        src/player-quest.c
-        src/player-race.c
-        src/player-spell.c
-        src/player-timed.c
-        src/player-util.c
-        src/player.c
-        src/project-feat.c
-        src/project-mon.c
-        src/project-obj.c
-        src/project-player.c
-        src/project.c
-        src/randname.c
-        src/save.c
-        src/save-charoutput.c
-        src/savefile.c
-        src/score.c
-        src/sound-core.c
-        src/source.c
-        src/store.c
-        src/target.c
-        src/trap.c
-        src/ui-birth.c
-        src/ui-command.c
-        src/ui-context.c
-        src/ui-curse.c
-        src/ui-death.c
-        src/ui-display.c
-        src/ui-effect.c
-        src/ui-entry-combiner.c
-        src/ui-entry-renderers.c
-        src/ui-entry.c
-        src/ui-equip-cmp.c
-        src/ui-event.c
-        src/ui-game.c
-        src/ui-help.c
-        src/ui-history.c
-        src/ui-init.c
-        src/ui-input.c
-        src/ui-keymap.c
-        src/ui-knowledge.c
-        src/ui-map.c
-        src/ui-menu.c
-        src/ui-mon-list.c
-        src/ui-mon-lore.c
-        src/ui-obj-list.c
-        src/ui-object.c
-        src/ui-options.c
-        src/ui-output.c
-        src/ui-player-properties.c
-        src/ui-player.c
-        src/ui-prefs.c
-        src/ui-score.c
-        src/ui-signals.c
-        src/ui-spell.c
-        src/ui-spoil.c
-        src/ui-store.c
-        src/ui-target.c
-        src/ui-term.c
-        src/ui-visuals.c
-        src/ui-wizard.c
-        src/wiz-debug.c
-        src/wiz-spoil.c
-        src/wiz-stats.c
-        src/z-bitflag.c
-        src/z-color.c
-        src/z-dice.c
-        src/z-expression.c
-        src/z-file.c
-        src/z-form.c
-        src/z-quark.c
-        src/z-queue.c
-        src/z-rand.c
-        src/z-set.c
-        src/z-textblock.c
-        src/z-type.c
-        src/z-util.c
-        src/z-virt.c
+        SinglePlayerSrc/buildid.c
+        SinglePlayerSrc/cave-map.c
+        SinglePlayerSrc/cave-square.c
+        SinglePlayerSrc/cave-view.c
+        SinglePlayerSrc/cave.c
+        SinglePlayerSrc/cmd-cave.c
+        SinglePlayerSrc/cmd-core.c
+        SinglePlayerSrc/cmd-misc.c
+        SinglePlayerSrc/cmd-obj.c
+        SinglePlayerSrc/cmd-pickup.c
+        SinglePlayerSrc/cmd-spoil.c
+        SinglePlayerSrc/cmd-wizard.c
+        SinglePlayerSrc/datafile.c
+        SinglePlayerSrc/debug.c
+        SinglePlayerSrc/effect-handler-attack.c
+        SinglePlayerSrc/effect-handler-general.c
+        SinglePlayerSrc/effects.c
+        SinglePlayerSrc/effects-info.c
+        SinglePlayerSrc/game-event.c
+        SinglePlayerSrc/game-input.c
+        SinglePlayerSrc/game-world.c
+        SinglePlayerSrc/gen-cave.c
+        SinglePlayerSrc/gen-chunk.c
+        SinglePlayerSrc/gen-monster.c
+        SinglePlayerSrc/gen-room.c
+        SinglePlayerSrc/gen-util.c
+        SinglePlayerSrc/generate.c
+        SinglePlayerSrc/grafmode.c
+        SinglePlayerSrc/guid.c
+        SinglePlayerSrc/init.c
+        SinglePlayerSrc/load.c
+        SinglePlayerSrc/message.c
+        SinglePlayerSrc/mon-attack.c
+        SinglePlayerSrc/mon-blows.c
+        SinglePlayerSrc/mon-desc.c
+        SinglePlayerSrc/mon-group.c
+        SinglePlayerSrc/mon-init.c
+        SinglePlayerSrc/mon-list.c
+        SinglePlayerSrc/mon-lore.c
+        SinglePlayerSrc/mon-make.c
+        SinglePlayerSrc/mon-move.c
+        SinglePlayerSrc/mon-msg.c
+        SinglePlayerSrc/mon-predicate.c
+        SinglePlayerSrc/mon-spell.c
+        SinglePlayerSrc/mon-summon.c
+        SinglePlayerSrc/mon-timed.c
+        SinglePlayerSrc/mon-util.c
+        SinglePlayerSrc/obj-chest.c
+        SinglePlayerSrc/obj-curse.c
+        SinglePlayerSrc/obj-desc.c
+        SinglePlayerSrc/obj-gear.c
+        SinglePlayerSrc/obj-ignore.c
+        SinglePlayerSrc/obj-info.c
+        SinglePlayerSrc/obj-init.c
+        SinglePlayerSrc/obj-knowledge.c
+        SinglePlayerSrc/obj-list.c
+        SinglePlayerSrc/obj-make.c
+        SinglePlayerSrc/obj-pile.c
+        SinglePlayerSrc/obj-power.c
+        SinglePlayerSrc/obj-properties.c
+        SinglePlayerSrc/obj-randart.c
+        SinglePlayerSrc/obj-slays.c
+        SinglePlayerSrc/obj-tval.c
+        SinglePlayerSrc/obj-util.c
+        SinglePlayerSrc/option.c
+        SinglePlayerSrc/parser.c
+        SinglePlayerSrc/player-attack.c
+        SinglePlayerSrc/player-birth.c
+        SinglePlayerSrc/player-calcs.c
+        SinglePlayerSrc/player-class.c
+        SinglePlayerSrc/player-history.c
+        SinglePlayerSrc/player-path.c
+        SinglePlayerSrc/player-properties.c
+        SinglePlayerSrc/player-quest.c
+        SinglePlayerSrc/player-race.c
+        SinglePlayerSrc/player-spell.c
+        SinglePlayerSrc/player-timed.c
+        SinglePlayerSrc/player-util.c
+        SinglePlayerSrc/player.c
+        SinglePlayerSrc/project-feat.c
+        SinglePlayerSrc/project-mon.c
+        SinglePlayerSrc/project-obj.c
+        SinglePlayerSrc/project-player.c
+        SinglePlayerSrc/project.c
+        SinglePlayerSrc/randname.c
+        SinglePlayerSrc/save.c
+        SinglePlayerSrc/save-charoutput.c
+        SinglePlayerSrc/savefile.c
+        SinglePlayerSrc/score.c
+        SinglePlayerSrc/sound-core.c
+        SinglePlayerSrc/source.c
+        SinglePlayerSrc/store.c
+        SinglePlayerSrc/target.c
+        SinglePlayerSrc/trap.c
+        SinglePlayerSrc/ui-birth.c
+        SinglePlayerSrc/ui-command.c
+        SinglePlayerSrc/ui-context.c
+        SinglePlayerSrc/ui-curse.c
+        SinglePlayerSrc/ui-death.c
+        SinglePlayerSrc/ui-display.c
+        SinglePlayerSrc/ui-effect.c
+        SinglePlayerSrc/ui-entry-combiner.c
+        SinglePlayerSrc/ui-entry-renderers.c
+        SinglePlayerSrc/ui-entry.c
+        SinglePlayerSrc/ui-equip-cmp.c
+        SinglePlayerSrc/ui-event.c
+        SinglePlayerSrc/ui-game.c
+        SinglePlayerSrc/ui-help.c
+        SinglePlayerSrc/ui-history.c
+        SinglePlayerSrc/ui-init.c
+        SinglePlayerSrc/ui-input.c
+        SinglePlayerSrc/ui-keymap.c
+        SinglePlayerSrc/ui-knowledge.c
+        SinglePlayerSrc/ui-map.c
+        SinglePlayerSrc/ui-menu.c
+        SinglePlayerSrc/ui-mon-list.c
+        SinglePlayerSrc/ui-mon-lore.c
+        SinglePlayerSrc/ui-obj-list.c
+        SinglePlayerSrc/ui-object.c
+        SinglePlayerSrc/ui-options.c
+        SinglePlayerSrc/ui-output.c
+        SinglePlayerSrc/ui-player-properties.c
+        SinglePlayerSrc/ui-player.c
+        SinglePlayerSrc/ui-prefs.c
+        SinglePlayerSrc/ui-score.c
+        SinglePlayerSrc/ui-signals.c
+        SinglePlayerSrc/ui-spell.c
+        SinglePlayerSrc/ui-spoil.c
+        SinglePlayerSrc/ui-store.c
+        SinglePlayerSrc/ui-target.c
+        SinglePlayerSrc/ui-term.c
+        SinglePlayerSrc/ui-visuals.c
+        SinglePlayerSrc/ui-wizard.c
+        SinglePlayerSrc/wiz-debug.c
+        SinglePlayerSrc/wiz-spoil.c
+        SinglePlayerSrc/wiz-stats.c
+        SinglePlayerSrc/z-bitflag.c
+        SinglePlayerSrc/z-color.c
+        SinglePlayerSrc/z-dice.c
+        SinglePlayerSrc/z-expression.c
+        SinglePlayerSrc/z-file.c
+        SinglePlayerSrc/z-form.c
+        SinglePlayerSrc/z-quark.c
+        SinglePlayerSrc/z-queue.c
+        SinglePlayerSrc/z-rand.c
+        SinglePlayerSrc/z-set.c
+        SinglePlayerSrc/z-textblock.c
+        SinglePlayerSrc/z-type.c
+        SinglePlayerSrc/z-util.c
+        SinglePlayerSrc/z-virt.c
 )
 
 SET_TARGET_PROPERTIES(OurCoreLib PROPERTIES C_STANDARD 99)
@@ -308,7 +308,7 @@ ENDIF()
 
 IF(SUPPORT_SDL_SOUND OR SUPPORT_SDL2_SOUND)
     ADD_LIBRARY(OurSoundSupportLib OBJECT
-            src/snd-sdl.c
+            SinglePlayerSrc/snd-sdl.c
     )
     SET_TARGET_PROPERTIES(OurSoundSupportLib PROPERTIES C_STANDARD 99)
     SET(SOUND_SUPPORT_LIB OurSoundSupportLib)
@@ -319,21 +319,21 @@ ENDIF()
 ADD_EXECUTABLE(OurExecutable
         $<TARGET_OBJECTS:OurCoreLib>
         $<$<BOOL:${SOUND_SUPPORT_LIB}>:$<TARGET_OBJECTS:${SOUND_SUPPORT_LIB}>>
-        $<$<BOOL:${SUPPORT_GCU_FRONTEND}>:src/main-gcu.c>
-        $<$<BOOL:${SUPPORT_SDL_FRONTEND}>:src/main-sdl.c>
-        $<$<BOOL:${SUPPORT_SDL2_FRONTEND}>:src/main-sdl2.c>
+        $<$<BOOL:${SUPPORT_GCU_FRONTEND}>:SinglePlayerSrc/main-gcu.c>
+        $<$<BOOL:${SUPPORT_SDL_FRONTEND}>:SinglePlayerSrc/main-sdl.c>
+        $<$<BOOL:${SUPPORT_SDL2_FRONTEND}>:SinglePlayerSrc/main-sdl2.c>
         $<$<BOOL:${SUPPORT_WINDOWS_FRONTEND}>:${OUR_WINDOWS_RC}>
-        $<$<BOOL:${SUPPORT_WINDOWS_FRONTEND}>:src/main-win.c>
-        $<$<BOOL:${SUPPORT_WINDOWS_FRONTEND}>:src/win/readdib.c>
-        $<$<BOOL:${SUPPORT_WINDOWS_FRONTEND}>:src/win/readpng.c>
-        $<$<BOOL:${SUPPORT_WINDOWS_FRONTEND}>:src/win/scrnshot.c>
-        $<$<BOOL:${SUPPORT_WINDOWS_FRONTEND}>:src/win/win-layout.c>
-        $<$<BOOL:${SUPPORT_X11_FRONTEND}>:src/main-x11.c>
-        $<$<BOOL:${SUPPORT_SPOIL_FRONTEND}>:src/main-spoil.c>
-        $<$<BOOL:${SUPPORT_STATS_FRONTEND}>:src/main-stats.c>
-        $<$<BOOL:${SUPPORT_STATS_FRONTEND}>:src/stats/db.c>
-        $<$<BOOL:${SUPPORT_TEST_FRONTEND}>:src/main-test.c>
-        $<$<NOT:$<BOOL:${SUPPORT_WINDOWS_FRONTEND}>>:src/main.c>
+        $<$<BOOL:${SUPPORT_WINDOWS_FRONTEND}>:SinglePlayerSrc/main-win.c>
+        $<$<BOOL:${SUPPORT_WINDOWS_FRONTEND}>:SinglePlayerSrc/win/readdib.c>
+        $<$<BOOL:${SUPPORT_WINDOWS_FRONTEND}>:SinglePlayerSrc/win/readpng.c>
+        $<$<BOOL:${SUPPORT_WINDOWS_FRONTEND}>:SinglePlayerSrc/win/scrnshot.c>
+        $<$<BOOL:${SUPPORT_WINDOWS_FRONTEND}>:SinglePlayerSrc/win/win-layout.c>
+        $<$<BOOL:${SUPPORT_X11_FRONTEND}>:SinglePlayerSrc/main-x11.c>
+        $<$<BOOL:${SUPPORT_SPOIL_FRONTEND}>:SinglePlayerSrc/main-spoil.c>
+        $<$<BOOL:${SUPPORT_STATS_FRONTEND}>:SinglePlayerSrc/main-stats.c>
+        $<$<BOOL:${SUPPORT_STATS_FRONTEND}>:SinglePlayerSrc/stats/db.c>
+        $<$<BOOL:${SUPPORT_TEST_FRONTEND}>:SinglePlayerSrc/main-test.c>
+        $<$<NOT:$<BOOL:${SUPPORT_WINDOWS_FRONTEND}>>:SinglePlayerSrc/main.c>
 )
 
 SET_TARGET_PROPERTIES(OurExecutable PROPERTIES
@@ -346,35 +346,35 @@ TARGET_INCLUDE_DIRECTORIES(OurExecutable PRIVATE
 TARGET_LINK_LIBRARIES(OurExecutable PRIVATE ${ANGBAND_CORE_LINK_LIBRARIES})
 
 IF (SUPPORT_X11_FRONTEND)
-    INCLUDE(src/cmake/macros/X11_Frontend.cmake)
+    INCLUDE(SinglePlayerSrc/cmake/macros/X11_Frontend.cmake)
     CONFIGURE_X11_FRONTEND(OurExecutable)
 ENDIF()
 IF(SUPPORT_GCU_FRONTEND)
-    INCLUDE(src/cmake/macros/GCU_Frontend.cmake)
+    INCLUDE(SinglePlayerSrc/cmake/macros/GCU_Frontend.cmake)
     CONFIGURE_GCU_FRONTEND(OurExecutable)
 ENDIF()
 IF(SUPPORT_SDL_FRONTEND)
-    INCLUDE(src/cmake/macros/SDL_Frontend.cmake)
+    INCLUDE(SinglePlayerSrc/cmake/macros/SDL_Frontend.cmake)
     CONFIGURE_SDL_FRONTEND(OurExecutable)
 ELSEIF(SUPPORT_SDL2_FRONTEND)
-    INCLUDE(src/cmake/macros/SDL2_Frontend.cmake)
+    INCLUDE(SinglePlayerSrc/cmake/macros/SDL2_Frontend.cmake)
     CONFIGURE_SDL2_FRONTEND(OurExecutable)
 ENDIF()
 IF(SUPPORT_WINDOWS_FRONTEND)
-    INCLUDE(src/cmake/macros/WINDOWS_Frontend.cmake)
+    INCLUDE(SinglePlayerSrc/cmake/macros/WINDOWS_Frontend.cmake)
     CONFIGURE_WINDOWS_FRONTEND(OurExecutable NO)
     CONFIGURE_WINDOWS_FRONTEND(OurCoreLib YES)
 ENDIF()
 
 IF(SUPPORT_SDL_SOUND)
-    INCLUDE(src/cmake/macros/SDL_Sound.cmake)
+    INCLUDE(SinglePlayerSrc/cmake/macros/SDL_Sound.cmake)
     CONFIGURE_SDL_SOUND(OurExecutable NO)
     CONFIGURE_SDL_SOUND(OurCoreLib YES)
     CONFIGURE_SDL_SOUND(${SOUND_SUPPORT_LIB} NO)
 ENDIF()
 
 IF (SUPPORT_SDL2_SOUND)
-    INCLUDE(src/cmake/macros/SDL2_Sound.cmake)
+    INCLUDE(SinglePlayerSrc/cmake/macros/SDL2_Sound.cmake)
     CONFIGURE_SDL2_SOUND(OurExecutable NO)
     CONFIGURE_SDL2_SOUND(OurCoreLib YES)
     CONFIGURE_SDL2_SOUND(${SOUND_SUPPORT_LIB} NO)
@@ -382,18 +382,18 @@ ENDIF()
 
 IF (SUPPORT_SPOIL_FRONTEND)
 
-    INCLUDE(src/cmake/macros/SPOIL_Frontend.cmake)
+    INCLUDE(SinglePlayerSrc/cmake/macros/SPOIL_Frontend.cmake)
     CONFIGURE_SPOIL_FRONTEND(OurExecutable)
 
 ENDIF()
 
 IF(SUPPORT_STATS_FRONTEND)
-    INCLUDE(src/cmake/macros/STATS_Frontend.cmake)
+    INCLUDE(SinglePlayerSrc/cmake/macros/STATS_Frontend.cmake)
     CONFIGURE_STATS_FRONTEND(OurExecutable)
 ENDIF()
 
 IF(SUPPORT_STATS_BACKEND)
-    INCLUDE(src/cmake/macros/STATS_Backend.cmake)
+    INCLUDE(SinglePlayerSrc/cmake/macros/STATS_Backend.cmake)
     IF(SUPPORT_STATS_FRONTEND)
         CONFIGURE_STATS_BACKEND(OurExecutable)
     ENDIF()
@@ -401,7 +401,7 @@ IF(SUPPORT_STATS_BACKEND)
 ENDIF()
 
 IF(SUPPORT_TEST_FRONTEND)
-    INCLUDE(src/cmake/macros/TEST_Frontend.cmake)
+    INCLUDE(SinglePlayerSrc/cmake/macros/TEST_Frontend.cmake)
     CONFIGURE_TEST_FRONTEND(OurExecutable)
 ENDIF()
 
@@ -434,7 +434,7 @@ TARGET_COMPILE_DEFINITIONS(OurCoreLib PRIVATE "${ANGBAND_BUILD_ID_OPTION}")
 
 # Set up to generate documentation if requested.
 IF(BUILD_DOC)
-    INCLUDE(src/cmake/modules/SphinxDocument.cmake)
+    INCLUDE(SinglePlayerSrc/cmake/modules/SphinxDocument.cmake)
 
     # Use a custom target to rewrite some of the configuration information
     # for sphinx-build.  Need to bring over the rest of the configuration
@@ -452,7 +452,7 @@ IF(BUILD_DOC)
         VERBATIM
     )
     SET_TARGET_PROPERTIES(OurManualConf PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${_OUTDIR}")
-    SET(_SCRIPT "src/cmake/scripts/rewrite.cmake")
+    SET(_SCRIPT "SinglePlayerSrc/cmake/scripts/rewrite.cmake")
     SET(_IN "docs/conf.py")
     SET(_OUT "conf.py")
     ADD_CUSTOM_COMMAND(
@@ -526,7 +526,7 @@ SET(LOOSE_VARDATADIR_PERMISSIONS ${DIR_PERMISIONS})
 SET(DATA_PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ)
 
 IF(SHARED_INSTALL)
-    INCLUDE(src/cmake/macros/GID_Handling.cmake)
+    INCLUDE(SinglePlayerSrc/cmake/macros/GID_Handling.cmake)
     CONFIGURE_GID_HANDLING(OurExecutable)
     CONFIGURE_GID_HANDLING(OurCoreLib)
     TARGET_COMPILE_DEFINITIONS(OurExecutable PRIVATE -D SETGID)
@@ -681,7 +681,7 @@ IF(SC_INSTALL)
         TARGET TransferLib
         PRE_BUILD
         COMMAND "${CMAKE_COMMAND}" "-P"
-        "${CMAKE_CURRENT_SOURCE_DIR}/src/cmake/scripts/copy_with_exclude.cmake"
+        "${CMAKE_CURRENT_SOURCE_DIR}/SinglePlayerSrc/cmake/scripts/copy_with_exclude.cmake"
         "--"
         "${CMAKE_CURRENT_BINARY_DIR}"
         "${CMAKE_CURRENT_SOURCE_DIR}/lib"
@@ -694,21 +694,21 @@ IF(SC_INSTALL)
     IF(SUPPORT_WINDOWS_FRONTEND)
         # Transfer the packaged DLLs so there in the same directory as the
         # executable.
-        FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/win/dll/zlib1.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/)
-        FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/win/dll/libpng12.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/)
+        FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/SinglePlayerSrc/win/dll/zlib1.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/)
+        FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/SinglePlayerSrc/win/dll/libpng12.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/)
     ENDIF()
 ENDIF()
 
 # Set up tests.  For now, don't bother on Windows since haven't worked out
-# replacements for the scripts used (src/tests/run-tests and
-# src/tests/list-tests).
+# replacements for the scripts used (SinglePlayerSrc/tests/run-tests and
+# SinglePlayerSrc/tests/list-tests).
 IF(SUPPORT_WINDOWS_FRONTEND)
     RETURN()
 ENDIF()
 
 # First copy some scripts and, as necessary, test case data from the source
 # tree.
-FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/src/tests/run-tests
+FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/SinglePlayerSrc/tests/run-tests
     DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/unittests/)
 IF(SUPPORT_TEST_FRONTEND)
     FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/tests DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/)
@@ -743,11 +743,11 @@ ENDIF()
 
 # Set up an object library with the shared code for unit tests.
 ADD_LIBRARY(OurUnitTestLib OBJECT EXCLUDE_FROM_ALL
-        src/tests/test-utils.c
-        src/tests/unit-test.c
+        SinglePlayerSrc/tests/test-utils.c
+        SinglePlayerSrc/tests/unit-test.c
 )
 SET_TARGET_PROPERTIES(OurUnitTestLib PROPERTIES C_STANDARD 99)
-SET(ANGBAND_UNIT_TEST_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/src/tests")
+SET(ANGBAND_UNIT_TEST_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/SinglePlayerSrc/tests")
 TARGET_INCLUDE_DIRECTORIES(OurUnitTestLib PRIVATE
     ${ANGBAND_CORE_INCLUDE_DIRS}
 )
@@ -758,18 +758,18 @@ TARGET_COMPILE_DEFINITIONS(OurUnitTestLib PRIVATE -D DEFAULT_CONFIG_PATH="${ANGB
 TARGET_COMPILE_DEFINITIONS(OurUnitTestLib PRIVATE -D DEFAULT_LIB_PATH="${ANGBAND_LIB_PATH}")
 TARGET_COMPILE_DEFINITIONS(OurUnitTestLib PRIVATE -D DEFAULT_DATA_PATH="${ANGBAND_DATA_PATH}")
 
-# Set up targets for exercising the unit tests (from src/tests in the source
+# Set up targets for exercising the unit tests (from SinglePlayerSrc/tests in the source
 # tree).
-EXECUTE_PROCESS(COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/src/tests/list-tests" -d
-    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src/tests"
+EXECUTE_PROCESS(COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/SinglePlayerSrc/tests/list-tests" -d
+    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/SinglePlayerSrc/tests"
     OUTPUT_VARIABLE ANGBAND_TEST_DIRS
 )
 STRING(REGEX REPLACE "[ \t\n\r]" ";" ANGBAND_TEST_DIR_LIST ${ANGBAND_TEST_DIRS})
 FOREACH(ANGBAND_TEST_DIR ${ANGBAND_TEST_DIR_LIST})
     FILE(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/unittests/${ANGBAND_TEST_DIR}")
 ENDFOREACH()
-EXECUTE_PROCESS(COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/src/tests/list-tests"
-    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src/tests"
+EXECUTE_PROCESS(COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/SinglePlayerSrc/tests/list-tests"
+    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/SinglePlayerSrc/tests"
     OUTPUT_VARIABLE ANGBAND_TEST_CASES
 )
 STRING(REGEX REPLACE "[ \t\n\r]" ";" ANGBAND_TEST_CASE_LIST ${ANGBAND_TEST_CASES})
@@ -778,7 +778,7 @@ FOREACH(ANGBAND_TEST_CASE ${ANGBAND_TEST_CASE_LIST})
     SET(ANGBAND_TEST_CASE_NAME "unittest${ANGBAND_TEST_CASE_INDEX}")
     SET(ANGBAND_TEST_CASE_PATH "unittests/${ANGBAND_TEST_CASE}")
     ADD_EXECUTABLE(${ANGBAND_TEST_CASE_NAME} EXCLUDE_FROM_ALL
-            "src/tests/${ANGBAND_TEST_CASE}.c"
+            "SinglePlayerSrc/tests/${ANGBAND_TEST_CASE}.c"
             $<TARGET_OBJECTS:OurUnitTestLib>
             $<TARGET_OBJECTS:OurCoreLib>
             $<$<BOOL:${SOUND_SUPPORT_LIB}>:$<TARGET_OBJECTS:${SOUND_SUPPORT_LIB}>>

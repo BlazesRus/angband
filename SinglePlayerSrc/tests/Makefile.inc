@@ -2,7 +2,7 @@
 # File: Makefile.inc
 #
 # Holds dependency information for the test cases.  Expects TESTOBJS to
-# be set by whatever includes this (src/tests/Makefile normally).
+# be set by whatever includes this (SinglePlayerSrc/tests/Makefile normally).
 #
 
 depgen:

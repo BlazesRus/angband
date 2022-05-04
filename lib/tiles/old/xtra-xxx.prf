@@ -3,7 +3,7 @@
 #
 # This file defines special attr/char mappings for use in "graphics" mode
 #
-# See "lib/help/command.txt" and "src/files.c" for more information.
+# See "lib/help/command.txt" and "SinglePlayerSrc/files.c" for more information.
 #
 
 
