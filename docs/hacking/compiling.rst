@@ -76,15 +76,15 @@ To compile and run the unit tests, do this::
 If you want to rerun just one part, say monster/attack, of the unit tests,
 that's most easily done by::
 
-    cd SinglePlayerSrc/tests
+    cd src/SPClient/tests
     monster/attack.exe
 
-Previous versions put the test executables in SinglePlayerSrc/tests/bin.  With those
+Previous versions put the test executables in src/SPClient/tests/bin.  With those
 versions, the second line above would be::
 
     bin/monster/attack
 
-The reason for changing directories to SinglePlayerSrc/tests is to match up with how the
+The reason for changing directories to src/SPClient/tests is to match up with how the
 tests were compiled:  they expect Angband's configuration data to be in
 ../../lib.
 
@@ -131,13 +131,13 @@ To build Angband to be run in-place, then run this::
 That'll create an executable in the src directory.  You can run it from the
 same directory where you ran make with::
 
-    SinglePlayerSrc/angband
+    src/SPClient/angband
 
 To see what command line options are accepted, use::
 
-    SinglePlayerSrc/angband -?
+    src/SPClient/angband -?
 
-Note that some of Angband's makefiles (SinglePlayerSrc/Makefile and SinglePlayerSrc/tests/Makefile are
+Note that some of Angband's makefiles (src/SPClient/Makefile and src/SPClient/tests/Makefile are
 the primary offenders) assume features present in GNU make.  If the default
 make on your system is not GNU make, you'll likely have to replace instances
 of make in the quoted commands with whatever will run GNU make.  On OpenBSD,
@@ -280,8 +280,8 @@ The last step only works with very recent versions.  For older ones, use this
 instead of the last step::
 
 	make
-	cp SinglePlayerSrc/angband.exe .
-	cp SinglePlayerSrc/win/dll/*.dll .
+	cp src/SPClient/angband.exe .
+	cp src/SPClient/win/dll/*.dll .
 
 To run the result, you can use wine like this::
 
@@ -328,12 +328,12 @@ do this::
 If you want to rerun just one part, say monster/attack, of the unit tests,
 that's most easily done by directly running from the top-level directory::
 
-    SinglePlayerSrc/tests/monster/attack.exe
+    src/SPClient/tests/monster/attack.exe
 
-Previous versions put the test executables in SinglePlayerSrc/tests/bin.  With those
+Previous versions put the test executables in src/SPClient/tests/bin.  With those
 versions, the line above would be::
 
-    SinglePlayerSrc/tests/bin/monster/attack
+    src/SPClient/tests/bin/monster/attack
 
 There's a separate set of tests that use scripts to control a character in
 the full game.  To run those tests, you'll need to enable the test module
@@ -404,8 +404,8 @@ Then run these commands::
         make install
 
 The last step only works with very recent versions.  For older ones, use
-"make" rather than "make install" and copy SinglePlayerSrc/angband.exe,
-SinglePlayerSrc/win/dll/libpng12.dll, and SinglePlayerSrc/win/dll/zlib1.dll to the top-level directory.
+"make" rather than "make install" and copy src/SPClient/angband.exe,
+src/SPClient/win/dll/libpng12.dll, and src/SPClient/win/dll/zlib1.dll to the top-level directory.
 
 Using Cygwin (with MinGW)
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -430,8 +430,8 @@ Then run these commands::
 	make install
 
 The last step only works with very recent versions.  For older ones, use
-"make" rather than "make install" and copy SinglePlayerSrc/angband.exe,
-SinglePlayerSrc/win/dll/libpng12.dll, and SinglePlayerSrc/win/zlib1.dll to the top-level directory.
+"make" rather than "make install" and copy src/SPClient/angband.exe,
+src/SPClient/win/dll/libpng12.dll, and src/SPClient/win/zlib1.dll to the top-level directory.
 
 If you want to build the Unix version of Angband that uses X11 or
 Curses and run it under Cygwin, then follow the native build
@@ -495,7 +495,7 @@ Using Visual Studio
 
 Blue Baron has detailed instructions for setting this up at:
 
-    SinglePlayerSrc/win/angband_visual_studio_step_by_step.txt
+    src/SPClient/win/angband_visual_studio_step_by_step.txt
 
 Statistics build
 ~~~~~~~~~~~~~~~~

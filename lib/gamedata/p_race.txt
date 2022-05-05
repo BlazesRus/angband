@@ -54,10 +54,10 @@
 
 # 'weight' is weight info - base weight, random weight modifier.
 
-# 'obj-flags' is for object flags (as in SinglePlayerSrc/list-obj-flags.h) that
+# 'obj-flags' is for object flags (as in src/SPClient/list-obj-flags.h) that
 # races possess innately.
 
-# 'player-flags' is for player flags (as in SinglePlayerSrc/list-player-flags.h) that
+# 'player-flags' is for player flags (as in src/SPClient/list-player-flags.h) that
 # races possess innately.
 
 # 'values' is for object modifiers which take a value that races possess

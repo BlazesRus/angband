@@ -5,7 +5,7 @@
 #
 # Edited for use with 8x16 tile set by Nomad.
 #
-# See "lib/help/command.txt" and "SinglePlayerSrc/files.c" for more information.
+# See "lib/help/command.txt" and "src/SPClient/files.c" for more information.
 #
 
 

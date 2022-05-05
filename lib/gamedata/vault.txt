@@ -66,7 +66,7 @@
 #    a-z and A-Z can be used for a monster with that symbol
 #    (see monster_base.txt)
 
-# 'flags' lines are optional and list the flags, from SinglePlayerSrc/list-room-flags.h,
+# 'flags' lines are optional and list the flags, from src/SPClient/list-room-flags.h,
 # that should be applied to the room.  As many 'flags' lines may be used as
 # are needed to specify all the flags, and flags are separated by the '|'
 # symbol.

@@ -20,9 +20,9 @@ Before release:
    * don't forget the top-level readme.txt!
 * Check all version strings
    * configure.ac
-   * SinglePlayerSrc/Makefile.src
-   * SinglePlayerSrc/angband.man
-   * SinglePlayerSrc/buildid.h
+   * src/SPClient/Makefile.src
+   * src/SPClient/angband.man
+   * src/SPClient/buildid.h
 * git tag -a version; git push official tag version
 
 Release:

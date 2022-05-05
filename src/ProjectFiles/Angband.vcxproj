@@ -64,8 +64,8 @@
     <LibraryPath>$(MSBuildProjectDirectory)\..\win\lib;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)..\lib\um\x86</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Platform)'=='x64'">
-    <IncludePath>$(MSBuildProjectDirectory)\src;$(MSBuildProjectDirectory)\..\win;$(MSBuildProjectDirectory)\..\win\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(MSBuildProjectDirectory)\..\win\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(MSBuildProjectDirectory)\src;$(MSBuildProjectDirectory)\..\win;$(MSBuildProjectDirectory)\..\win\include</IncludePath>
+    <LibraryPath>$(MSBuildProjectDirectory)\..\win\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)..\lib\um\x64</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
@@ -97,7 +97,7 @@
       <OptimizeReferences Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='VS2022Release'">true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='VS2022Debug'">zlib.lib;libpng.lib;msimg32.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalDependencies Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='VS2022Release'">zlib.lib;libpng.lib;msimg32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='VS2022Release'">..\..\zlib-win64\zlib.lib;libpng.lib;msimg32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <!--
     <PostBuildEvent Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='VS2022Debug'">

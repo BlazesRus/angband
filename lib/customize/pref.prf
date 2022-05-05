@@ -5,7 +5,7 @@
 #
 # This file includes, if appropriate, various "sub-files"
 #
-# See "lib/help/command.txt" and "SinglePlayerSrc/files.c" for more information.
+# See "lib/help/command.txt" and "src/SPClient/files.c" for more information.
 #
 # Note that the "x" key is mapped in the original keyset to the key sequence
 # "w0", which will "swap weapons" as long as both weapons contain the

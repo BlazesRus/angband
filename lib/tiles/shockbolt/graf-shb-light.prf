@@ -10,7 +10,7 @@
 # Shockbolt tile conversion/placement by Blue Baron
 # Additional work by PowerWyrm
 #
-# See "lib/help/command.txt" and "SinglePlayerSrc/files.c" for more information.
+# See "lib/help/command.txt" and "src/SPClient/files.c" for more information.
 #
 
 

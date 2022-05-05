@@ -11,7 +11,7 @@
 # Converted by Mogami from the dg32-assign of AngbandTK
 # Additional work by Ivan Jekic (the.edge@Net.yu)
 #
-# See "lib/help/command.txt" and "SinglePlayerSrc/files.c" for more information.
+# See "lib/help/command.txt" and "src/SPClient/files.c" for more information.
 #
 #
 

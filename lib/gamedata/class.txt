@@ -106,7 +106,7 @@
 # spells in the previous 'book:' line.  The lines below are all used in
 # reference to the previous 'spell:' line.
 
-# 'effect' defines the spell effect (as listed in SinglePlayerSrc/list-effects.h),
+# 'effect' defines the spell effect (as listed in src/SPClient/list-effects.h),
 # and optionally parameters for effect subtype, effect radius and
 # an extra parameter for various things
 

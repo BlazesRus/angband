@@ -6,7 +6,7 @@
  * below start from 1 on line 17, so a flag's sequence number is its line
  * number minus 16.
  *
- * Each sustain flag (SUST_*) has a matching stat in SinglePlayerSrc/list-stats.h,
+ * Each sustain flag (SUST_*) has a matching stat in src/SPClient/list-stats.h,
  * which should be at the same index in that file as the sustain in this file.
  *
  * The second argument to OF is the label used in the debugging commands

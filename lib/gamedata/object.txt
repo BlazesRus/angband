@@ -104,7 +104,7 @@
 # without a pile line appear singly.
 
 # 'flags' is for flags, which can be either object flags (as found in
-# SinglePlayerSrc/list-object-flags.h) or kind flags (SinglePlayerSrc/list-kind-flags.h).  As many
+# src/SPClient/list-object-flags.h) or kind flags (src/SPClient/list-kind-flags.h).  As many
 # flags: lines may be used as are needed to specify all the flags, and
 # flags are separated by the '|' symbol.
 
@@ -139,9 +139,9 @@
 # 'msg' is any message printed on using the object.
 
 # 'effect' is for the effect when an object is eaten, activated or whatever.
-# Fields are the name of the effect (as found in SinglePlayerSrc/list-effects.h), the
+# Fields are the name of the effect (as found in src/SPClient/list-effects.h), the
 # subtype which is either an index or a name (look at effect_subtype()
-# in SinglePlayerSrc/effects.c for more information about the available subtypes), the
+# in src/SPClient/effects.c for more information about the available subtypes), the
 # radius, and the other parameter.  The effect name is required.  The others
 # are optional, and the trailing ones that are unused can be omitted.
 

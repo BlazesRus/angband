@@ -6,7 +6,7 @@
 # This makefile is intended for use with Unix machines running X11, gtk or 
 # (n)curses.  You can choose which you want to compile for below.
 #
-# You can also place your alterations to a file in the SinglePlayerSrc/ directory called 
+# You can also place your alterations to a file in the src/SPClient/ directory called 
 # "config", in which case that file will override what is specified here.
 #
 
