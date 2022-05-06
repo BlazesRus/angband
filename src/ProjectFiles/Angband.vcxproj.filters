@@ -54,1028 +54,1028 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\buildid.c">
+    <ClCompile Include="..\SPClient\buildid.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\cave.c">
+    <ClCompile Include="..\SPClient\cave.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\cave-map.c">
+    <ClCompile Include="..\SPClient\cave-map.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\cave-square.c">
+    <ClCompile Include="..\SPClient\cave-square.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\cave-view.c">
+    <ClCompile Include="..\SPClient\cave-view.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\cmd-cave.c">
+    <ClCompile Include="..\SPClient\cmd-cave.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\cmd-core.c">
+    <ClCompile Include="..\SPClient\cmd-core.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\cmd-misc.c">
+    <ClCompile Include="..\SPClient\cmd-misc.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\cmd-obj.c">
+    <ClCompile Include="..\SPClient\cmd-obj.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\cmd-pickup.c">
+    <ClCompile Include="..\SPClient\cmd-pickup.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\cmd-spoil.c">
+    <ClCompile Include="..\SPClient\cmd-spoil.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\cmd-wizard.c">
+    <ClCompile Include="..\SPClient\cmd-wizard.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\datafile.c">
+    <ClCompile Include="..\SPClient\datafile.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\debug.c">
+    <ClCompile Include="..\SPClient\debug.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\effect-handler-attack.c">
+    <ClCompile Include="..\SPClient\effect-handler-attack.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\effect-handler-general.c">
+    <ClCompile Include="..\SPClient\effect-handler-general.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\effects-info.c">
+    <ClCompile Include="..\SPClient\effects-info.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\effects.c">
+    <ClCompile Include="..\SPClient\effects.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\game-event.c">
+    <ClCompile Include="..\SPClient\game-event.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\game-input.c">
+    <ClCompile Include="..\SPClient\game-input.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\game-world.c">
+    <ClCompile Include="..\SPClient\game-world.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\gen-cave.c">
+    <ClCompile Include="..\SPClient\gen-cave.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\gen-chunk.c">
+    <ClCompile Include="..\SPClient\gen-chunk.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\generate.c">
+    <ClCompile Include="..\SPClient\generate.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\gen-monster.c">
+    <ClCompile Include="..\SPClient\gen-monster.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\gen-room.c">
+    <ClCompile Include="..\SPClient\gen-room.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\gen-util.c">
+    <ClCompile Include="..\SPClient\gen-util.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\grafmode.c">
+    <ClCompile Include="..\SPClient\grafmode.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\guid.c">
+    <ClCompile Include="..\SPClient\guid.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\init.c">
+    <ClCompile Include="..\SPClient\init.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\load.c">
+    <ClCompile Include="..\SPClient\load.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\main-win.c">
+    <ClCompile Include="..\SPClient\main-win.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\message.c">
+    <ClCompile Include="..\SPClient\message.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\mon-attack.c">
+    <ClCompile Include="..\SPClient\mon-attack.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\mon-blows.c">
+    <ClCompile Include="..\SPClient\mon-blows.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\mon-desc.c">
+    <ClCompile Include="..\SPClient\mon-desc.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\mon-group.c">
+    <ClCompile Include="..\SPClient\mon-group.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\mon-init.c">
+    <ClCompile Include="..\SPClient\mon-init.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\mon-list.c">
+    <ClCompile Include="..\SPClient\mon-list.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\mon-lore.c">
+    <ClCompile Include="..\SPClient\mon-lore.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\mon-make.c">
+    <ClCompile Include="..\SPClient\mon-make.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\mon-move.c">
+    <ClCompile Include="..\SPClient\mon-move.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\mon-msg.c">
+    <ClCompile Include="..\SPClient\mon-msg.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\mon-predicate.c">
+    <ClCompile Include="..\SPClient\mon-predicate.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\mon-spell.c">
+    <ClCompile Include="..\SPClient\mon-spell.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\mon-summon.c">
+    <ClCompile Include="..\SPClient\mon-summon.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\mon-timed.c">
+    <ClCompile Include="..\SPClient\mon-timed.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\mon-util.c">
+    <ClCompile Include="..\SPClient\mon-util.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\obj-chest.c">
+    <ClCompile Include="..\SPClient\obj-chest.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\obj-curse.c">
+    <ClCompile Include="..\SPClient\obj-curse.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\obj-desc.c">
+    <ClCompile Include="..\SPClient\obj-desc.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\obj-gear.c">
+    <ClCompile Include="..\SPClient\obj-gear.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\obj-ignore.c">
+    <ClCompile Include="..\SPClient\obj-ignore.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\obj-info.c">
+    <ClCompile Include="..\SPClient\obj-info.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\obj-init.c">
+    <ClCompile Include="..\SPClient\obj-init.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\obj-knowledge.c">
+    <ClCompile Include="..\SPClient\obj-knowledge.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\obj-list.c">
+    <ClCompile Include="..\SPClient\obj-list.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\obj-make.c">
+    <ClCompile Include="..\SPClient\obj-make.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\obj-pile.c">
+    <ClCompile Include="..\SPClient\obj-pile.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\obj-power.c">
+    <ClCompile Include="..\SPClient\obj-power.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\obj-properties.c">
+    <ClCompile Include="..\SPClient\obj-properties.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\obj-randart.c">
+    <ClCompile Include="..\SPClient\obj-randart.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\obj-slays.c">
+    <ClCompile Include="..\SPClient\obj-slays.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\obj-tval.c">
+    <ClCompile Include="..\SPClient\obj-tval.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\option.c">
+    <ClCompile Include="..\SPClient\option.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\parser.c">
+    <ClCompile Include="..\SPClient\parser.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\player.c">
+    <ClCompile Include="..\SPClient\player.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\player-attack.c">
+    <ClCompile Include="..\SPClient\player-attack.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\player-birth.c">
+    <ClCompile Include="..\SPClient\player-birth.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\player-calcs.c">
+    <ClCompile Include="..\SPClient\player-calcs.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\player-class.c">
+    <ClCompile Include="..\SPClient\player-class.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\player-history.c">
+    <ClCompile Include="..\SPClient\player-history.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\player-path.c">
+    <ClCompile Include="..\SPClient\player-path.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\player-quest.c">
+    <ClCompile Include="..\SPClient\player-quest.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\player-race.c">
+    <ClCompile Include="..\SPClient\player-race.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\player-spell.c">
+    <ClCompile Include="..\SPClient\player-spell.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\player-timed.c">
+    <ClCompile Include="..\SPClient\player-timed.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\player-util.c">
+    <ClCompile Include="..\SPClient\player-util.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\project.c">
+    <ClCompile Include="..\SPClient\project.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\project-feat.c">
+    <ClCompile Include="..\SPClient\project-feat.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\project-mon.c">
+    <ClCompile Include="..\SPClient\project-mon.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\project-obj.c">
+    <ClCompile Include="..\SPClient\project-obj.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\project-player.c">
+    <ClCompile Include="..\SPClient\project-player.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\randname.c">
+    <ClCompile Include="..\SPClient\randname.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\save-charoutput.c">
+    <ClCompile Include="..\SPClient\save-charoutput.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\save.c">
+    <ClCompile Include="..\SPClient\save.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\savefile.c">
+    <ClCompile Include="..\SPClient\savefile.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\score.c">
+    <ClCompile Include="..\SPClient\score.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\sound-core.c">
+    <ClCompile Include="..\SPClient\sound-core.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source.c">
+    <ClCompile Include="..\SPClient\source.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\store.c">
+    <ClCompile Include="..\SPClient\store.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\target.c">
+    <ClCompile Include="..\SPClient\target.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\trap.c">
+    <ClCompile Include="..\SPClient\trap.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ui-birth.c">
+    <ClCompile Include="..\SPClient\ui-birth.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ui-command.c">
+    <ClCompile Include="..\SPClient\ui-command.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ui-context.c">
+    <ClCompile Include="..\SPClient\ui-context.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ui-curse.c">
+    <ClCompile Include="..\SPClient\ui-curse.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ui-death.c">
+    <ClCompile Include="..\SPClient\ui-death.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ui-display.c">
+    <ClCompile Include="..\SPClient\ui-display.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ui-effect.c">
+    <ClCompile Include="..\SPClient\ui-effect.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ui-event.c">
+    <ClCompile Include="..\SPClient\ui-event.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ui-game.c">
+    <ClCompile Include="..\SPClient\ui-game.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ui-help.c">
+    <ClCompile Include="..\SPClient\ui-help.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ui-history.c">
+    <ClCompile Include="..\SPClient\ui-history.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ui-init.c">
+    <ClCompile Include="..\SPClient\ui-init.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ui-input.c">
+    <ClCompile Include="..\SPClient\ui-input.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ui-keymap.c">
+    <ClCompile Include="..\SPClient\ui-keymap.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ui-knowledge.c">
+    <ClCompile Include="..\SPClient\ui-knowledge.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ui-map.c">
+    <ClCompile Include="..\SPClient\ui-map.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ui-menu.c">
+    <ClCompile Include="..\SPClient\ui-menu.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ui-mon-list.c">
+    <ClCompile Include="..\SPClient\ui-mon-list.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ui-mon-lore.c">
+    <ClCompile Include="..\SPClient\ui-mon-lore.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ui-object.c">
+    <ClCompile Include="..\SPClient\ui-object.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ui-obj-list.c">
+    <ClCompile Include="..\SPClient\ui-obj-list.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ui-options.c">
+    <ClCompile Include="..\SPClient\ui-options.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ui-output.c">
+    <ClCompile Include="..\SPClient\ui-output.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ui-player-properties.c">
+    <ClCompile Include="..\SPClient\ui-player-properties.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ui-player.c">
+    <ClCompile Include="..\SPClient\ui-player.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ui-prefs.c">
+    <ClCompile Include="..\SPClient\ui-prefs.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ui-score.c">
+    <ClCompile Include="..\SPClient\ui-score.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ui-signals.c">
+    <ClCompile Include="..\SPClient\ui-signals.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ui-spell.c">
+    <ClCompile Include="..\SPClient\ui-spell.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ui-spoil.c">
+    <ClCompile Include="..\SPClient\ui-spoil.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ui-store.c">
+    <ClCompile Include="..\SPClient\ui-store.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ui-target.c">
+    <ClCompile Include="..\SPClient\ui-target.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ui-term.c">
+    <ClCompile Include="..\SPClient\ui-term.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ui-wizard.c">
+    <ClCompile Include="..\SPClient\ui-wizard.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\wiz-debug.c">
+    <ClCompile Include="..\SPClient\wiz-debug.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\wiz-spoil.c">
+    <ClCompile Include="..\SPClient\wiz-spoil.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\wiz-stats.c">
+    <ClCompile Include="..\SPClient\wiz-stats.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\z-bitflag.c">
+    <ClCompile Include="..\SPClient\z-bitflag.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\z-color.c">
+    <ClCompile Include="..\SPClient\z-color.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\z-dice.c">
+    <ClCompile Include="..\SPClient\z-dice.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\z-expression.c">
+    <ClCompile Include="..\SPClient\z-expression.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\z-file.c">
+    <ClCompile Include="..\SPClient\z-file.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\z-form.c">
+    <ClCompile Include="..\SPClient\z-form.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\z-quark.c">
+    <ClCompile Include="..\SPClient\z-quark.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\z-queue.c">
+    <ClCompile Include="..\SPClient\z-queue.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\z-rand.c">
+    <ClCompile Include="..\SPClient\z-rand.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\z-set.c">
+    <ClCompile Include="..\SPClient\z-set.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\z-textblock.c">
+    <ClCompile Include="..\SPClient\z-textblock.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\z-type.c">
+    <ClCompile Include="..\SPClient\z-type.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\z-util.c">
+    <ClCompile Include="..\SPClient\z-util.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\z-virt.c">
+    <ClCompile Include="..\SPClient\z-virt.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\win\readdib.c">
+    <ClCompile Include="..\SPClient\win\readdib.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\win\readpng.c">
+    <ClCompile Include="..\SPClient\win\readpng.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\win\scrnshot.c">
+    <ClCompile Include="..\SPClient\win\scrnshot.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\win\win-layout.c">
+    <ClCompile Include="..\SPClient\win\win-layout.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\obj-util.c">
+    <ClCompile Include="..\SPClient\obj-util.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ui-entry.c">
+    <ClCompile Include="..\SPClient\ui-entry.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ui-entry-combiner.c">
+    <ClCompile Include="..\SPClient\ui-entry-combiner.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ui-entry-renderers.c">
+    <ClCompile Include="..\SPClient\ui-entry-renderers.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ui-equip-cmp.c">
+    <ClCompile Include="..\SPClient\ui-equip-cmp.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ui-visuals.c">
+    <ClCompile Include="..\SPClient\ui-visuals.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\player-properties.c">
+    <ClCompile Include="..\SPClient\player-properties.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\alloc.h">
+    <ClInclude Include="..\SPClient\alloc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\angband.h">
+    <ClInclude Include="..\SPClient\angband.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\buildid.h">
+    <ClInclude Include="..\SPClient\buildid.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\cave.h">
+    <ClInclude Include="..\SPClient\cave.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\cmd-core.h">
+    <ClInclude Include="..\SPClient\cmd-core.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\cmds.h">
+    <ClInclude Include="..\SPClient\cmds.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\config.h">
+    <ClInclude Include="..\SPClient\config.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\datafile.h">
+    <ClInclude Include="..\SPClient\datafile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\debug.h">
+    <ClInclude Include="..\SPClient\debug.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\effect-handler.h">
+    <ClInclude Include="..\SPClient\effect-handler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\effects-info.h">
+    <ClInclude Include="..\SPClient\effects-info.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\effects.h">
+    <ClInclude Include="..\SPClient\effects.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\game-event.h">
+    <ClInclude Include="..\SPClient\game-event.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\game-input.h">
+    <ClInclude Include="..\SPClient\game-input.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\game-world.h">
+    <ClInclude Include="..\SPClient\game-world.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\generate.h">
+    <ClInclude Include="..\SPClient\generate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\grafmode.h">
+    <ClInclude Include="..\SPClient\grafmode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\guid.h">
+    <ClInclude Include="..\SPClient\guid.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\h-basic.h">
+    <ClInclude Include="..\SPClient\h-basic.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\hint.h">
+    <ClInclude Include="..\SPClient\hint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\init.h">
+    <ClInclude Include="..\SPClient\init.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\list-dun-profiles.h">
+    <ClInclude Include="..\SPClient\list-dun-profiles.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\list-effects.h">
+    <ClInclude Include="..\SPClient\list-effects.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\list-elements.h">
+    <ClInclude Include="..\SPClient\list-elements.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\list-equip-slots.h">
+    <ClInclude Include="..\SPClient\list-equip-slots.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\list-history-types.h">
+    <ClInclude Include="..\SPClient\list-history-types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\list-ignore-types.h">
+    <ClInclude Include="..\SPClient\list-ignore-types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\list-kind-flags.h">
+    <ClInclude Include="..\SPClient\list-kind-flags.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\list-message.h">
+    <ClInclude Include="..\SPClient\list-message.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\list-mon-message.h">
+    <ClInclude Include="..\SPClient\list-mon-message.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\list-mon-race-flags.h">
+    <ClInclude Include="..\SPClient\list-mon-race-flags.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\list-mon-spells.h">
+    <ClInclude Include="..\SPClient\list-mon-spells.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\list-mon-temp-flags.h">
+    <ClInclude Include="..\SPClient\list-mon-temp-flags.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\list-mon-timed.h">
+    <ClInclude Include="..\SPClient\list-mon-timed.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\list-object-flags.h">
+    <ClInclude Include="..\SPClient\list-object-flags.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\list-object-modifiers.h">
+    <ClInclude Include="..\SPClient\list-object-modifiers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\list-options.h">
+    <ClInclude Include="..\SPClient\list-options.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\list-origins.h">
+    <ClInclude Include="..\SPClient\list-origins.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\list-parser-errors.h">
+    <ClInclude Include="..\SPClient\list-parser-errors.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\list-player-flags.h">
+    <ClInclude Include="..\SPClient\list-player-flags.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\list-player-timed.h">
+    <ClInclude Include="..\SPClient\list-player-timed.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\list-projections.h">
+    <ClInclude Include="..\SPClient\list-projections.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\list-randart-properties.h">
+    <ClInclude Include="..\SPClient\list-randart-properties.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\list-rooms.h">
+    <ClInclude Include="..\SPClient\list-rooms.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\list-room-flags.h">
+    <ClInclude Include="..\SPClient\list-room-flags.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\list-square-flags.h">
+    <ClInclude Include="..\SPClient\list-square-flags.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\list-stats.h">
+    <ClInclude Include="..\SPClient\list-stats.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\list-terrain-flags.h">
+    <ClInclude Include="..\SPClient\list-terrain-flags.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\list-trap-flags.h">
+    <ClInclude Include="..\SPClient\list-trap-flags.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\list-tvals.h">
+    <ClInclude Include="..\SPClient\list-tvals.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\list-ui-entry-renderers.h">
+    <ClInclude Include="..\SPClient\list-ui-entry-renderers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\message.h">
+    <ClInclude Include="..\SPClient\message.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\mon-attack.h">
+    <ClInclude Include="..\SPClient\mon-attack.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\mon-blows.h">
+    <ClInclude Include="..\SPClient\mon-blows.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\mon-desc.h">
+    <ClInclude Include="..\SPClient\mon-desc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\mon-group.h">
+    <ClInclude Include="..\SPClient\mon-group.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\mon-init.h">
+    <ClInclude Include="..\SPClient\mon-init.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\mon-list.h">
+    <ClInclude Include="..\SPClient\mon-list.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\mon-lore.h">
+    <ClInclude Include="..\SPClient\mon-lore.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\mon-make.h">
+    <ClInclude Include="..\SPClient\mon-make.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\mon-move.h">
+    <ClInclude Include="..\SPClient\mon-move.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\mon-msg.h">
+    <ClInclude Include="..\SPClient\mon-msg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\mon-predicate.h">
+    <ClInclude Include="..\SPClient\mon-predicate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\mon-spell.h">
+    <ClInclude Include="..\SPClient\mon-spell.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\monster.h">
+    <ClInclude Include="..\SPClient\monster.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\mon-summon.h">
+    <ClInclude Include="..\SPClient\mon-summon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\mon-timed.h">
+    <ClInclude Include="..\SPClient\mon-timed.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\mon-util.h">
+    <ClInclude Include="..\SPClient\mon-util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\obj-chest.h">
+    <ClInclude Include="..\SPClient\obj-chest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\obj-curse.h">
+    <ClInclude Include="..\SPClient\obj-curse.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\obj-desc.h">
+    <ClInclude Include="..\SPClient\obj-desc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\object.h">
+    <ClInclude Include="..\SPClient\object.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\obj-gear.h">
+    <ClInclude Include="..\SPClient\obj-gear.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\obj-ignore.h">
+    <ClInclude Include="..\SPClient\obj-ignore.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\obj-info.h">
+    <ClInclude Include="..\SPClient\obj-info.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\obj-init.h">
+    <ClInclude Include="..\SPClient\obj-init.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\obj-knowledge.h">
+    <ClInclude Include="..\SPClient\obj-knowledge.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\obj-list.h">
+    <ClInclude Include="..\SPClient\obj-list.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\obj-make.h">
+    <ClInclude Include="..\SPClient\obj-make.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\obj-pile.h">
+    <ClInclude Include="..\SPClient\obj-pile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\obj-power.h">
+    <ClInclude Include="..\SPClient\obj-power.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\obj-properties.h">
+    <ClInclude Include="..\SPClient\obj-properties.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\obj-randart.h">
+    <ClInclude Include="..\SPClient\obj-randart.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\obj-slays.h">
+    <ClInclude Include="..\SPClient\obj-slays.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\obj-tval.h">
+    <ClInclude Include="..\SPClient\obj-tval.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\obj-util.h">
+    <ClInclude Include="..\SPClient\obj-util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\option.h">
+    <ClInclude Include="..\SPClient\option.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\parser.h">
+    <ClInclude Include="..\SPClient\parser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\player.h">
+    <ClInclude Include="..\SPClient\player.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\player-attack.h">
+    <ClInclude Include="..\SPClient\player-attack.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\player-birth.h">
+    <ClInclude Include="..\SPClient\player-birth.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\player-calcs.h">
+    <ClInclude Include="..\SPClient\player-calcs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\player-history.h">
+    <ClInclude Include="..\SPClient\player-history.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\player-path.h">
+    <ClInclude Include="..\SPClient\player-path.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\player-quest.h">
+    <ClInclude Include="..\SPClient\player-quest.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\player-spell.h">
+    <ClInclude Include="..\SPClient\player-spell.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\player-timed.h">
+    <ClInclude Include="..\SPClient\player-timed.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\player-util.h">
+    <ClInclude Include="..\SPClient\player-util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\project.h">
+    <ClInclude Include="..\SPClient\project.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\randname.h">
+    <ClInclude Include="..\SPClient\randname.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\save-charoutput.h">
+    <ClInclude Include="..\SPClient\save-charoutput.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\savefile.h">
+    <ClInclude Include="..\SPClient\savefile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\score.h">
+    <ClInclude Include="..\SPClient\score.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\snd-sdl.h">
+    <ClInclude Include="..\SPClient\snd-sdl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\snd-win.h">
+    <ClInclude Include="..\SPClient\snd-win.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\sound.h">
+    <ClInclude Include="..\SPClient\sound.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\source.h">
+    <ClInclude Include="..\SPClient\source.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\store.h">
+    <ClInclude Include="..\SPClient\store.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\target.h">
+    <ClInclude Include="..\SPClient\target.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\trap.h">
+    <ClInclude Include="..\SPClient\trap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ui-birth.h">
+    <ClInclude Include="..\SPClient\ui-birth.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ui-command.h">
+    <ClInclude Include="..\SPClient\ui-command.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ui-context.h">
+    <ClInclude Include="..\SPClient\ui-context.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ui-curse.h">
+    <ClInclude Include="..\SPClient\ui-curse.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ui-death.h">
+    <ClInclude Include="..\SPClient\ui-death.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ui-display.h">
+    <ClInclude Include="..\SPClient\ui-display.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ui-effect.h">
+    <ClInclude Include="..\SPClient\ui-effect.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ui-event.h">
+    <ClInclude Include="..\SPClient\ui-event.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ui-game.h">
+    <ClInclude Include="..\SPClient\ui-game.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ui-help.h">
+    <ClInclude Include="..\SPClient\ui-help.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ui-history.h">
+    <ClInclude Include="..\SPClient\ui-history.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ui-init.h">
+    <ClInclude Include="..\SPClient\ui-init.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ui-input.h">
+    <ClInclude Include="..\SPClient\ui-input.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ui-keymap.h">
+    <ClInclude Include="..\SPClient\ui-keymap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ui-knowledge.h">
+    <ClInclude Include="..\SPClient\ui-knowledge.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ui-map.h">
+    <ClInclude Include="..\SPClient\ui-map.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ui-menu.h">
+    <ClInclude Include="..\SPClient\ui-menu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ui-mon-list.h">
+    <ClInclude Include="..\SPClient\ui-mon-list.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ui-mon-lore.h">
+    <ClInclude Include="..\SPClient\ui-mon-lore.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ui-object.h">
+    <ClInclude Include="..\SPClient\ui-object.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ui-obj-list.h">
+    <ClInclude Include="..\SPClient\ui-obj-list.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ui-options.h">
+    <ClInclude Include="..\SPClient\ui-options.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ui-output.h">
+    <ClInclude Include="..\SPClient\ui-output.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ui-player-properties.h">
+    <ClInclude Include="..\SPClient\ui-player-properties.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ui-player.h">
+    <ClInclude Include="..\SPClient\ui-player.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ui-prefs.h">
+    <ClInclude Include="..\SPClient\ui-prefs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ui-score.h">
+    <ClInclude Include="..\SPClient\ui-score.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ui-signals.h">
+    <ClInclude Include="..\SPClient\ui-signals.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ui-spell.h">
+    <ClInclude Include="..\SPClient\ui-spell.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ui-spoil.h">
+    <ClInclude Include="..\SPClient\ui-spoil.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ui-store.h">
+    <ClInclude Include="..\SPClient\ui-store.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ui-target.h">
+    <ClInclude Include="..\SPClient\ui-target.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ui-term.h">
+    <ClInclude Include="..\SPClient\ui-term.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ui-visuals.h">
+    <ClInclude Include="..\SPClient\ui-visuals.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ui-wizard.h">
+    <ClInclude Include="..\SPClient\ui-wizard.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\wizard.h">
+    <ClInclude Include="..\SPClient\wizard.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\z-bitflag.h">
+    <ClInclude Include="..\SPClient\z-bitflag.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\z-color.h">
+    <ClInclude Include="..\SPClient\z-color.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\z-debug.h">
+    <ClInclude Include="..\SPClient\z-debug.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\z-dice.h">
+    <ClInclude Include="..\SPClient\z-dice.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\z-expression.h">
+    <ClInclude Include="..\SPClient\z-expression.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\z-file.h">
+    <ClInclude Include="..\SPClient\z-file.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\z-form.h">
+    <ClInclude Include="..\SPClient\z-form.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\z-quark.h">
+    <ClInclude Include="..\SPClient\z-quark.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\z-queue.h">
+    <ClInclude Include="..\SPClient\z-queue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\z-rand.h">
+    <ClInclude Include="..\SPClient\z-rand.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\z-set.h">
+    <ClInclude Include="..\SPClient\z-set.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\z-textblock.h">
+    <ClInclude Include="..\SPClient\z-textblock.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\z-type.h">
+    <ClInclude Include="..\SPClient\z-type.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\z-util.h">
+    <ClInclude Include="..\SPClient\z-util.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\z-virt.h">
+    <ClInclude Include="..\SPClient\z-virt.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\win\readdib.h">
+    <ClInclude Include="..\SPClient\win\readdib.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\win\win-menu.h">
+    <ClInclude Include="..\SPClient\win\win-menu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\win\win-term.h">
+    <ClInclude Include="..\SPClient\win\win-term.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\win\include\png.h">
+    <ClInclude Include="..\SPClient\win\include\png.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\win\include\pngconf.h">
+    <ClInclude Include="..\SPClient\win\include\pngconf.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\win\include\zconf.h">
+    <ClInclude Include="..\SPClient\win\include\zconf.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\win\include\zlib.h">
+    <ClInclude Include="..\SPClient\win\include\zlib.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ui-entry.h">
+    <ClInclude Include="..\SPClient\ui-entry.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ui-entry-combiner.h">
+    <ClInclude Include="..\SPClient\ui-entry-combiner.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ui-entry-init.h">
+    <ClInclude Include="..\SPClient\ui-entry-init.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ui-entry-renderers.h">
+    <ClInclude Include="..\SPClient\ui-entry-renderers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ui-equip-cmp.h">
+    <ClInclude Include="..\SPClient\ui-equip-cmp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\player-properties.h">
+    <ClInclude Include="..\SPClient\player-properties.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\win\angband.ico">
+    <Image Include="..\SPClient\win\angband.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\lib\icons\att-16.png">
+    <Image Include="..\..\lib\icons\att-16.png">
       <Filter>Resource Files\icons</Filter>
     </Image>
-    <Image Include="..\lib\icons\att-32.png">
+    <Image Include="..\..\lib\icons\att-32.png">
       <Filter>Resource Files\icons</Filter>
     </Image>
-    <Image Include="..\lib\icons\att-128.png">
+    <Image Include="..\..\lib\icons\att-128.png">
       <Filter>Resource Files\icons</Filter>
     </Image>
-    <Image Include="..\lib\icons\att-256.png">
+    <Image Include="..\..\lib\icons\att-256.png">
       <Filter>Resource Files\icons</Filter>
     </Image>
-    <Image Include="..\lib\icons\att-512.png">
+    <Image Include="..\..\lib\icons\att-512.png">
       <Filter>Resource Files\icons</Filter>
     </Image>
-    <Image Include="..\lib\tiles\adam-bolt\16x16.png">
+    <Image Include="..\..\lib\tiles\adam-bolt\16x16.png">
       <Filter>Resource Files\tiles\adam-bolt</Filter>
     </Image>
-    <Image Include="..\lib\tiles\gervais\32x32.png">
+    <Image Include="..\..\lib\tiles\gervais\32x32.png">
       <Filter>Resource Files\tiles\gervais</Filter>
     </Image>
-    <Image Include="..\lib\tiles\nomad\8x16.png">
+    <Image Include="..\..\lib\tiles\nomad\8x16.png">
       <Filter>Resource Files\tiles\nomad</Filter>
     </Image>
-    <Image Include="..\lib\tiles\old\8x8.png">
+    <Image Include="..\..\lib\tiles\old\8x8.png">
       <Filter>Resource Files\tiles\old</Filter>
     </Image>
-    <Image Include="..\lib\tiles\shockbolt\64x64.png">
+    <Image Include="..\..\lib\tiles\shockbolt\64x64.png">
       <Filter>Resource Files\tiles\shockbolt</Filter>
     </Image>
   </ItemGroup>
@@ -1085,959 +1085,959 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\lib\customize\font.prf">
+    <None Include="..\..\lib\customize\font.prf">
       <Filter>Resource Files\customize</Filter>
     </None>
-    <None Include="..\lib\customize\font-gcu.prf">
+    <None Include="..\..\lib\customize\font-gcu.prf">
       <Filter>Resource Files\customize</Filter>
     </None>
-    <None Include="..\lib\customize\font-sdl.prf">
+    <None Include="..\..\lib\customize\font-sdl.prf">
       <Filter>Resource Files\customize</Filter>
     </None>
-    <None Include="..\lib\customize\font-sdl2.prf">
+    <None Include="..\..\lib\customize\font-sdl2.prf">
       <Filter>Resource Files\customize</Filter>
     </None>
-    <None Include="..\lib\customize\font-win.prf">
+    <None Include="..\..\lib\customize\font-win.prf">
       <Filter>Resource Files\customize</Filter>
     </None>
-    <None Include="..\lib\customize\font-x11.prf">
+    <None Include="..\..\lib\customize\font-x11.prf">
       <Filter>Resource Files\customize</Filter>
     </None>
-    <None Include="..\lib\customize\keys-gcu.prf">
+    <None Include="..\..\lib\customize\keys-gcu.prf">
       <Filter>Resource Files\customize</Filter>
     </None>
-    <None Include="..\lib\customize\message.prf">
+    <None Include="..\..\lib\customize\message.prf">
       <Filter>Resource Files\customize</Filter>
     </None>
-    <None Include="..\lib\customize\pref.prf">
+    <None Include="..\..\lib\customize\pref.prf">
       <Filter>Resource Files\customize</Filter>
     </None>
-    <None Include="..\lib\customize\sound.prf">
+    <None Include="..\..\lib\customize\sound.prf">
       <Filter>Resource Files\customize</Filter>
     </None>
-    <None Include="..\lib\customize\user.prf">
+    <None Include="..\..\lib\customize\user.prf">
       <Filter>Resource Files\customize</Filter>
     </None>
-    <None Include="..\lib\fonts\5x8x.fon">
+    <None Include="..\..\lib\fonts\5x8x.fon">
       <Filter>Resource Files\fonts</Filter>
     </None>
-    <None Include="..\lib\fonts\6x10x.fon">
+    <None Include="..\..\lib\fonts\6x10x.fon">
       <Filter>Resource Files\fonts</Filter>
     </None>
-    <None Include="..\lib\fonts\6x12x.fon">
+    <None Include="..\..\lib\fonts\6x12x.fon">
       <Filter>Resource Files\fonts</Filter>
     </None>
-    <None Include="..\lib\fonts\6x13x.fon">
+    <None Include="..\..\lib\fonts\6x13x.fon">
       <Filter>Resource Files\fonts</Filter>
     </None>
-    <None Include="..\lib\fonts\6x13xb.fon">
+    <None Include="..\..\lib\fonts\6x13xb.fon">
       <Filter>Resource Files\fonts</Filter>
     </None>
-    <None Include="..\lib\fonts\7x13x.fon">
+    <None Include="..\..\lib\fonts\7x13x.fon">
       <Filter>Resource Files\fonts</Filter>
     </None>
-    <None Include="..\lib\fonts\7x13xb.fon">
+    <None Include="..\..\lib\fonts\7x13xb.fon">
       <Filter>Resource Files\fonts</Filter>
     </None>
-    <None Include="..\lib\fonts\8x8x.fon">
+    <None Include="..\..\lib\fonts\8x8x.fon">
       <Filter>Resource Files\fonts</Filter>
     </None>
-    <None Include="..\lib\fonts\8x8xb.fon">
+    <None Include="..\..\lib\fonts\8x8xb.fon">
       <Filter>Resource Files\fonts</Filter>
     </None>
-    <None Include="..\lib\fonts\8x12x.fon">
+    <None Include="..\..\lib\fonts\8x12x.fon">
       <Filter>Resource Files\fonts</Filter>
     </None>
-    <None Include="..\lib\fonts\8x12xb.fon">
+    <None Include="..\..\lib\fonts\8x12xb.fon">
       <Filter>Resource Files\fonts</Filter>
     </None>
-    <None Include="..\lib\fonts\8x13x.fon">
+    <None Include="..\..\lib\fonts\8x13x.fon">
       <Filter>Resource Files\fonts</Filter>
     </None>
-    <None Include="..\lib\fonts\8x16x.fon">
+    <None Include="..\..\lib\fonts\8x16x.fon">
       <Filter>Resource Files\fonts</Filter>
     </None>
-    <None Include="..\lib\fonts\9x15x.fon">
+    <None Include="..\..\lib\fonts\9x15x.fon">
       <Filter>Resource Files\fonts</Filter>
     </None>
-    <None Include="..\lib\fonts\9x15xb.fon">
+    <None Include="..\..\lib\fonts\9x15xb.fon">
       <Filter>Resource Files\fonts</Filter>
     </None>
-    <None Include="..\lib\fonts\10x14x.fon">
+    <None Include="..\..\lib\fonts\10x14x.fon">
       <Filter>Resource Files\fonts</Filter>
     </None>
-    <None Include="..\lib\fonts\10x14xb.fon">
+    <None Include="..\..\lib\fonts\10x14xb.fon">
       <Filter>Resource Files\fonts</Filter>
     </None>
-    <None Include="..\lib\fonts\10x20x.fon">
+    <None Include="..\..\lib\fonts\10x20x.fon">
       <Filter>Resource Files\fonts</Filter>
     </None>
-    <None Include="..\lib\fonts\12x18x.fon">
+    <None Include="..\..\lib\fonts\12x18x.fon">
       <Filter>Resource Files\fonts</Filter>
     </None>
-    <None Include="..\lib\fonts\12x24x.fon">
+    <None Include="..\..\lib\fonts\12x24x.fon">
       <Filter>Resource Files\fonts</Filter>
     </None>
-    <None Include="..\lib\fonts\16x16x.fon">
+    <None Include="..\..\lib\fonts\16x16x.fon">
       <Filter>Resource Files\fonts</Filter>
     </None>
-    <None Include="..\lib\fonts\16x16xw.fon">
+    <None Include="..\..\lib\fonts\16x16xw.fon">
       <Filter>Resource Files\fonts</Filter>
     </None>
-    <None Include="..\lib\fonts\16x24x.fon">
+    <None Include="..\..\lib\fonts\16x24x.fon">
       <Filter>Resource Files\fonts</Filter>
     </None>
-    <None Include="..\lib\sounds\sound.cfg">
+    <None Include="..\..\lib\sounds\sound.cfg">
       <Filter>Resource Files\sounds</Filter>
     </None>
-    <None Include="..\lib\tiles\adam-bolt\flvr-new.prf">
+    <None Include="..\..\lib\tiles\adam-bolt\flvr-new.prf">
       <Filter>Resource Files\tiles\adam-bolt</Filter>
     </None>
-    <None Include="..\lib\tiles\adam-bolt\graf-new.prf">
+    <None Include="..\..\lib\tiles\adam-bolt\graf-new.prf">
       <Filter>Resource Files\tiles\adam-bolt</Filter>
     </None>
-    <None Include="..\lib\tiles\adam-bolt\xtra-new.prf">
+    <None Include="..\..\lib\tiles\adam-bolt\xtra-new.prf">
       <Filter>Resource Files\tiles\adam-bolt</Filter>
     </None>
-    <None Include="..\lib\tiles\gervais\flvr-dvg.prf">
+    <None Include="..\..\lib\tiles\gervais\flvr-dvg.prf">
       <Filter>Resource Files\tiles\gervais</Filter>
     </None>
-    <None Include="..\lib\tiles\gervais\graf-dvg.prf">
+    <None Include="..\..\lib\tiles\gervais\graf-dvg.prf">
       <Filter>Resource Files\tiles\gervais</Filter>
     </None>
-    <None Include="..\lib\tiles\gervais\xtra-dvg.prf">
+    <None Include="..\..\lib\tiles\gervais\xtra-dvg.prf">
       <Filter>Resource Files\tiles\gervais</Filter>
     </None>
-    <None Include="..\lib\tiles\nomad\flvr-nmd.prf">
+    <None Include="..\..\lib\tiles\nomad\flvr-nmd.prf">
       <Filter>Resource Files\tiles\nomad</Filter>
     </None>
-    <None Include="..\lib\tiles\nomad\graf-nmd.prf">
+    <None Include="..\..\lib\tiles\nomad\graf-nmd.prf">
       <Filter>Resource Files\tiles\nomad</Filter>
     </None>
-    <None Include="..\lib\tiles\nomad\xtra-nmd.prf">
+    <None Include="..\..\lib\tiles\nomad\xtra-nmd.prf">
       <Filter>Resource Files\tiles\nomad</Filter>
     </None>
-    <None Include="..\lib\tiles\old\flvr-xxx.prf">
+    <None Include="..\..\lib\tiles\old\flvr-xxx.prf">
       <Filter>Resource Files\tiles\old</Filter>
     </None>
-    <None Include="..\lib\tiles\old\graf-xxx.prf">
+    <None Include="..\..\lib\tiles\old\graf-xxx.prf">
       <Filter>Resource Files\tiles\old</Filter>
     </None>
-    <None Include="..\lib\tiles\old\xtra-xxx.prf">
+    <None Include="..\..\lib\tiles\old\xtra-xxx.prf">
       <Filter>Resource Files\tiles\old</Filter>
     </None>
-    <None Include="..\lib\tiles\shockbolt\flvr-shb.prf">
+    <None Include="..\..\lib\tiles\shockbolt\flvr-shb.prf">
       <Filter>Resource Files\tiles\shockbolt</Filter>
     </None>
-    <None Include="..\lib\tiles\shockbolt\graf-shb-dark.prf">
+    <None Include="..\..\lib\tiles\shockbolt\graf-shb-dark.prf">
       <Filter>Resource Files\tiles\shockbolt</Filter>
     </None>
-    <None Include="..\lib\tiles\shockbolt\graf-shb-light.prf">
+    <None Include="..\..\lib\tiles\shockbolt\graf-shb-light.prf">
       <Filter>Resource Files\tiles\shockbolt</Filter>
     </None>
-    <None Include="..\lib\tiles\shockbolt\xtra-shb.prf">
+    <None Include="..\..\lib\tiles\shockbolt\xtra-shb.prf">
       <Filter>Resource Files\tiles\shockbolt</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="..\lib\gamedata\activation.txt">
+    <Text Include="..\..\lib\gamedata\activation.txt">
       <Filter>Resource Files\gamedata</Filter>
     </Text>
-    <Text Include="..\lib\gamedata\artifact.txt">
+    <Text Include="..\..\lib\gamedata\artifact.txt">
       <Filter>Resource Files\gamedata</Filter>
     </Text>
-    <Text Include="..\lib\gamedata\blow_effects.txt">
+    <Text Include="..\..\lib\gamedata\blow_effects.txt">
       <Filter>Resource Files\gamedata</Filter>
     </Text>
-    <Text Include="..\lib\gamedata\blow_methods.txt">
+    <Text Include="..\..\lib\gamedata\blow_methods.txt">
       <Filter>Resource Files\gamedata</Filter>
     </Text>
-    <Text Include="..\lib\gamedata\body.txt">
+    <Text Include="..\..\lib\gamedata\body.txt">
       <Filter>Resource Files\gamedata</Filter>
     </Text>
-    <Text Include="..\lib\gamedata\brand.txt">
+    <Text Include="..\..\lib\gamedata\brand.txt">
       <Filter>Resource Files\gamedata</Filter>
     </Text>
-    <Text Include="..\lib\gamedata\chest_trap.txt">
+    <Text Include="..\..\lib\gamedata\chest_trap.txt">
       <Filter>Resource Files\gamedata</Filter>
     </Text>
-    <Text Include="..\lib\gamedata\class.txt">
+    <Text Include="..\..\lib\gamedata\class.txt">
       <Filter>Resource Files\gamedata</Filter>
     </Text>
-    <Text Include="..\lib\gamedata\constants.txt">
+    <Text Include="..\..\lib\gamedata\constants.txt">
       <Filter>Resource Files\gamedata</Filter>
     </Text>
-    <Text Include="..\lib\gamedata\curse.txt">
+    <Text Include="..\..\lib\gamedata\curse.txt">
       <Filter>Resource Files\gamedata</Filter>
     </Text>
-    <Text Include="..\lib\gamedata\dungeon_profile.txt">
+    <Text Include="..\..\lib\gamedata\dungeon_profile.txt">
       <Filter>Resource Files\gamedata</Filter>
     </Text>
-    <Text Include="..\lib\gamedata\ego_item.txt">
+    <Text Include="..\..\lib\gamedata\ego_item.txt">
       <Filter>Resource Files\gamedata</Filter>
     </Text>
-    <Text Include="..\lib\gamedata\flavor.txt">
+    <Text Include="..\..\lib\gamedata\flavor.txt">
       <Filter>Resource Files\gamedata</Filter>
     </Text>
-    <Text Include="..\lib\gamedata\hints.txt">
+    <Text Include="..\..\lib\gamedata\hints.txt">
       <Filter>Resource Files\gamedata</Filter>
     </Text>
-    <Text Include="..\lib\gamedata\history.txt">
+    <Text Include="..\..\lib\gamedata\history.txt">
       <Filter>Resource Files\gamedata</Filter>
     </Text>
-    <Text Include="..\lib\gamedata\monster.txt">
+    <Text Include="..\..\lib\gamedata\monster.txt">
       <Filter>Resource Files\gamedata</Filter>
     </Text>
-    <Text Include="..\lib\gamedata\monster_base.txt">
+    <Text Include="..\..\lib\gamedata\monster_base.txt">
       <Filter>Resource Files\gamedata</Filter>
     </Text>
-    <Text Include="..\lib\gamedata\monster_spell.txt">
+    <Text Include="..\..\lib\gamedata\monster_spell.txt">
       <Filter>Resource Files\gamedata</Filter>
     </Text>
-    <Text Include="..\lib\gamedata\names.txt">
+    <Text Include="..\..\lib\gamedata\names.txt">
       <Filter>Resource Files\gamedata</Filter>
     </Text>
-    <Text Include="..\lib\gamedata\object.txt">
+    <Text Include="..\..\lib\gamedata\object.txt">
       <Filter>Resource Files\gamedata</Filter>
     </Text>
-    <Text Include="..\lib\gamedata\object_base.txt">
+    <Text Include="..\..\lib\gamedata\object_base.txt">
       <Filter>Resource Files\gamedata</Filter>
     </Text>
-    <Text Include="..\lib\gamedata\object_property.txt">
+    <Text Include="..\..\lib\gamedata\object_property.txt">
       <Filter>Resource Files\gamedata</Filter>
     </Text>
-    <Text Include="..\lib\gamedata\old_class.txt">
+    <Text Include="..\..\lib\gamedata\old_class.txt">
       <Filter>Resource Files\gamedata</Filter>
     </Text>
-    <Text Include="..\lib\gamedata\p_race.txt">
+    <Text Include="..\..\lib\gamedata\p_race.txt">
       <Filter>Resource Files\gamedata</Filter>
     </Text>
-    <Text Include="..\lib\gamedata\pain.txt">
+    <Text Include="..\..\lib\gamedata\pain.txt">
       <Filter>Resource Files\gamedata</Filter>
     </Text>
-    <Text Include="..\lib\gamedata\pit.txt">
+    <Text Include="..\..\lib\gamedata\pit.txt">
       <Filter>Resource Files\gamedata</Filter>
     </Text>
-    <Text Include="..\lib\gamedata\player_property.txt">
+    <Text Include="..\..\lib\gamedata\player_property.txt">
       <Filter>Resource Files\gamedata</Filter>
     </Text>
-    <Text Include="..\lib\gamedata\player_timed.txt">
+    <Text Include="..\..\lib\gamedata\player_timed.txt">
       <Filter>Resource Files\gamedata</Filter>
     </Text>
-    <Text Include="..\lib\gamedata\projection.txt">
+    <Text Include="..\..\lib\gamedata\projection.txt">
       <Filter>Resource Files\gamedata</Filter>
     </Text>
-    <Text Include="..\lib\gamedata\quest.txt">
+    <Text Include="..\..\lib\gamedata\quest.txt">
       <Filter>Resource Files\gamedata</Filter>
     </Text>
-    <Text Include="..\lib\gamedata\realm.txt">
+    <Text Include="..\..\lib\gamedata\realm.txt">
       <Filter>Resource Files\gamedata</Filter>
     </Text>
-    <Text Include="..\lib\gamedata\room_template.txt">
+    <Text Include="..\..\lib\gamedata\room_template.txt">
       <Filter>Resource Files\gamedata</Filter>
     </Text>
-    <Text Include="..\lib\gamedata\shape.txt">
+    <Text Include="..\..\lib\gamedata\shape.txt">
       <Filter>Resource Files\gamedata</Filter>
     </Text>
-    <Text Include="..\lib\gamedata\slay.txt">
+    <Text Include="..\..\lib\gamedata\slay.txt">
       <Filter>Resource Files\gamedata</Filter>
     </Text>
-    <Text Include="..\lib\gamedata\store.txt">
+    <Text Include="..\..\lib\gamedata\store.txt">
       <Filter>Resource Files\gamedata</Filter>
     </Text>
-    <Text Include="..\lib\gamedata\summon.txt">
+    <Text Include="..\..\lib\gamedata\summon.txt">
       <Filter>Resource Files\gamedata</Filter>
     </Text>
-    <Text Include="..\lib\gamedata\terrain.txt">
+    <Text Include="..\..\lib\gamedata\terrain.txt">
       <Filter>Resource Files\gamedata</Filter>
     </Text>
-    <Text Include="..\lib\gamedata\trap.txt">
+    <Text Include="..\..\lib\gamedata\trap.txt">
       <Filter>Resource Files\gamedata</Filter>
     </Text>
-    <Text Include="..\lib\gamedata\ui_entry.txt">
+    <Text Include="..\..\lib\gamedata\ui_entry.txt">
       <Filter>Resource Files\gamedata</Filter>
     </Text>
-    <Text Include="..\lib\gamedata\ui_entry_base.txt">
+    <Text Include="..\..\lib\gamedata\ui_entry_base.txt">
       <Filter>Resource Files\gamedata</Filter>
     </Text>
-    <Text Include="..\lib\gamedata\ui_entry_renderer.txt">
+    <Text Include="..\..\lib\gamedata\ui_entry_renderer.txt">
       <Filter>Resource Files\gamedata</Filter>
     </Text>
-    <Text Include="..\lib\gamedata\vault.txt">
+    <Text Include="..\..\lib\gamedata\vault.txt">
       <Filter>Resource Files\gamedata</Filter>
     </Text>
-    <Text Include="..\lib\gamedata\visuals.txt">
+    <Text Include="..\..\lib\gamedata\visuals.txt">
       <Filter>Resource Files\gamedata</Filter>
     </Text>
-    <Text Include="..\lib\gamedata\world.txt">
+    <Text Include="..\..\lib\gamedata\world.txt">
       <Filter>Resource Files\gamedata</Filter>
     </Text>
-    <Text Include="..\lib\help\commands.txt">
+    <Text Include="..\..\lib\help\commands.txt">
       <Filter>Resource Files\help</Filter>
     </Text>
-    <Text Include="..\lib\help\index.txt">
+    <Text Include="..\..\lib\help\index.txt">
       <Filter>Resource Files\help</Filter>
     </Text>
-    <Text Include="..\lib\help\r_comm.txt">
+    <Text Include="..\..\lib\help\r_comm.txt">
       <Filter>Resource Files\help</Filter>
     </Text>
-    <Text Include="..\lib\help\r_index.txt">
+    <Text Include="..\..\lib\help\r_index.txt">
       <Filter>Resource Files\help</Filter>
     </Text>
-    <Text Include="..\lib\help\symbols.txt">
+    <Text Include="..\..\lib\help\symbols.txt">
       <Filter>Resource Files\help</Filter>
     </Text>
-    <Text Include="..\lib\tiles\list.txt">
+    <Text Include="..\..\lib\tiles\list.txt">
       <Filter>Resource Files\tiles</Filter>
     </Text>
-    <Text Include="..\lib\screens\crown.txt">
+    <Text Include="..\..\lib\screens\crown.txt">
       <Filter>Resource Files\screens</Filter>
     </Text>
-    <Text Include="..\lib\screens\dead.txt">
+    <Text Include="..\..\lib\screens\dead.txt">
       <Filter>Resource Files\screens</Filter>
     </Text>
-    <Text Include="..\lib\screens\news.txt">
+    <Text Include="..\..\lib\screens\news.txt">
       <Filter>Resource Files\screens</Filter>
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <Media Include="..\lib\sounds\amb_bell_metal1.mp3">
+    <Media Include="..\..\lib\sounds\amb_bell_metal1.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\amb_bell_metal2.mp3">
+    <Media Include="..\..\lib\sounds\amb_bell_metal2.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\amb_bell_tibet1.mp3">
+    <Media Include="..\..\lib\sounds\amb_bell_tibet1.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\amb_bell_tibet2.mp3">
+    <Media Include="..\..\lib\sounds\amb_bell_tibet2.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\amb_bell_tibet3.mp3">
+    <Media Include="..\..\lib\sounds\amb_bell_tibet3.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\amb_door_doom.mp3">
+    <Media Include="..\..\lib\sounds\amb_door_doom.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\amb_door_iron.mp3">
+    <Media Include="..\..\lib\sounds\amb_door_iron.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\amb_dungeon_echo.mp3">
+    <Media Include="..\..\lib\sounds\amb_dungeon_echo.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\amb_dungeon_echowet.mp3">
+    <Media Include="..\..\lib\sounds\amb_dungeon_echowet.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\amb_gong_chinese.mp3">
+    <Media Include="..\..\lib\sounds\amb_gong_chinese.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\amb_gong_low.mp3">
+    <Media Include="..\..\lib\sounds\amb_gong_low.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\amb_gong_strike.mp3">
+    <Media Include="..\..\lib\sounds\amb_gong_strike.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\amb_gong_undertone.mp3">
+    <Media Include="..\..\lib\sounds\amb_gong_undertone.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\amb_guitar_chord.mp3">
+    <Media Include="..\..\lib\sounds\amb_guitar_chord.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\amb_pulse_low.mp3">
+    <Media Include="..\..\lib\sounds\amb_pulse_low.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\amb_thunder_rain.mp3">
+    <Media Include="..\..\lib\sounds\amb_thunder_rain.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\amb_thunder_roll.mp3">
+    <Media Include="..\..\lib\sounds\amb_thunder_roll.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\id_bad_aww.mp3">
+    <Media Include="..\..\lib\sounds\id_bad_aww.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\id_bad_dang.mp3">
+    <Media Include="..\..\lib\sounds\id_bad_dang.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\id_bad_hmm.mp3">
+    <Media Include="..\..\lib\sounds\id_bad_hmm.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\id_bad_hmph.mp3">
+    <Media Include="..\..\lib\sounds\id_bad_hmph.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\id_bad_ohh.mp3">
+    <Media Include="..\..\lib\sounds\id_bad_ohh.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\id_ego_whoa.mp3">
+    <Media Include="..\..\lib\sounds\id_ego_whoa.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\id_ego_woohoo.mp3">
+    <Media Include="..\..\lib\sounds\id_ego_woohoo.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\id_ego_yeah.mp3">
+    <Media Include="..\..\lib\sounds\id_ego_yeah.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\id_ego_yeah2.mp3">
+    <Media Include="..\..\lib\sounds\id_ego_yeah2.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\id_ego_yes.mp3">
+    <Media Include="..\..\lib\sounds\id_ego_yes.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\id_good_hey.mp3">
+    <Media Include="..\..\lib\sounds\id_good_hey.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\id_good_hey2.mp3">
+    <Media Include="..\..\lib\sounds\id_good_hey2.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\id_good_hmm.mp3">
+    <Media Include="..\..\lib\sounds\id_good_hmm.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\id_good_huh.mp3">
+    <Media Include="..\..\lib\sounds\id_good_huh.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\id_good_ooh.mp3">
+    <Media Include="..\..\lib\sounds\id_good_ooh.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\id_good_ooo.mp3">
+    <Media Include="..\..\lib\sounds\id_good_ooo.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\id_good_wow.mp3">
+    <Media Include="..\..\lib\sounds\id_good_wow.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_attack_breath.mp3">
+    <Media Include="..\..\lib\sounds\mco_attack_breath.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_attack_spray.mp3">
+    <Media Include="..\..\lib\sounds\mco_attack_spray.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_bite_chew.mp3">
+    <Media Include="..\..\lib\sounds\mco_bite_chew.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_bite_chomp.mp3">
+    <Media Include="..\..\lib\sounds\mco_bite_chomp.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_bite_dainty.mp3">
+    <Media Include="..\..\lib\sounds\mco_bite_dainty.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_bite_gnash.mp3">
+    <Media Include="..\..\lib\sounds\mco_bite_gnash.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_bite_hard.mp3">
+    <Media Include="..\..\lib\sounds\mco_bite_hard.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_bite_long.mp3">
+    <Media Include="..\..\lib\sounds\mco_bite_long.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_bite_munch.mp3">
+    <Media Include="..\..\lib\sounds\mco_bite_munch.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_bite_regular.mp3">
+    <Media Include="..\..\lib\sounds\mco_bite_regular.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_bite_short.mp3">
+    <Media Include="..\..\lib\sounds\mco_bite_short.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_bite_small.mp3">
+    <Media Include="..\..\lib\sounds\mco_bite_small.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_bite_soft.mp3">
+    <Media Include="..\..\lib\sounds\mco_bite_soft.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_card_shuffle.mp3">
+    <Media Include="..\..\lib\sounds\mco_card_shuffle.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_castanet_trill.mp3">
+    <Media Include="..\..\lib\sounds\mco_castanet_trill.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_ceramic_trill.mp3">
+    <Media Include="..\..\lib\sounds\mco_ceramic_trill.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_click_vibra.mp3">
+    <Media Include="..\..\lib\sounds\mco_click_vibra.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_creature_choking.mp3">
+    <Media Include="..\..\lib\sounds\mco_creature_choking.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_creature_groan.mp3">
+    <Media Include="..\..\lib\sounds\mco_creature_groan.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_creature_yelp.mp3">
+    <Media Include="..\..\lib\sounds\mco_creature_yelp.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_cuica_rubbing.mp3">
+    <Media Include="..\..\lib\sounds\mco_cuica_rubbing.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_dino_low.mp3">
+    <Media Include="..\..\lib\sounds\mco_dino_low.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_dino_slur.mp3">
+    <Media Include="..\..\lib\sounds\mco_dino_slur.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_dino_talk.mp3">
+    <Media Include="..\..\lib\sounds\mco_dino_talk.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_dino_yawn.mp3">
+    <Media Include="..\..\lib\sounds\mco_dino_yawn.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_dub_wobble.mp3">
+    <Media Include="..\..\lib\sounds\mco_dub_wobble.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_frog_trill.mp3">
+    <Media Include="..\..\lib\sounds\mco_frog_trill.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_hit_whip.mp3">
+    <Media Include="..\..\lib\sounds\mco_hit_whip.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_howl_croak.mp3">
+    <Media Include="..\..\lib\sounds\mco_howl_croak.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_howl_deep.mp3">
+    <Media Include="..\..\lib\sounds\mco_howl_deep.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_howl_distressed.mp3">
+    <Media Include="..\..\lib\sounds\mco_howl_distressed.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_howl_high.mp3">
+    <Media Include="..\..\lib\sounds\mco_howl_high.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_howl_long.mp3">
+    <Media Include="..\..\lib\sounds\mco_howl_long.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_liquid_squirt.mp3">
+    <Media Include="..\..\lib\sounds\mco_liquid_squirt.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_man_mumble.mp3">
+    <Media Include="..\..\lib\sounds\mco_man_mumble.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_mouse_squeaks.mp3">
+    <Media Include="..\..\lib\sounds\mco_mouse_squeaks.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_rubber_thud.mp3">
+    <Media Include="..\..\lib\sounds\mco_rubber_thud.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_scurry_dry.mp3">
+    <Media Include="..\..\lib\sounds\mco_scurry_dry.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_shake_roll.mp3">
+    <Media Include="..\..\lib\sounds\mco_shake_roll.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_snarl_short.mp3">
+    <Media Include="..\..\lib\sounds\mco_snarl_short.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_spray_long.mp3">
+    <Media Include="..\..\lib\sounds\mco_spray_long.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_squish_hit.mp3">
+    <Media Include="..\..\lib\sounds\mco_squish_hit.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_squish_snap.mp3">
+    <Media Include="..\..\lib\sounds\mco_squish_snap.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_strange_music.mp3">
+    <Media Include="..\..\lib\sounds\mco_strange_music.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_strange_thwoink.mp3">
+    <Media Include="..\..\lib\sounds\mco_strange_thwoink.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_thoing_backwards.mp3">
+    <Media Include="..\..\lib\sounds\mco_thoing_backwards.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_thoing_deep.mp3">
+    <Media Include="..\..\lib\sounds\mco_thoing_deep.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_thud_crash.mp3">
+    <Media Include="..\..\lib\sounds\mco_thud_crash.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\mco_tube_hit.mp3">
+    <Media Include="..\..\lib\sounds\mco_tube_hit.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plc_bell_warn.mp3">
+    <Media Include="..\..\lib\sounds\plc_bell_warn.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plc_die_laugh.mp3">
+    <Media Include="..\..\lib\sounds\plc_die_laugh.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plc_hit_anvil.mp3">
+    <Media Include="..\..\lib\sounds\plc_hit_anvil.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plc_hit_anvil2.mp3">
+    <Media Include="..\..\lib\sounds\plc_hit_anvil2.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plc_hit_arrow.mp3">
+    <Media Include="..\..\lib\sounds\plc_hit_arrow.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plc_hit_body.mp3">
+    <Media Include="..\..\lib\sounds\plc_hit_body.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plc_hit_groan.mp3">
+    <Media Include="..\..\lib\sounds\plc_hit_groan.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plc_hit_grunt.mp3">
+    <Media Include="..\..\lib\sounds\plc_hit_grunt.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plc_hit_grunt2.mp3">
+    <Media Include="..\..\lib\sounds\plc_hit_grunt2.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plc_hit_hay.mp3">
+    <Media Include="..\..\lib\sounds\plc_hit_hay.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plc_miss_arrow.mp3">
+    <Media Include="..\..\lib\sounds\plc_miss_arrow.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plc_miss_arrow2.mp3">
+    <Media Include="..\..\lib\sounds\plc_miss_arrow2.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plc_miss_swish.mp3">
+    <Media Include="..\..\lib\sounds\plc_miss_swish.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_aim_wand.mp3">
+    <Media Include="..\..\lib\sounds\plm_aim_wand.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_bang_ceramic.mp3">
+    <Media Include="..\..\lib\sounds\plm_bang_ceramic.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_bang_dumpster.mp3">
+    <Media Include="..\..\lib\sounds\plm_bang_dumpster.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_bang_metal.mp3">
+    <Media Include="..\..\lib\sounds\plm_bang_metal.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_book_pageturn.mp3">
+    <Media Include="..\..\lib\sounds\plm_book_pageturn.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_bottle_clinks.mp3">
+    <Media Include="..\..\lib\sounds\plm_bottle_clinks.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_break_canister.mp3">
+    <Media Include="..\..\lib\sounds\plm_break_canister.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_break_glass.mp3">
+    <Media Include="..\..\lib\sounds\plm_break_glass.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_break_glass2.mp3">
+    <Media Include="..\..\lib\sounds\plm_break_glass2.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_break_plates.mp3">
+    <Media Include="..\..\lib\sounds\plm_break_plates.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_break_shatter.mp3">
+    <Media Include="..\..\lib\sounds\plm_break_shatter.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_break_smash.mp3">
+    <Media Include="..\..\lib\sounds\plm_break_smash.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_break_wood.mp3">
+    <Media Include="..\..\lib\sounds\plm_break_wood.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_cabinet_open.mp3">
+    <Media Include="..\..\lib\sounds\plm_cabinet_open.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_cabinet_shut.mp3">
+    <Media Include="..\..\lib\sounds\plm_cabinet_shut.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_chain_light.mp3">
+    <Media Include="..\..\lib\sounds\plm_chain_light.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_chest_latch.mp3">
+    <Media Include="..\..\lib\sounds\plm_chest_latch.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_chest_unlatch.mp3">
+    <Media Include="..\..\lib\sounds\plm_chest_unlatch.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_chimes_jangle.mp3">
+    <Media Include="..\..\lib\sounds\plm_chimes_jangle.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_click_dry.mp3">
+    <Media Include="..\..\lib\sounds\plm_click_dry.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_click_switch.mp3">
+    <Media Include="..\..\lib\sounds\plm_click_switch.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_click_switch2.mp3">
+    <Media Include="..\..\lib\sounds\plm_click_switch2.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_click_switch3.mp3">
+    <Media Include="..\..\lib\sounds\plm_click_switch3.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_click_wood.mp3">
+    <Media Include="..\..\lib\sounds\plm_click_wood.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_close_hatch.mp3">
+    <Media Include="..\..\lib\sounds\plm_close_hatch.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_coins_dump.mp3">
+    <Media Include="..\..\lib\sounds\plm_coins_dump.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_coins_light.mp3">
+    <Media Include="..\..\lib\sounds\plm_coins_light.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_coins_pour.mp3">
+    <Media Include="..\..\lib\sounds\plm_coins_pour.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_coins_shake.mp3">
+    <Media Include="..\..\lib\sounds\plm_coins_shake.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_cork_pop.mp3">
+    <Media Include="..\..\lib\sounds\plm_cork_pop.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_cork_squeak.mp3">
+    <Media Include="..\..\lib\sounds\plm_cork_squeak.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_door_bolt.mp3">
+    <Media Include="..\..\lib\sounds\plm_door_bolt.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_door_creak.mp3">
+    <Media Include="..\..\lib\sounds\plm_door_creak.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_door_creakshut.mp3">
+    <Media Include="..\..\lib\sounds\plm_door_creakshut.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_door_dungeon.mp3">
+    <Media Include="..\..\lib\sounds\plm_door_dungeon.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_door_echolock.mp3">
+    <Media Include="..\..\lib\sounds\plm_door_echolock.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_door_entrance.mp3">
+    <Media Include="..\..\lib\sounds\plm_door_entrance.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_door_knob.mp3">
+    <Media Include="..\..\lib\sounds\plm_door_knob.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_door_latch.mp3">
+    <Media Include="..\..\lib\sounds\plm_door_latch.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_door_open.mp3">
+    <Media Include="..\..\lib\sounds\plm_door_open.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_door_opening.mp3">
+    <Media Include="..\..\lib\sounds\plm_door_opening.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_door_rusty.mp3">
+    <Media Include="..\..\lib\sounds\plm_door_rusty.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_door_shut.mp3">
+    <Media Include="..\..\lib\sounds\plm_door_shut.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_door_slam.mp3">
+    <Media Include="..\..\lib\sounds\plm_door_slam.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_door_squeaky.mp3">
+    <Media Include="..\..\lib\sounds\plm_door_squeaky.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_door_wooden.mp3">
+    <Media Include="..\..\lib\sounds\plm_door_wooden.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_drop_boot.mp3">
+    <Media Include="..\..\lib\sounds\plm_drop_boot.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_eat_bite.mp3">
+    <Media Include="..\..\lib\sounds\plm_eat_bite.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_floor_creak.mp3">
+    <Media Include="..\..\lib\sounds\plm_floor_creak.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_floor_creak2.mp3">
+    <Media Include="..\..\lib\sounds\plm_floor_creak2.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_glass_break.mp3">
+    <Media Include="..\..\lib\sounds\plm_glass_break.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_glass_breaking.mp3">
+    <Media Include="..\..\lib\sounds\plm_glass_breaking.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_glass_smashing.mp3">
+    <Media Include="..\..\lib\sounds\plm_glass_smashing.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_jar_ding.mp3">
+    <Media Include="..\..\lib\sounds\plm_jar_ding.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_levelup.mp3">
+    <Media Include="..\..\lib\sounds\plm_levelup.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_lock_case.mp3">
+    <Media Include="..\..\lib\sounds\plm_lock_case.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_lock_distant.mp3">
+    <Media Include="..\..\lib\sounds\plm_lock_distant.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_metal_clank.mp3">
+    <Media Include="..\..\lib\sounds\plm_metal_clank.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_metal_sharpen.mp3">
+    <Media Include="..\..\lib\sounds\plm_metal_sharpen.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_open_case.mp3">
+    <Media Include="..\..\lib\sounds\plm_open_case.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_spell1.mp3">
+    <Media Include="..\..\lib\sounds\plm_spell1.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_spell2.mp3">
+    <Media Include="..\..\lib\sounds\plm_spell2.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_spell3.mp3">
+    <Media Include="..\..\lib\sounds\plm_spell3.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_use_staff.mp3">
+    <Media Include="..\..\lib\sounds\plm_use_staff.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_wood_thud.mp3">
+    <Media Include="..\..\lib\sounds\plm_wood_thud.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\plm_zap_rod.mp3">
+    <Media Include="..\..\lib\sounds\plm_zap_rod.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\pls_bell_bowl.mp3">
+    <Media Include="..\..\lib\sounds\pls_bell_bowl.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\pls_bell_chime_new.mp3">
+    <Media Include="..\..\lib\sounds\pls_bell_chime_new.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\pls_bell_glass.mp3">
+    <Media Include="..\..\lib\sounds\pls_bell_glass.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\pls_bell_hibell_soft.mp3">
+    <Media Include="..\..\lib\sounds\pls_bell_hibell_soft.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\pls_bell_mute.mp3">
+    <Media Include="..\..\lib\sounds\pls_bell_mute.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\pls_bell_sustain.mp3">
+    <Media Include="..\..\lib\sounds\pls_bell_sustain.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\pls_breathe_in.mp3">
+    <Media Include="..\..\lib\sounds\pls_breathe_in.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\pls_man_argoh.mp3">
+    <Media Include="..\..\lib\sounds\pls_man_argoh.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\pls_man_gulp_new.mp3">
+    <Media Include="..\..\lib\sounds\pls_man_gulp_new.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\pls_man_oooh.mp3">
+    <Media Include="..\..\lib\sounds\pls_man_oooh.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\pls_man_scream2.mp3">
+    <Media Include="..\..\lib\sounds\pls_man_scream2.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\pls_man_sigh.mp3">
+    <Media Include="..\..\lib\sounds\pls_man_sigh.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\pls_man_sniff.mp3">
+    <Media Include="..\..\lib\sounds\pls_man_sniff.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\pls_man_sob.mp3">
+    <Media Include="..\..\lib\sounds\pls_man_sob.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\pls_man_spit.mp3">
+    <Media Include="..\..\lib\sounds\pls_man_spit.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\pls_man_ugh.mp3">
+    <Media Include="..\..\lib\sounds\pls_man_ugh.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\pls_man_yell.mp3">
+    <Media Include="..\..\lib\sounds\pls_man_yell.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\pls_tone_blurk.mp3">
+    <Media Include="..\..\lib\sounds\pls_tone_blurk.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\pls_tone_clave6.mp3">
+    <Media Include="..\..\lib\sounds\pls_tone_clave6.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\pls_tone_clavelo8.mp3">
+    <Media Include="..\..\lib\sounds\pls_tone_clavelo8.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\pls_tone_conk.mp3">
+    <Media Include="..\..\lib\sounds\pls_tone_conk.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\pls_tone_elec.mp3">
+    <Media Include="..\..\lib\sounds\pls_tone_elec.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\pls_tone_goblet.mp3">
+    <Media Include="..\..\lib\sounds\pls_tone_goblet.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\pls_tone_guiro.mp3">
+    <Media Include="..\..\lib\sounds\pls_tone_guiro.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\pls_tone_headstock.mp3">
+    <Media Include="..\..\lib\sounds\pls_tone_headstock.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\pls_tone_scrape.mp3">
+    <Media Include="..\..\lib\sounds\pls_tone_scrape.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\pls_tone_stick.mp3">
+    <Media Include="..\..\lib\sounds\pls_tone_stick.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\sto_bell_desk.mp3">
+    <Media Include="..\..\lib\sounds\sto_bell_desk.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\sto_bell_ding.mp3">
+    <Media Include="..\..\lib\sounds\sto_bell_ding.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\sto_bell_dingaling.mp3">
+    <Media Include="..\..\lib\sounds\sto_bell_dingaling.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\sto_bell_jingles.mp3">
+    <Media Include="..\..\lib\sounds\sto_bell_jingles.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\sto_bell_register1.mp3">
+    <Media Include="..\..\lib\sounds\sto_bell_register1.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\sto_bell_register2.mp3">
+    <Media Include="..\..\lib\sounds\sto_bell_register2.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\sto_bell_ringing.mp3">
+    <Media Include="..\..\lib\sounds\sto_bell_ringing.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\sto_bell_shop.mp3">
+    <Media Include="..\..\lib\sounds\sto_bell_shop.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\sto_coins_countertop.mp3">
+    <Media Include="..\..\lib\sounds\sto_coins_countertop.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\sto_man_haha.mp3">
+    <Media Include="..\..\lib\sounds\sto_man_haha.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\sto_man_hey.mp3">
+    <Media Include="..\..\lib\sounds\sto_man_hey.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\sto_man_whoohaha.mp3">
+    <Media Include="..\..\lib\sounds\sto_man_whoohaha.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\sum_angel_song.mp3">
+    <Media Include="..\..\lib\sounds\sum_angel_song.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\sum_bell_crystal.mp3">
+    <Media Include="..\..\lib\sounds\sum_bell_crystal.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\sum_bell_hand.mp3">
+    <Media Include="..\..\lib\sounds\sum_bell_hand.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\sum_bell_tone.mp3">
+    <Media Include="..\..\lib\sounds\sum_bell_tone.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\sum_chime_jangle.mp3">
+    <Media Include="..\..\lib\sounds\sum_chime_jangle.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\sum_ghost_moan.mp3">
+    <Media Include="..\..\lib\sounds\sum_ghost_moan.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\sum_ghost_oooo.mp3">
+    <Media Include="..\..\lib\sounds\sum_ghost_oooo.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\sum_ghost_wail.mp3">
+    <Media Include="..\..\lib\sounds\sum_ghost_wail.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\sum_gong_temple.mp3">
+    <Media Include="..\..\lib\sounds\sum_gong_temple.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\sum_laugh_evil2.mp3">
+    <Media Include="..\..\lib\sounds\sum_laugh_evil2.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\sum_lion_growl.mp3">
+    <Media Include="..\..\lib\sounds\sum_lion_growl.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
-    <Media Include="..\lib\sounds\sum_piano_scrape.mp3">
+    <Media Include="..\..\lib\sounds\sum_piano_scrape.mp3">
       <Filter>Resource Files\sounds</Filter>
     </Media>
   </ItemGroup>
