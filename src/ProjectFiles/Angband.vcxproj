@@ -170,22 +170,54 @@ xcopy  "$(MSBuildProjectDirectory)\lib" "$(OutDir)lib" /DEISY </Command>
     -->
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\libpng\png.c" />
-    <ClCompile Include="..\..\..\libpng\pngerror.c" />
-    <ClCompile Include="..\..\..\libpng\pngget.c" />
-    <ClCompile Include="..\..\..\libpng\pngmem.c" />
-    <ClCompile Include="..\..\..\libpng\pngpread.c" />
-    <ClCompile Include="..\..\..\libpng\pngread.c" />
-    <ClCompile Include="..\..\..\libpng\pngrio.c" />
-    <ClCompile Include="..\..\..\libpng\pngrtran.c" />
-    <ClCompile Include="..\..\..\libpng\pngrutil.c" />
-    <ClCompile Include="..\..\..\libpng\pngset.c" />
-    <ClCompile Include="..\..\..\libpng\pngtest.c" />
-    <ClCompile Include="..\..\..\libpng\pngtrans.c" />
-    <ClCompile Include="..\..\..\libpng\pngwio.c" />
-    <ClCompile Include="..\..\..\libpng\pngwrite.c" />
-    <ClCompile Include="..\..\..\libpng\pngwtran.c" />
-    <ClCompile Include="..\..\..\libpng\pngwutil.c" />
+    <ClCompile Include="..\..\..\libpng\png.c">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libpng\pngerror.c">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libpng\pngget.c">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libpng\pngmem.c">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libpng\pngpread.c">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libpng\pngread.c">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libpng\pngrio.c">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libpng\pngrtran.c">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libpng\pngrutil.c">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libpng\pngset.c">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libpng\pngtest.c">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libpng\pngtrans.c">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libpng\pngwio.c">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libpng\pngwrite.c">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libpng\pngwtran.c">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libpng\pngwutil.c">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\SPClient\buildid.c" />
     <ClCompile Include="..\SPClient\cave-map.c" />
     <ClCompile Include="..\SPClient\cave-square.c" />
@@ -321,7 +353,9 @@ xcopy  "$(MSBuildProjectDirectory)\lib" "$(OutDir)lib" /DEISY </Command>
     <ClCompile Include="..\SPClient\ui-visuals.c" />
     <ClCompile Include="..\SPClient\ui-wizard.c" />
     <ClCompile Include="..\SPClient\win\readdib.c" />
-    <ClCompile Include="..\SPClient\win\readpng.c" />
+    <ClCompile Include="..\SPClient\win\readpng.c">
+      <ExcludedFromBuild Condition="'$(Platform)'=='x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\SPClient\win\scrnshot.c" />
     <ClCompile Include="..\SPClient\win\win-layout.c" />
     <ClCompile Include="..\SPClient\wiz-debug.c" />
@@ -343,12 +377,24 @@ xcopy  "$(MSBuildProjectDirectory)\lib" "$(OutDir)lib" /DEISY </Command>
     <ClCompile Include="..\SPClient\z-virt.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\libpng\png.h" />
-    <ClInclude Include="..\..\..\libpng\pngconf.h" />
-    <ClInclude Include="..\..\..\libpng\pngdebug.h" />
-    <ClInclude Include="..\..\..\libpng\pnginfo.h" />
-    <ClInclude Include="..\..\..\libpng\pngpriv.h" />
-    <ClInclude Include="..\..\..\libpng\pngstruct.h" />
+    <ClInclude Include="..\..\..\libpng\png.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libpng\pngconf.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libpng\pngdebug.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libpng\pnginfo.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libpng\pngpriv.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libpng\pngstruct.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="..\SPClient\alloc.h" />
     <ClInclude Include="..\SPClient\angband.h" />
     <ClInclude Include="..\SPClient\buildid.h" />
@@ -500,10 +546,18 @@ xcopy  "$(MSBuildProjectDirectory)\lib" "$(OutDir)lib" /DEISY </Command>
     <ClInclude Include="..\SPClient\ui-term.h" />
     <ClInclude Include="..\SPClient\ui-visuals.h" />
     <ClInclude Include="..\SPClient\ui-wizard.h" />
-    <ClInclude Include="..\SPClient\win\include\png.h" />
-    <ClInclude Include="..\SPClient\win\include\pngconf.h" />
-    <ClInclude Include="..\SPClient\win\include\zconf.h" />
-    <ClInclude Include="..\SPClient\win\include\zlib.h" />
+    <ClInclude Include="..\SPClient\win\include\png.h">
+      <ExcludedFromBuild Condition="'$(Platform)'=='x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\SPClient\win\include\pngconf.h">
+      <ExcludedFromBuild Condition="'$(Platform)'=='x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\SPClient\win\include\zconf.h">
+      <ExcludedFromBuild Condition="'$(Platform)'=='x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\SPClient\win\include\zlib.h">
+      <ExcludedFromBuild Condition="'$(Platform)'=='x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="..\SPClient\win\readdib.h" />
     <ClInclude Include="..\SPClient\win\win-menu.h" />
     <ClInclude Include="..\SPClient\win\win-term.h" />
