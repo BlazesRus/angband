@@ -1,14 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="Debug|x64">
-      <Configuration>Debug</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|x64">
-      <Configuration>Release</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
@@ -16,6 +8,14 @@
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -26,7 +26,7 @@
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ConfigurationType>Application</ConfigurationType>
     <RootNamespace>AngBand</RootNamespace>
-	<ProjectName>Angband</ProjectName>
+    <ProjectName>Angband</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Label="GlobalsPart2">
@@ -58,22 +58,25 @@
   <ImportGroup Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Label="UserMacros">
+    <ZLibDir>..\..\..\zlib-win64\</ZLibDir>
+    <LibPngDir>..\..\..\libpng\</LibPngDir>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Platform)'=='Win32'">
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(MSBuildProjectDirectory)\src;$(MSBuildProjectDirectory)\..\win;$(MSBuildProjectDirectory)\..\win\include</IncludePath>
     <LibraryPath>$(MSBuildProjectDirectory)\..\win\lib;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)..\lib\um\x86</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Platform)'=='x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(MSBuildProjectDirectory)\src;$(MSBuildProjectDirectory)\..\win;$(MSBuildProjectDirectory)\..\win\include</IncludePath>
-    <LibraryPath>$(MSBuildProjectDirectory)\..\win\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)..\lib\um\x64</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(MSBuildProjectDirectory)\src;$(MSBuildProjectDirectory)\..\win;$(MSBuildProjectDirectory)\..\win\include;$(ZLibDir);$(LibPngDir)</IncludePath>
+    <LibraryPath>$(MSBuildProjectDirectory)\..\win\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)..\lib\um\x64;$(LibPngDir);ZLibDir</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-	<CustomBuildAfterTargets>Build</CustomBuildAfterTargets>
+    <CustomBuildAfterTargets>Build</CustomBuildAfterTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-	<CustomBuildAfterTargets>Build</CustomBuildAfterTargets>
+    <CustomBuildAfterTargets>Build</CustomBuildAfterTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -97,7 +100,8 @@
       <OptimizeReferences Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='VS2022Release'">true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='VS2022Debug'">zlib.lib;libpng.lib;msimg32.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalDependencies Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='VS2022Release'">zlib.lib;libpng.lib;msimg32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies><!--Built in Zlib fine for 32 Bit-->
+      <AdditionalDependencies Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='VS2022Release'">zlib.lib;libpng.lib;msimg32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <!--Built in Zlib fine for 32 Bit-->
     </Link>
     <CustomBuildStep Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='VS2022Debug'">
       <Command>xcopy  "$(MSBuildProjectDirectory)\..\..\lib" "$(OutDir)lib" /s /e /y /d</Command>
@@ -138,8 +142,8 @@ xcopy  "$(MSBuildProjectDirectory)\lib" "$(OutDir)lib" /DEISY </Command>
       <EnableCOMDATFolding Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='VS2022Release'">true</EnableCOMDATFolding>
       <OptimizeReferences Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='VS2022Release'">true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='VS2022Debug'">..\..\..\zlib-win64\contrib\vstudio\vc16\x64\ZlibDllDebug\zlib.lib;..\..\..\libpng\projects\vstudio\DebugLibrary\libpng.lib;msimg32.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalDependencies Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='VS2022Release'">..\..\..\zlib-win64\contrib\vstudio\vc16\x64\ZlibDllRelease\zlibwapi.lib;..\..\..\libpng\projects\vstudio\ReleaseLibrary\libpng.lib;msimg32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='VS2022Debug'">$(ZLibDir)contrib\vstudio\vc16\x64\ZlibDllDebug\zlib.lib;$(LibPngDir)projects\vstudio\DebugLibrary\libpng.lib;msimg32.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='VS2022Release'">$(ZLibDir)contrib\vstudio\vc16\x64\ZlibDllRelease\zlibwapi.lib;$(LibPngDir)projects\vstudio\ReleaseLibrary\libpng.lib;msimg32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CustomBuildStep Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='VS2022Debug'">
       <Command>xcopy  "$(MSBuildProjectDirectory)\..\..\lib" "$(OutDir)lib" /s /e /y /d</Command>
@@ -166,6 +170,22 @@ xcopy  "$(MSBuildProjectDirectory)\lib" "$(OutDir)lib" /DEISY </Command>
     -->
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\libpng\png.c" />
+    <ClCompile Include="..\..\..\libpng\pngerror.c" />
+    <ClCompile Include="..\..\..\libpng\pngget.c" />
+    <ClCompile Include="..\..\..\libpng\pngmem.c" />
+    <ClCompile Include="..\..\..\libpng\pngpread.c" />
+    <ClCompile Include="..\..\..\libpng\pngread.c" />
+    <ClCompile Include="..\..\..\libpng\pngrio.c" />
+    <ClCompile Include="..\..\..\libpng\pngrtran.c" />
+    <ClCompile Include="..\..\..\libpng\pngrutil.c" />
+    <ClCompile Include="..\..\..\libpng\pngset.c" />
+    <ClCompile Include="..\..\..\libpng\pngtest.c" />
+    <ClCompile Include="..\..\..\libpng\pngtrans.c" />
+    <ClCompile Include="..\..\..\libpng\pngwio.c" />
+    <ClCompile Include="..\..\..\libpng\pngwrite.c" />
+    <ClCompile Include="..\..\..\libpng\pngwtran.c" />
+    <ClCompile Include="..\..\..\libpng\pngwutil.c" />
     <ClCompile Include="..\SPClient\buildid.c" />
     <ClCompile Include="..\SPClient\cave-map.c" />
     <ClCompile Include="..\SPClient\cave-square.c" />
@@ -323,6 +343,12 @@ xcopy  "$(MSBuildProjectDirectory)\lib" "$(OutDir)lib" /DEISY </Command>
     <ClCompile Include="..\SPClient\z-virt.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\libpng\png.h" />
+    <ClInclude Include="..\..\..\libpng\pngconf.h" />
+    <ClInclude Include="..\..\..\libpng\pngdebug.h" />
+    <ClInclude Include="..\..\..\libpng\pnginfo.h" />
+    <ClInclude Include="..\..\..\libpng\pngpriv.h" />
+    <ClInclude Include="..\..\..\libpng\pngstruct.h" />
     <ClInclude Include="..\SPClient\alloc.h" />
     <ClInclude Include="..\SPClient\angband.h" />
     <ClInclude Include="..\SPClient\buildid.h" />

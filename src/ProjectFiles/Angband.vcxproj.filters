@@ -52,6 +52,24 @@
     <Filter Include="Resource Files\screens">
       <UniqueIdentifier>{8a54c5c2-3c10-4cf2-b6a8-9588ab62a502}</UniqueIdentifier>
     </Filter>
+    <Filter Include="LibPng Files">
+      <UniqueIdentifier>{37ef86d2-dfeb-4920-bc37-3843383c8435}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LibPng Files\ExternalFiles">
+      <UniqueIdentifier>{4fd3cb21-ed6d-4145-a7df-0bc55d066164}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="LibPng Files\IntegratedFiles">
+      <UniqueIdentifier>{dec64d86-049c-4a20-91bc-72712de37d35}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ZLib Files">
+      <UniqueIdentifier>{8dd1214f-ddd7-4767-b796-7022b6afce09}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ZLib Files\IntegratedFiles">
+      <UniqueIdentifier>{4c203884-cbc9-4359-a01a-b11cc94cc69f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ZLib Files\ExternalFiles">
+      <UniqueIdentifier>{5b1692ed-231c-4991-9606-8e57eb453308}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\SPClient\buildid.c">
@@ -489,9 +507,6 @@
     <ClCompile Include="..\SPClient\win\readdib.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\SPClient\win\readpng.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\SPClient\win\scrnshot.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -518,6 +533,57 @@
     </ClCompile>
     <ClCompile Include="..\SPClient\player-properties.c">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SPClient\win\readpng.c">
+      <Filter>LibPng Files\IntegratedFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libpng\png.c">
+      <Filter>LibPng Files\ExternalFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libpng\pngerror.c">
+      <Filter>LibPng Files\ExternalFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libpng\pngget.c">
+      <Filter>LibPng Files\ExternalFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libpng\pngmem.c">
+      <Filter>LibPng Files\ExternalFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libpng\pngpread.c">
+      <Filter>LibPng Files\ExternalFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libpng\pngread.c">
+      <Filter>LibPng Files\ExternalFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libpng\pngrio.c">
+      <Filter>LibPng Files\ExternalFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libpng\pngrtran.c">
+      <Filter>LibPng Files\ExternalFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libpng\pngrutil.c">
+      <Filter>LibPng Files\ExternalFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libpng\pngset.c">
+      <Filter>LibPng Files\ExternalFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libpng\pngtest.c">
+      <Filter>LibPng Files\ExternalFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libpng\pngtrans.c">
+      <Filter>LibPng Files\ExternalFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libpng\pngwio.c">
+      <Filter>LibPng Files\ExternalFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libpng\pngwrite.c">
+      <Filter>LibPng Files\ExternalFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libpng\pngwtran.c">
+      <Filter>LibPng Files\ExternalFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\libpng\pngwutil.c">
+      <Filter>LibPng Files\ExternalFiles</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1013,18 +1079,6 @@
     <ClInclude Include="..\SPClient\win\win-term.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\SPClient\win\include\png.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\SPClient\win\include\pngconf.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\SPClient\win\include\zconf.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\SPClient\win\include\zlib.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\SPClient\ui-entry.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1042,6 +1096,36 @@
     </ClInclude>
     <ClInclude Include="..\SPClient\player-properties.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SPClient\win\include\pngconf.h">
+      <Filter>LibPng Files\IntegratedFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SPClient\win\include\png.h">
+      <Filter>LibPng Files\IntegratedFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SPClient\win\include\zconf.h">
+      <Filter>ZLib Files\IntegratedFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SPClient\win\include\zlib.h">
+      <Filter>ZLib Files\IntegratedFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libpng\png.h">
+      <Filter>LibPng Files\ExternalFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libpng\pngconf.h">
+      <Filter>LibPng Files\ExternalFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libpng\pngdebug.h">
+      <Filter>LibPng Files\ExternalFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libpng\pnginfo.h">
+      <Filter>LibPng Files\ExternalFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libpng\pngpriv.h">
+      <Filter>LibPng Files\ExternalFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\libpng\pngstruct.h">
+      <Filter>LibPng Files\ExternalFiles</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1080,7 +1164,7 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\win\angband.rc">
+    <ResourceCompile Include="..\SPClient\win\angband.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>
