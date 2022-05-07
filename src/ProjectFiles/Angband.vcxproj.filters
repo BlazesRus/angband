@@ -70,6 +70,9 @@
     <Filter Include="ZLib Files\ExternalFiles">
       <UniqueIdentifier>{5b1692ed-231c-4991-9606-8e57eb453308}</UniqueIdentifier>
     </Filter>
+    <Filter Include="LibPng Files\IntegratedFiles\AngbandBased">
+      <UniqueIdentifier>{1af1aff8-4d05-4d00-9da6-6cd4f7634ee3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\SPClient\buildid.c">
@@ -504,12 +507,6 @@
     <ClCompile Include="..\SPClient\z-virt.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\SPClient\win\readdib.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\SPClient\win\scrnshot.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\SPClient\win\win-layout.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -536,6 +533,12 @@
     </ClCompile>
     <ClCompile Include="..\SPClient\win\readpng.c">
       <Filter>LibPng Files\IntegratedFiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SPClient\win\readdib.c">
+      <Filter>LibPng Files\IntegratedFiles\AngbandBased</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SPClient\win\scrnshot.c">
+      <Filter>LibPng Files\IntegratedFiles\AngbandBased</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1022,9 +1025,6 @@
     <ClInclude Include="..\SPClient\z-virt.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\SPClient\win\readdib.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\SPClient\win\win-menu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1060,6 +1060,9 @@
     </ClInclude>
     <ClInclude Include="..\SPClient\win\include\zlib.h">
       <Filter>ZLib Files\IntegratedFiles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SPClient\win\readdib.h">
+      <Filter>LibPng Files\IntegratedFiles\AngbandBased</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
