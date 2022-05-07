@@ -1128,7 +1128,7 @@ typedef struct
 {
 	int		type;
 	MCI_OPEN_PARMS	op;
-	char		*filename;
+	char	*filename;
 } win_sample;
 
 /**
