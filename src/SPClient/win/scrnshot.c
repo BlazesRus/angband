@@ -10,7 +10,7 @@
  * a) the GNU General Public License as published by the Free Software
  *    Foundation, version 2, or
  *
- * b) the "Angband licence":
+ * b) the "Angband license":
  *    This software may be copied and distributed for educational, research,
  *    and not for profit purposes provided that this copyright and statement
  *    are included in all such copies.  Other copyrights may also apply.
