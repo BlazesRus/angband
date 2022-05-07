@@ -10,7 +10,7 @@
  * a) the GNU General Public License as published by the Free Software
  *    Foundation, version 2, or
  *
- * b) the "Angband license":
+ * b) the "Angband licence":
  *    This software may be copied and distributed for educational, research,
  *    and not for profit purposes provided that this copyright and statement
  *    are included in all such copies.  Other copyrights may also apply.
@@ -31,7 +31,7 @@ typedef unsigned int uint;
  *
  * Just a big list of what to do for a specific screen resolution.
  *
- * Note: graphics modes are hard coded, using info from 
+ * Note: graphics modes are hardcoded, using info from 
  * angband/lib/tiles/graphics.txt at the time of this writing
  *
  * Return values:    0 - Success
@@ -373,7 +373,7 @@ int default_layout_win(term_data *data, int maxterms)
     }
 
     /* Set up subwindows */
-    for (i = 1; i < maxterms; i++) {
+    for (i = 1; i < maxterms; ++i) {
         string_free(data[i].font_want);
         data[i].font_want = string_make(sub_font);
         data[i].font_wid = fx2;

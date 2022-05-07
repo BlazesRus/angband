@@ -17,6 +17,22 @@
       <Configuration>Release</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="LegacyDebug|Win32">
+      <Configuration>LegacyDebug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="LegacyRelease|Win32">
+      <Configuration>LegacyRelease</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="LegacyDebug|x64">
+      <Configuration>LegacyDebug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="LegacyRelease|x64">
+      <Configuration>LegacyRelease</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
@@ -27,7 +43,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <RootNamespace>AngBand</RootNamespace>
     <ProjectName>Angband</ProjectName>
-	<!-- 142 for VS2019(Default);143 for Legacy-->
+	<!-- 142 for VS2019(Default);143 for VS2022-->
 	<PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -37,10 +53,10 @@
     <CodeAnalysisRuleAssemblies />
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
-  
+<!--   
   <PropertyGroup Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Release'" Label="Configuration">
-    
   </PropertyGroup>
+-->
   <PropertyGroup Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='LegacyDebug'" Label="Configuration">
     <UseDebugLibraries>true</UseDebugLibraries>
     <WholeProgramOptimization>false</WholeProgramOptimization>
@@ -59,13 +75,14 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros">
     <!--Legacy builds store zlib and libpng in src/SPClient/win/ -->
-    <ZLibDir>..\..\..\zlib-win64\</ZLibDir>
-    <ZLibLibrary Condition="'$(Configuration)'!='LegacyDebug' And '$(Configuration)'!='LegacyRelease'">$(ZLibDir)$(Platform)\$(Configuration)\zlib.lib</ZLibLibrary>
+    <ZLibDir Condition="'$(Configuration)'!='LegacyDebug' And '$(Configuration)'!='LegacyRelease'">..\..\..\zlib-win64\</ZLibDir>
+    <ZLibLibrary Condition="'$(Configuration)'=='LegacyDebug' Or '$(Configuration)'=='LegacyRelease'">..\SPClient\win\include\</ZLibLibrary>
 	<ZLibLibrary Condition="'$(Configuration)'=='LegacyDebug' And '$(Platform)'=='x64'">../SPClient/win/zlib_x64.lib</ZLibLibrary>
 	<ZLibLibrary Condition="'$(Configuration)'=='LegacyDebug' And '$(Platform)'=='Win32'">../SPClient/win/zlib.lib</ZLibLibrary>
 	<ZLibLibrary Condition="'$(Configuration)'=='LegacyRelease' And '$(Platform)'=='x64'">../SPClient/win/zlib_x64.lib</ZLibLibrary>
 	<ZLibLibrary Condition="'$(Configuration)'=='LegacyRelease' And '$(Platform)'=='Win32'">$(ZLibDir)$(Platform)\$(Configuration)\zlib.lib</ZLibLibrary>
-    <LibPngDir>..\..\..\libpng\</LibPngDir>
+    <LibPngDir Condition="'$(Configuration)'!='LegacyDebug' And '$(Configuration)'!='LegacyRelease'">..\..\..\libpng\</LibPngDir>
+    <LibPngDir Condition="'$(Configuration)'=='LegacyDebug' Or '$(Configuration)'=='LegacyRelease'">..\SPClient\win\include\</LibPngDir>
     <LibPngLibrary Condition="'$(Configuration)'!='LegacyDebug' And '$(Configuration)'!='LegacyRelease'">$(LibPngDir)projects\vstudio\$(Platform)\$(Configuration)Library\libpng.lib</LibPngLibrary>
 	<LibPngLibrary Condition="'$(Configuration)'=='LegacyDebug' And '$(Platform)'=='x64'">../SPClient/win/libpng_x64.lib</LibPngLibrary>
 	<LibPngLibrary Condition="'$(Configuration)'=='LegacyDebug' And '$(Platform)'=='Win32'">../SPClient/win/libpng.lib</LibPngLibrary>
