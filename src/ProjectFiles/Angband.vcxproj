@@ -60,15 +60,21 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros">
     <ZLibDir>..\..\..\zlib-win64\</ZLibDir>
+    <ZLibLibrary>$(LibPngDir)$(Platform)\$(Configuration)\zlibwapi.lib</ZLibLibrary>
     <LibPngDir>..\..\..\libpng\</LibPngDir>
+    <LibPngLibrary>$(LibPngDir)projects\vstudio\$(Platform)\$(Configuration)Library\libpng.lib</LibPngLibrary>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Platform)'=='Win32'">
+  <PropertyGroup Label="OutputInfo">
+    <OutDir>..\$(Configuration)_$(Platform)\</OutDir>
+    <IntDir>..\ObjectFiles\SPClient\$(Configuration)_$(Platform)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Platform)'=='Win32'" Label="LibraryInfo">
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(MSBuildProjectDirectory)\src;$(MSBuildProjectDirectory)\..\win;$(MSBuildProjectDirectory)\..\win\include</IncludePath>
-    <LibraryPath>$(MSBuildProjectDirectory)\..\win\lib;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)..\lib\um\x86</LibraryPath>
+    <LibraryPath>$(MSBuildProjectDirectory)\..\win\lib;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)..\lib\um\x86;$(ZLibLibrary);$(LibPngDir);</LibraryPath>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Platform)'=='x64'">
+  <PropertyGroup Condition="'$(Platform)'=='x64'" Label="LibraryInfo">
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(MSBuildProjectDirectory)\src;$(MSBuildProjectDirectory)\..\win;$(MSBuildProjectDirectory)\..\win\include;$(ZLibDir);$(LibPngDir)</IncludePath>
-    <LibraryPath>$(MSBuildProjectDirectory)\..\win\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)..\lib\um\x64;$(LibPngDir);$(ZLibDir)</LibraryPath>
+    <LibraryPath>$(MSBuildProjectDirectory)\..\win\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)..\lib\um\x64;$(ZLibLibrary);$(LibPngLibrary);</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
@@ -77,18 +83,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <CustomBuildAfterTargets>Build</CustomBuildAfterTargets>
-    <OutDir>..\$(Configuration)_$(Platform)\</OutDir>
-    <IntDir>..\ObjectFiles\$(Configuration)_$(Platform)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\$(Configuration)_$(Platform)\</OutDir>
-    <IntDir>..\ObjectFiles\$(Configuration)_$(Platform)\</IntDir>
   </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Platform)'=='Win32'">
+  <ItemDefinitionGroup>
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='VS2022Release'">true</FunctionLevelLinking>
@@ -103,9 +105,10 @@
       <EnableCOMDATFolding Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='VS2022Release'">true</EnableCOMDATFolding>
       <OptimizeReferences Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='VS2022Release'">true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='VS2022Debug'">zlib.lib;libpng.lib;msimg32.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalDependencies Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='VS2022Release'">zlib.lib;libpng.lib;msimg32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <!--Built in Zlib and libpng fine for 32 Bit-->
+      <AdditionalDependencies Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='VS2022Debug'">$(ZLibLibrary);$(LibPngLibrary);msimg32.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='VS2022Release'">$(ZLibLibrary);$(LibPngLibrary);msimg32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories Condition="'$(Configuration)'=='Debug'">$(ZLibDir);$(LibPngDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories Condition="'$(Configuration)'=='Release'">$(ZLibDir);$(LibPngDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <CustomBuildStep Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='VS2022Debug'">
       <Command>xcopy  "$(MSBuildProjectDirectory)\..\..\lib" "$(OutDir)lib" /s /e /y /d</Command>
@@ -113,67 +116,6 @@
     <PostBuildEvent Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='VS2022Release'">
       <Command>xcopy $(MSBuildProjectDirectory)\..\..\lib\* $(OutDir)..\lib\ /DESY /exclude:$(MSBuildProjectDirectory)\..\..\lib\xcopy_exclude.txt</Command>
     </PostBuildEvent>
-    <!--
-    <PostBuildEvent Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='VS2022Debug'">
-      <Command>
-      </Command>
-    </PostBuildEvent>
-    <PostBuildEvent Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='VS2022Release'">
-      <Command>xcopy $(MSBuildProjectDirectory)\..\win\dll\*.dll $(OutDir) /DY 
-xcopy $(MSBuildProjectDirectory)\..\lib\* $(OutDir)..\lib\ /DESY /exclude:$(MSBuildProjectDirectory)\..\lib\xcopy_exclude.txt</Command>
-    </PostBuildEvent>
-    <CustomBuildStep Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='VS2022Debug'">
-      <Command>xcopy "$(MSBuildProjectDirectory)\..\win\dll\*.dll" "$(OutDir)" /DY
-xcopy  "$(MSBuildProjectDirectory)\lib" "$(OutDir)lib" /DEISY </Command>
-    </CustomBuildStep>
-    <CustomBuildStep Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='VS2022Debug'">
-      <Outputs>$(OutDir)suppress_post_build.txt</Outputs>
-    </CustomBuildStep>
-    -->
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Platform)'=='x64'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <FunctionLevelLinking Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='VS2022Release'">true</FunctionLevelLinking>
-      <IntrinsicFunctions Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='VS2022Release'">true</IntrinsicFunctions>
-      <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='VS2022Debug'">SOUND;USE_PRIVATE_PATHS;WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='VS2022Release'">SOUND;USE_PRIVATE_PATHS;WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
-    </ClCompile>
-    <Link>
-      <SubSystem>Windows</SubSystem>
-      <EnableCOMDATFolding Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='VS2022Release'">true</EnableCOMDATFolding>
-      <OptimizeReferences Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='VS2022Release'">true</OptimizeReferences>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='VS2022Debug'">$(ZLibDir)contrib\vstudio\vc16\x64\ZlibDllDebug\zlibwapi.lib;$(LibPngDir)projects\vstudio\DebugLibrary\libpng.lib;msimg32.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalDependencies Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='VS2022Release'">$(ZLibDir)contrib\vstudio\vc16\x64\ZlibDllRelease\zlibwapi.lib;$(LibPngDir)projects\vstudio\ReleaseLibrary\libpng.lib;msimg32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ZLibDir);$(LibPngDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalLibraryDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ZLibDir);$(LibPngDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-    </Link>
-    <CustomBuildStep Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='VS2022Debug'">
-      <Command>xcopy  "$(MSBuildProjectDirectory)\..\..\lib" "$(OutDir)lib" /s /e /y /d</Command>
-    </CustomBuildStep>
-    <PostBuildEvent Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='VS2022Release'">
-      <Command>xcopy $(MSBuildProjectDirectory)\..\..\lib\* $(OutDir)..\lib\ /DESY /exclude:$(MSBuildProjectDirectory)\..\..\lib\xcopy_exclude.txt</Command>
-    </PostBuildEvent>
-    <!--
-    <PostBuildEvent Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='VS2022Debug'">
-      <Command>
-      </Command>
-    </PostBuildEvent>
-    <PostBuildEvent Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='VS2022Release'">
-      <Command>xcopy $(MSBuildProjectDirectory)\..\win\dll\*.dll $(OutDir) /DY 
-xcopy $(MSBuildProjectDirectory)\..\lib\* $(OutDir)..\lib\ /DESY /exclude:$(MSBuildProjectDirectory)\..\lib\xcopy_exclude.txt</Command>
-    </PostBuildEvent>
-    <CustomBuildStep Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='VS2022Debug'">
-      <Command>xcopy "$(MSBuildProjectDirectory)\..\win\dll\*.dll" "$(OutDir)" /DY
-xcopy  "$(MSBuildProjectDirectory)\lib" "$(OutDir)lib" /DEISY </Command>
-    </CustomBuildStep>
-    <CustomBuildStep Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='VS2022Debug'">
-      <Outputs>$(OutDir)suppress_post_build.txt</Outputs>
-    </CustomBuildStep>
-    -->
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\SPClient\buildid.c" />
@@ -312,7 +254,7 @@ xcopy  "$(MSBuildProjectDirectory)\lib" "$(OutDir)lib" /DEISY </Command>
     <ClCompile Include="..\SPClient\ui-wizard.c" />
     <ClCompile Include="..\SPClient\win\readdib.c" />
     <ClCompile Include="..\SPClient\win\readpng.c">
-      <ExcludedFromBuild Condition="'$(Platform)'=='x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\SPClient\win\scrnshot.c" />
     <ClCompile Include="..\SPClient\win\win-layout.c" />
@@ -487,20 +429,16 @@ xcopy  "$(MSBuildProjectDirectory)\lib" "$(OutDir)lib" /DEISY </Command>
     <ClInclude Include="..\SPClient\ui-visuals.h" />
     <ClInclude Include="..\SPClient\ui-wizard.h" />
     <ClInclude Include="..\SPClient\win\include\png.h">
-      <ExcludedFromBuild Condition="'$(Platform)'=='x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\SPClient\win\include\pngconf.h">
-      <ExcludedFromBuild Condition="'$(Platform)'=='x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\SPClient\win\include\zconf.h">
-      <ExcludedFromBuild Condition="'$(Platform)'=='x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\SPClient\win\include\zlib.h">
-      <ExcludedFromBuild Condition="'$(Platform)'=='x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\SPClient\win\readdib.h" />
     <ClInclude Include="..\SPClient\win\win-menu.h" />
