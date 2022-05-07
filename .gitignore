@@ -68,3 +68,5 @@ src/SPClient/tests/ran-already
 src/SPClient/version.h
 
 src/Release_x64/*
+src/ObjectFiles/*
+src/ObjectFiles/**

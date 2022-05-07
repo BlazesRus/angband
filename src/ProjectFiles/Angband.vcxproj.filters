@@ -537,54 +537,6 @@
     <ClCompile Include="..\SPClient\win\readpng.c">
       <Filter>LibPng Files\IntegratedFiles</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\libpng\png.c">
-      <Filter>LibPng Files\ExternalFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngerror.c">
-      <Filter>LibPng Files\ExternalFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngget.c">
-      <Filter>LibPng Files\ExternalFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngmem.c">
-      <Filter>LibPng Files\ExternalFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngpread.c">
-      <Filter>LibPng Files\ExternalFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngread.c">
-      <Filter>LibPng Files\ExternalFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngrio.c">
-      <Filter>LibPng Files\ExternalFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngrtran.c">
-      <Filter>LibPng Files\ExternalFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngrutil.c">
-      <Filter>LibPng Files\ExternalFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngset.c">
-      <Filter>LibPng Files\ExternalFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngtest.c">
-      <Filter>LibPng Files\ExternalFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngtrans.c">
-      <Filter>LibPng Files\ExternalFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngwio.c">
-      <Filter>LibPng Files\ExternalFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngwrite.c">
-      <Filter>LibPng Files\ExternalFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngwtran.c">
-      <Filter>LibPng Files\ExternalFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngwutil.c">
-      <Filter>LibPng Files\ExternalFiles</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\SPClient\alloc.h">
@@ -1108,24 +1060,6 @@
     </ClInclude>
     <ClInclude Include="..\SPClient\win\include\zlib.h">
       <Filter>ZLib Files\IntegratedFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\libpng\png.h">
-      <Filter>LibPng Files\ExternalFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\libpng\pngconf.h">
-      <Filter>LibPng Files\ExternalFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\libpng\pngdebug.h">
-      <Filter>LibPng Files\ExternalFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\libpng\pnginfo.h">
-      <Filter>LibPng Files\ExternalFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\libpng\pngpriv.h">
-      <Filter>LibPng Files\ExternalFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\libpng\pngstruct.h">
-      <Filter>LibPng Files\ExternalFiles</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

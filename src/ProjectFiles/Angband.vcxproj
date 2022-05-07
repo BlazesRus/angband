@@ -68,7 +68,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Platform)'=='x64'">
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(MSBuildProjectDirectory)\src;$(MSBuildProjectDirectory)\..\win;$(MSBuildProjectDirectory)\..\win\include;$(ZLibDir);$(LibPngDir)</IncludePath>
-    <LibraryPath>$(MSBuildProjectDirectory)\..\win\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)..\lib\um\x64;$(LibPngDir);ZLibDir</LibraryPath>
+    <LibraryPath>$(MSBuildProjectDirectory)\..\win\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)..\lib\um\x64;$(LibPngDir);$(ZLibDir)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
@@ -77,12 +77,16 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <CustomBuildAfterTargets>Build</CustomBuildAfterTargets>
+    <OutDir>..\$(Configuration)_$(Platform)\</OutDir>
+    <IntDir>..\ObjectFiles\$(Configuration)_$(Platform)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\$(Configuration)_$(Platform)\</OutDir>
+    <IntDir>..\ObjectFiles\$(Configuration)_$(Platform)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Platform)'=='Win32'">
     <ClCompile>
@@ -101,7 +105,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='VS2022Debug'">zlib.lib;libpng.lib;msimg32.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalDependencies Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='VS2022Release'">zlib.lib;libpng.lib;msimg32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <!--Built in Zlib fine for 32 Bit-->
+      <!--Built in Zlib and libpng fine for 32 Bit-->
     </Link>
     <CustomBuildStep Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='VS2022Debug'">
       <Command>xcopy  "$(MSBuildProjectDirectory)\..\..\lib" "$(OutDir)lib" /s /e /y /d</Command>
@@ -142,8 +146,10 @@ xcopy  "$(MSBuildProjectDirectory)\lib" "$(OutDir)lib" /DEISY </Command>
       <EnableCOMDATFolding Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='VS2022Release'">true</EnableCOMDATFolding>
       <OptimizeReferences Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='VS2022Release'">true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='VS2022Debug'">$(ZLibDir)contrib\vstudio\vc16\x64\ZlibDllDebug\zlib.lib;$(LibPngDir)projects\vstudio\DebugLibrary\libpng.lib;msimg32.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='VS2022Debug'">$(ZLibDir)contrib\vstudio\vc16\x64\ZlibDllDebug\zlibwapi.lib;$(LibPngDir)projects\vstudio\DebugLibrary\libpng.lib;msimg32.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalDependencies Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='VS2022Release'">$(ZLibDir)contrib\vstudio\vc16\x64\ZlibDllRelease\zlibwapi.lib;$(LibPngDir)projects\vstudio\ReleaseLibrary\libpng.lib;msimg32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ZLibDir);$(LibPngDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ZLibDir);$(LibPngDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <CustomBuildStep Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='VS2022Debug'">
       <Command>xcopy  "$(MSBuildProjectDirectory)\..\..\lib" "$(OutDir)lib" /s /e /y /d</Command>
@@ -170,54 +176,6 @@ xcopy  "$(MSBuildProjectDirectory)\lib" "$(OutDir)lib" /DEISY </Command>
     -->
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\libpng\png.c">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngerror.c">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngget.c">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngmem.c">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngpread.c">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngread.c">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngrio.c">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngrtran.c">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngrutil.c">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngset.c">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngtest.c">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngtrans.c">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngwio.c">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngwrite.c">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngwtran.c">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\..\libpng\pngwutil.c">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="..\SPClient\buildid.c" />
     <ClCompile Include="..\SPClient\cave-map.c" />
     <ClCompile Include="..\SPClient\cave-square.c" />
@@ -377,24 +335,6 @@ xcopy  "$(MSBuildProjectDirectory)\lib" "$(OutDir)lib" /DEISY </Command>
     <ClCompile Include="..\SPClient\z-virt.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\libpng\png.h">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\..\..\libpng\pngconf.h">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\..\..\libpng\pngdebug.h">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\..\..\libpng\pnginfo.h">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\..\..\libpng\pngpriv.h">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\..\..\libpng\pngstruct.h">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClInclude>
     <ClInclude Include="..\SPClient\alloc.h" />
     <ClInclude Include="..\SPClient\angband.h" />
     <ClInclude Include="..\SPClient\buildid.h" />
@@ -548,9 +488,13 @@ xcopy  "$(MSBuildProjectDirectory)\lib" "$(OutDir)lib" /DEISY </Command>
     <ClInclude Include="..\SPClient\ui-wizard.h" />
     <ClInclude Include="..\SPClient\win\include\png.h">
       <ExcludedFromBuild Condition="'$(Platform)'=='x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\SPClient\win\include\pngconf.h">
       <ExcludedFromBuild Condition="'$(Platform)'=='x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\SPClient\win\include\zconf.h">
       <ExcludedFromBuild Condition="'$(Platform)'=='x64'">true</ExcludedFromBuild>
