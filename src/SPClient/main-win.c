@@ -433,7 +433,7 @@ static const char *extract_file_name(const char *s)
 	p = s + strlen(s) - 1;
 
 	/* Back up to divider */
-	while ((p >= s) && (*p != ':') && (*p != '\\')) p--;
+	while ((p >= s) && (*p != ':') && (*p != '\\')) --p;
 
 	/* Return file name */
 	return (p+1);
