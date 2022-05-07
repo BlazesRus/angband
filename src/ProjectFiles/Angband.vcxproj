@@ -27,6 +27,8 @@
     <ConfigurationType>Application</ConfigurationType>
     <RootNamespace>AngBand</RootNamespace>
     <ProjectName>Angband</ProjectName>
+	<!-- 142 for VS2019(Default);143 for Legacy-->
+	<PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Label="GlobalsPart2">
@@ -35,18 +37,15 @@
     <CodeAnalysisRuleAssemblies />
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
-  <!-- 142 for VS2019(Default);143 for VS2022-->
+  
   <PropertyGroup Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Release'" Label="Configuration">
-    <PlatformToolset>v142</PlatformToolset>
+    
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)'=='VS2022Debug' Or '$(Configuration)'=='VS2022Release'" Label="Configuration">
-    <PlatformToolset>v143</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='VS2022Debug'" Label="Configuration">
+  <PropertyGroup Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='LegacyDebug'" Label="Configuration">
     <UseDebugLibraries>true</UseDebugLibraries>
     <WholeProgramOptimization>false</WholeProgramOptimization>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='VS2022Release'" Label="Release Configuration">
+  <PropertyGroup Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='LegacyRelease'" Label="Release Configuration">
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
@@ -60,9 +59,9 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros">
     <ZLibDir>..\..\..\zlib-win64\</ZLibDir>
-    <ZLibLibrary>$(ZLibDir)$(Platform)\$(Configuration)\zlib.lib</ZLibLibrary>
+    <ZLibLibrary Condition="'$(Configuration)'!='LegacyDebug' And '$(Configuration)'!='LegacyRelease'">$(ZLibDir)$(Platform)\$(Configuration)\zlib.lib</ZLibLibrary>
     <LibPngDir>..\..\..\libpng\</LibPngDir>
-    <LibPngLibrary>$(LibPngDir)projects\vstudio\$(Platform)\$(Configuration)Library\libpng.lib</LibPngLibrary>
+    <LibPngLibrary Condition="'$(Configuration)'!='LegacyDebug' And '$(Configuration)'!='LegacyRelease'">$(LibPngDir)projects\vstudio\$(Platform)\$(Configuration)Library\libpng.lib</LibPngLibrary>
   </PropertyGroup>
   <PropertyGroup Label="OutputInfo">
     <OutDir>..\$(Configuration)_$(Platform)\</OutDir>
@@ -93,27 +92,29 @@
   <ItemDefinitionGroup>
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <FunctionLevelLinking Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='VS2022Release'">true</FunctionLevelLinking>
-      <IntrinsicFunctions Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='VS2022Release'">true</IntrinsicFunctions>
+      <FunctionLevelLinking Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='LegacyRelease'">true</FunctionLevelLinking>
+      <IntrinsicFunctions Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='LegacyRelease'">true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='VS2022Debug'">SOUND;USE_PRIVATE_PATHS;WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='VS2022Release'">SOUND;USE_PRIVATE_PATHS;WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)'=='Debug'">SOUND;USE_PRIVATE_PATHS;WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+	  <PreprocessorDefinitions Condition="'$(Configuration)'=='LegacyDebug'">SOUND;USE_PRIVATE_PATHS;WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)'=='Release'">SOUND;USE_PRIVATE_PATHS;WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+	  <PreprocessorDefinitions Condition="'$(Configuration)'=='LegacyRelease'">SOUND;USE_PRIVATE_PATHS;WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <EnableCOMDATFolding Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='VS2022Release'">true</EnableCOMDATFolding>
-      <OptimizeReferences Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='VS2022Release'">true</OptimizeReferences>
+      <EnableCOMDATFolding Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='LegacyRelease'">true</EnableCOMDATFolding>
+      <OptimizeReferences Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='LegacyRelease'">true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='VS2022Debug'">$(ZLibLibrary);$(LibPngLibrary);msimg32.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalDependencies Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='VS2022Release'">$(ZLibLibrary);$(LibPngLibrary);msimg32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='LegacyDebug'">$(ZLibLibrary);$(LibPngLibrary);msimg32.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='LegacyRelease'">$(ZLibLibrary);$(LibPngLibrary);msimg32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories Condition="'$(Configuration)'=='Debug'">$(ZLibDir);$(LibPngDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalLibraryDirectories Condition="'$(Configuration)'=='Release'">$(ZLibDir);$(LibPngDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
-    <CustomBuildStep Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='VS2022Debug'">
+    <CustomBuildStep Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='LegacyDebug'">
       <Command>xcopy  "$(MSBuildProjectDirectory)\..\..\lib" "$(OutDir)lib" /s /e /y /d</Command>
     </CustomBuildStep>
-    <PostBuildEvent Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='VS2022Release'">
+    <PostBuildEvent Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='LegacyRelease'">
       <Command>xcopy $(MSBuildProjectDirectory)\..\..\lib\* $(OutDir)..\lib\ /DESY /exclude:$(MSBuildProjectDirectory)\..\..\lib\xcopy_exclude.txt</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
