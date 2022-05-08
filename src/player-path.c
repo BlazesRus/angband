@@ -705,7 +705,7 @@ static bool run_test(const struct player *p)
 		}
 
 		/* Hack -- look again */
-		for (i = max; i > 0; i--) {
+		for (i = max; i > 0; --i) {
 			new_dir = cycle[chome[prev_dir] + i];
 			grid = loc_sum(player->grid, ddgrid[new_dir]);
 

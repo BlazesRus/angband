@@ -1080,7 +1080,7 @@ bool effect_handler_DEEP_DESCENT(effect_handler_context_t *context)
 	int target_increment = (4 / z_info->stair_skip) + 1;
 	int target_depth = dungeon_get_next_level(player, player->max_depth,
 		target_increment);
-	for (i = 5; i > 0; i--) {
+	for (i = 5; i > 0; --i) {
 		if (is_quest(player, target_depth)) break;
 		if (target_depth >= z_info->max_depth - 1) break;
 
@@ -1885,7 +1885,7 @@ bool effect_handler_DISENCHANT(effect_handler_context_t *context)
 	}
 
 	/* Pick one at random */
-	for (i = player->body.count - 1; i >= 0; i--) {
+	for (i = player->body.count - 1; i >= 0; --i) {
 		/* Ignore rings, amulets and lights */
 		if (slot_type_is(player, i, EQUIP_RING)) continue;
 		if (slot_type_is(player, i, EQUIP_AMULET)) continue;

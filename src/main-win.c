@@ -3538,7 +3538,7 @@ static void process_menus(WORD wCmd)
 				Term_activate(old);
 
 				/* Do something to sub-windows */
-				for (i = MAX_TERM_DATA - 1; i >= 0; i--) {
+				for (i = MAX_TERM_DATA - 1; i >= 0; --i) {
 					if (!(data[i].w)) continue;
 					
 					/* Client window size */
@@ -4970,7 +4970,7 @@ static void init_stuff(void)
 	i = strlen(path);
 
 	/* Get the path */
-	for (; i > 0; i--) {
+	for (; i > 0; --i) {
 		if (path[i] == '\\') {
 			/* End of path */
 			break;

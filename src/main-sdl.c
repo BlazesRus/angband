@@ -1049,7 +1049,7 @@ static int sdl_LocateWin(int x, int y)
 {
 	int i;
 
-	for (i = ANGBAND_TERM_MAX - 1; i >= 0; i--) {
+	for (i = ANGBAND_TERM_MAX - 1; i >= 0; --i) {
 		term_window *win = &windows[Zorder[i]];
 		SDL_Rect rc;
 		

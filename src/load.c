@@ -1297,7 +1297,7 @@ static int rd_dungeon_aux(struct chunk **c)
 			rd_byte(&tmp8u);
 
 			/* Apply the RLE info */
-			for (i = count; i > 0; i--) {
+			for (i = count; i > 0; --i) {
 				/* Extract "info" */
 				c1->squares[y][x].info[n] = tmp8u;
 
@@ -1320,7 +1320,7 @@ static int rd_dungeon_aux(struct chunk **c)
 		rd_byte(&tmp8u);
 
 		/* Apply the RLE info */
-		for (i = count; i > 0; i--) {
+		for (i = count; i > 0; --i) {
 			/* Extract "feat" */
 			square_set_feat(c1, loc(x, y), tmp8u);
 

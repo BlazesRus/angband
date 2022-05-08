@@ -2760,7 +2760,7 @@ static void crop_rects(SDL_Rect *src, SDL_Rect *dst)
 static void try_snap(struct window *window,
 		struct subwindow *subwindow, SDL_Rect *rect)
 {
-	for (size_t i = N_ELEMENTS(window->subwindows); i > 0; i--) {
+	for (size_t i = N_ELEMENTS(window->subwindows); i > 0; --i) {
 		struct subwindow *other = window->subwindows[i - 1];
 		if (other == NULL
 				|| !other->visible
@@ -2895,7 +2895,7 @@ static void handle_last_resize_event(int num_events, const SDL_Event *events)
 {
 	assert(num_events > 0);
 
-	for (int i = num_events - 1; i >= 0; i--) {
+	for (int i = num_events - 1; i >= 0; --i) {
 		if (events[i].window.event == SDL_WINDOWEVENT_RESIZED) {
 			const SDL_WindowEvent event = events[i].window;
 
@@ -4519,7 +4519,7 @@ static struct subwindow *get_subwindow_by_index(const struct window *window,
 static struct subwindow *get_subwindow_by_xy(const struct window *window, int x, int y)
 {
 	/* checking subwindows in z order */
-	for (size_t i = N_ELEMENTS(window->subwindows); i > 0; i--) {
+	for (size_t i = N_ELEMENTS(window->subwindows); i > 0; --i) {
 		struct subwindow *subwindow = window->subwindows[i - 1];
 
 		if (subwindow != NULL && subwindow->visible) {
@@ -5783,7 +5783,7 @@ static void free_globals(void)
 
 static void start_windows(void)
 {
-	for (size_t i = N_ELEMENTS(g_windows); i > 0; i--) {
+	for (size_t i = N_ELEMENTS(g_windows); i > 0; --i) {
 		if (g_windows[i - 1].inited) {
 			start_window(&g_windows[i - 1]);
 		}

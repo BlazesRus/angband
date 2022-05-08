@@ -1249,7 +1249,7 @@ static int average_spell_stat(struct player *p, struct player_state *state)
 	int i, count, sum = 0;
 	struct magic_realm *realm = class_magic_realms(p->class, &count), *r_next;
 
-	for (i = count; i > 0; i--) {
+	for (i = count; i > 0; --i) {
 		sum += state->stat_ind[realm->stat];
 		r_next = realm->next;
 		mem_free(realm);
@@ -1311,7 +1311,7 @@ static void calc_spells(struct player *p)
 	p->upkeep->new_spells = num_allowed - num_known;
 
 	/* Forget spells which are too hard */
-	for (i = num_total - 1; i >= 0; i--) {
+	for (i = num_total - 1; i >= 0; --i) {
 		/* Get the spell */
 		j = p->spell_order[i];
 
@@ -1342,7 +1342,7 @@ static void calc_spells(struct player *p)
 	}
 
 	/* Forget spells if we know too many spells */
-	for (i = num_total - 1; i >= 0; i--) {
+	for (i = num_total - 1; i >= 0; --i) {
 		/* Stop when possible */
 		if (p->upkeep->new_spells >= 0) break;
 

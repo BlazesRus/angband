@@ -577,7 +577,7 @@ errr init_nds(void)
 	init_color_data();
 
 	/* Create windows (backwards!) */
-	for (i = MAX_TERM_DATA - 1; i >= 0; i--) {
+	for (i = MAX_TERM_DATA - 1; i >= 0; --i) {
 		/* Link */
 		term_data_link(i);
 		none = false;

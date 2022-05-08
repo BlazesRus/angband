@@ -1457,7 +1457,7 @@ static struct object *find_artifact(struct artifact *artifact)
 	}
 
 	/* Monster objects */
-	for (i = cave_monster_max(cave) - 1; i >= 1; i--) {
+	for (i = cave_monster_max(cave) - 1; i >= 1; --i) {
 		struct monster *mon = cave_monster(cave, i);
 		obj = mon ? mon->held_obj : NULL;
 

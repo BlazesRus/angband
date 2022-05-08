@@ -346,7 +346,7 @@ void wr_messages(void)
 	wr_u16b(num);
 
 	/* Dump the messages (oldest first!) */
-	for (i = num - 1; i >= 0; i--) {
+	for (i = num - 1; i >= 0; --i) {
 		wr_string(message_str(i));
 		wr_u16b(message_type(i));
 	}

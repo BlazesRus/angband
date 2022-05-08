@@ -172,7 +172,7 @@ void nds_scrkey_vblank()
 
 		need_redraw = true;
 
-		for (int si = 0; si < NDS_SCRKEY_SEQ_LEN && entry->sequence[si]; s++i) {
+		for (int si = 0; si < NDS_SCRKEY_SEQ_LEN && entry->sequence[si]; ++si) {
 			nds_event_put_key(entry->sequence[si], 0);
 		}
 
