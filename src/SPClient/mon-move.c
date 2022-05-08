@@ -693,7 +693,7 @@ static bool get_move_flee(struct monster *mon)
 	}
 
 	/* Check nearby grids, diagonals first */
-	for (i = 7; i >= 0; i--) {
+	for (i = 7; i >= 0; --i) {
 		int dis, score;
 
 		/* Get the location */
@@ -1883,7 +1883,7 @@ void process_monsters(int minimum_energy)
 		regen = true;
 
 	/* Process the monsters (backwards) */
-	for (i = cave_monster_max(cave) - 1; i >= 1; i--) {
+	for (i = cave_monster_max(cave) - 1; i >= 1; --i) {
 		struct monster *mon;
 		bool moving;
 
@@ -1966,7 +1966,7 @@ void reset_monsters(void)
 	struct monster *mon;
 
 	/* Process the monsters (backwards) */
-	for (i = cave_monster_max(cave) - 1; i >= 1; i--) {
+	for (i = cave_monster_max(cave) - 1; i >= 1; --i) {
 		/* Access the monster */
 		mon = cave_monster(cave, i);
 
@@ -1990,7 +1990,7 @@ void restore_monsters(void)
 	int num_turns = turn - cave->turn;
 
 	/* Process the monsters (backwards) */
-	for (i = cave_monster_max(cave) - 1; i >= 1; i--) {
+	for (i = cave_monster_max(cave) - 1; i >= 1; --i) {
 		int status, status_red;
 
 		/* Access the monster */

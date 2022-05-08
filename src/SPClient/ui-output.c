@@ -305,7 +305,7 @@ void text_out_to_screen(uint8_t a, const char *str)
 			/* Wrap word */
 			if (x < wrap) {
 				/* Scan existing text */
-				for (i = wrap - 2; i >= 0; i--) {
+				for (i = wrap - 2; i >= 0; --i) {
 					/* Grab existing attr/char */
 					Term_what(i, y, &av[i], &cv[i]);
 

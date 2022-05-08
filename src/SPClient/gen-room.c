@@ -788,7 +788,7 @@ extern bool generate_starburst_room(struct chunk *c, int y1, int x1, int y2,
 			degree = get_angle_to_grid[ny][nx];
 
 			/* Scan arcs to find the one that applies here. */
-			for (i = arc_num - 1; i >= 0; i--) {
+			for (i = arc_num - 1; i >= 0; --i) {
 				if (arc[i][0] <= degree) {
 					max_dist = arc[i][1];
 

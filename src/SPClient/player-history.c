@@ -143,7 +143,7 @@ bool history_is_artifact_known(struct player *p, const struct artifact *artifact
 	size_t i = h->next;
 	assert(artifact);
 
-	while (i--) {
+	while (--i) {
 		if (hist_has(h->entries[i].type, HIST_ARTIFACT_KNOWN) &&
 				h->entries[i].a_idx == artifact->aidx)
 			return true;
@@ -161,7 +161,7 @@ static bool history_mark_artifact_known(struct player_history *h,
 	assert(artifact);
 
 	size_t i = h->next;
-	while (i--) {
+	while (--i) {
 		if (h->entries[i].a_idx == artifact->aidx) {
 			hist_off(h->entries[i].type, HIST_ARTIFACT_UNKNOWN);
 			hist_on(h->entries[i].type, HIST_ARTIFACT_KNOWN);
@@ -181,7 +181,7 @@ static bool history_mark_artifact_lost(struct player_history *h,
 	assert(artifact);
 
 	size_t i = h->next;
-	while (i--) {
+	while (--i) {
 		if (h->entries[i].a_idx == artifact->aidx) {
 			hist_on(h->entries[i].type, HIST_ARTIFACT_LOST);
 			return true;
@@ -274,7 +274,7 @@ void history_unmask_unknown(struct player *p)
 	struct player_history *h = &p->hist;
 
 	size_t i = h->next;
-	while (i--) {
+	while (--i) {
 		if (hist_has(h->entries[i].type, HIST_ARTIFACT_UNKNOWN)) {
 			hist_off(h->entries[i].type, HIST_ARTIFACT_UNKNOWN);
 			hist_on(h->entries[i].type, HIST_ARTIFACT_KNOWN);

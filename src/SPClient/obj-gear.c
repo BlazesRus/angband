@@ -395,7 +395,7 @@ bool minus_ac(struct player *p)
 	}
 
 	/* Pick one at random */
-	for (i = p->body.count - 1; i >= 0; i--) {
+	for (i = p->body.count - 1; i >= 0; --i) {
 		/* Ignore non-armor */
 		if (slot_type_is(p, i, EQUIP_WEAPON)) continue;
 		if (slot_type_is(p, i, EQUIP_BOW)) continue;

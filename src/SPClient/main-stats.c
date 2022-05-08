@@ -266,7 +266,7 @@ static void kill_all_monsters(int level)
 {
 	int i;
 
-	for (i = cave_monster_max(cave) - 1; i >= 1; i--) {
+	for (i = cave_monster_max(cave) - 1; i >= 1; --i) {
 		struct monster *mon = cave_monster(cave, i);
 
 		/* Skip the ones that are already dead. */
