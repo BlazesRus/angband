@@ -71,7 +71,7 @@ size_t highscore_where(const struct high_score *entry,
 	size_t i;
 
 	/* Read until we get to a higher score */
-	for (i = 0; i < sz; i++) {
+	for (i = 0; i < sz; ++i) {
 		long entry_pts = strtoul(entry->pts, NULL, 0);
 		long score_pts = strtoul(scores[i].pts, NULL, 0);
 		bool entry_winner = streq(entry->how, "Ripe Old Age");

@@ -53,7 +53,7 @@ int slot_by_name(struct player *p, const char *name)
 	int i;
 
 	/* Look for the correctly named slot */
-	for (i = 0; i < p->body.count; i++) {
+	for (i = 0; i < p->body.count; ++i) {
 		if (streq(name, p->body.slots[i].name)) {
 			break;
 		}
@@ -73,7 +73,7 @@ static int slot_by_type(struct player *p, int type, bool full)
 	int i, fallback = p->body.count;
 
 	/* Look for a correct slot type */
-	for (i = 0; i < p->body.count; i++) {
+	for (i = 0; i < p->body.count; ++i) {
 		if (type == p->body.slots[i].type) {
 			if (full) {
 				/* Found a full slot */
@@ -138,7 +138,7 @@ int object_slot(struct player_body body, const struct object *obj)
 {
 	int i;
 
-	for (i = 0; i < body.count; i++) {
+	for (i = 0; i < body.count; ++i) {
 		if (obj == body.slots[i].obj) {
 			break;
 		}
@@ -164,7 +164,7 @@ bool object_is_in_quiver(struct player *p, const struct object *obj)
 {
 	int i;
 
-	for (i = 0; i < z_info->quiver_size; i++) {
+	for (i = 0; i < z_info->quiver_size; ++i) {
 		if (obj == p->upkeep->quiver[i]) {
 			return true;
 		}
@@ -267,7 +267,7 @@ int pack_slots_used(const struct player *p)
 			/* Check if it is in the quiver */
 			if (tval_is_ammo(obj) ||
 					of_has(obj->flags, OF_THROWING)) {
-				for (i = 0; i < z_info->quiver_size; i++) {
+				for (i = 0; i < z_info->quiver_size; ++i) {
 					if (p->upkeep->quiver[i] == obj) {
 						quiver_ammo += obj->number *
 							(tval_is_ammo(obj) ?
@@ -382,7 +382,7 @@ bool minus_ac(struct player *p)
 	if (!p->gear) return false;
 
 	/* Count the armor slots */
-	for (i = 0; i < p->body.count; i++) {
+	for (i = 0; i < p->body.count; ++i) {
 		/* Ignore non-armor */
 		if (slot_type_is(p, i, EQUIP_WEAPON)) continue;
 		if (slot_type_is(p, i, EQUIP_BOW)) continue;
@@ -453,14 +453,14 @@ char gear_to_label(struct player *p, struct object *obj)
 	}
 
 	/* Check the quiver */
-	for (i = 0; i < z_info->quiver_size; i++) {
+	for (i = 0; i < z_info->quiver_size; ++i) {
 		if (p->upkeep->quiver[i] == obj) {
 			return I2D(i);
 		}
 	}
 
 	/* Check the inventory */
-	for (i = 0; i < z_info->pack_size; i++) {
+	for (i = 0; i < z_info->pack_size; ++i) {
 		if (p->upkeep->inven[i] == obj) {
 			return labels[i];
 		}
@@ -485,7 +485,7 @@ static bool gear_excise_object(struct player *p, struct object *obj)
 	p->upkeep->total_weight -= (obj->number * obj->weight);
 
 	/* Make sure it isn't still equipped */
-	for (i = 0; i < p->body.count; i++) {
+	for (i = 0; i < p->body.count; ++i) {
 		if (slot_object(p, i) == obj) {
 			p->body.slots[i].obj = NULL;
 			p->upkeep->equip_cnt--;
@@ -657,7 +657,7 @@ static void quiver_absorb_num(const struct player *p, const struct object *obj,
 		bool displaces = false;
 
 		/* Count the current space this object could go into. */
-		for (i = 0; i < z_info->quiver_size; i++) {
+		for (i = 0; i < z_info->quiver_size; ++i) {
 			const struct object *quiver_obj = p->upkeep->quiver[i];
 			if (quiver_obj) {
 				int mult = tval_is_ammo(quiver_obj) ?
@@ -765,7 +765,7 @@ int inven_carry_num(const struct player *p, const struct object *obj)
 
 	/* See if we can add to a partially full inventory slot. */
 	num_left = obj->number - num_to_quiver;
-	for (i = 0; i < z_info->pack_size; i++) {
+	for (i = 0; i < z_info->pack_size; ++i) {
 		struct object *inven_obj = p->upkeep->inven[i];
 		if (inven_obj && object_stackable(inven_obj, obj, OSTACK_PACK)) {
 			num_left -= inven_obj->kind->base->max_stack -

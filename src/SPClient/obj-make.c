@@ -130,7 +130,7 @@ static void alloc_init_egos(void) {
 
 	int i;
 
-	for (i = 0; i < z_info->e_max; i++) {
+	for (i = 0; i < z_info->e_max; ++i) {
 		struct ego_item *ego = &e_info[i];
 
 		if (ego->alloc_prob) {
@@ -150,7 +150,7 @@ static void alloc_init_egos(void) {
 	alloc_ego_table = mem_zalloc(alloc_ego_size * sizeof(alloc_entry));
 
 	/* Scan the ego-items */
-	for (i = 0; i < z_info->e_max; i++) {
+	for (i = 0; i < z_info->e_max; ++i) {
 		struct ego_item *ego = &e_info[i];
 
 		/* Count valid pairs */
@@ -194,7 +194,7 @@ static void init_money_svals(void)
 	tval_sval_list("gold", money_svals, num_money_types);
 
 	/* List the money types */
-	for (i = 0; i < num_money_types; i++) {
+	for (i = 0; i < num_money_types; ++i) {
 		struct object_kind *kind = lookup_kind(TV_GOLD, money_svals[i]);
 		money_type[i].name = string_make(kind->name);
 		money_type[i].type = money_svals[i];
@@ -211,7 +211,7 @@ static void init_obj_make(void) {
 
 static void cleanup_obj_make(void) {
 	int i;
-	for (i = 0; i < num_money_types; i++) {
+	for (i = 0; i < num_money_types; ++i) {
 		string_free(money_type[i].name);
 	}
 	mem_free(money_type);
@@ -265,7 +265,7 @@ static int random_base_resist(struct object *obj, int *resist)
 	r = randint0(count);
 
 	/* Find the one we picked */
-	for (i = ELEM_BASE_MIN; i < ELEM_HIGH_MIN; i++) {
+	for (i = ELEM_BASE_MIN; i < ELEM_HIGH_MIN; ++i) {
 		if (obj->el_info[i].res_level != 0) continue;
 		if (r == 0) {
 			*resist = i;
@@ -294,7 +294,7 @@ static int random_high_resist(struct object *obj, int *resist)
 	r = randint0(count);
 
 	/* Find the one we picked */
-	for (i = ELEM_HIGH_MIN; i < ELEM_HIGH_MAX; i++) {
+	for (i = ELEM_HIGH_MIN; i < ELEM_HIGH_MAX; ++i) {
 		if (obj->el_info[i].res_level != 0) continue;
 		if (r == 0) {
 			*resist = i;
@@ -345,7 +345,7 @@ static struct ego_item *ego_find_random(struct object *obj, int level)
 	alloc_entry *table = alloc_ego_table;
 
 	/* Go through all possible ego items and find ones which fit this item */
-	for (i = 0; i < alloc_ego_size; i++) {
+	for (i = 0; i < alloc_ego_size; ++i) {
 		struct ego_item *ego = &e_info[table[i].index];
 
 		/* Reset any previous probability of this type being picked */
@@ -370,7 +370,7 @@ static struct ego_item *ego_find_random(struct object *obj, int level)
 
 	if (total) {
 		long value = randint0(total);
-		for (i = 0; i < alloc_ego_size; i++) {
+		for (i = 0; i < alloc_ego_size; ++i) {
 			/* Found the entry */
 			if (value < table[i].prob3) {
 				return &e_info[table[i].index];
@@ -424,7 +424,7 @@ void ego_apply_magic(struct object *obj, int level)
 	obj->to_a += randcalc(obj->ego->to_a, level, RANDOMISE);
 
 	/* Apply modifiers */
-	for (i = 0; i < OBJ_MOD_MAX; i++) {
+	for (i = 0; i < OBJ_MOD_MAX; ++i) {
 		x = randcalc(obj->ego->modifiers[i], level, RANDOMISE);
 		obj->modifiers[i] += x;
 	}
@@ -439,7 +439,7 @@ void ego_apply_magic(struct object *obj, int level)
 	copy_curses(obj, obj->ego->curses);
 
 	/* Add resists */
-	for (i = 0; i < ELEM_MAX; i++) {
+	for (i = 0; i < ELEM_MAX; ++i) {
 		/* Take the larger of ego and base object resist levels */
 		obj->el_info[i].res_level =
 			MAX(obj->ego->el_info[i].res_level, obj->el_info[i].res_level);
@@ -476,7 +476,7 @@ static void ego_apply_minima(struct object *obj)
 			obj->to_a < obj->ego->min_to_a)
 		obj->to_a = obj->ego->min_to_a;
 
-	for (i = 0; i < OBJ_MOD_MAX; i++) {
+	for (i = 0; i < OBJ_MOD_MAX; ++i) {
 		if (obj->modifiers[i] < obj->ego->min_modifiers[i])
 			obj->modifiers[i] = obj->ego->min_modifiers[i];
 	}
@@ -553,7 +553,7 @@ void copy_artifact_data(struct object *obj, const struct artifact *art)
 	copy_slays(&obj->slays, art->slays);
 	copy_brands(&obj->brands, art->brands);
 	copy_curses(obj, art->curses);
-	for (i = 0; i < ELEM_MAX; i++) {
+	for (i = 0; i < ELEM_MAX; ++i) {
 		/* Take the larger of artifact and base object resist levels */
 		obj->el_info[i].res_level =
 			MAX(art->el_info[i].res_level, obj->el_info[i].res_level);
@@ -665,7 +665,7 @@ static bool make_artifact(struct object *obj)
 	if (obj->number != 1) return false;
 
 	/* Check the artifact list (skip the "specials") */
-	for (i = 0; !obj->artifact && i < z_info->a_max; i++) {
+	for (i = 0; !obj->artifact && i < z_info->a_max; ++i) {
 		const struct artifact *art = &a_info[i];
 		struct object_kind *kind = lookup_kind(art->tval, art->sval);
 
@@ -872,7 +872,7 @@ void object_prep(struct object *obj, struct object_kind *k, int lev,
 	copy_curses(obj, k->curses);
 
 	/* Default resists */
-	for (i = 0; i < ELEM_MAX; i++) {
+	for (i = 0; i < ELEM_MAX; ++i) {
 		obj->el_info[i].res_level = k->el_info[i].res_level;
 		obj->el_info[i].flags = k->el_info[i].flags;
 		obj->el_info[i].flags |= k->base->el_info[i].flags;

@@ -373,7 +373,7 @@ void close_sound(void)
 	if (hooks.unload_sound_hook) {
 		int i;
 
-		for (i = 0; i < next_sound_id; i++) {
+		for (i = 0; i < next_sound_id; ++i) {
 			hooks.unload_sound_hook(&sounds[i]);
 			string_free(sounds[i].name);
 		}

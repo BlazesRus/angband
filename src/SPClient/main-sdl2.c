@@ -712,7 +712,7 @@ static void render_all(const struct window *window)
 	SDL_RenderCopy(window->renderer,
 			window->status_bar.texture, NULL, &window->status_bar.full_rect);
 
-	for (size_t i = 0; i < N_ELEMENTS(window->subwindows); i++) {
+	for (size_t i = 0; i < N_ELEMENTS(window->subwindows); ++i) {
 		struct subwindow *subwindow = window->subwindows[i];
 		if (subwindow != NULL && subwindow->visible) {
 			SDL_RenderCopy(window->renderer,
@@ -726,7 +726,7 @@ static void render_status_bar(const struct window *window)
 {
 	render_clear(window, window->status_bar.texture, &window->status_bar.color);
 
-	for (size_t i = 0; i < window->status_bar.button_bank.number; i++) {
+	for (size_t i = 0; i < window->status_bar.button_bank.number; ++i) {
 		struct button *button = &window->status_bar.button_bank.buttons[i];
 		if (button->callbacks.on_render != NULL) {
 			button->callbacks.on_render(window, button);
@@ -748,7 +748,7 @@ static void render_outline_rect_width(const struct window *window,
 {
 	SDL_Rect dst = *rect;
 
-	for (int i = 0; i < width; i++) {
+	for (int i = 0; i < width; ++i) {
 		render_outline_rect(window, texture, &dst, color);
 		resize_rect(&dst, 1, 1, -1, -1);
 	}
@@ -769,7 +769,7 @@ static void render_window_in_menu(const struct window *window)
 
 	SDL_SetRenderTarget(window->renderer, NULL);
 
-	for (size_t i = 0; i < N_ELEMENTS(window->subwindows); i++) {
+	for (size_t i = 0; i < N_ELEMENTS(window->subwindows); ++i) {
 		struct subwindow *subwindow = window->subwindows[i];
 		if (subwindow != NULL && subwindow->visible) {
 			if (subwindow->sizing_rect.w > 0 && subwindow->sizing_rect.h > 0) {
@@ -804,7 +804,7 @@ static void set_subwindow_alpha(struct subwindow *subwindow, int alpha)
 
 static void set_subwindows_alpha(const struct window *window, int alpha)
 {
-	for (size_t i = 0; i < N_ELEMENTS(window->subwindows); i++) {
+	for (size_t i = 0; i < N_ELEMENTS(window->subwindows); ++i) {
 		struct subwindow *subwindow = window->subwindows[i];
 		if (subwindow != NULL) {
 			set_subwindow_alpha(subwindow, alpha);
@@ -846,7 +846,7 @@ static void try_redraw_window(struct window *window)
 
 static void redraw_all_windows(bool dirty)
 {
-	for (unsigned i = 0; i < MAX_WINDOWS; i++) {
+	for (unsigned i = 0; i < MAX_WINDOWS; ++i) {
 		struct window *window = get_window_direct(i);
 		if (window != NULL && (dirty ? window->dirty : true)) {
 			render_status_bar(window);
@@ -1068,7 +1068,7 @@ static void render_grid_cell_tile(const struct subwindow *subwindow,
 
 static void clear_all_borders(struct window *window)
 {
-	for (size_t i = 0; i < N_ELEMENTS(window->subwindows); i++) {
+	for (size_t i = 0; i < N_ELEMENTS(window->subwindows); ++i) {
 		struct subwindow *subwindow = window->subwindows[i];
 		if (subwindow != NULL) {
 			subwindow->borders.error = false;
@@ -1122,7 +1122,7 @@ static void render_menu_panel(const struct window *window, struct menu_panel *me
 		return;
 	}
 
-	for (size_t i = 0; i < menu_panel->button_bank.number; i++) {
+	for (size_t i = 0; i < menu_panel->button_bank.number; ++i) {
 		struct button *button = &menu_panel->button_bank.buttons[i];
 
 		assert(button->callbacks.on_render != NULL);
@@ -1511,7 +1511,7 @@ static void show_about(const struct window *window)
 	};
 
 	struct { SDL_Rect rect; const char *text; } elems[N_ELEMENTS(about_text)];
-	for (size_t i = 0; i < N_ELEMENTS(elems); i++) {
+	for (size_t i = 0; i < N_ELEMENTS(elems); ++i) {
 		elems[i].text = about_text[i];
 	}
 
@@ -1529,7 +1529,7 @@ static void show_about(const struct window *window)
 		DEFAULT_XTRA_BORDER + texture_rect.h
 	};
 
-	for (size_t i = 0; i < N_ELEMENTS(elems); i++) {
+	for (size_t i = 0; i < N_ELEMENTS(elems); ++i) {
 		int w;
 		int h;
 		get_string_metrics(window->status_bar.font,
@@ -1558,7 +1558,7 @@ static void show_about(const struct window *window)
 	render_outline_rect_width(window, NULL, &total,
 			&g_colors[DEFAULT_ABOUT_BORDER_INNER_COLOR], DEFAULT_VISIBLE_BORDER);
 
-	for (size_t i = 0; i < N_ELEMENTS(elems); i++) {
+	for (size_t i = 0; i < N_ELEMENTS(elems); ++i) {
 		/* center the string in total rect */
 		elems[i].rect.x = total.x + (total.w - elems[i].rect.w) / 2;
 		/* make the y coord of string absolute (was relative to total rect) */
@@ -1759,7 +1759,7 @@ static struct menu_panel *make_menu_panel(const struct button *origin,
 {
 	int maxlen = 0;
 
-	for (size_t i = 0; i < n_elems; i++) {
+	for (size_t i = 0; i < n_elems; ++i) {
 		if (elems[i].caption == NULL) {
 			continue;
 		}
@@ -1783,7 +1783,7 @@ static struct menu_panel *make_menu_panel(const struct button *origin,
 	menu_panel->rect = rect;
 	menu_panel->rect.h = 0;
 
-	for (size_t i = 0; i < n_elems; i++) {
+	for (size_t i = 0; i < n_elems; ++i) {
 		if (elems[i].caption == NULL) {
 			continue;
 		}
@@ -1902,7 +1902,7 @@ static void handle_menu_windows(struct window *window,
 
 	struct menu_elem elems[MAX_WINDOWS];
 
-	for (unsigned i = 0; i < MAX_WINDOWS; i++) {
+	for (unsigned i = 0; i < MAX_WINDOWS; ++i) {
 		elems[i].caption = "Window-%u";
 		elems[i].data.type = BUTTON_DATA_UNSIGNED;
 		elems[i].data.value.unsigned_value = i;
@@ -2084,7 +2084,7 @@ static void handle_menu_tile_sets(struct window *window,
 	elems = mem_alloc(num_elems * sizeof(*elems));
 
 	mode = graphics_modes;
-	for (size_t i = 0; i < num_elems; i++) {
+	for (size_t i = 0; i < num_elems; ++i) {
 		elems[i].caption = mode->menuname;
 		elems[i].data.type = BUTTON_DATA_INT;
 		elems[i].data.value.int_value = mode->grafID;
@@ -2207,7 +2207,7 @@ static void handle_menu_font_size(struct window *window,
 	int increment =
 		(event->button.x - button->full_rect.x < button->full_rect.w / 2) ? -1 : +1;
 
-	for (size_t i = 0; i < MAX_VECTOR_FONT_SIZE - MIN_VECTOR_FONT_SIZE; i++) {
+	for (size_t i = 0; i < MAX_VECTOR_FONT_SIZE - MIN_VECTOR_FONT_SIZE; ++i) {
 		size += increment;
 		if (size > MAX_VECTOR_FONT_SIZE) {
 			size = MIN_VECTOR_FONT_SIZE;
@@ -2260,7 +2260,7 @@ static void handle_menu_font_names(struct window *window,
 	struct menu_elem elems[N_ELEMENTS(g_font_info)];
 
 	size_t num_elems = 0;
-	for (size_t i = 0; i < N_ELEMENTS(g_font_info); i++) {
+	for (size_t i = 0; i < N_ELEMENTS(g_font_info); ++i) {
 		if (g_font_info[i].loaded) {
 			elems[num_elems].caption = g_font_info[i].name;
 			elems[num_elems].data.type = BUTTON_DATA_FONT;
@@ -2379,7 +2379,7 @@ static void handle_menu_alpha(struct window *window,
 	struct menu_elem elems[(100 - DEFAULT_ALPHA_LOWEST) / DEFAULT_ALPHA_STEP +
 		1 + ((100 - DEFAULT_ALPHA_LOWEST) % DEFAULT_ALPHA_STEP == 0 ? 0 : 1)];
 
-	for (size_t i = 0; i < N_ELEMENTS(elems); i++) {
+	for (size_t i = 0; i < N_ELEMENTS(elems); ++i) {
 		int alpha = ALPHA_PERCENT(DEFAULT_ALPHA_LOWEST + i * DEFAULT_ALPHA_STEP);
 
 		elems[i].caption = " %3d%% ";
@@ -2463,7 +2463,7 @@ static void load_main_menu_panel(struct status_bar *status_bar)
 	struct menu_elem term_elems[N_ELEMENTS(angband_term_name)];
 	size_t n_terms = 0;
 
-	for (size_t i = 0; i < N_ELEMENTS(angband_term_name); i++) {
+	for (size_t i = 0; i < N_ELEMENTS(angband_term_name); ++i) {
 		struct subwindow *subwindow =
 			get_subwindow_by_index(status_bar->window, i, true);
 		if (subwindow == NULL) {
@@ -2521,7 +2521,7 @@ static void unselect_menu_buttons(struct menu_panel *menu_panel)
 		return;
 	}
 
-	for (size_t i = 0; i < menu_panel->button_bank.number; i++) {
+	for (size_t i = 0; i < menu_panel->button_bank.number; ++i) {
 		menu_panel->button_bank.buttons[i].selected = false;
 		menu_panel->button_bank.buttons[i].highlighted = false;
 	}
@@ -2562,7 +2562,7 @@ static bool handle_menu_event(struct window *window, const SDL_Event *event)
 
 	bool handled = false;
 
-	for (size_t i = 0; i < menu_panel->button_bank.number; i++) {
+	for (size_t i = 0; i < menu_panel->button_bank.number; ++i) {
 		struct button *button = &menu_panel->button_bank.buttons[i];
 		if (is_point_in_rect(x, y, &button->full_rect)) {
 			/* note that the buttons themselves set "selected" */
@@ -2859,7 +2859,7 @@ static void handle_window_closed(const SDL_WindowEvent *event)
 	if (window->index == MAIN_WINDOW) {
 		handle_quit();
 	} else {
-		for (size_t i = 0; i < N_ELEMENTS(window->subwindows); i++) {
+		for (size_t i = 0; i < N_ELEMENTS(window->subwindows); ++i) {
 			struct subwindow *subwindow = window->subwindows[i];
 			if (subwindow != NULL) {
 				clear_pw_flag(subwindow);
@@ -2918,7 +2918,7 @@ static void handle_windowevent(const SDL_WindowEvent *event)
 
 	bool resize = false;
 
-	for (int i = 0; i < num_events; i++) {
+	for (int i = 0; i < num_events; ++i) {
 		switch (events[i].window.event) {
 			case SDL_WINDOWEVENT_RESIZED:
 				/* just for efficiency */
@@ -3075,7 +3075,7 @@ static bool handle_status_bar_buttons(struct window *window,
 {
 	bool handled = false;
 
-	for (size_t i = 0; i < window->status_bar.button_bank.number; i++) {
+	for (size_t i = 0; i < window->status_bar.button_bank.number; ++i) {
 		struct button *button = &window->status_bar.button_bank.buttons[i];
 		assert(button->callbacks.on_event != NULL);
 		handled |= button->callbacks.on_event(window, button, event);
@@ -3687,7 +3687,7 @@ static errr term_xtra_event(int v)
 
 	if (v) {
 		while (true) {
-			for (int i = 0; i < DEFAULT_IDLE_UPDATE_PERIOD; i++) {
+			for (int i = 0; i < DEFAULT_IDLE_UPDATE_PERIOD; ++i) {
 				if (get_event()) {
 					return 0;
 				}
@@ -3858,7 +3858,7 @@ static errr term_text_hook(int col, int row, int n, int a, const wchar_t *s)
 	render_fill_rect(subwindow->window, subwindow->texture, &rect, &bg);
 
 	rect.w = subwindow->font_width;
-	for (int i = 0; i < n; i++) {
+	for (int i = 0; i < n; ++i) {
 		render_glyph_mono(subwindow->window,
 				subwindow->font, subwindow->texture,
 				rect.x, rect.y, &fg, (uint32_t) s[i]);
@@ -3889,7 +3889,7 @@ static errr term_pict_hook(int col, int row, int n,
 		dhrclip = 0;
 	}
 
-	for (int i = 0; i < n; i++) {
+	for (int i = 0; i < n; ++i) {
 		render_tile_font_scaled(subwindow, col + i, row, tap[i], tcp[i], true, dhrclip);
 
 		if (tap[i] == ap[i] && tcp[i] == cp[i]) {
@@ -4157,7 +4157,7 @@ static void load_graphics(struct window *window, graphics_mode *mode)
 		window->graphics.overdraw_row = mode->overdrawRow;
 		window->graphics.overdraw_max = mode->overdrawMax;
 
-		for (i = 0; i < N_ELEMENTS(window->subwindows); i++) {
+		for (i = 0; i < N_ELEMENTS(window->subwindows); ++i) {
 			if (window->subwindows[i] &&
 					window->subwindows[i]->term) {
 				window->subwindows[i]->term->dblh_hook =
@@ -4180,7 +4180,7 @@ static void reload_all_graphics(graphics_mode *mode)
 		return;
 	}
 
-	for (size_t i = 0; i < MAX_WINDOWS; i++) {
+	for (size_t i = 0; i < MAX_WINDOWS; ++i) {
 		struct window *window = get_window_direct(i);
 		if (window == NULL) {
 			continue;
@@ -4196,7 +4196,7 @@ static void reload_all_graphics(graphics_mode *mode)
 
 static const struct font_info *find_font_info(const char *name)
 {
-	for (size_t i = 0; i < N_ELEMENTS(g_font_info); i++) {
+	for (size_t i = 0; i < N_ELEMENTS(g_font_info); ++i) {
 		if (g_font_info[i].loaded && streq(g_font_info[i].name, name)) {
 			return &g_font_info[i];
 		}
@@ -4220,7 +4220,7 @@ static void make_font_cache(const struct window *window, struct font *font)
 	const int glyph_w = font->ttf.glyph.w;
 	const int glyph_h = font->ttf.glyph.h;
 
-	for (size_t i = 0; i < ASCII_CACHE_SIZE; i++) {
+	for (size_t i = 0; i < ASCII_CACHE_SIZE; ++i) {
 		SDL_Surface *surface = TTF_RenderGlyph_Blended(font->ttf.handle,
 				(Uint16) g_ascii_codepoints_for_cache[i], white);
 		if (surface == NULL) {
@@ -4430,7 +4430,7 @@ static void sort_to_top_aux(struct window *window, size_t *next_subwindow,
 		return;
 	}
 
-	for (size_t i = 0; i < N_ELEMENTS(window->subwindows); i++) {
+	for (size_t i = 0; i < N_ELEMENTS(window->subwindows); ++i) {
 		if (window->subwindows[i] != NULL
 				&& window->subwindows[i]->top == top
 				&& window->subwindows[i]->always_top == always_top)
@@ -4448,7 +4448,7 @@ static void sort_to_top(struct window *window)
 	assert(sizeof(window->subwindows) == sizeof(tmp));
 
 	size_t num_subwindows = 0;
-	for (size_t i = 0; i < N_ELEMENTS(window->subwindows); i++) {
+	for (size_t i = 0; i < N_ELEMENTS(window->subwindows); ++i) {
 		if (window->subwindows[i] != NULL) {
 			num_subwindows++;
 		}
@@ -4469,7 +4469,7 @@ static void bring_to_top(struct window *window, struct subwindow *subwindow)
 	assert(subwindow->window == window);
 
 	bool found_subwindow_in_window = false;
-	for (size_t i = 0; i < N_ELEMENTS(window->subwindows); i++) {
+	for (size_t i = 0; i < N_ELEMENTS(window->subwindows); ++i) {
 		if (window->subwindows[i] != NULL) {
 			window->subwindows[i]->top = false;
 			if (window->subwindows[i] == subwindow) {
@@ -4502,7 +4502,7 @@ static void adjust_status_bar_geometry(struct window *window)
 static struct subwindow *get_subwindow_by_index(const struct window *window,
 		unsigned index, bool visible)
 {
-	for (size_t i = 0; i < N_ELEMENTS(window->subwindows); i++) {
+	for (size_t i = 0; i < N_ELEMENTS(window->subwindows); ++i) {
 		struct subwindow *subwindow = window->subwindows[i];
 
 		if (subwindow != NULL
@@ -4639,7 +4639,7 @@ static void make_default_status_buttons(struct status_bar *status_bar)
 	}
 
 	callbacks.on_event = handle_button_open_subwindow;
-	for (unsigned i = 1; i < N_ELEMENTS(status_bar->window->subwindows); i++) {
+	for (unsigned i = 1; i < N_ELEMENTS(status_bar->window->subwindows); ++i) {
 		data.value.unsigned_value = i;
 		PUSH_BUTTON_LEFT_TO_RIGHT(format("%u", i));
 	}
@@ -4755,7 +4755,7 @@ static void resize_window(struct window *window, int w, int h)
 	adjust_window_geometry(window);
 	
 	clear_all_borders(window);
-	for (size_t i = 0; i < N_ELEMENTS(window->subwindows); i++) {
+	for (size_t i = 0; i < N_ELEMENTS(window->subwindows); ++i) {
 		struct subwindow *subwindow = window->subwindows[i];
 		if (subwindow != NULL) {
 			fit_subwindow_in_window(window, subwindow);
@@ -4836,7 +4836,7 @@ static bool choose_pixelformat(struct window *window,
 #define TRY_SET_WINDOW_PIXELFORMAT(format) \
 	case SDL_PIXELFORMAT_ ##format: window->pixelformat = SDL_PIXELFORMAT_ ##format;
 
-	for (size_t i = 0; i < info->num_texture_formats; i++) {
+	for (size_t i = 0; i < info->num_texture_formats; ++i) {
 		switch (info->texture_formats[i]) {
 			TRY_SET_WINDOW_PIXELFORMAT(ARGB8888); return true;
 			TRY_SET_WINDOW_PIXELFORMAT(RGBA8888); return true;
@@ -4891,7 +4891,7 @@ static void start_window(struct window *window)
 
 	load_window(window);
 
-	for (size_t i = 0; i < N_ELEMENTS(window->subwindows); i++) {
+	for (size_t i = 0; i < N_ELEMENTS(window->subwindows); ++i) {
 		if (window->subwindows[i] != NULL) {
 			load_subwindow(window, window->subwindows[i]);
 			window->subwindows[i]->visible = true;
@@ -5056,7 +5056,7 @@ static void dump_window(const struct window *window, ang_file *config)
 #undef DUMP_WINDOW
 	file_put(config, "\n");
 
-	for (size_t i = 0; i < N_ELEMENTS(window->subwindows); i++) {
+	for (size_t i = 0; i < N_ELEMENTS(window->subwindows); ++i) {
 		struct subwindow *subwindow = window->subwindows[i];
 		if (subwindow != NULL && subwindow->visible) {
 			dump_subwindow(subwindow, config);
@@ -5382,7 +5382,7 @@ static void free_menu_panel(struct menu_panel *menu_panel)
 
 static void free_button_bank(struct button_bank *button_bank)
 {
-	for (size_t i = 0; i < button_bank->number; i++) {
+	for (size_t i = 0; i < button_bank->number; ++i) {
 		mem_free(button_bank->buttons[i].caption);
 	}
 	mem_free(button_bank->buttons);
@@ -5480,7 +5480,7 @@ static void free_window(struct window *window)
 {
 	assert(window->loaded);
 
-	for (size_t i = 0; i < N_ELEMENTS(window->subwindows); i++) {
+	for (size_t i = 0; i < N_ELEMENTS(window->subwindows); ++i) {
 		struct subwindow *subwindow = window->subwindows[i];
 		if (subwindow != NULL) {
 			free_subwindow(subwindow);
@@ -5521,16 +5521,16 @@ static void init_colors(void)
 	assert(N_ELEMENTS(g_colors) == N_ELEMENTS(angband_color_table));
 	size_t i;
 
-	for (i = 0; i < N_ELEMENTS(g_colors); i++) {
+	for (i = 0; i < N_ELEMENTS(g_colors); ++i) {
 		g_colors[i].r = angband_color_table[i][1];
 		g_colors[i].g = angband_color_table[i][2];
 		g_colors[i].b = angband_color_table[i][3];
 		g_colors[i].a = DEFAULT_ALPHA_FULL;
 	}
-	for (i = 0; i < N_ELEMENTS(g_windows); i++) {
+	for (i = 0; i < N_ELEMENTS(g_windows); ++i) {
 		g_windows[i].color = g_colors[DEFAULT_WINDOW_BG_COLOR];
 	}
-	for (i = 0; i < N_ELEMENTS(g_subwindows); i++) {
+	for (i = 0; i < N_ELEMENTS(g_subwindows); ++i) {
 		/* Retain whatever customized alpha the subwindow has. */
 		g_subwindows[i].color.r =
 			g_colors[DEFAULT_SUBWINDOW_BG_COLOR].r;
@@ -5544,7 +5544,7 @@ static void init_colors(void)
 static void init_font_info(const char *directory)
 {
 	/* well maybe it will get ability to be reinitialized at some point */
-	for (size_t i = 0; i < N_ELEMENTS(g_font_info); i++) {
+	for (size_t i = 0; i < N_ELEMENTS(g_font_info); ++i) {
 		g_font_info[i].name = NULL;
 		g_font_info[i].path = NULL;
 		g_font_info[i].loaded = false;
@@ -5669,10 +5669,10 @@ static char g_config_file[4096];
 
 static void init_globals(void)
 {
-	for (size_t i = 0; i < N_ELEMENTS(g_subwindows); i++) {
+	for (size_t i = 0; i < N_ELEMENTS(g_subwindows); ++i) {
 		g_subwindows[i].index = i;
 	}
-	for (size_t i = 0; i < N_ELEMENTS(g_windows); i++) {
+	for (size_t i = 0; i < N_ELEMENTS(g_windows); ++i) {
 		g_windows[i].index = i;
 	}
 
@@ -5699,7 +5699,7 @@ static struct subwindow *get_subwindow_direct(unsigned index)
 	{
 		i = index;
 	} else {
-		for (i = 0; i < N_ELEMENTS(g_subwindows); i++) {
+		for (i = 0; i < N_ELEMENTS(g_subwindows); ++i) {
 			if (g_subwindows[i].index == index) {
 				break;
 			}
@@ -5755,7 +5755,7 @@ static struct window *get_window_direct(unsigned index)
 
 static struct window *get_window_by_id(Uint32 id)
 {
-	for (size_t i = 0; i < N_ELEMENTS(g_windows); i++) {
+	for (size_t i = 0; i < N_ELEMENTS(g_windows); ++i) {
 		if (g_windows[i].loaded && g_windows[i].id == id) {
 			return &g_windows[i];
 		}
@@ -5766,15 +5766,15 @@ static struct window *get_window_by_id(Uint32 id)
 
 static void free_globals(void)
 {
-	for (size_t i = 0; i < N_ELEMENTS(g_font_info); i++) {
+	for (size_t i = 0; i < N_ELEMENTS(g_font_info); ++i) {
 		free_font_info(&g_font_info[i]);
 	}
-	for (size_t i = 0; i < N_ELEMENTS(g_windows); i++) {
+	for (size_t i = 0; i < N_ELEMENTS(g_windows); ++i) {
 		if (g_windows[i].loaded) {
 			free_window(&g_windows[i]);
 		}
 	}
-	for (size_t i = 0; i < N_ELEMENTS(g_subwindows); i++) {
+	for (size_t i = 0; i < N_ELEMENTS(g_subwindows); ++i) {
 		assert(!g_subwindows[i].inited);
 		assert(!g_subwindows[i].loaded);
 		assert(!g_subwindows[i].linked);
@@ -5792,7 +5792,7 @@ static void start_windows(void)
 
 static void load_terms(void)
 {
-	for (size_t i = 0; i < N_ELEMENTS(g_subwindows); i++) {
+	for (size_t i = 0; i < N_ELEMENTS(g_subwindows); ++i) {
 		if (g_subwindows[i].loaded) {
 			load_term(&g_subwindows[i]);
 		}
@@ -5809,7 +5809,7 @@ static void dump_config_file(void)
 
 	assert(config != NULL);
 
-	for (size_t i = 0; i < N_ELEMENTS(g_windows); i++) {
+	for (size_t i = 0; i < N_ELEMENTS(g_windows); ++i) {
 		if (g_windows[i].loaded) {
 			dump_window(&g_windows[i], config);
 		}

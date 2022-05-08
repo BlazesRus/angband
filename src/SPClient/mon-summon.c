@@ -225,7 +225,7 @@ struct file_parser summon_parser = {
 int summon_name_to_idx(const char *name)
 {
     int i;
-    for (i = 0; i < summon_max; i++) {
+    for (i = 0; i < summon_max; ++i) {
         if (name && streq(name, summons[i].name)) {
             return i;
 		}
@@ -329,7 +329,7 @@ static int call_monster(struct loc grid)
 
 	mon_count = 0;
 
-	for (i = 1; i < cave_monster_max(cave); i++) {
+	for (i = 1; i < cave_monster_max(cave); ++i) {
 		mon = cave_monster(cave, i);
 
 		/* Figure out how many good monsters there are */
@@ -346,7 +346,7 @@ static int call_monster(struct loc grid)
 	mon_count = 0;
 
 	/* Now go through a second time and store the indices */
-	for (i = 1; i < cave_monster_max(cave); i++) {
+	for (i = 1; i < cave_monster_max(cave); ++i) {
 		mon = cave_monster(cave, i);
 		
 		/* Save the values of the good monster */

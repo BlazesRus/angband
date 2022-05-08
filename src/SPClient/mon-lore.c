@@ -188,7 +188,7 @@ static int blow_color(struct player *p, int blow_idx)
 	if (blow->lore_attr_immune) {
 		int i;
 
-		for (i = ELEM_ACID; i < ELEM_POIS; i++) {
+		for (i = ELEM_ACID; i < ELEM_POIS; ++i) {
 			if (proj_name_to_idx(blow->name) == i) {
 				break;
 			}
@@ -213,7 +213,7 @@ static int blow_color(struct player *p, int blow_idx)
 	} else if (streq(blow->effect_type, "drain")) {
 		int i;
 		bool found = false;
-		for (i = 0; i < z_info->pack_size; i++) {
+		for (i = 0; i < z_info->pack_size; ++i) {
 			struct object *obj = p->upkeep->inven[i];
 			if (obj && tval_can_have_charges(obj) && obj->pval) {
 				found = true;
@@ -228,7 +228,7 @@ static int blow_color(struct player *p, int blow_idx)
 	} else if (streq(blow->effect_type, "eat-food")) {
 		int i;
 		bool found = false;
-		for (i = 0; i < z_info->pack_size; i++) {
+		for (i = 0; i < z_info->pack_size; ++i) {
 			struct object *obj = p->upkeep->inven[i];
 			if (obj && tval_is_edible(obj)) {
 				found = true;
@@ -312,7 +312,7 @@ void lore_update(const struct monster_race *race, struct monster_lore *lore)
 	mflag_union(lore->flags, mask);
 
 	/* Blows */
-	for (i = 0; i < z_info->mon_blows_max; i++) {
+	for (i = 0; i < z_info->mon_blows_max; ++i) {
 		if (!race->blow) break;
 		if (lore->blow_known[i] || lore->blows[i].times_seen ||
 			lore->all_known) {
@@ -1634,7 +1634,7 @@ void lore_append_attack(textblock *tb, const struct monster_race *race,
 	known_attacks = 0;
 
 	/* Count the number of defined and known attacks */
-	for (i = 0; i < z_info->mon_blows_max; i++) {
+	for (i = 0; i < z_info->mon_blows_max; ++i) {
 		/* Skip non-attacks */
 		if (!race->blow[i].method) continue;
 
@@ -1654,7 +1654,7 @@ void lore_append_attack(textblock *tb, const struct monster_race *race,
 	total_centidamage = 99; // round up the final result to the next higher point
 
 	/* Describe each melee attack */
-	for (i = 0; i < z_info->mon_blows_max; i++) {
+	for (i = 0; i < z_info->mon_blows_max; ++i) {
 		random_value dice;
 		const char *effect_str = NULL;
 
@@ -1739,7 +1739,7 @@ static void write_lore_entries(ang_file *fff)
 {
 	int i, n;
 
-	for (i = 0; i < z_info->r_max; i++) {
+	for (i = 0; i < z_info->r_max; ++i) {
 		/* Current entry */
 		struct monster_race *race = &r_info[i];
 		struct monster_lore *lore = &l_list[i];

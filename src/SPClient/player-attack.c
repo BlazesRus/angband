@@ -817,7 +817,7 @@ bool py_attack_real(struct player *p, struct loc grid, bool *fear)
 		my_strcpy(verb, "fail to harm", sizeof(verb));
 	}
 
-	for (i = 0; i < N_ELEMENTS(melee_hit_types); i++) {
+	for (i = 0; i < N_ELEMENTS(melee_hit_types); ++i) {
 		const char *dmg_text = "";
 
 		if (msg_type != melee_hit_types[i].msg_type)
@@ -1401,7 +1401,7 @@ void do_cmd_fire_at_nearest(void) {
 	}
 
 	/* Find first eligible ammo in the quiver */
-	for (i = 0; i < z_info->quiver_size; i++) {
+	for (i = 0; i < z_info->quiver_size; ++i) {
 		if (!player->upkeep->quiver[i])
 			continue;
 		if (player->upkeep->quiver[i]->tval != player->state.ammo_tval)

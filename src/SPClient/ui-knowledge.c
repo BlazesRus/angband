@@ -231,7 +231,7 @@ static void display_tiles(int col, int row, int height, int width,
 	height = logical_height(height);
 
 	/* Display lines until done */
-	for (i = 0; i < height; i++) {
+	for (i = 0; i < height; ++i) {
 		/* Display columns until done */
 		for (j = 0; j < width; j++) {
 			uint8_t a;
@@ -790,7 +790,7 @@ static void display_knowledge(const char *title, int *obj_list, int o_count,
 	g_list = mem_zalloc((max_group + 1) * sizeof(int));
 	g_offset = mem_zalloc((max_group + 1) * sizeof(int));
 
-	for (i = 0; i < o_count; i++) {
+	for (i = 0; i < o_count; ++i) {
 		if (prev_g != g_funcs.group(obj_list[i])) {
 			prev_g = g_funcs.group(obj_list[i]);
 			g_offset[grp_cnt] = i;
@@ -805,7 +805,7 @@ static void display_knowledge(const char *title, int *obj_list, int o_count,
 	/* The compact set of group names, in display order */
 	g_names = mem_zalloc(grp_cnt * sizeof(char*));
 
-	for (i = 0; i < grp_cnt; i++) {
+	for (i = 0; i < grp_cnt; ++i) {
 		int len;
 		g_names[i] = g_funcs.name(g_list[i]);
 		len = strlen(g_names[i]);
@@ -1250,7 +1250,7 @@ static void mon_summary(int gid, const int *item_list, int n, int top,
 	int kills = 0;
 
 	/* Access the race */
-	for (i = 0; i < n; i++) {
+	for (i = 0; i < n; ++i) {
 		int oid = default_join[item_list[i+top]].oid;
 		kills += l_list[oid].pkills;
 	}
@@ -1276,7 +1276,7 @@ static int count_known_monsters(void)
 	int i;
 	size_t j;
 
-	for (i = 0; i < z_info->r_max; i++) {
+	for (i = 0; i < z_info->r_max; ++i) {
 		struct monster_race *race = &r_info[i];
 		if (!l_list[i].all_known && !l_list[i].sights) {
 			continue;
@@ -1311,7 +1311,7 @@ static void do_cmd_knowledge_monsters(const char *name, int row)
 	int i;
 	size_t j;
 
-	for (i = 0; i < z_info->r_max; i++) {
+	for (i = 0; i < z_info->r_max; ++i) {
 		struct monster_race *race = &r_info[i];
 		if (!l_list[i].all_known && !l_list[i].sights) {
 			continue;
@@ -1331,7 +1331,7 @@ static void do_cmd_knowledge_monsters(const char *name, int row)
 	monsters = mem_zalloc(m_count * sizeof(int));
 
 	m_count = 0;
-	for (i = 0; i < z_info->r_max; i++) {
+	for (i = 0; i < z_info->r_max; ++i) {
 		struct monster_race *race = &r_info[i];
 		if (!l_list[i].all_known && !l_list[i].sights) {
 			continue;
@@ -1468,7 +1468,7 @@ static struct object *find_artifact(struct artifact *artifact)
 	}
 
 	/* Store objects */
-	for (i = 0; i < MAX_STORES; i++) {
+	for (i = 0; i < MAX_STORES; ++i) {
 		struct store *s = &stores[i];
 		for (obj = s->stock; obj; obj = obj->next) {
 			if (obj->artifact == artifact) return obj;
@@ -1476,7 +1476,7 @@ static struct object *find_artifact(struct artifact *artifact)
 	}
 
 	/* Stored chunk objects */
-	for (i = 0; i < chunk_list_max; i++) {
+	for (i = 0; i < chunk_list_max; ++i) {
 		struct chunk *c = chunk_list[i];
 		int j;
 		if (strstr(c->name, "known")) continue;
@@ -2047,7 +2047,7 @@ void textui_browse_object_knowledge(const char *name, int row)
 
 	objects = mem_zalloc(z_info->k_max * sizeof(int));
 
-	for (i = 0; i < z_info->k_max; i++) {
+	for (i = 0; i < z_info->k_max; ++i) {
 		kind = &k_info[i];
 		/* It's in the list if we've ever seen it, or it has a flavour,
 		 * and it's not one of the special artifacts. This way the flavour
@@ -2202,7 +2202,7 @@ static void do_cmd_knowledge_runes(const char *name, int row)
 
 	runes = mem_zalloc(rune_max * sizeof(int));
 
-	for (i = 0; i < rune_max; i++) {
+	for (i = 0; i < rune_max; ++i) {
 		/* Ignore unknown runes */
 		if (!player_knows_rune(player, i))
 			continue;
@@ -2369,7 +2369,7 @@ static void do_cmd_knowledge_features(const char *name, int row)
 
 	features = mem_zalloc(z_info->f_max * sizeof(int));
 
-	for (i = 0; i < z_info->f_max; i++) {
+	for (i = 0; i < z_info->f_max; ++i) {
 		/* Ignore non-features and mimics */
 		if (f_info[i].name == 0 || f_info[i].mimic)
 			continue;
@@ -2550,7 +2550,7 @@ static void do_cmd_knowledge_traps(const char *name, int row)
 
 	traps = mem_zalloc(z_info->trap_max * sizeof(int));
 
-	for (i = 0; i < z_info->trap_max; i++) {
+	for (i = 0; i < z_info->trap_max; ++i) {
 		if (!trap_info[i].name) continue;
 
 		traps[t_count++] = i;
@@ -3102,7 +3102,7 @@ static void do_cmd_knowledge_shapechange(const char *name, int row)
 			region_erase(&header_region);
 			prt("Knowledge - shapes", 2, 0);
 			prt("Name", 4, 0);
-			for (i = 0; i < MIN(80, wnew); i++) {
+			for (i = 0; i < MIN(80, wnew); ++i) {
 				Term_putch(i, 5, COLOUR_WHITE, L'=');
 			}
 			prt("<dir>, 'r' to recall, ESC", h - 2, 0);
@@ -3269,7 +3269,7 @@ void textui_knowledge_init(void)
 		for (i = 0; i < TV_MAX; i++)
 			obj_group_order[i] = -1;
 
-		for (i = 0; 0 != object_text_order[i].tval; i++) {
+		for (i = 0; 0 != object_text_order[i].tval; ++i) {
 			if (kb_info[object_text_order[i].tval].num_svals == 0) continue;
 			if (object_text_order[i].name) gid = i;
 			obj_group_order[object_text_order[i].tval] = gid;
@@ -3296,7 +3296,7 @@ void textui_browse_knowledge(void)
 
 	/* Runes */
 	knowledge_actions[1].flags = MN_ACT_GRAYED;
-	for (i = 0; i < rune_max; i++) {
+	for (i = 0; i < rune_max; ++i) {
 		if (player_knows_rune(player, i) || OPT(player, cheat_xtra)) {
 			knowledge_actions[1].flags = 0;
 		    break;
@@ -3311,7 +3311,7 @@ void textui_browse_knowledge(void)
 
 	/* Ego items */
 	knowledge_actions[3].flags = MN_ACT_GRAYED;
-	for (i = 0; i < z_info->e_max; i++) {
+	for (i = 0; i < z_info->e_max; ++i) {
 		if (e_info[i].everseen || OPT(player, cheat_xtra)) {
 			knowledge_actions[3].flags = 0;
 			break;
@@ -3864,7 +3864,7 @@ static void lookup_symbol(char sym, char *buf, size_t max)
 	 * find a match.
 	 * It would make more sense to loop through tvals, but then we need to
 	 * associate a display character with each tval. */
-	for (i = 0; i < z_info->k_max; i++) {
+	for (i = 0; i < z_info->k_max; ++i) {
 		if (char_matches_key(k_info[i].d_char, sym)) {
 			strnfmt(buf, max, "%c - %s.", sym, tval_find_name(k_info[i].tval));
 			return;
@@ -3874,7 +3874,7 @@ static void lookup_symbol(char sym, char *buf, size_t max)
 	/* Look through features */
 	/* Note: We need a better way of doing this. Currently '#' matches secret
 	 * door, and '^' matches trap door (instead of the more generic "trap"). */
-	for (i = 1; i < z_info->f_max; i++) {
+	for (i = 1; i < z_info->f_max; ++i) {
 		if (char_matches_key(f_info[i].d_char, sym)) {
 			strnfmt(buf, max, "%c - %s.", sym, f_info[i].name);
 			return;

@@ -120,7 +120,7 @@ static void build_streamer(struct chunk *c, int feat, int chance)
 		struct loc change;
 
 		/* One grid per density */
-		for (i = 0; i < dun->profile->str.den; i++) {
+		for (i = 0; i < dun->profile->str.den; ++i) {
 			int d = dun->profile->str.rng;
 
 			/* Pick a nearby grid */
@@ -742,13 +742,13 @@ static void build_tunnel(struct chunk *c, struct loc grid1, struct loc grid2)
 	}
 
 	/* Turn the tunnel into corridor */
-	for (i = 0; i < dun->tunn_n; i++) {
+	for (i = 0; i < dun->tunn_n; ++i) {
 		/* Clear previous contents, add a floor */
 		square_set_feat(c, dun->tunn[i], FEAT_FLOOR);
 	}
 
 	/* Apply the piercings that we found */
-	for (i = 0; i < dun->wall_n; i++) {
+	for (i = 0; i < dun->wall_n; ++i) {
 		/* Convert to floor grid */
 		square_set_feat(c, dun->wall[i], FEAT_FLOOR);
 
@@ -780,7 +780,7 @@ static int next_to_corr(struct chunk *c, struct loc grid)
 	assert(square_in_bounds(c, grid));
 
 	/* Scan adjacent grids */
-	for (i = 0; i < 4; i++) {
+	for (i = 0; i < 4; ++i) {
 		/* Extract the location */
 		struct loc grid1 = loc_sum(grid, ddgrid_ddd[i]);
 
@@ -917,7 +917,7 @@ static void build_staircase_rooms(struct chunk *c, const char *label)
 	struct connector *join;
 	int i;
 
-	for (i = 0; i < num_rooms; i++) {
+	for (i = 0; i < num_rooms; ++i) {
 		profile = dun->profile->room_profiles[i];
 		if (streq(profile.name, "staircase room")) {
 			break;
@@ -1230,7 +1230,7 @@ struct chunk *classic_gen(struct player *p, int min_height, int min_width) {
 		 * rarity > this rarity). We try building the room, and if it works
 		 * then we are done with this iteration. We keep going until we find
 		 * a room that we can build successfully or we exhaust the profiles. */
-		for (i = 0; i < dun->profile->n_room_profiles; i++) {
+		for (i = 0; i < dun->profile->n_room_profiles; ++i) {
 			struct room_profile profile = dun->profile->room_profiles[i];
 			if (profile.rarity > rarity) continue;
 			if (profile.cutoff <= key) continue;
@@ -1406,7 +1406,7 @@ static struct chunk *labyrinth_chunk(int depth, int h, int w, bool lit, bool sof
 		fill_rectangle(c, 1, 1, h, w, FEAT_PERM, SQUARE_NONE);
 
 	/* Initialize each wall. */
-	for (i = 0; i < n; i++) {
+	for (i = 0; i < n; ++i) {
 		walls[i] = i;
 		sets[i] = -1;
 	}
@@ -1429,7 +1429,7 @@ static struct chunk *labyrinth_chunk(int depth, int h, int w, bool lit, bool sof
 	 * in the same set, remove the wall and join their sets.
 	 *
 	 * This is a randomized version of Kruskal's algorithm. */
-	for (i = 0; i < n; i++) {
+	for (i = 0; i < n; ++i) {
 		int a, b;
 
 		j = walls[i];
@@ -1771,7 +1771,7 @@ static void build_color_point(struct chunk *c, int colors[], int counts[],
 		counts[color]++;
 		if (stairs && square_isstairs(c, grid1)) stairs[color] = true;
 
-		for (i = 0; i < (diagonal ? 8 : 4); i++) {
+		for (i = 0; i < (diagonal ? 8 : 4); ++i) {
 			struct loc grid2 = loc_sum(grid1, ddgrid_ddd[i]);
 			int n2 = grid_to_i(grid2, w);
 			if (ignore_point(c, colors, grid2)) continue;
@@ -1834,7 +1834,7 @@ static void clear_small_regions(struct chunk *c, int colors[], int counts[],
 	int *deleted = mem_zalloc(size * sizeof(int));
 	array_filler(deleted, 0, size);
 
-	for (i = 0; i < size; i++) {
+	for (i = 0; i < size; ++i) {
 		if (counts[i] < 9 && (!stairs || !stairs[i])) {
 			deleted[i] = 1;
 			counts[i] = 0;
@@ -1922,7 +1922,7 @@ static void join_region(struct chunk *c, int colors[], int counts[], int color,
 	array_filler(previous, -1, size);
 
 	/* Push all squares of the given color onto the queue */
-	for (i = 0; i < size; i++) {
+	for (i = 0; i < size; ++i) {
 		if (colors[i] == color) {
 			q_push_int(queue, i);
 			previous[i] = i;
@@ -1972,7 +1972,7 @@ static void join_region(struct chunk *c, int colors[], int counts[], int color,
 		/* If we haven't reached a new color, add all the unprocessed adjacent
 		 * squares to our queue.
 		 */
-		for (i = 0; i < 4; i++) {
+		for (i = 0; i < 4; ++i) {
 			int n2;
 			struct loc grid;
 			i_to_grid(n1, w, &grid);
@@ -2768,7 +2768,7 @@ static struct chunk *modified_chunk(struct player *p, int depth, int height,
 		 * rarity > this rarity). We try building the room, and if it works
 		 * then we are done with this iteration. We keep going until we find
 		 * a room that we can build successfully or we exhaust the profiles. */
-		for (i = 0; i < num_rooms; i++) {
+		for (i = 0; i < num_rooms; ++i) {
 			struct room_profile profile = dun->profile->room_profiles[i];
 			if (profile.rarity > rarity) continue;
 			if (profile.cutoff <= key) continue;
@@ -3002,7 +3002,7 @@ static struct chunk *moria_chunk(struct player *p, int depth, int height,
 		 * rarity > this rarity). We try building the room, and if it works
 		 * then we are done with this iteration. We keep going until we find
 		 * a room that we can build successfully or we exhaust the profiles. */
-		for (i = 0; i < num_rooms; i++) {
+		for (i = 0; i < num_rooms; ++i) {
 			struct room_profile profile = dun->profile->room_profiles[i];
 			if (profile.rarity > rarity) continue;
 			if (profile.cutoff <= key) continue;
@@ -3181,7 +3181,7 @@ static void connect_caverns(struct chunk *c, struct loc floor[])
 
 	/* Color the regions, find which cavern is which color */
 	build_colors(c, colors, counts, NULL, true);
-	for (i = 0; i < 4; i++) {
+	for (i = 0; i < 4; ++i) {
 		int spot = grid_to_i(floor[i], c->width);
 		color_of_floor[i] = colors[spot];
 	}
@@ -3193,7 +3193,7 @@ static void connect_caverns(struct chunk *c, struct loc floor[])
 		false);
 
 	/* Join the two big caverns */
-	for (i = 1; i < 3; i++) {
+	for (i = 1; i < 3; ++i) {
 		int spot = grid_to_i(floor[i], c->width);
 		color_of_floor[i] = colors[spot];
 	}

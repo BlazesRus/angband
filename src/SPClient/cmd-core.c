@@ -172,7 +172,7 @@ static const struct command_info game_cmds[] =
 const char *cmd_verb(cmd_code cmd)
 {
 	size_t i;
-	for (i = 0; i < N_ELEMENTS(game_cmds); i++) {
+	for (i = 0; i < N_ELEMENTS(game_cmds); ++i) {
 		if (game_cmds[i].cmd == cmd)
 			return game_cmds[i].verb;
 	}
@@ -467,7 +467,7 @@ static void cmd_set_arg(struct command *cmd, const char *name,
 	assert(name[0]);
 
 	/* Find an arg that either... */
-	for (i = 0; i < CMD_MAX_ARGS; i++) {
+	for (i = 0; i < CMD_MAX_ARGS; ++i) {
 		struct cmd_arg *arg = &cmd->arg[i];
 		if (!arg->name[0] && first_empty == -1)
 			first_empty = i;
@@ -496,7 +496,7 @@ static int cmd_get_arg(struct command *cmd, const char *arg,
 {
 	size_t i;
 
-	for (i = 0; i < CMD_MAX_ARGS; i++) {
+	for (i = 0; i < CMD_MAX_ARGS; ++i) {
 		if (streq(cmd->arg[i].name, arg)) {
 			if (cmd->arg[i].type != type)
 				return CMD_ARG_WRONG_TYPE;

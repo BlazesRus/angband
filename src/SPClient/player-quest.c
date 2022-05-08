@@ -162,7 +162,7 @@ void player_quests_reset(struct player *p)
 		player_quests_free(p);
 	p->quests = mem_zalloc(z_info->quest_max * sizeof(struct quest));
 
-	for (i = 0; i < z_info->quest_max; i++) {
+	for (i = 0; i < z_info->quest_max; ++i) {
 		p->quests[i].name = string_make(quests[i].name);
 		p->quests[i].level = quests[i].level;
 		p->quests[i].race = quests[i].race;
@@ -224,7 +224,7 @@ bool quest_check(struct player *p, const struct monster *m)
 	if (!rf_has(m->race->flags, RF_QUESTOR)) return false;
 
 	/* Mark quests as complete */
-	for (i = 0; i < z_info->quest_max; i++) {
+	for (i = 0; i < z_info->quest_max; ++i) {
 		/* Note completed quests */
 		if (p->quests[i].level == m->race->level) {
 			p->quests[i].level = 0;

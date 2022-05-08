@@ -61,7 +61,7 @@ static struct monster_race *poly_race(struct monster_race *race,
 	if (one_in_(100)) maxlvl = 100;
 
 	/* Try to pick a new, non-unique race within our level range */
-	for (i = 0; i < 1000; i++) {
+	for (i = 0; i < 1000; ++i) {
 		struct monster_race *new_race = get_mon_num(goal, current_level);
 
 		if (!new_race || new_race == race) continue;
@@ -102,7 +102,7 @@ void thrust_away(struct loc centre, struct loc target, int grids_away)
 	/* Up to the number of grids requested, force the target away from the
 	 * source of the projection, until it hits something it can't travel
 	 * around. */
-	for (i = 0; i < grids_away; i++) {
+	for (i = 0; i < grids_away; ++i) {
 		/* Randomize initial direction. */
 		first_d = randint0(8);
 
@@ -1225,7 +1225,7 @@ static void project_m_apply_side_effects(project_monster_handler_context_t *cont
 		/* Wake the monster up, don't notice the player */
 		monster_wake(mon, false, 0);
 	} else {
-		for (int i = 0; i < MON_TMD_MAX; i++) {
+		for (int i = 0; i < MON_TMD_MAX; ++i) {
 			if (context->mon_timed[i] > 0) {
 				mon_inc_timed(mon,
 							  i,

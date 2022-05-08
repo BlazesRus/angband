@@ -416,7 +416,7 @@ void do_cmd_wiz_advance(struct command *cmd)
 	int i;
 
 	/* Max stats */
-	for (i = 0; i < STAT_MAX; i++) {
+	for (i = 0; i < STAT_MAX; ++i) {
 		player->stat_cur[i] = player->stat_max[i] = 118;
 	}
 
@@ -456,7 +456,7 @@ void do_cmd_wiz_banish(struct command *cmd)
 		cmd_set_arg_number(cmd, "range", d);
 	}
 
-	for (i = 1; i < cave_monster_max(cave); i++) {
+	for (i = 1; i < cave_monster_max(cave); ++i) {
 		struct monster *mon = cave_monster(cave, i);
 
 		/* Skip dead monsters */
@@ -714,7 +714,7 @@ void do_cmd_wiz_create_all_artifact(struct command *cmd)
 {
 	int i;
 
-	for (i = 1; i < z_info->a_max; i++) {
+	for (i = 1; i < z_info->a_max; ++i) {
 		struct artifact *art = &a_info[i];
 		struct object *obj = wiz_create_object_from_artifact(art);
 
@@ -745,7 +745,7 @@ void do_cmd_wiz_create_all_artifact_from_tval(struct command *cmd)
 		cmd_set_arg_number(cmd, "tval", tval);
 	}
 
-	for (i = 1; i < z_info->a_max; i++) {
+	for (i = 1; i < z_info->a_max; ++i) {
 		struct artifact *art = &a_info[i];
 
 		if (art->tval == tval) {
@@ -766,7 +766,7 @@ void do_cmd_wiz_create_all_obj(struct command *cmd)
 {
 	int i;
 
-	for (i = 0; i < z_info->k_max; i++) {
+	for (i = 0; i < z_info->k_max; ++i) {
 		struct object_kind *kind = &k_info[i];
 		struct object *obj;
 
@@ -807,7 +807,7 @@ void do_cmd_wiz_create_all_obj_from_tval(struct command *cmd)
 		cmd_set_arg_choice(cmd, "choice", art);
 	}
 
-	for (i = 0; i < z_info->k_max; i++) {
+	for (i = 0; i < z_info->k_max; ++i) {
 		struct object_kind *kind = &k_info[i];
 		struct object *obj;
 
@@ -925,7 +925,7 @@ void do_cmd_wiz_cure_all(struct command *cmd)
 	int i;
 
 	/* Remove curses */
-	for (i = 0; i < player->body.count; i++) {
+	for (i = 0; i < player->body.count; ++i) {
 		if (player->body.slots[i].obj &&
 				player->body.slots[i].obj->curses) {
 			mem_free(player->body.slots[i].obj->curses);
@@ -934,7 +934,7 @@ void do_cmd_wiz_cure_all(struct command *cmd)
 	}
 
 	/* Restore stats */
-	for (i = 0; i < STAT_MAX; i++) {
+	for (i = 0; i < STAT_MAX; ++i) {
 		effect_simple(EF_RESTORE_STAT, source_player(), "0", i,
 			0, 0, 0, 0, NULL);
 	}
@@ -1094,7 +1094,7 @@ void do_cmd_wiz_display_keylog(struct command *cmd)
 
 	prt("Previous keypresses (top most recent):", 0, 0);
 
-	for (i = 0; i < KEYLOG_SIZE; i++) {
+	for (i = 0; i < KEYLOG_SIZE; ++i) {
 		if (i < log_size) {
 			/*
 			 * Find the keypress from the log; log_i is one past
@@ -1428,7 +1428,7 @@ void do_cmd_wiz_learn_object_kinds(struct command *cmd)
 	}
 
 	/* Scan all object kinds */
-	for (i = 1; i < z_info->k_max; i++) {
+	for (i = 1; i < z_info->k_max; ++i) {
 		struct object_kind *kind = &k_info[i];
 
 		/* Induce awareness */
@@ -1511,7 +1511,7 @@ void do_cmd_wiz_peek_noise_scent(struct command *cmd)
 	char kp;
 
 	/* Noise */
-	for (i = 0; i < 100; i++) {
+	for (i = 0; i < 100; ++i) {
 		wiz_hack_map(cave, player, wiz_hack_map_peek_noise, &i);
 
 		/* Get key */
@@ -1522,7 +1522,7 @@ void do_cmd_wiz_peek_noise_scent(struct command *cmd)
 	}
 
 	/* Smell */
-	for (i = 0; i < 50; i++) {
+	for (i = 0; i < 50; ++i) {
 		wiz_hack_map(cave, player, wiz_hack_map_peek_scent, &i);
 
 		/* Get key */
@@ -2218,7 +2218,7 @@ void do_cmd_wiz_recall_monster(struct command *cmd)
 	} else if (r_idx == -1) {
 		int i;
 
-		for (i = 0; i < z_info->r_max; i++) {
+		for (i = 0; i < z_info->r_max; ++i) {
 			cheat_monster_lore(&r_info[i], &l_list[i]);
 		}
 	} else {
@@ -2248,7 +2248,7 @@ void do_cmd_wiz_rerate(struct command *cmd)
 		int i;
 
 		/* Collect values */
-		for (i = 1; i < PY_MAX_LEVEL; i++) {
+		for (i = 1; i < PY_MAX_LEVEL; ++i) {
 			player->player_hp[i] = randint1(player->hitdie);
 			player->player_hp[i] += player->player_hp[i - 1];
 		}
@@ -2493,7 +2493,7 @@ void do_cmd_wiz_stat_item(struct command *cmd)
 	msg("Creating a lot of %s items.  Base level = %d.", quality, level);
 	event_signal(EVENT_MESSAGE_FLUSH);
 
-	for (i = 0; i < n; i++) {
+	for (i = 0; i < n; ++i) {
 		bool ismatch = true, isbetter = true, isworse = true;
 		struct object *test_obj;
 		int j;
@@ -2660,7 +2660,7 @@ void do_cmd_wiz_summon_random(struct command *cmd)
 		cmd_set_arg_number(cmd, "quantity", n);
 	}
 
-	for (i = 0; i < n; i++) {
+	for (i = 0; i < n; ++i) {
 		effect_simple(EF_SUMMON, source_player(), "1",
 			0, 0, 0, 0, 0, NULL);
 	}
@@ -2867,7 +2867,7 @@ void do_cmd_wiz_tweak_item(struct command *cmd)
 			wiz_display_item(obj, true, player);\
 		}\
 } while (0)
-	for (i = 0; i < OBJ_MOD_MAX; i++) {
+	for (i = 0; i < OBJ_MOD_MAX; ++i) {
 		WIZ_TWEAK(modifiers[i], obj_mods[i]);
 	}
 	WIZ_TWEAK(to_a, "AC bonus");
@@ -2923,7 +2923,7 @@ void do_cmd_wiz_wipe_recall(struct command *cmd)
 	} else if (r_idx == -1) {
 		int i;
 
-		for (i = 0; i < z_info->r_max; i++) {
+		for (i = 0; i < z_info->r_max; ++i) {
 			wipe_monster_lore(&r_info[i], &l_list[i]);
 		}
 	} else {

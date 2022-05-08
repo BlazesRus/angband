@@ -173,7 +173,7 @@ int blow_index(const char *name)
 {
 	int i;
 
-	for (i = 1; i < z_info->blow_effects_max; i++) {
+	for (i = 1; i < z_info->blow_effects_max; ++i) {
 		struct blow_effect *effect = &blow_effects[i];
 		if (my_stricmp(name, effect->name) == 0)
 			return i;

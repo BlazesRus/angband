@@ -68,7 +68,7 @@ static void init_race_allocs(void) {
 	alloc_race_size = 0;
 
 	/* Scan the monsters (not the ghost) */
-	for (i = 1; i < z_info->r_max - 1; i++) {
+	for (i = 1; i < z_info->r_max - 1; ++i) {
 		/* Get the i'th race */
 		race = &r_info[i];
 
@@ -83,7 +83,7 @@ static void init_race_allocs(void) {
 	}
 
 	/* Calculate the cumultive level totals */
-	for (i = 1; i < z_info->max_depth; i++) {
+	for (i = 1; i < z_info->max_depth; ++i) {
 		/* Group by level */
 		num[i] += num[i - 1];
 	}
@@ -98,7 +98,7 @@ static void init_race_allocs(void) {
 	table = alloc_race_table;
 
 	/* Scan the monsters (not the ghost) */
-	for (i = 1; i < z_info->r_max - 1; i++) {
+	for (i = 1; i < z_info->r_max - 1; ++i) {
 		/* Get the i'th race */
 		race = &r_info[i];
 
@@ -152,7 +152,7 @@ void get_mon_num_prep(bool (*get_mon_num_hook)(struct monster_race *race))
 	int i;
 
 	/* Scan the allocation table */
-	for (i = 0; i < alloc_race_size; i++) {
+	for (i = 0; i < alloc_race_size; ++i) {
 		alloc_entry *entry = &alloc_race_table[i];
 
 		/* Check the restriction, if any */
@@ -181,7 +181,7 @@ static struct monster_race *get_mon_race_aux(long total,
 	long value = randint0(total);
 
 	/* Find the monster */
-	for (i = 0; i < alloc_race_size; i++) {
+	for (i = 0; i < alloc_race_size; ++i) {
 		/* Found the entry */
 		if (value < table[i].prob3) break;
 
@@ -235,7 +235,7 @@ struct monster_race *get_mon_num(int generated_level, int current_level)
 	total = 0L;
 
 	/* Process probabilities */
-	for (i = 0; i < alloc_race_size; i++) {
+	for (i = 0; i < alloc_race_size; ++i) {
 		/* Monsters are sorted by depth */
 		if (table[i].level > generated_level) break;
 
@@ -607,7 +607,7 @@ void wipe_mon_list(struct chunk *c, struct player *p)
 	}
 
 	/* Delete all the monster groups */
-	for (i = 1; i < z_info->level_monster_max; i++) {
+	for (i = 1; i < z_info->level_monster_max; ++i) {
 		if (c->monster_groups[i]) {
 			monster_group_free(c, c->monster_groups[i]);
 		}
@@ -903,7 +903,7 @@ void mon_create_mimicked_object(struct chunk *c, struct monster *mon, int index)
 	/* Pick a random object kind to mimic */
 	for (mimic_kind = mon->race->mimic_kinds;
 		 mimic_kind;
-		 mimic_kind = mimic_kind->next, i++) {
+		 mimic_kind = mimic_kind->next, ++i) {
 		if (one_in_(i)) {
 			kind = mimic_kind->kind;
 		}
@@ -1231,7 +1231,7 @@ static bool place_new_monster_group(struct chunk *c, struct loc grid,
 	/* Puddle monsters, breadth first, up to total */
 	for (n = 0; (n < loc_num) && (loc_num < total); n++) {
 		/* Check each direction, up to total */
-		for (i = 0; (i < 8) && (loc_num < total); i++) {
+		for (i = 0; (i < 8) && (loc_num < total); ++i) {
 			struct loc try = loc_sum(loc_list[n], ddgrid_ddd[i]);
 
 			/* Walls and Monsters block flow */

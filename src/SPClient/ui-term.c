@@ -2417,7 +2417,7 @@ errr Term_redraw_section(int x1, int y1, int x2, int y2)
 	Term->y2 = y2;
 
 	/* Set the x limits */
-	for (i = Term->y1; i <= Term->y2; i++) {
+	for (i = Term->y1; i <= Term->y2; ++i) {
 		if ((x1 > 0) && (Term->old->a[i][x1] == 255))
 			x1--;
 
@@ -2962,7 +2962,7 @@ errr Term_resize(int w, int h)
 	Term->total_erase = true;
 
 	/* Assume change */
-	for (i = 0; i < h; i++) {
+	for (i = 0; i < h; ++i) {
 		/* Assume change */
 		Term->x1[i] = 0;
 		Term->x2[i] = w - 1;

@@ -64,12 +64,12 @@ void copy_slays(bool **dest, bool *source)
 	}
 
 	/* Copy */
-	for (i = 0; i < z_info->slay_max; i++) {
+	for (i = 0; i < z_info->slay_max; ++i) {
 		(*dest)[i] |= source[i];
 	}
 
 	/* Check for duplicates */
-	for (i = 0; i < z_info->slay_max; i++) {
+	for (i = 0; i < z_info->slay_max; ++i) {
 		for (j = 0; j < i; j++) {
 			if ((*dest)[i] && (*dest)[j] && same_monsters_slain(i, j)) {
 				if (slays[i].multiplier < slays[j].multiplier) {
@@ -102,7 +102,7 @@ void copy_brands(bool **dest, bool *source)
 		(*dest)[i] |= source[i];
 
 	/* Check for duplicates */
-	for (i = 0; i < z_info->brand_max; i++) {
+	for (i = 0; i < z_info->brand_max; ++i) {
 		for (j = 0; j < i; j++) {
 			if ((*dest)[i] && (*dest)[j] &&
 				streq(brands[i].name, brands[j].name)) {
@@ -138,7 +138,7 @@ bool append_random_brand(bool **current, struct brand **brand)
 	}
 
 	/* Check the existing brands for name matches */
-	for (i = 1; i < z_info->brand_max; i++) {
+	for (i = 1; i < z_info->brand_max; ++i) {
 		if ((*current)[i]) {
 			/* If we get the same race, check the multiplier */
 			if (streq(brands[i].name, (*brand)->name)) {
@@ -182,7 +182,7 @@ bool append_random_slay(bool **current, struct slay **slay)
 	}
 
 	/* Check the existing slays for base/flag matches */
-	for (i = 1; i < z_info->slay_max; i++) {
+	for (i = 1; i < z_info->slay_max; ++i) {
 		if ((*current)[i]) {
 			/* If we get the same race, check the multiplier */
 			if (streq(slays[i].name, (*slay)->name) &&
@@ -214,7 +214,7 @@ int brand_count(const bool *brands_on)
 	int i, count = 0;
 
 	/* Count the brands */
-	for (i = 0; i < z_info->brand_max; i++) {
+	for (i = 0; i < z_info->brand_max; ++i) {
 		if (brands_on[i]) {
 			count++;
 		}
@@ -233,7 +233,7 @@ int slay_count(const bool *slays_on)
 	int i, count = 0;
 
 	/* Count the slays */
-	for (i = 0; i < z_info->slay_max; i++) {
+	for (i = 0; i < z_info->slay_max; ++i) {
 		if (slays_on[i]) {
 			count++;
 		}
@@ -357,7 +357,7 @@ void improve_attack_modifier(struct player *p, struct object *obj,
 	}
 
 	/* Brands */
-	for (i = 1; i < z_info->brand_max; i++) {
+	for (i = 1; i < z_info->brand_max; ++i) {
 		struct brand *b = &brands[i];
 		if (obj) {
 			/* Brand is on an object */
@@ -383,7 +383,7 @@ void improve_attack_modifier(struct player *p, struct object *obj,
 	}
 
 	/* Slays */
-	for (i = 1; i < z_info->slay_max; i++) {
+	for (i = 1; i < z_info->slay_max; ++i) {
 		struct slay *s = &slays[i];
 		if (obj) {
 			/* Slay is on an object */
@@ -425,7 +425,7 @@ bool react_to_slay(struct object *obj, const struct monster *mon)
 
 	if (!obj->slays) return false;
 
-	for (i = 0; i < z_info->slay_max; i++) {
+	for (i = 0; i < z_info->slay_max; ++i) {
 		struct slay *s = &slays[i];
 		if (obj->slays[i] && react_to_specific_slay(s, mon)) {
 			return true;
@@ -456,7 +456,7 @@ static void learn_brand_slay_helper(struct player *p, struct object *obj1,
 	int i;
 
 	/* Handle brands. */
-	for (i = 1; i < z_info->brand_max; i++) {
+	for (i = 1; i < z_info->brand_max; ++i) {
 		int n = 0, j;
 		struct brand *b;
 

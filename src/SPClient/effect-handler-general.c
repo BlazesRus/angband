@@ -114,7 +114,7 @@ static bool item_tester_uncursable(const struct object *obj)
 	struct curse_data *c = obj->known->curses;
 	if (c) {
 		size_t i;
-		for (i = 1; i < z_info->curse_max; i++) {
+		for (i = 1; i < z_info->curse_max; ++i) {
 			if (c[i].power < 100) {
 				return true;
 			}
@@ -381,7 +381,7 @@ static void brand_object(struct object *obj, const char *name)
 			(obj->number > 1) ? "are" : "is", name);
 
 		/* Get the right ego type for the object */
-		for (i = 0; i < z_info->e_max; i++) {
+		for (i = 0; i < z_info->e_max; ++i) {
 			ego = &e_info[i];
 
 			/* Match the name */
@@ -1155,7 +1155,7 @@ bool effect_handler_MAP_AREA(effect_handler_context_t *context)
 					square_memorize(cave, grid);
 
 				/* Memorize known walls */
-				for (i = 0; i < 8; i++) {
+				for (i = 0; i < 8; ++i) {
 					int yy = y + ddy_ddd[i];
 					int xx = x + ddx_ddd[i];
 
@@ -1207,7 +1207,7 @@ bool effect_handler_READ_MINDS(effect_handler_context_t *context)
 	bool found = false;
 
 	/* Scan monsters */
-	for (i = 1; i < cave_monster_max(cave); i++) {
+	for (i = 1; i < cave_monster_max(cave); ++i) {
 		struct monster *mon = cave_monster(cave, i);
 
 		/* Skip dead monsters */
@@ -1650,7 +1650,7 @@ static bool detect_monsters(int y_dist, int x_dist, monster_predicate pred)
 	if (x2 > cave->width - 1) x2 = cave->width - 1;
 
 	/* Scan monsters */
-	for (i = 1; i < cave_monster_max(cave); i++) {
+	for (i = 1; i < cave_monster_max(cave); ++i) {
 		struct monster *mon = cave_monster(cave, i);
 
 		/* Skip dead monsters */
@@ -1874,7 +1874,7 @@ bool effect_handler_DISENCHANT(effect_handler_context_t *context)
 	char o_name[80];
 
 	/* Count slots */
-	for (i = 0; i < player->body.count; i++) {
+	for (i = 0; i < player->body.count; ++i) {
 		/* Ignore rings, amulets and lights */
 		if (slot_type_is(player, i, EQUIP_RING)) continue;
 		if (slot_type_is(player, i, EQUIP_AMULET)) continue;
@@ -2076,7 +2076,7 @@ bool effect_handler_WAKE(effect_handler_context_t *context)
 	struct loc origin = origin_get_loc(context->origin);
 
 	/* Wake everyone nearby */
-	for (i = 1; i < cave_monster_max(cave); i++) {
+	for (i = 1; i < cave_monster_max(cave); ++i) {
 		struct monster *mon = cave_monster(cave, i);
 		if (mon->race) {
 			int radius = z_info->max_sight * 2;
@@ -2219,7 +2219,7 @@ bool effect_handler_BANISH(effect_handler_context_t *context)
 		return false;
 
 	/* Delete the monsters of that "type" */
-	for (i = 1; i < cave_monster_max(cave); i++) {
+	for (i = 1; i < cave_monster_max(cave); ++i) {
 		struct monster *mon = cave_monster(cave, i);
 
 		/* Paranoia -- Skip dead monsters */
@@ -2267,7 +2267,7 @@ bool effect_handler_MASS_BANISH(effect_handler_context_t *context)
 	}
 
 	/* Delete the (nearby) monsters */
-	for (i = 1; i < cave_monster_max(cave); i++) {
+	for (i = 1; i < cave_monster_max(cave); ++i) {
 		struct monster *mon = cave_monster(cave, i);
 
 		/* Paranoia -- Skip dead monsters */
@@ -2305,7 +2305,7 @@ bool effect_handler_PROBE(effect_handler_context_t *context)
 	bool probe = false;
 
 	/* Probe all (nearby) monsters */
-	for (i = 1; i < cave_monster_max(cave); i++) {
+	for (i = 1; i < cave_monster_max(cave); ++i) {
 		struct monster *mon = cave_monster(cave, i);
 
 		/* Paranoia -- Skip dead monsters */
