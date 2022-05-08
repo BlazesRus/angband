@@ -88,7 +88,7 @@ bool chunk_list_remove(const char *name)
 	int i;
 
 	/* Find the match */
-	for (i = 0; i < chunk_list_max; i++) {
+	for (i = 0; i < chunk_list_max; ++i) {
 		if (streq(name, chunk_list[i]->name)) {
 			/* Copy all the succeeding chunks back one */
 			int j;
@@ -174,7 +174,7 @@ void symmetry_transform(struct loc *grid, int y0, int x0, int height, int width,
 	int i;
 
 	/* Rotate (in multiples of 90 degrees clockwise) */
-	for (i = 0; i < rotate % 4; i++) {
+	for (i = 0; i < rotate % 4; ++i) {
 		int temp = grid->x;
 		grid->x = rheight - 1 - (grid->y);
 		grid->y = temp;
@@ -411,7 +411,7 @@ bool chunk_copy(struct chunk *dest, struct player *p, struct chunk *source,
 	dest->mon_max += source->mon_max;
 	dest->mon_cnt += source->mon_cnt;
 	dest->num_repro += source->num_repro;
-	for (i = 1; i < source->mon_max; i++) {
+	for (i = 1; i < source->mon_max; ++i) {
 		struct monster *source_mon = &source->monsters[i];
 		struct monster *dest_mon = &dest->monsters[mon_skip + i];
 
@@ -442,12 +442,12 @@ bool chunk_copy(struct chunk *dest, struct player *p, struct chunk *source,
 	}
 
 	/* Find max monster group id */
-	for (i = 1; i < z_info->level_monster_max; i++) {
+	for (i = 1; i < z_info->level_monster_max; ++i) {
 		if (dest->monster_groups[i]) max_group_id = i;
 	}
 
 	/* Copy monster groups */
-	for (i = 1; i < z_info->level_monster_max - max_group_id; i++) {
+	for (i = 1; i < z_info->level_monster_max - max_group_id; ++i) {
 		struct monster_group *group = source->monster_groups[i];
 		struct mon_group_list_entry *entry;
 
@@ -474,7 +474,7 @@ bool chunk_copy(struct chunk *dest, struct player *p, struct chunk *source,
 	dest->objects = mem_realloc(dest->objects,
 								(dest->obj_max + source->obj_max + 2)
 								* sizeof(struct object*));
-	for (i = 0; i <= source->obj_max; i++) {
+	for (i = 0; i <= source->obj_max; ++i) {
 		dest->objects[dest->obj_max + i] = source->objects[i];
 		if (dest->objects[dest->obj_max + i] != NULL)
 			dest->objects[dest->obj_max + i]->oidx = dest->obj_max + i;

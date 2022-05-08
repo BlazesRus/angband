@@ -966,7 +966,7 @@ static int new_palette(void)
 	if (i == 0) quit("Cannot realize palette!");
 
 	/* Sub-windows */
-	for (i = 1; i < MAX_TERM_DATA; i++) {
+	for (i = 1; i < MAX_TERM_DATA; ++i) {
 		td = &data[i];
 
 		hdc = GetDC(td->w);
@@ -1359,7 +1359,7 @@ static errr term_force_font(term_data *td, const char *path)
 		bool used = false;
 
 		/* Scan windows */
-		for (i = 0; i < MAX_TERM_DATA; i++) {
+		for (i = 0; i < MAX_TERM_DATA; ++i) {
 			/* Check "screen" */
 			if ((td != &data[i]) && (data[i].font_file) &&
 			    (streq(data[i].font_file, td->font_file))) {
@@ -1592,7 +1592,7 @@ static errr Term_xtra_win_react(void)
 	/* Simple or complex color */
 	if (colors16) {
 		/* Save the default colors */
-		for (i = 0; i < MAX_COLORS; i++) {
+		for (i = 0; i < MAX_COLORS; ++i) {
 			/* Simply accept the desired colors */
 			win_pal[i] = angband_color_table[i][0];
 		}
@@ -1604,7 +1604,7 @@ static errr Term_xtra_win_react(void)
 		bool change = false;
 
 		/* Save the default colors */
-		for (i = 0; i < MAX_COLORS; i++) {
+		for (i = 0; i < MAX_COLORS; ++i) {
 			/* Extract desired values */
 			rv = angband_color_table[i][1];
 			gv = angband_color_table[i][2];
@@ -2080,7 +2080,7 @@ static errr Term_text_win(int x, int y, int n, int a, const wchar_t *s)
 		rc.bottom = rc.top + td->font_hgt;
 
 		/* Dump each character */
-		for (i = 0; i < n; i++) {
+		for (i = 0; i < n; ++i) {
 			/* Dump the text */
 			ExtTextOutW(hdc, rc.left, rc.top, 0, &rc,
 			            s+i, 1, NULL);
@@ -2638,7 +2638,7 @@ static void init_windows(void)
 	td->pos_y = 20;
 
 	/* Sub windows */
-	for (i = 1; i < MAX_TERM_DATA; i++) {
+	for (i = 1; i < MAX_TERM_DATA; ++i) {
 		td = &data[i];
 		memset(td, 0, sizeof(term_data));
 		td->s = angband_term_name[i];
@@ -2669,7 +2669,7 @@ static void init_windows(void)
 	td->visible = true;
 
 	/* Sub windows (need these before term_getsize gets called) */
-	for (i = 1; i < MAX_TERM_DATA; i++) {
+	for (i = 1; i < MAX_TERM_DATA; ++i) {
 		td = &data[i];
 		td->dwStyle = (WS_OVERLAPPED | WS_THICKFRAME | WS_SYSMENU | WS_CAPTION);
 		td->dwExStyle = (WS_EX_TOOLWINDOW);
@@ -2677,7 +2677,7 @@ static void init_windows(void)
 
 
 	/* All windows */
-	for (i = 0; i < MAX_TERM_DATA; i++) {
+	for (i = 0; i < MAX_TERM_DATA; ++i) {
 		td = &data[i];
 
 		/* Access the standard font file */
@@ -2888,7 +2888,7 @@ static void setup_menus(void)
 
 
 	/* Menu "Window::Visibility" */
-	for (i = 0; i < MAX_TERM_DATA; i++) {
+	for (i = 0; i < MAX_TERM_DATA; ++i) {
 		EnableMenuItem(hm, IDM_WINDOW_VIS_0 + i,
 		               MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
 
@@ -2900,7 +2900,7 @@ static void setup_menus(void)
 	}
 
 	/* Menu "Window::Font" */
-	for (i = 0; i < MAX_TERM_DATA; i++) {
+	for (i = 0; i < MAX_TERM_DATA; ++i) {
 		EnableMenuItem(hm, IDM_WINDOW_FONT_0 + i,
 		               MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
 
@@ -2911,7 +2911,7 @@ static void setup_menus(void)
 	}
 
 	/* Menu "Window::Bizarre Display" */
-	for (i = 0; i < MAX_TERM_DATA; i++) {
+	for (i = 0; i < MAX_TERM_DATA; ++i) {
 		EnableMenuItem(hm, IDM_WINDOW_BIZ_0 + i,
 		               MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
 
@@ -2925,7 +2925,7 @@ static void setup_menus(void)
 	}
 
 	/* Menu "Window::Increase Tile Width" */
-	for (i = 0; i < MAX_TERM_DATA; i++) {
+	for (i = 0; i < MAX_TERM_DATA; ++i) {
 		EnableMenuItem(hm, IDM_WINDOW_I_WID_0 + i,
 		               MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
 
@@ -2936,7 +2936,7 @@ static void setup_menus(void)
 	}
 
 	/* Menu "Window::Decrease Tile Width" */
-	for (i = 0; i < MAX_TERM_DATA; i++) {
+	for (i = 0; i < MAX_TERM_DATA; ++i) {
 		EnableMenuItem(hm, IDM_WINDOW_D_WID_0 + i,
 		               MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
 
@@ -2947,7 +2947,7 @@ static void setup_menus(void)
 	}
 
 	/* Menu "Window::Increase Tile Height" */
-	for (i = 0; i < MAX_TERM_DATA; i++) {
+	for (i = 0; i < MAX_TERM_DATA; ++i) {
 		EnableMenuItem(hm, IDM_WINDOW_I_HGT_0 + i,
 		               MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
 
@@ -2958,7 +2958,7 @@ static void setup_menus(void)
 	}
 
 	/* Menu "Window::Decrease Tile Height" */
-	for (i = 0; i < MAX_TERM_DATA; i++) {
+	for (i = 0; i < MAX_TERM_DATA; ++i) {
 		EnableMenuItem(hm, IDM_WINDOW_D_HGT_0 + i,
 		               MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
 
@@ -2979,10 +2979,10 @@ static void setup_menus(void)
 	EnableMenuItem(hm, IDM_OPTIONS_GRAPHICS_NICE,
 				   MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
 
-	for (i = IDM_OPTIONS_TILE_1x1; i < IDM_OPTIONS_TILE_16x16; i++) {
+	for (i = IDM_OPTIONS_TILE_1x1; i < IDM_OPTIONS_TILE_16x16; ++i) {
 		EnableMenuItem(hm, i, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
 	}
-	for (i = IDM_TILE_FONT; i < IDM_TILE_12X13; i++) {
+	for (i = IDM_TILE_FONT; i < IDM_TILE_12X13; ++i) {
 		EnableMenuItem(hm, i, MF_BYCOMMAND | MF_DISABLED | MF_GRAYED);
 	}
 
@@ -3112,10 +3112,10 @@ static void setup_menus(void)
 
 		EnableMenuItem(hm, IDM_OPTIONS_GRAPHICS_NICE, MF_ENABLED);
 
-		for (i = IDM_OPTIONS_TILE_1x1; i < IDM_OPTIONS_TILE_16x16; i++) {
+		for (i = IDM_OPTIONS_TILE_1x1; i < IDM_OPTIONS_TILE_16x16; ++i) {
 			EnableMenuItem(hm, i, MF_ENABLED);
 		}
-		for (i = IDM_TILE_FONT; i < IDM_TILE_12X13; i++) {
+		for (i = IDM_TILE_FONT; i < IDM_TILE_12X13; ++i) {
 			EnableMenuItem(hm, i, MF_ENABLED);
 		}
 
@@ -3529,7 +3529,7 @@ static void process_menus(WORD wCmd)
 
 				(void)default_layout_win(data,MAX_TERM_DATA);
 
-				for (i = 0; i < MAX_TERM_DATA; i++) {
+				for (i = 0; i < MAX_TERM_DATA; ++i) {
 					/* Activate */
 					Term_activate(&(data[i].t));
 	        
@@ -5149,7 +5149,7 @@ int FAR PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst,
 	ReleaseDC(NULL, hdc);
 
 	/* Initialize the colors */
-	for (i = 0; i < MAX_COLORS; i++) {
+	for (i = 0; i < MAX_COLORS; ++i) {
 		uint8_t rv, gv, bv;
 
 		/* Extract desired values */

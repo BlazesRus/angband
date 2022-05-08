@@ -131,7 +131,7 @@ bool mon_restrict(const char *monster_type, int depth, int current_depth,
 		return true;
 	} else if (streq(monster_type, "random")) {
 		/* Handle random */
-		for (i = 0; i < 2500; i++) {
+		for (i = 0; i < 2500; ++i) {
 			/* Get a random monster. */
 			j = randint1(z_info->r_max - 1);
 
@@ -218,7 +218,7 @@ void spread_monsters(struct chunk *c, const char *type, int depth, int num,
 
 
 	/* Try to summon monsters within our rectangle of effect. */
-	for (count = 0, i = 0; ((count < num) && (i < 50)); i++) {
+	for (count = 0, i = 0; ((count < num) && (i < 50)); ++i) {
 		/* Get a location */
 		if ((dy == 0) && (dx == 0)) {
 			y = y0;
@@ -284,7 +284,7 @@ void get_vault_monsters(struct chunk *c, char racial_symbol[], char *vault_type,
 	int i, y, x, depth;
 	const char *t;
 
-	for (i = 0; racial_symbol[i] != '\0'; i++) {
+	for (i = 0; racial_symbol[i] != '\0'; ++i) {
 		/* Require correct race, allow uniques. */
 		allow_unique = true;
 		my_strcpy(base_d_char, format("%c", racial_symbol[i]),
@@ -387,7 +387,7 @@ void get_chamber_monsters(struct chunk *c, int y1, int x1, int y2, int x2,
 	monsters_left = area / (30 - c->depth / 10);
 
 	/* Place the monsters. */
-	for (i = 0; i < 300; i++) {
+	for (i = 0; i < 300; ++i) {
 		/* Check for early completion. */
 		if (!monsters_left)
 			break;

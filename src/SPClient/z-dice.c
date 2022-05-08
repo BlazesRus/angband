@@ -175,7 +175,7 @@ static void dice_reset(dice_t *dice)
 	if (dice->expressions == NULL)
 		return;
 
-	for (i = 0; i < DICE_MAX_EXPRESSIONS; i++) {
+	for (i = 0; i < DICE_MAX_EXPRESSIONS; ++i) {
 		if (dice->expressions[i].name != NULL) {
 			string_free((char *)dice->expressions[i].name);
 			dice->expressions[i].name = NULL;
@@ -239,7 +239,7 @@ static int dice_add_variable(dice_t *dice, const char *name)
 									   sizeof(dice_expression_entry_t));
 	}
 
-	for (i = 0; i < DICE_MAX_EXPRESSIONS; i++) {
+	for (i = 0; i < DICE_MAX_EXPRESSIONS; ++i) {
 		if (dice->expressions[i].name == NULL) {
 			/* Add the variable to an empty slot. */
 			dice->expressions[i].name = string_make(name);
@@ -273,7 +273,7 @@ int dice_bind_expression(dice_t *dice, const char *name,
 	if (dice->expressions == NULL)
 		return -1;
 
-	for (i = 0; i < DICE_MAX_EXPRESSIONS; i++) {
+	for (i = 0; i < DICE_MAX_EXPRESSIONS; ++i) {
 		if (dice->expressions[i].name == NULL)
 			continue;
 

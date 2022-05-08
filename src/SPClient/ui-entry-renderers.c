@@ -1690,7 +1690,7 @@ static void cleanup_parse_ui_entry_renderer(void)
 {
 	int i;
 
-	for (i = 0; i < renderer_count; i++) {
+	for (i = 0; i < renderer_count; ++i) {
 		mem_free(renderers[i].symbols);
 		mem_free(renderers[i].label_colors);
 		mem_free(renderers[i].colors);

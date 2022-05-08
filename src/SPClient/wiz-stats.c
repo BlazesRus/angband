@@ -1365,7 +1365,7 @@ static void post_process_stats(void)
 	file_putf(stats_log,"55\t\t\t60\t\t\t65\t\t\t70\t\t\t75\t\t\t");
 	file_putf(stats_log,"80\t\t\t85\t\t\t90\t\t\t95\t\t\t100\n");
 	
-	for (i = 1; i < ST_FF_END; i++) {
+	for (i = 1; i < ST_FF_END; ++i) {
 			file_putf(stats_log, stat_ff_message[i].name);
 			prob_of_find(stat_all[stat_ff_message[i].st][0]);
 			mean_and_stdv(stat_ff_all[i]);
@@ -1425,7 +1425,7 @@ static void scan_for_monsters(void)
 	int i;
 
 	/* Go through the monster list */
-	for (i = 1; i < cave_monster_max(cave); i++) {
+	for (i = 1; i < cave_monster_max(cave); ++i) {
 		struct monster *mon = cave_monster(cave, i);
 
 		/* Skip dead monsters */
@@ -1460,7 +1460,7 @@ static void uncreate_artifacts(void)
 	int i;
 
 	/* Loop through artifacts */
-	for (i = 0; z_info && i < z_info->a_max; i++) {
+	for (i = 0; z_info && i < z_info->a_max; ++i) {
 		mark_artifact_created(&a_info[i], false);
 	}
 }
@@ -1473,7 +1473,7 @@ static void revive_uniques(void)
 {
 	int i;
 
-	for (i = 1; i < z_info->r_max - 1; i++) {
+	for (i = 1; i < z_info->r_max - 1; ++i) {
 		/* Get the monster info */
 		struct monster_race *race = &r_info[i];
 
@@ -1787,7 +1787,7 @@ void pit_stats(int nsim, int pittype, int depth)
 		int pit_idx = 0;
 		int pit_dist = 999;
 
-		for (i = 0; i < z_info->pit_max; i++) {
+		for (i = 0; i < z_info->pit_max; ++i) {
 			int offset, dist;
 			struct pit_profile *pit = &pit_info[i];
 
@@ -2781,7 +2781,7 @@ void disconnect_stats(int nsim, bool stop_on_disconnect)
 	 */
 	initialize_generation_stats(&gs);
 
-	for (i = 1; i <= nsim; i++) {
+	for (i = 1; i <= nsim; ++i) {
 		/* Assume no disconnected areas */
 		bool has_dsc = false;
 		/* Assume you can't get to the down staircase */

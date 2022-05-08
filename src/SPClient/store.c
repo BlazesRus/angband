@@ -106,7 +106,7 @@ static void cleanup_stores(void)
 		return;
 
 	/* Free the store inventories */
-	for (i = 0; i < MAX_STORES; i++) {
+	for (i = 0; i < MAX_STORES; ++i) {
 		/* Get the store */
 		struct store *store = &stores[i];
 
@@ -221,7 +221,7 @@ static enum parser_error parse_always(struct parser *p) {
 		int i;
 
 		/* Run across all the books for this type, add the town books */
-		for (i = 1; i <= book_base->num_svals; i++) {
+		for (i = 1; i <= book_base->num_svals; ++i) {
 			const struct class_book *book = NULL;
 			kind = lookup_kind(tval, i);
 			book = object_kind_to_book(kind);
@@ -368,7 +368,7 @@ void store_reset(void) {
 	int i, j;
 	struct store *s;
 
-	for (i = 0; i < MAX_STORES; i++) {
+	for (i = 0; i < MAX_STORES; ++i) {
 		s = &stores[i];
 		s->stock_num = 0;
 		store_shuffle(s);
@@ -403,7 +403,7 @@ static bool store_is_staple(struct store *s, struct object_kind *k) {
 	assert(s);
 	assert(k);
 
-	for (i = 0; i < s->always_num; i++) {
+	for (i = 0; i < s->always_num; ++i) {
 		struct object_kind *l = s->always_table[i];
 		if (k == l)
 			return true;
@@ -418,7 +418,7 @@ static bool store_is_staple(struct store *s, struct object_kind *k) {
 static bool store_can_carry(struct store *store, struct object_kind *kind) {
 	size_t i;
 
-	for (i = 0; i < store->normal_num; i++) {
+	for (i = 0; i < store->normal_num; ++i) {
 		if (store->normal_table[i] == kind)
 			return true;
 	}
@@ -1133,7 +1133,7 @@ static bool black_market_ok(const struct object *obj)
 	if (object_value_real(obj, 1) < 10) return (false);
 
 	/* Check the other stores */
-	for (i = 0; i < MAX_STORES; i++) {
+	for (i = 0; i < MAX_STORES; ++i) {
 		struct object *stock_obj;
 
 		/* Skip home and black market */
@@ -1367,7 +1367,7 @@ static void store_maint(struct store *s)
 	/* Ensure staples are created */
 	if (s->always_num) {
 		size_t i;
-		for (i = 0; i < s->always_num; i++) {
+		for (i = 0; i < s->always_num; ++i) {
 			struct object_kind *kind = s->always_table[i];
 			struct object *obj = store_find_kind(s, kind,
 				store_sale_should_reduce_stock);

@@ -45,7 +45,7 @@ static void build_prob(name_probs probs, const char **learn)
 	int i;
 
 	/* Build raw frequencies */
-	for (i = 0; learn[i] != NULL; i++) {
+	for (i = 0; learn[i] != NULL; ++i) {
 		c_prev = c_cur = S_WORD;
 		ch = learn[i];
 
@@ -197,7 +197,7 @@ int main(int argc, char *argv[])
 
 	Rand_value = time(NULL);
 
-	for (i = 0; i < 20; i++) {
+	for (i = 0; i < 20; ++i) {
 		randname_make(RANDNAME_TOLKIEN, 5, 9, name, 256, name_sections);
 		my_strcap(name);
 		printf("%s\n", name);

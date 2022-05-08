@@ -108,7 +108,7 @@ static void create_indices(void)
 	consumables_index = mem_zalloc(z_info->k_max * sizeof(int));
 	wearables_index = mem_zalloc(z_info->k_max * sizeof(int));
 
-	for (i = 0; i < z_info->k_max; i++) {
+	for (i = 0; i < z_info->k_max; ++i) {
 
 		struct object object_type_body = { 0 };
 		struct object *obj = &object_type_body;
@@ -128,7 +128,7 @@ static void alloc_memory(void)
 {
 	int i, j, k, l;
 
-	for (i = 0; i < LEVEL_MAX; i++) {
+	for (i = 0; i < LEVEL_MAX; ++i) {
 		level_data[i].monsters = mem_zalloc(z_info->r_max * sizeof(uint32_t));
 /*		level_data[i].vaults = mem_zalloc(z_info->v_max * sizeof(uint32_t));
 		level_data[i].pits = mem_zalloc(z_info->pit_max * sizeof(uint32_t)); */
@@ -156,7 +156,7 @@ static void alloc_memory(void)
 static void free_stats_memory(void)
 {
 	int i, j, k, l;
-	for (i = 0; i < LEVEL_MAX; i++) {
+	for (i = 0; i < LEVEL_MAX; ++i) {
 		mem_free(level_data[i].monsters);
 /*		mem_free(level_data[i].vaults);
  		mem_free(level_data[i].pits); */
@@ -290,7 +290,7 @@ static void unkill_uniques(void)
 		fflush(stdout);
 	}
 
-	for (i = 0; i < z_info->r_max; i++) {
+	for (i = 0; i < z_info->r_max; ++i) {
 		struct monster_race *race = &r_info[i];
 
 		if (rf_has(race->flags, RF_UNIQUE))
@@ -307,7 +307,7 @@ static void reset_artifacts(void)
 		fflush(stdout);
 	}
 
-	for (i = 0; i < z_info->a_max; i++) {
+	for (i = 0; i < z_info->a_max; ++i) {
 		mark_artifact_created(&a_info[i], false);
 	}
 }
@@ -380,7 +380,7 @@ static void log_all_objects(int level)
 							i = of_next(obj->flags, i + 1))
 						w->flags[i]++;
 					/* Capture object modifiers */
-					for (i = 0; i < OBJ_MOD_MAX; i++) {
+					for (i = 0; i < OBJ_MOD_MAX; ++i) {
 						int p = obj->modifiers[i];
 						w->modifiers[MIN(MAX(p, 0), TOP_MOD - 1)][i]++;
 					}
@@ -562,7 +562,7 @@ static int stats_dump_egos(void)
 		err = stats_dump_oflags(flags_stmt, idx, ego->flags);
 		if (err) return err;
 
-		for (i = 0; i < OBJ_MOD_MAX; i++) {
+		for (i = 0; i < OBJ_MOD_MAX; ++i) {
 			err = stats_db_bind_ints(mods_stmt, 3, 0, idx, i, 
 									 ego->min_modifiers[i]);
 				if (err) return err;
@@ -626,7 +626,7 @@ static int stats_dump_objects(void)
 		err = stats_dump_oflags(flags_stmt, idx, kind->flags);
 		if (err) return err;
 
-		for (i = 0; i < OBJ_MOD_MAX; i++) {
+		for (i = 0; i < OBJ_MOD_MAX; ++i) {
 			err = stats_db_bind_ints(mods_stmt, 2, 0, idx, i);
 				if (err) return err;
 				err = stats_db_bind_rv(mods_stmt, 3, kind->modifiers[i]);
@@ -1217,7 +1217,7 @@ static int stats_write_db_level_data(const char *table, int max_idx)
 	offset = stats_level_data_offsetof(table);
 
 	for (level = 1; level < LEVEL_MAX; level++)
-		for (i = 0; i < max_idx; i++) {
+		for (i = 0; i < max_idx; ++i) {
 	/* This arcane expression finds the value of 
 			 * level_data[level].<table>[i] */
 			uint32_t count;
@@ -1253,7 +1253,7 @@ static int stats_write_db_level_data_items(const char *table, int max_idx,
 
 	for (level = 1; level < LEVEL_MAX; level++)
 		for (origin = 0; origin < ORIGIN_STATS; origin++)
-			for (i = 0; i < max_idx; i++) {
+			for (i = 0; i < max_idx; ++i) {
 				/* This arcane expression finds the value of 
 				 * level_data[level].<table>[origin][i] */
 				uint32_t count = ((uint32_t **)((uint8_t *)&level_data[level] + offset))[origin][i];
@@ -1327,7 +1327,7 @@ static int stats_write_db_wearables_array(const char *field, int max_val, bool a
 				/* Skip if pile */
 				if (! k_idx) continue;
 
-				for (i = 0; i < max_val; i++) {
+				for (i = 0; i < max_val; ++i) {
 					/* This arcane expression finds the value of
 					 * level_data[level].wearables[origin][idx].<field>[i] */
 					uint32_t count;
@@ -1542,7 +1542,7 @@ static errr run_stats(void)
 		a_info_save = mem_zalloc(z_info->a_max * sizeof(struct artifact));
 		aup_info_save = mem_zalloc(z_info->a_max
 			* sizeof(*aup_info_save));
-		for (i = 0; i < z_info->a_max; i++) {
+		for (i = 0; i < z_info->a_max; ++i) {
 			if (!a_info[i].name) continue;
 
 			memcpy(&a_info_save[i], &a_info[i],
@@ -1566,7 +1566,7 @@ static errr run_stats(void)
 		if (!quiet) progress_bar(run - 1, start);
 
 		if (randarts) {
-			for (i = 0; i < z_info->a_max; i++) {
+			for (i = 0; i < z_info->a_max; ++i) {
 				memcpy(&a_info[i], &a_info_save[i],
 					sizeof(struct artifact));
 				memcpy(&aup_info[i], &aup_info_save[i],
@@ -1695,7 +1695,7 @@ static term_xtra_func xtras[] = {
 
 static errr term_xtra_stats(int n, int v) {
 	int i;
-	for (i = 0; xtras[i].func; i++) {
+	for (i = 0; xtras[i].func; ++i) {
 		if (xtras[i].key == n) {
 			return xtras[i].func(v);
 		}
@@ -1756,7 +1756,7 @@ errr init_stats(int argc, char *argv[]) {
 	int i;
 
 	/* Skip over argv[0] */
-	for (i = 1; i < argc; i++) {
+	for (i = 1; i < argc; ++i) {
 		if (streq(argv[i], "-r")) {
 			randarts = 1;
 			continue;

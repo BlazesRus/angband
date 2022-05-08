@@ -138,7 +138,7 @@ void i_to_grid(int i, int w, struct loc *grid)
 void shuffle(int *arr, int n)
 {
 	int i, j, k;
-	for (i = 0; i < n; i++) {
+	for (i = 0; i < n; ++i) {
 		j = randint0(n - i) + i;
 		k = arr[j];
 		arr[j] = arr[i];
@@ -892,7 +892,7 @@ void vault_monsters(struct chunk *c, struct loc grid, int depth, int num)
 	/* Try to summon "num" monsters "near" the given location */
 	for (k = 0; k < num; k++) {
 		/* Try nine locations */
-		for (i = 0; i < 9; i++) {
+		for (i = 0; i < 9; ++i) {
 			struct loc near;
 
 			/* Pick a nearby empty location. */

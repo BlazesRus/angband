@@ -1077,7 +1077,7 @@ void do_cmd_study_book(struct command *cmd)
 	track_object(player->upkeep, book_obj);
 	handle_stuff(player);
 
-	for (i = 0; i < book->num_spells; i++) {
+	for (i = 0; i < book->num_spells; ++i) {
 		spell = &book->spells[i];
 		if (!spell_okay_to_study(player, spell->sidx))
 			continue;

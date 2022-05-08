@@ -170,7 +170,7 @@ static void write_curse_kinds(void)
 	int i;
 	int sval =  lookup_sval(tval_find_idx("none"), "<curse object>");
 
-	for (i = 1; i < z_info->curse_max; i++) {
+	for (i = 1; i < z_info->curse_max; ++i) {
 		struct curse *curse = &curses[i];
 		curse->obj->kind = curse_object_kind;
 		curse->obj->sval = sval;
@@ -1914,7 +1914,7 @@ static enum parser_error parse_object_slay(struct parser *p) {
 	int i;
 
 	assert(k);
-	for (i = 1; i < z_info->slay_max; i++) {
+	for (i = 1; i < z_info->slay_max; ++i) {
 		if (streq(s, slays[i].code)) break;
 	}
 	if (i == z_info->slay_max)
@@ -1932,7 +1932,7 @@ static enum parser_error parse_object_brand(struct parser *p) {
 	int i;
 
 	assert(k);
-	for (i = 1; i < z_info->brand_max; i++) {
+	for (i = 1; i < z_info->brand_max; ++i) {
 		if (streq(s, brands[i].code)) break;
 	}
 	if (i == z_info->brand_max)
@@ -1950,7 +1950,7 @@ static enum parser_error parse_object_curse(struct parser *p) {
 	int i;
 
 	assert(k);
-	for (i = 1; i < z_info->curse_max; i++) {
+	for (i = 1; i < z_info->curse_max; ++i) {
 		if (streq(s, curses[i].name)) break;
 	}
 	if (i == z_info->curse_max)
@@ -2125,7 +2125,7 @@ static enum parser_error parse_ego_type(struct parser *p) {
 		return PARSE_ERROR_UNRECOGNISED_TVAL;
 
 	/* Find all the right object kinds */
-	for (i = 0; i < z_info->k_max; i++) {
+	for (i = 0; i < z_info->k_max; ++i) {
 		if (k_info[i].tval != tval) continue;
 		poss = mem_zalloc(sizeof(struct poss_item));
 		poss->kidx = i;
@@ -2372,7 +2372,7 @@ static enum parser_error parse_ego_slay(struct parser *p) {
 
 	if (!e)
 		return PARSE_ERROR_MISSING_RECORD_HEADER;
-	for (i = 1; i < z_info->slay_max; i++) {
+	for (i = 1; i < z_info->slay_max; ++i) {
 		if (streq(s, slays[i].code)) break;
 	}
 	if (i == z_info->slay_max)
@@ -2391,7 +2391,7 @@ static enum parser_error parse_ego_brand(struct parser *p) {
 
 	if (!e)
 		return PARSE_ERROR_MISSING_RECORD_HEADER;
-	for (i = 1; i < z_info->brand_max; i++) {
+	for (i = 1; i < z_info->brand_max; ++i) {
 		if (streq(s, brands[i].code)) break;
 	}
 	if (i == z_info->brand_max)
@@ -2411,7 +2411,7 @@ static enum parser_error parse_ego_curse(struct parser *p) {
 	if (!e)
 		return PARSE_ERROR_MISSING_RECORD_HEADER;
 	s = string_make(parser_getsym(p, "name"));
-	for (i = 1; i < z_info->curse_max; i++) {
+	for (i = 1; i < z_info->curse_max; ++i) {
 		if (streq(s, curses[i].name)) break;
 	}
 	if (i == z_info->curse_max)
@@ -2766,7 +2766,7 @@ static enum parser_error parse_artifact_slay(struct parser *p) {
 
 	if (!a)
 		return PARSE_ERROR_MISSING_RECORD_HEADER;
-	for (i = 1; i < z_info->slay_max; i++) {
+	for (i = 1; i < z_info->slay_max; ++i) {
 		if (streq(s, slays[i].code)) break;
 	}
 	if (i == z_info->slay_max)
@@ -2785,7 +2785,7 @@ static enum parser_error parse_artifact_brand(struct parser *p) {
 
 	if (!a)
 		return PARSE_ERROR_MISSING_RECORD_HEADER;
-	for (i = 1; i < z_info->brand_max; i++) {
+	for (i = 1; i < z_info->brand_max; ++i) {
 		if (streq(s, brands[i].code)) break;
 	}
 	if (i == z_info->brand_max)
@@ -2804,7 +2804,7 @@ static enum parser_error parse_artifact_curse(struct parser *p) {
 
 	assert(a);
 	s = string_make(parser_getsym(p, "name"));
-	for (i = 1; i < z_info->curse_max; i++) {
+	for (i = 1; i < z_info->curse_max; ++i) {
 		if (streq(s, curses[i].name)) break;
 	}
 	string_free(s);
@@ -2978,7 +2978,7 @@ static enum parser_error parse_object_property_name(struct parser *p) {
 	prop->name = string_make(name);
 
 	/* Set all the type multipliers to the default of 1 */
-	for (i = 0; i < TV_MAX; i++) {
+	for (i = 0; i < TV_MAX; ++i) {
 		prop->type_mult[i] = 1;
 	}
 	return PARSE_ERROR_NONE;

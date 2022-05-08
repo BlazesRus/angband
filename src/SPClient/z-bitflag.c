@@ -95,7 +95,7 @@ int flag_count(const bitflag *flags, const size_t size)
 	size_t i, j;
 	int count = 0;
 
-	for (i = 0; i < size; i++) {
+	for (i = 0; i < size; ++i) {
 		for (j = 1; j <= FLAG_WIDTH; j++) {
 			if (flags[i] & FLAG_BINARY(j)) {
 				count++;
@@ -315,7 +315,7 @@ bool flag_union(bitflag *flags1, const bitflag *flags2, const size_t size)
 	size_t i;
 	bool delta = false;
 
-	for (i = 0; i < size; i++) {
+	for (i = 0; i < size; ++i) {
 		/* !flag_is_subset() */
 		if (~flags1[i] & flags2[i]) delta = true;
 
@@ -338,7 +338,7 @@ bool flag_inter(bitflag *flags1, const bitflag *flags2, const size_t size)
 	size_t i;
 	bool delta = false;
 
-	for (i = 0; i < size; i++) {
+	for (i = 0; i < size; ++i) {
 		/* !flag_is_equal() */
 		if (!(flags1[i] == flags2[i])) delta = true;
 
@@ -362,7 +362,7 @@ bool flag_diff(bitflag *flags1, const bitflag *flags2, const size_t size)
 	size_t i;
 	bool delta = false;
 
-	for (i = 0; i < size; i++) {
+	for (i = 0; i < size; ++i) {
 		/* flag_is_inter() */
 		if (flags1[i] & flags2[i]) delta = true;
 

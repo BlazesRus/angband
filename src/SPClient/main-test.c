@@ -155,7 +155,7 @@ static errr test_docmd(void) {
 	if (!cmd) return 0;
 	rest = strtok(NULL, "");
 
-	for (i = 0; cmds[i].name; i++) {
+	for (i = 0; cmds[i].name; ++i) {
 		if (streq(cmds[i].name, cmd)) {
 			cmds[i].func(rest);
 			return 0;
@@ -248,7 +248,7 @@ static term_xtra_func xtras[] = {
 
 static errr term_xtra_test(int n, int v) {
 	int i;
-	for (i = 0; xtras[i].func; i++) {
+	for (i = 0; xtras[i].func; ++i) {
 		if (xtras[i].key == n) {
 			return xtras[i].func(v);
 		}
@@ -302,7 +302,7 @@ errr init_test(int argc, char *argv[]) {
 	int i;
 
 	/* Skip over argv[0] */
-	for (i = 1; i < argc; i++) {
+	for (i = 1; i < argc; ++i) {
 		if (streq(argv[i], "-p")) {
 			prompt = 1;
 			continue;

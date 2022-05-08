@@ -321,7 +321,7 @@ void textblock_to_file(textblock *tb, ang_file *f, int indent, int wrap_at)
 	n_lines = textblock_calculate_lines(tb, &line_starts, &line_lengths, width);
 	mbbuf = mem_alloc(text_wcsz() + 1);
 
-	for (i = 0; i < n_lines; i++) {
+	for (i = 0; i < n_lines; ++i) {
 		if (indent > 0) {
 			file_putf(f, "%*c", indent, ' ');
 		}
@@ -432,7 +432,7 @@ void text_out_to_file(uint8_t a, const char *str)
 			int i;
 
 			/* Output the indent */
-			for (i = 0; i < text_out_indent; i++) {
+			for (i = 0; i < text_out_indent; ++i) {
 				file_writec(text_out_file, ' ');
 				pos++;
 			}

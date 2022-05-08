@@ -725,7 +725,7 @@ struct effect *effect_next(struct effect *effect)
 		int num_subeffects = MAX(0,
 			dice_evaluate(effect->dice, 0, AVERAGE, NULL));
 		// Skip all the sub-effects, plus one to advance beyond current
-		for (int i = 0; e != NULL && i < num_subeffects + 1; i++) {
+		for (int i = 0; e != NULL && i < num_subeffects + 1; ++i) {
 			e = e->next;
 		}
 		return e;
@@ -747,7 +747,7 @@ bool effect_damages(const struct effect *effect)
 		int num_subeffects = dice_evaluate(effect->dice, 0, AVERAGE, NULL);
 
 		// Check if any of the subeffects do damage
-		for (int i = 0; e != NULL && i < num_subeffects; i++) {
+		for (int i = 0; e != NULL && i < num_subeffects; ++i) {
 			if (effect_damages(e)) {
 				return true;
 			}
@@ -781,7 +781,7 @@ int effect_avg_damage(const struct effect *effect, const dice_t *shared_dice)
 			shared_dice : effect->dice, 0, AVERAGE, NULL);
 		int n_actual = 0;
 
-		for (int i = 0; e != NULL && i < n_stated; i++) {
+		for (int i = 0; e != NULL && i < n_stated; ++i) {
 			total += effect_avg_damage(e, shared_dice);
 			++n_actual;
 			e = e->next;
@@ -817,7 +817,7 @@ const char *effect_projection(const struct effect *effect)
 
 		e = effect->next;
 		subeffect_proj = effect_projection(e);
-		for (int i = 0; e != NULL && i < num_subeffects; i++) {
+		for (int i = 0; e != NULL && i < num_subeffects; ++i) {
 			if (!streq(subeffect_proj, effect_projection(e))) {
 				return "";
 			}

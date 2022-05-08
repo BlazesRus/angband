@@ -174,7 +174,7 @@ static struct object *rd_item(void)
 	for (i = 0; i < of_size; i++)
 		rd_byte(&obj->flags[i]);
 
-	for (i = 0; i < obj_mod_max; i++) {
+	for (i = 0; i < obj_mod_max; ++i) {
 		rd_s16b(&obj->modifiers[i]);
 	}
 
@@ -182,7 +182,7 @@ static struct object *rd_item(void)
 	rd_byte(&tmp8u);
 	if (tmp8u) {
 		obj->brands = mem_zalloc(z_info->brand_max * sizeof(bool));
-		for (i = 0; i < brand_max; i++) {
+		for (i = 0; i < brand_max; ++i) {
 			rd_byte(&tmp8u);
 			obj->brands[i] = tmp8u ? true : false;
 		}
@@ -192,7 +192,7 @@ static struct object *rd_item(void)
 	rd_byte(&tmp8u);
 	if (tmp8u) {
 		obj->slays = mem_zalloc(z_info->slay_max * sizeof(bool));
-		for (i = 0; i < slay_max; i++) {
+		for (i = 0; i < slay_max; ++i) {
 			rd_byte(&tmp8u);
 			obj->slays[i] = tmp8u ? true : false;
 		}
@@ -202,7 +202,7 @@ static struct object *rd_item(void)
 	rd_byte(&tmp8u);
 	if (tmp8u) {
 		obj->curses = mem_zalloc(z_info->curse_max * sizeof(struct curse_data));
-		for (i = 0; i < curse_max; i++) {
+		for (i = 0; i < curse_max; ++i) {
 			rd_byte(&tmp8u);
 			obj->curses[i].power = tmp8u;
 			rd_u16b(&tmp16u);
@@ -210,7 +210,7 @@ static struct object *rd_item(void)
 		}
 	}
 
-	for (i = 0; i < elem_max; i++) {
+	for (i = 0; i < elem_max; ++i) {
 		rd_s16b(&obj->el_info[i].res_level);
 		rd_byte(&obj->el_info[i].flags);
 	}
@@ -483,7 +483,7 @@ int rd_messages(void)
 	rd_s16b(&num);
 
 	/* Read the messages */
-	for (i = 0; i < num; i++) {
+	for (i = 0; i < num; ++i) {
 		/* Read the message */
 		rd_string(buf, sizeof(buf));
 
@@ -516,7 +516,7 @@ int rd_monster_memory(void)
 	}
 
 	/* Reset maximum numbers per level */
-	for (i = 1; z_info && i < z_info->r_max; i++) {
+	for (i = 1; z_info && i < z_info->r_max; ++i) {
 		struct monster_race *race = &r_info[i];
 		race->max_num = 100;
 		if (rf_has(race->flags, RF_UNIQUE))
@@ -604,7 +604,7 @@ int rd_object_memory(void)
 	}
 
 	/* Read the kind knowledge */
-	for (i = 0; i < tmp16u; i++) {
+	for (i = 0; i < tmp16u; ++i) {
 		uint8_t tmp8u;
 		struct object_kind *kind = &k_info[i];
 
@@ -637,7 +637,7 @@ int rd_quests(void)
 
 	/* Load the Quests */
 	player_quests_reset(player);
-	for (i = 0; i < tmp16u; i++) {
+	for (i = 0; i < tmp16u; ++i) {
 		uint16_t cur_num;
 		rd_byte(&player->quests[i].level);
 		rd_u16b(&cur_num);
@@ -750,7 +750,7 @@ int rd_player(void)
 
 	player->body.slots = mem_zalloc(player->body.count *
 									sizeof(struct equip_slot));
-	for (i = 0; i < player->body.count; i++) {
+	for (i = 0; i < player->body.count; ++i) {
 		rd_u16b(&player->body.slots[i].type);
 		rd_string(buf, sizeof(buf));
 		player->body.slots[i].name = string_make(buf);
@@ -872,7 +872,7 @@ int rd_ignore(void)
 		return (-1);
 	}
 
-	for (i = 0; i < file_e_max; i++) {
+	for (i = 0; i < file_e_max; ++i) {
 		if (i < z_info->e_max) {
 			bitflag flags, itypes[ITYPE_SIZE];
 			
@@ -897,7 +897,7 @@ int rd_ignore(void)
 	rd_u16b(&inscriptions);
 
 	/* Read the aware object autoinscriptions array */
-	for (i = 0; i < inscriptions; i++) {
+	for (i = 0; i < inscriptions; ++i) {
 		char tmp[80];
 		uint8_t tval, sval;
 		struct object_kind *k;
@@ -917,7 +917,7 @@ int rd_ignore(void)
 	rd_u16b(&inscriptions);
 
 	/* Read the unaware object autoinscriptions array */
-	for (i = 0; i < inscriptions; i++) {
+	for (i = 0; i < inscriptions; ++i) {
 		char tmp[80];
 		uint8_t tval, sval;
 		struct object_kind *k;
@@ -937,7 +937,7 @@ int rd_ignore(void)
 	rd_u16b(&inscriptions);
 
 	/* Read the rune autoinscriptions array */
-	for (i = 0; i < inscriptions; i++) {
+	for (i = 0; i < inscriptions; ++i) {
 		char tmp[80];
 		int16_t runeid;
 
@@ -995,30 +995,30 @@ int rd_misc(void)
 		rd_byte(&player->obj_k->flags[i]);
 
 	/* Modifiers */
-	for (i = 0; i < OBJ_MOD_MAX; i++) {
+	for (i = 0; i < OBJ_MOD_MAX; ++i) {
 		rd_s16b(&player->obj_k->modifiers[i]);
 	}
 
 	/* Elements */
-	for (i = 0; i < ELEM_MAX; i++) {
+	for (i = 0; i < ELEM_MAX; ++i) {
 		rd_s16b(&player->obj_k->el_info[i].res_level);
 		rd_byte(&player->obj_k->el_info[i].flags);
 	}
 
 	/* Read brands */
-	for (i = 0; i < brand_max; i++) {
+	for (i = 0; i < brand_max; ++i) {
 		rd_byte(&tmp8u);
 		player->obj_k->brands[i] = tmp8u ? true : false;
 	}
 
 	/* Read slays */
-	for (i = 0; i < slay_max; i++) {
+	for (i = 0; i < slay_max; ++i) {
 		rd_byte(&tmp8u);
 		player->obj_k->slays[i] = tmp8u ? true : false;
 	}
 
 	/* Read curses */
-	for (i = 0; i < curse_max; i++) {
+	for (i = 0; i < curse_max; ++i) {
 		rd_byte(&tmp8u);
 		player->obj_k->curses[i].power = tmp8u;
 	}
@@ -1046,7 +1046,7 @@ int rd_artifacts(void)
 	}
 
 	/* Read the artifact flags */
-	for (i = 0; i < tmp16u; i++) {
+	for (i = 0; i < tmp16u; ++i) {
 		uint8_t tmp8u;
 
 		rd_byte(&tmp8u);
@@ -1199,7 +1199,7 @@ static int rd_stores_aux(rd_item_t rd_item_version)
 
 	/* Read the stores */
 	rd_u16b(&tmp16u);
-	for (i = 0; i < tmp16u; i++) {
+	for (i = 0; i < tmp16u; ++i) {
 		struct store *store = &stores[i];
 
 		uint8_t own, num;
@@ -1426,7 +1426,7 @@ static int rd_monsters_aux(struct chunk *c)
 	}
 
 	/* Read the monsters */
-	for (i = 1; i < limit; i++) {
+	for (i = 1; i < limit; ++i) {
 		struct monster *mon;
 		struct monster monster_body;
 
@@ -1568,7 +1568,7 @@ int rd_monsters(void)
 #if OBJ_RECOVER
 	player->cave->objects = mem_zalloc((cave->obj_max + 1) * sizeof(struct object*));
 	player->cave->obj_max = cave->obj_max;
-	for (i = 0; i <= cave->obj_max; i++) {
+	for (i = 0; i <= cave->obj_max; ++i) {
 		struct object *obj = cave->objects[i], *known_obj;
 		if (!obj) continue;
 		known_obj = object_new();
@@ -1652,7 +1652,7 @@ int rd_chunks(void)
 			rd_u16b(&tmp16u);
 			c->width = tmp16u;
 			rd_u16b(&c->feeling_squares);
-			for (i = 0; i < z_info->f_max + 1; i++) {
+			for (i = 0; i < z_info->f_max + 1; ++i) {
 				rd_u16b(&tmp16u);
 				c->feat_count[i] = tmp16u;
 			}
@@ -1707,7 +1707,7 @@ int rd_history(void)
 	}
 
 	rd_u32b(&tmp32u);
-	for (i = 0; i < tmp32u; i++) {
+	for (i = 0; i < tmp32u; ++i) {
 		int32_t turnno;
 		int16_t dlev, clev;
 		bitflag type[HIST_SIZE];

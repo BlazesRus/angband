@@ -320,7 +320,7 @@ static void monster_list_get_glyphs(monster_list_t *list)
 	int i;
 
 	/* Run through all monsters in the list. */
-	for (i = 0; i < (int)list->entries_size; i++) {
+	for (i = 0; i < (int)list->entries_size; ++i) {
 		monster_list_entry_t *entry = &list->entries[i];
 		if (entry->race == NULL)
 			continue;
@@ -355,7 +355,7 @@ void monster_list_show_subwindow(int height, int width)
 	list = monster_list_shared_instance();
 
 	/* Force an update if detected monsters */
-	for (i = 1; i < cave_monster_max(cave); i++) {
+	for (i = 1; i < cave_monster_max(cave); ++i) {
 		if (mflag_has(cave_monster(cave, i)->mflag, MFLAG_MARK)) {
 			list->creation_turn = -1;
 			break;

@@ -238,7 +238,7 @@ static void visuals_cycle_group_free(struct visuals_cycle_group *group)
 	}
 
 	if (group->cycles != NULL) {
-		for (i = 0; i < group->max_cycles; i++) {
+		for (i = 0; i < group->max_cycles; ++i) {
 			visuals_color_cycle_free(group->cycles[i]);
 		}
 
@@ -313,7 +313,7 @@ static void visuals_cycler_free(struct visuals_cycler *cycler)
 	}
 
 	if (cycler->groups != NULL) {
-		for (i = 0; i < cycler->max_groups; i++) {
+		for (i = 0; i < cycler->max_groups; ++i) {
 			visuals_cycle_group_free(cycler->groups[i]);
 		}
 
@@ -349,7 +349,7 @@ static struct visuals_color_cycle *visuals_cycler_cycle_by_name(struct visuals_c
 		return NULL;
 	}
 
-	for (i = 0; i < cycler->max_groups; i++) {
+	for (i = 0; i < cycler->max_groups; ++i) {
 		if (streq(cycler->groups[i]->group_name, group_name)) {
 			group = cycler->groups[i];
 			break;
@@ -360,7 +360,7 @@ static struct visuals_color_cycle *visuals_cycler_cycle_by_name(struct visuals_c
 		return NULL;
 	}
 
-	for (i = 0; i < group->max_cycles; i++) {
+	for (i = 0; i < group->max_cycles; ++i) {
 		if (streq(group->cycles[i]->cycle_name, cycle_name)) {
 			cycle = group->cycles[i];
 			break;
@@ -732,7 +732,7 @@ static void visuals_parse_context_free(struct visuals_parse_context *context)
 	}
 
 	if (context->cycles != NULL) {
-		for (i = 0; i < context->max_cycles; i++) {
+		for (i = 0; i < context->max_cycles; ++i) {
 			visuals_color_cycle_free(context->cycles[i]);
 		}
 
@@ -741,7 +741,7 @@ static void visuals_parse_context_free(struct visuals_parse_context *context)
 	}
 
 	if (context->group_names != NULL) {
-		for (i = 0; i < context->max_groups; i++) {
+		for (i = 0; i < context->max_groups; ++i) {
 			string_free(context->group_names[i])	;
 		}
 
@@ -946,7 +946,7 @@ static enum parser_error visuals_parse_cycle(struct parser *parser)
 	 * if not found. */
 	current_group_index = context->max_groups;
 
-	for (i = 0; i < context->max_groups; i++) {
+	for (i = 0; i < context->max_groups; ++i) {
 		if (context->group_names[i] == NULL) {
 			context->group_names[i] = string_make(parsed_group);
 			current_group_index = i;
@@ -965,7 +965,7 @@ static enum parser_error visuals_parse_cycle(struct parser *parser)
 	/* Assign the parsed cycle to its group. If a cycle with a matching name is
 	 * found, the parsed cycle replaces that one, otherwise, it is added to the
 	 * end of the group. */
-	for (i = 0; i < VISUALS_CYCLES_MAX; i++) {
+	for (i = 0; i < VISUALS_CYCLES_MAX; ++i) {
 		size_t offset = current_group_index * VISUALS_CYCLES_MAX + i;
 
 		if (offset >= context->max_group_cycles) {

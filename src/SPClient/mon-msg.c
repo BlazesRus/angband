@@ -123,7 +123,7 @@ static bool redundant_monster_message(struct monster *mon, int msg_code)
 	assert(msg_code >= 0);
 	assert(msg_code < MON_MSG_MAX);
 
-	for (int i = 0; i < size_mon_hist; i++) {
+	for (int i = 0; i < size_mon_hist; ++i) {
 		/* Check for a matched monster & monster code */
 		if (mon == mon_message_hist[i].mon &&
 				msg_code == mon_message_hist[i].message_code) {
@@ -174,7 +174,7 @@ static bool stack_message(struct monster *mon, int msg_code, int flags)
 {
 	int i;
 
-	for (i = 0; i < size_mon_msg; i++) {
+	for (i = 0; i < size_mon_msg; ++i) {
 		/* We found the race and the message code */
 		if (mon_msg[i].race == mon->race &&
 					mon_msg[i].flags == flags &&
@@ -311,7 +311,7 @@ static void get_message_text(char *buf, size_t buflen,
 
 	/* Put the message characters in the buffer */
 	/* XXX This logic should be used everywhere for pluralising strings */
-	for (size_t i = 0; i < maxlen && pos < buflen - 1; i++) {
+	for (size_t i = 0; i < maxlen && pos < buflen - 1; ++i) {
 		char cur = source[i];
 
 		/*
@@ -412,7 +412,7 @@ static void show_message(struct monster_race_message *msg)
 void show_monster_messages(void)
 {
 	for (int delay = 0; delay < 3; delay++) {
-		for (int i = 0; i < size_mon_msg; i++) {
+		for (int i = 0; i < size_mon_msg; ++i) {
 			struct monster_race_message *msg = &mon_msg[i];
 
 			/* Skip irrelevant entries */

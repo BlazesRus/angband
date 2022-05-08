@@ -165,7 +165,7 @@ void object_list_collect(object_list_t *list)
 		return;
 
 	/* Scan each object in the dungeon. */
-	for (i = 1; i < player->cave->obj_max; i++) {
+	for (i = 1; i < player->cave->obj_max; ++i) {
 		object_list_entry_t *entry = NULL;
 		int entry_index;
 		int current_distance;
@@ -230,7 +230,7 @@ void object_list_collect(object_list_t *list)
 	}
 
 	/* Collect totals for easier calculations of the list. */
-	for (i = 0; i < (int)list->entries_size; i++) {
+	for (i = 0; i < (int)list->entries_size; ++i) {
 		if (list->entries[i].object == NULL)
 			continue;
 

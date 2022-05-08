@@ -49,7 +49,7 @@ static int test_names(void *state) {
 	a.sval = 1;
 	a.name = "of Prometheus";
 
-	for (i = 0; i < NAMES_TRIES; i++) {
+	for (i = 0; i < NAMES_TRIES; ++i) {
 		n = artifact_gen_name(&a, p);
 		if (strchr(n, '\''))
 			require(strchr(n, '\'') != strrchr(n, '\''));

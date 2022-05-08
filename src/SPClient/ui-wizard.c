@@ -48,7 +48,7 @@ static void proj_display(struct menu *m, int type, bool cursor,
 	col += 25;
 
 	if (tile_height == 1) {
-		for (i = 0; i < BOLT_MAX; i++) {
+		for (i = 0; i < BOLT_MAX; ++i) {
 			if (use_graphics == GRAPHICS_NONE) {
 				/* ASCII is simple */
 				wchar_t chars[] = L"*|/-\\";
@@ -259,7 +259,7 @@ static bool wiz_create_item_action(struct menu *m, const ui_event *e, int oid)
 	/* Artifacts */
 	if (choose_artifact) {
 		/* ...We have to search the whole artifact list. */
-		for (num = 0, i = 1; (num < 60) && (i < z_info->a_max); i++) {
+		for (num = 0, i = 1; (num < 60) && (i < z_info->a_max); ++i) {
 			const struct artifact *art = &a_info[i];
 
 			if (art->tval != oid) continue;
@@ -268,7 +268,7 @@ static bool wiz_create_item_action(struct menu *m, const ui_event *e, int oid)
 		}
 	} else {
 		/* Regular objects */
-		for (num = 0, i = 1; (num < 60) && (i < z_info->k_max); i++) {
+		for (num = 0, i = 1; (num < 60) && (i < z_info->k_max); ++i) {
 			struct object_kind *kind = &k_info[i];
 
 			if (kind->tval != oid ||
@@ -338,7 +338,7 @@ void wiz_create_item(bool art)
 	menu->title = art ? "What kind of artifact?" : "What kind of object?";
 
 	/* Make a list of all tvals for the filter */
-	for (i = 0, n = 0; i < TV_MAX; i++) {
+	for (i = 0, n = 0; i < TV_MAX; ++i) {
 		/* Only real object bases */
 		if (!kb_info[i].name) continue;
 

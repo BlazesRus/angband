@@ -258,7 +258,7 @@ static void wipe_obj_list(void)
 	ex_offset = 0;
 
 	/* Clear the existing contents */
-	for (i = 0; i < MAX_ITEMS; i++) {
+	for (i = 0; i < MAX_ITEMS; ++i) {
 		my_strcpy(items[i].label, "", sizeof(items[i].label));
 		my_strcpy(items[i].equip_label, "", sizeof(items[i].equip_label));
 		items[i].object = NULL;
@@ -282,7 +282,7 @@ static void build_obj_list(int last, struct object **list, item_tester tester,
 	bool quiver = list == player->upkeep->quiver ? true : false;
 
 	/* Build the object list */
-	for (i = 0; i <= last; i++) {
+	for (i = 0; i <= last; ++i) {
 		char buf[80];
 		struct object *obj = equip ? slot_object(player, i) : list[i];
 
@@ -330,7 +330,7 @@ static void set_obj_names(bool terse, const struct player *p)
 	struct object *obj;
 
 	/* Calculate name offset and max name length */
-	for (i = 0; i < num_obj; i++) {
+	for (i = 0; i < num_obj; ++i) {
 		obj = items[i].object;
 
 		/* Null objects are used to skip lines, or display only a label */		
@@ -420,7 +420,7 @@ static void show_obj_list(olist_detail_t mode)
 		int quiver_slots = (player->upkeep->quiver_cnt + z_info->quiver_slot_size - 1) / z_info->quiver_slot_size;
 
 		/* Quiver may take multiple lines */
-		for (j = 0; j < quiver_slots; j++, i++) {
+		for (j = 0; j < quiver_slots; j++, ++i) {
 			const char *fmt = "in Quiver: %d missile%s";
 			char letter = all_letters_nohjkl[in_term ? i - 1 : i];
 
@@ -688,7 +688,7 @@ static bool get_tag(struct object **tagged_obj, char tag, cmd_code cmd,
 	}
 
 	/* Check every object in the object list */
-	for (i = 0; i < num_obj; i++) {
+	for (i = 0; i < num_obj; ++i) {
 		const char *s;
 		struct object *obj = items[i].object;
 
@@ -1009,7 +1009,7 @@ static void item_menu_browser(int oid, void *data, const region *local_area)
 	/* If we're printing pack slots the quiver takes up */
 	if (olist_mode & OLIST_QUIVER && player->upkeep->command_wrk == USE_INVEN) {
 		/* Quiver may take multiple lines */
-		for (j = 0; j < quiver_slots; j++, i++) {
+		for (j = 0; j < quiver_slots; j++, ++i) {
 			const char *fmt = "in Quiver: %d missile%s\n";
 			char letter = all_letters_nohjkl[i];
 

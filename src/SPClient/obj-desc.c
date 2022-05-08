@@ -445,7 +445,7 @@ static size_t obj_desc_mods(const struct object *obj, char *buf, size_t max,
 	int mods[OBJ_MOD_MAX] = { 0 };
 
 	/* Run through possible modifiers and store distinct ones */
-	for (i = 0; i < OBJ_MOD_MAX; i++) {
+	for (i = 0; i < OBJ_MOD_MAX; ++i) {
 		/* Check for known non-zero mods */
 		if (obj->modifiers[i] != 0) {
 			/* If no mods stored yet, store and move on */
@@ -535,7 +535,7 @@ static size_t obj_desc_inscrip(const struct object *obj, char *buf,
 
 	if (n) {
 		int i;
-		for (i = 0; i < n; i++) {
+		for (i = 0; i < n; ++i) {
 			if (i == 0)
 				strnfcat(buf, max, &end, " {");
 			strnfcat(buf, max, &end, "%s", u[i]);

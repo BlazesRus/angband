@@ -212,7 +212,7 @@ static void change_path(const char *info)
 	path = strtok(info_copy, "=");
 	dir = strtok(NULL, "=");
 
-	for (i = 0; i < N_ELEMENTS(change_path_values); i++) {
+	for (i = 0; i < N_ELEMENTS(change_path_values); ++i) {
 		if (my_stricmp(path, change_path_values[i].name) == 0) {
 #ifdef SETGID
 			if (!change_path_values[i].setgid_ok)
@@ -349,7 +349,7 @@ int main(int argc, char *argv[])
 	init_stuff();
 
 	/* Process the command line arguments */
-	for (i = 1; args && (i < argc); i++) {
+	for (i = 1; args && (i < argc); ++i) {
 		const char *arg = argv[i];
 
 		/* Require proper options */
@@ -443,7 +443,7 @@ int main(int argc, char *argv[])
 				puts("  -x<opt>        Debug options; see -xhelp");
 				puts("  -u<who>        Use your <who> savefile");
 				puts("  -d<dir>=<path> Override a specific directory with <path>. <path> can be:");
-				for (i = 0; i < (int)N_ELEMENTS(change_path_values); i++) {
+				for (i = 0; i < (int)N_ELEMENTS(change_path_values); ++i) {
 #ifdef SETGID
 					if (!change_path_values[i].setgid_ok) continue;
 #endif
@@ -503,7 +503,7 @@ int main(int argc, char *argv[])
 #endif /* UNIX */
 
 	/* Try the modules in the order specified by modules[] */
-	for (i = 0; i < (int)N_ELEMENTS(modules); i++) {
+	for (i = 0; i < (int)N_ELEMENTS(modules); ++i) {
 		/* User requested a specific module? */
 		if (!mstr || (streq(mstr, modules[i].name))) {
 			ANGBAND_SYS = modules[i].name;

@@ -283,7 +283,7 @@ int16_t target_pick(int y1, int x1, int dy, int dx, struct point_set *targets)
 
 
 	/* Scan the locations */
-	for (i = 0; i < point_set_size(targets); i++) {
+	for (i = 0; i < point_set_size(targets); ++i) {
 		/* Point 2 */
 		x2 = targets->pts[i].x;
 		y2 = targets->pts[i].y;

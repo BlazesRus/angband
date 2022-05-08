@@ -66,7 +66,7 @@ static void monster_group_split(struct chunk *c, struct monster_group *group,
 		struct monster *mon = &c->monsters[entry->midx];
 
 		/* Check all groups to see if they contain a monster of this race */
-		for (i = 0; i < current; i++) {
+		for (i = 0; i < current; ++i) {
 			struct monster_group *new_group = c->monster_groups[temp[i]];
 
 			/* If it's the right group, add the monster and stop checking */
@@ -155,7 +155,7 @@ void monster_remove_from_groups(struct chunk *c, struct monster *mon)
 	struct monster_group *group;
 	struct mon_group_list_entry *list_entry;
 
-	for (i = 0; i < GROUP_MAX; i++) {
+	for (i = 0; i < GROUP_MAX; ++i) {
 		group =	c->monster_groups[mon->group_info[i].index];
 
 		/* Most monsters won't have a second group */
@@ -281,7 +281,7 @@ void monster_group_assign(struct chunk *c, struct monster *mon,
 		/* For loading from a savefile, build by hand */
 		int i;
 
-		for (i = 0; i < GROUP_MAX; i++) {
+		for (i = 0; i < GROUP_MAX; ++i) {
 			struct mon_group_list_entry *entry = mem_zalloc(sizeof(*entry));
 
 			/* Check the index */
@@ -493,7 +493,7 @@ void monster_groups_verify(struct chunk *c)
 {
 	int i;
 
-	for (i = 0; i < z_info->level_monster_max; i++) {
+	for (i = 0; i < z_info->level_monster_max; ++i) {
 		if (c->monster_groups[i]) {
 			struct monster_group *group = c->monster_groups[i];
 			struct mon_group_list_entry *entry = group->member_list;

@@ -533,7 +533,7 @@ static void do_gcu_resize(void) {
 	int i, rows, cols, y, x;
 	term *old_t = Term;
 	
-	for (i = 0; i < term_count; i++) {
+	for (i = 0; i < term_count; ++i) {
 		/* Activate the current Term */
 		Term_activate(&data[i].t);
 
@@ -760,7 +760,7 @@ static void handle_extended_color_tables(void) {
 			int scale = COLORS == 256 ? 6 : 4;
 
 			bg_color = create_color(COLOUR_DARK, scale);
-			for (i = 0; i < BASIC_COLORS; i++) {
+			for (i = 0; i < BASIC_COLORS; ++i) {
 				int fg = create_color(i, scale);
 				init_pair(i + 1, fg, bg_color);
 				colortable[i] = COLOR_PAIR(i + 1) | isbold;
@@ -770,7 +770,7 @@ static void handle_extended_color_tables(void) {
 			}
 		} else {
 			bg_color = 0;
-			for (i = 0; i < BASIC_COLORS; i++) {
+			for (i = 0; i < BASIC_COLORS; ++i) {
 				/*
 				 * Scale components to a range of 0 - 1000 per
 				 * per init_color()'s documentation.
@@ -1030,7 +1030,7 @@ static int _parse_size_list(const char *arg, int sizes[], int max)
 static void hook_quit(const char *str) {
 	int i;
 
-	for (i = 0; i < term_count; i++) {
+	for (i = 0; i < term_count; ++i) {
 		if (angband_term[i]) {
 			term_nuke(angband_term[i]);
 		}
@@ -1054,7 +1054,7 @@ errr init_gcu(int argc, char **argv) {
 	loaded_terminfo = termtype && tgetent(0, termtype) == 1;
 
 	/* Parse args */
-	for (i = 1; i < argc; i++) {
+	for (i = 1; i < argc; ++i) {
 		if (prefix(argv[i], "-B")) {
 			bold_extended = true;
 		} else if (prefix(argv[i], "-n")) {
@@ -1209,7 +1209,7 @@ errr init_gcu(int argc, char **argv) {
 	{	
 		int rows, cols, y, x;
 		int next_win = 0;
-		for (i = 0; i < term_count; i++) {
+		for (i = 0; i < term_count; ++i) {
 			/* Get the terminal dimensions; if the user asked for a big screen
 			 * then we'll put the whole screen in term 0; otherwise we'll divide
 			 * it amongst the available terms */

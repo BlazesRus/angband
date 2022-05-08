@@ -67,7 +67,7 @@ static const struct {
 keycode_t keycode_find_code(const char *str, size_t len)
 {
 	size_t i;
-	for (i = 0; i < N_ELEMENTS(mappings); i++) {
+	for (i = 0; i < N_ELEMENTS(mappings); ++i) {
 		if (strncmp(str, mappings[i].desc, len) == 0)
 			return mappings[i].code;
 	}
@@ -81,7 +81,7 @@ keycode_t keycode_find_code(const char *str, size_t len)
 const char *keycode_find_desc(keycode_t kc)
 {
 	size_t i;
-	for (i = 0; i < N_ELEMENTS(mappings); i++) {
+	for (i = 0; i < N_ELEMENTS(mappings); ++i) {
 		if (mappings[i].code == kc)
 			return mappings[i].desc;
 	}

@@ -64,7 +64,7 @@ static void flavor_assign_fixed(void)
 		if (f->sval == SV_UNKNOWN)
 			continue;
 
-		for (i = 0; i < z_info->k_max; i++) {
+		for (i = 0; i < z_info->k_max; ++i) {
 			struct object_kind *k = &k_info[i];
 			if (k->tval == f->tval && k->sval == f->sval)
 				k->flavor = f;
@@ -85,7 +85,7 @@ static void flavor_assign_random(uint8_t tval)
 		if (f->tval == tval && f->sval == SV_UNKNOWN)
 			flavor_count++;
 
-	for (i = 0; i < z_info->k_max; i++) {
+	for (i = 0; i < z_info->k_max; ++i) {
 		if (k_info[i].tval != tval || k_info[i].flavor)
 			continue;
 
@@ -165,7 +165,7 @@ void flavor_init(void)
 	if (turn == 1) {
 		struct flavor *f;
 
-		for (i = 0; i < z_info->k_max; i++) {
+		for (i = 0; i < z_info->k_max; ++i) {
 			k_info[i].flavor = NULL;
 		}
 		for (f = flavors; f; f = f->next) {
@@ -189,7 +189,7 @@ void flavor_init(void)
 	flavor_assign_random(TV_POTION);
 
 	/* Scrolls (random titles, always white) */
-	for (i = 0; i < MAX_TITLES; i++) {
+	for (i = 0; i < MAX_TITLES; ++i) {
 		char buf[26];
 		char *end = buf + 1;
 		int titlelen = 0;
@@ -228,7 +228,7 @@ void flavor_init(void)
 	Rand_quick = false;
 
 	/* Analyze every object */
-	for (i = 0; i < z_info->k_max; i++) {
+	for (i = 0; i < z_info->k_max; ++i) {
 		struct object_kind *kind = &k_info[i];
 
 		/* Skip "empty" objects */
@@ -247,7 +247,7 @@ void flavor_set_all_aware(void)
 	int i;
 
 	/* Analyze every object */
-	for (i = 0; i < z_info->k_max; i++) {
+	for (i = 0; i < z_info->k_max; ++i) {
 		struct object_kind *kind = &k_info[i];
 
 		/* Skip empty objects */
@@ -434,7 +434,7 @@ const struct artifact *lookup_artifact_name(const char *name)
 	int a_idx = -1;
 
 	/* Look for it */
-	for (i = 0; i < z_info->a_max; i++) {
+	for (i = 0; i < z_info->a_max; ++i) {
 		const struct artifact *art = &a_info[i];
 
 		/* Test for equality */
@@ -462,7 +462,7 @@ struct ego_item *lookup_ego_item(const char *name, int tval, int sval)
 	int i;
 
 	/* Look for it */
-	for (i = 0; i < z_info->e_max; i++) {
+	for (i = 0; i < z_info->e_max; ++i) {
 		struct ego_item *ego = &e_info[i];
 		struct poss_item *poss_item = ego->poss_items;
 
@@ -672,7 +672,7 @@ bool obj_kind_can_browse(const struct object_kind *kind)
 {
 	int i;
 
-	for (i = 0; i < player->class->magic.num_books; i++) {
+	for (i = 0; i < player->class->magic.num_books; ++i) {
 		struct class_book book = player->class->magic.books[i];
 		if (kind->tval == book.tval && kind->sval == book.sval)
 			return true;
@@ -754,7 +754,7 @@ bool obj_has_flag(const struct object *obj, int flag)
 	/* Check any curse object flags */
 	if (c) {
 		int i;
-		for (i = 1; i < z_info->curse_max; i++) {
+		for (i = 1; i < z_info->curse_max; ++i) {
 			if (c[i].power && of_has(curses[i].obj->flags, flag)) {
 				return true;
 			}
