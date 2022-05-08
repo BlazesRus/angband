@@ -272,7 +272,7 @@ static void kill_all_monsters(int level)
 		/* Skip the ones that are already dead. */
 		if (!mon->race) continue;
 
-		level_data[level].monsters[mon->race->ridx]++;
+		++level_data[level].monsters[mon->race->ridx];
 
 		monster_death(mon, player, true);
 
@@ -359,33 +359,33 @@ static void log_all_objects(int level)
 
 				/* Capture artifact drops */
 				if (obj->artifact)
-					level_data[level].artifacts[obj->origin][obj->artifact->aidx]++;
+					++level_data[level].artifacts[obj->origin][obj->artifact->aidx];
 
 				/* Capture kind details */
 				if (tval_has_variable_power(obj)) {
 					struct wearables_data *w
 						= &level_data[level].wearables[obj->origin][wearables_index[obj->kind->kidx]];
 
-					w->count++;
-					w->dice[MIN(obj->dd, TOP_DICE - 1)][MIN(obj->ds, TOP_SIDES - 1)]++;
-					w->ac[MIN(MAX(obj->ac + obj->to_a, 0), TOP_AC - 1)]++;
-					w->hit[MIN(MAX(obj->to_h, 0), TOP_PLUS - 1)]++;
-					w->dam[MIN(MAX(obj->to_d, 0), TOP_PLUS - 1)]++;
+					++w->count;
+					++w->dice[MIN(obj->dd, TOP_DICE - 1)][MIN(obj->ds, TOP_SIDES - 1)];
+					++w->ac[MIN(MAX(obj->ac + obj->to_a, 0), TOP_AC - 1)];
+					++w->hit[MIN(MAX(obj->to_h, 0), TOP_PLUS - 1)];
+					++w->dam[MIN(MAX(obj->to_d, 0), TOP_PLUS - 1)];
 
 					/* Capture egos */
 					if (obj->ego)
-						w->egos[obj->ego->eidx]++;
+						++w->egos[obj->ego->eidx];
 					/* Capture object flags */
 					for (i = of_next(obj->flags, FLAG_START); i != FLAG_END;
 							i = of_next(obj->flags, i + 1))
-						w->flags[i]++;
+						++w->flags[i];
 					/* Capture object modifiers */
 					for (i = 0; i < OBJ_MOD_MAX; ++i) {
 						int p = obj->modifiers[i];
-						w->modifiers[MIN(MAX(p, 0), TOP_MOD - 1)][i]++;
+						++w->modifiers[MIN(MAX(p, 0), TOP_MOD - 1)][i];
 					}
 				} else {
-					level_data[level].consumables[obj->origin][consumables_index[obj->kind->kidx]]++;
+					++level_data[level].consumables[obj->origin][consumables_index[obj->kind->kidx]];
 				}
 
 				obj = obj->next;

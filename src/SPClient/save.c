@@ -546,9 +546,9 @@ void wr_ignore(void)
 
 	/* Write the current number of aware object auto-inscriptions */
 	n = 0;
-	for (i = 0; i < z_info->k_max; i++)
+	for (i = 0; i < z_info->k_max; ++i)
 		if (k_info[i].note_aware)
-			n++;
+			++n;
 
 	wr_u16b(n);
 
@@ -566,9 +566,9 @@ void wr_ignore(void)
 
 	/* Write the current number of unaware object auto-inscriptions */
 	n = 0;
-	for (i = 0; i < z_info->k_max; i++)
+	for (i = 0; i < z_info->k_max; ++i)
 		if (k_info[i].note_unaware)
-			n++;
+			++n;
 
 	wr_u16b(n);
 
@@ -589,14 +589,14 @@ void wr_ignore(void)
 	nrune = max_runes();
 	assert(nrune >= 0 && nrune <= 65535);
 	n = (uint16_t) MAX(0, MIN(65535, nrune));
-	for (k = 0; k < n; k++)
+	for (k = 0; k < n; ++k)
 		if (rune_note(k))
-			j++;
+			++j;
 
 	wr_u16b(j);
 
 	/* Write the rune autoinscriptions array */
-	for (k = 0; k < n; k++) {
+	for (k = 0; k < n; ++k) {
 		if (rune_note(k)) {
 			wr_s16b(k);
 			wr_string(quark_str(rune_note(k)));
@@ -632,7 +632,7 @@ void wr_misc(void)
 	//	return;
 
 	/* Flags */
-	for (i = 0; i < OF_SIZE; i++)
+	for (i = 0; i < OF_SIZE; ++i)
 		wr_byte(player->obj_k->flags[i]);
 
 	/* Modifiers */
@@ -694,7 +694,7 @@ void wr_player_hp(void)
 	int i;
 
 	wr_u16b(PY_MAX_LEVEL);
-	for (i = 0; i < PY_MAX_LEVEL; i++)
+	for (i = 0; i < PY_MAX_LEVEL; ++i)
 		wr_s16b(player->player_hp[i]);
 }
 
@@ -705,10 +705,10 @@ void wr_player_spells(void)
 
 	wr_u16b(player->class->magic.total_spells);
 
-	for (i = 0; i < player->class->magic.total_spells; i++)
+	for (i = 0; i < player->class->magic.total_spells; ++i)
 		wr_byte(player->spell_flags[i]);
 
-	for (i = 0; i < player->class->magic.total_spells; i++)
+	for (i = 0; i < player->class->magic.total_spells; ++i)
 		wr_byte(player->spell_order[i]);
 }
 
@@ -792,8 +792,8 @@ static void wr_dungeon_aux(struct chunk *c)
 		prev_char = 0;
 
 		/* Dump for each grid */
-		for (y = 0; y < c->height; y++) {
-			for (x = 0; x < c->width; x++) {
+		for (y = 0; y < c->height; ++y) {
+			for (x = 0; x < c->width; ++x) {
 				/* Extract the important c->squares[y][x].info flags */
 				tmp8u = square(c, loc(x, y))->info[i];
 
@@ -804,7 +804,7 @@ static void wr_dungeon_aux(struct chunk *c)
 					prev_char = tmp8u;
 					count = 1;
 				} else /* Continue the run */
-					count++;
+					++count;
 			}
 		}
 
@@ -820,8 +820,8 @@ static void wr_dungeon_aux(struct chunk *c)
 	prev_char = 0;
 
 	/* Dump for each grid */
-	for (y = 0; y < c->height; y++) {
-		for (x = 0; x < c->width; x++) {
+	for (y = 0; y < c->height; ++y) {
+		for (x = 0; x < c->width; ++x) {
 			/* Extract a byte */
 			tmp8u = square(c, loc(x, y))->feat;
 
@@ -832,7 +832,7 @@ static void wr_dungeon_aux(struct chunk *c)
 				prev_char = tmp8u;
 				count = 1;
 			} else /* Continue the run */
-				count++;
+				++count;
 		}
 	}
 
@@ -880,8 +880,8 @@ static void wr_objects_aux(struct chunk *c)
 	
 	/* Write the objects */
 	wr_u16b(c->obj_max);
-	for (y = 0; y < c->height; y++) {
-		for (x = 0; x < c->width; x++) {
+	for (y = 0; y < c->height; ++y) {
+		for (x = 0; x < c->width; ++x) {
 			struct object *obj = square(c, loc(x, y))->obj;
 			while (obj) {
 				wr_item(obj);
@@ -940,8 +940,8 @@ static void wr_traps_aux(struct chunk *c)
 
     wr_byte(TRF_SIZE);
 
-	for (y = 0; y < c->height; y++) {
-		for (x = 0; x < c->width; x++) {
+	for (y = 0; y < c->height; ++y) {
+		for (x = 0; x < c->width; ++x) {
 			struct trap *trap = square(c, loc(x, y))->trap;
 			while (trap) {
 				wr_trap(trap);
@@ -1008,7 +1008,7 @@ void wr_chunks(void)
 	wr_u16b(chunk_list_max);
 
 	/* Now write each chunk */
-	for (j = 0; j < chunk_list_max; j++) {
+	for (j = 0; j < chunk_list_max; ++j) {
 		struct chunk *c = chunk_list[j];
 
 		/* Write the terrain and info */

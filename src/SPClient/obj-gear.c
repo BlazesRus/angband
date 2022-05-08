@@ -279,7 +279,7 @@ int pack_slots_used(const struct player *p)
 			}
 			if (!found) {
 				/* Count regular slots */
-				pack_slots++;
+				++pack_slots;
 			}
 		}
 	}
@@ -289,7 +289,7 @@ int pack_slots_used(const struct player *p)
 
 	/* Plus one for any remainder */
 	if (quiver_ammo % z_info->quiver_slot_size) {
-		pack_slots++;
+		++pack_slots;
 	}
 
 	return pack_slots;
@@ -391,7 +391,7 @@ bool minus_ac(struct player *p)
 		if (slot_type_is(p, i, EQUIP_LIGHT)) continue;
 
 		/* Add */
-		count++;
+		++count;
 	}
 
 	/* Pick one at random */
@@ -936,7 +936,7 @@ void inven_wield(struct object *obj, int slot)
 
 	/* Increase equipment counter if empty slot */
 	if (old == NULL)
-		player->upkeep->equip_cnt++;
+		++player->upkeep->equip_cnt;
 
 	/* Take a turn */
 	player->upkeep->energy_use = z_info->move_energy;

@@ -666,8 +666,8 @@ bool effect_handler_WEB(effect_handler_context_t *context)
 	context->ident = true;
 
 	/* Increase the radius for higher spell power */
-	if (mon->race->spell_power > 40) rad++;
-	if (mon->race->spell_power > 80) rad++;
+	if (mon->race->spell_power > 40) ++rad;
+	if (mon->race->spell_power > 80) ++rad;
 
 	/* Check within the radius for clear floor */
 	for (grid.y = mon->grid.y - rad; grid.y <= mon->grid.y + rad; grid.y++) {
@@ -1084,7 +1084,7 @@ bool effect_handler_DEEP_DESCENT(effect_handler_context_t *context)
 		if (is_quest(player, target_depth)) break;
 		if (target_depth >= z_info->max_depth - 1) break;
 
-		target_depth++;
+		++target_depth;
 	}
 
 	if (target_depth > player->depth) {
@@ -1881,7 +1881,7 @@ bool effect_handler_DISENCHANT(effect_handler_context_t *context)
 		if (slot_type_is(player, i, EQUIP_LIGHT)) continue;
 
 		/* Count disenchantable slots */
-		count++;
+		++count;
 	}
 
 	/* Pick one at random */
@@ -2142,11 +2142,11 @@ bool effect_handler_SUMMON(effect_handler_context_t *context)
 			val += temp * temp;
 
 			/* Increase the attempt in case no monsters were available. */
-			attempts++;
+			++attempts;
 
 			/* Increase count of summoned monsters */
 			if (val > 0)
-				count++;
+				++count;
 		}
 
 		/* If the summon failed and there's a fallback type, use that */
@@ -2162,11 +2162,11 @@ bool effect_handler_SUMMON(effect_handler_context_t *context)
 				val += temp * temp;
 
 				/* Increase the attempt in case no monsters were available. */
-				attempts++;
+				++attempts;
 
 				/* Increase count of summoned monsters */
 				if (val > 0)
-					count++;
+					++count;
 			}
 		}
 
@@ -2478,7 +2478,7 @@ bool effect_handler_TELEPORT(effect_handler_context_t *context)
 			} else {
 				new->next = spots;
 				spots = new;
-				num_spots++;
+				++num_spots;
 			}
 		}
 	}
@@ -2644,7 +2644,7 @@ bool effect_handler_TELEPORT_TO(effect_handler_context_t *context)
 		/* Occasionally advance the distance */
 		if (++ctr > (4 * dis * dis + 4 * dis + 1)) {
 			ctr = 0;
-			dis++;
+			++dis;
 		}
 	}
 
@@ -2805,11 +2805,11 @@ bool effect_handler_RUBBLE(effect_handler_context_t *context)
 					square_set_feat(cave, grid, FEAT_RUBBLE);
 				if (cave->depth == 0)
 					expose_to_sun(cave, grid, is_daytime());
-				rubble_grids--;
+				--rubble_grids;
 			}
 		}
 
-		iterations++;
+		++iterations;
 	}
 
 	context->ident = true;

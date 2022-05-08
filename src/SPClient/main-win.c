@@ -5054,7 +5054,7 @@ int FAR PASCAL WinMain(HINSTANCE hInst, HINSTANCE hPrevInst,
 
 #ifdef USE_SAVER
 	if (lpCmdLine && ((*lpCmdLine == '-') || (*lpCmdLine == '/'))) {
-		lpCmdLine++;
+		++lpCmdLine;
 
 		switch (*lpCmdLine)
 		{
