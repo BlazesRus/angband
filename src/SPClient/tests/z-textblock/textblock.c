@@ -63,13 +63,13 @@ static int test_length(void *state) {
 	const wchar_t *tb_text;
 
 	/* Add it 32 times to make sure that appending definitely works */
-	for (i = 0; i < 32; i++) {
+	for (i = 0; i < 32; ++i) {
 		textblock_append(tb, text);
 	}
 
 	/* Now make sure it's all right */
 	tb_text = textblock_text(tb);
-	for (i = 0; i < 32; i++) {
+	for (i = 0; i < 32; ++i) {
 		int n = N_ELEMENTS(text) - 1;
 		int offset = i * n;
 

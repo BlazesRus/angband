@@ -333,7 +333,7 @@ void build_gamma_table(int gamma)
 	gamma_table[0] = 0;
 	gamma_table[255] = 255;
 
-	for (i = 1; i < 255; i++) {
+	for (i = 1; i < 255; ++i) {
 		/*
 		 * Initialise the Taylor series
 		 *

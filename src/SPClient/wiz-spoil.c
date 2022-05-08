@@ -229,7 +229,7 @@ void spoil_obj_desc(const char *fname)
 	        "------", "---", "---", "----");
 
 	/* List the groups */
-	for (i = 0; true; i++) {
+	for (i = 0; true; ++i) {
 		/* Write out the group title */
 		if (group_item[i].name) {
 			/* Hack -- bubble-sort by cost and then level */
@@ -396,7 +396,7 @@ void spoil_artifact(const char *fname)
 	text_out("\n Randart seed is %u\n", seed_randart);
 
 	/* List the artifacts by tval */
-	for (i = 0; group_artifact[i].tval; i++) {
+	for (i = 0; group_artifact[i].tval; ++i) {
 		/* Write out the group title */
 		if (group_artifact[i].name) {
 			spoiler_blanklines(2);
@@ -522,7 +522,7 @@ void spoil_mon_desc(const char *fname)
 	who = mem_zalloc(z_info->r_max * sizeof(uint16_t));
 
 	/* Scan the monsters (except the ghost) */
-	for (i = 1; i < z_info->r_max - 1; i++) {
+	for (i = 1; i < z_info->r_max - 1; ++i) {
 		struct monster_race *race = &r_info[i];
 
 		/* Use that monster */
@@ -533,7 +533,7 @@ void spoil_mon_desc(const char *fname)
 	sort(who, n, sizeof(*who), cmp_monsters);
 
 	/* Scan again */
-	for (i = 0; i < n; i++) {
+	for (i = 0; i < n; ++i) {
 		struct monster_race *race = &r_info[who[i]];
 		const char *name = race->name;
 		size_t u8len;
@@ -646,7 +646,7 @@ void spoil_mon_info(const char *fname)
 	who = mem_zalloc(z_info->r_max * sizeof(uint16_t));
 
 	/* Scan the monsters */
-	for (i = 1; i < z_info->r_max; i++) {
+	for (i = 1; i < z_info->r_max; ++i) {
 		struct monster_race *race = &r_info[i];
 
 		/* Use that monster */

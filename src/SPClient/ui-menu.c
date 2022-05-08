@@ -198,7 +198,7 @@ static void display_scrolling(struct menu *menu, int cursor, int *top, region *l
 	*top = MIN(*top, n - rows_per_page);
 	*top = MAX(*top, 0);
 
-	for (i = 0; i < rows_per_page; i++) {
+	for (i = 0; i < rows_per_page; ++i) {
 		/* Blank all lines */
 		Term_erase(col, row + i, loc->width);
 		if (i < n) {
@@ -291,7 +291,7 @@ static void object_skin_display(struct menu *menu, int cursor, int *top, region 
 	*top = MIN(*top, n - rows_per_page);
 	*top = MAX(*top, 0);
 
-	for (i = 0; i < rows_per_page; i++) {
+	for (i = 0; i < rows_per_page; ++i) {
 		/* Blank all lines */
 		Term_erase(col, row + i, loc->width);
 		if (i < n) {
@@ -493,7 +493,7 @@ static int get_cursor_key(struct menu *menu, int top, struct keypress key)
 	if (menu->flags & MN_NO_TAGS) {
 		return -1;
 	} else if (menu->flags & MN_REL_TAGS) {
-		for (i = 0; i < n; i++) {
+		for (i = 0; i < n; ++i) {
 			char c = menu->skin->get_tag(menu, i);
 
 			if ((menu->flags & MN_CASELESS_TAGS) && c)
@@ -503,7 +503,7 @@ static int get_cursor_key(struct menu *menu, int top, struct keypress key)
 				return i + menu->top;
 		}
 	} else if (!(menu->flags & MN_PVT_TAGS) && menu->selections) {
-		for (i = 0; menu->selections[i]; i++) {
+		for (i = 0; menu->selections[i]; ++i) {
 			char c = menu->selections[i];
 
 			if (menu->flags & MN_CASELESS_TAGS)
@@ -513,7 +513,7 @@ static int get_cursor_key(struct menu *menu, int top, struct keypress key)
 				return i;
 		}
 	} else if (menu->row_funcs->get_tag) {
-		for (i = 0; i < n; i++) {
+		for (i = 0; i < n; ++i) {
 			int oid = menu->filter_list ? menu->filter_list[i] : i;
 			char c = menu->row_funcs->get_tag(menu, oid);
 

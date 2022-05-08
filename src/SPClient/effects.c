@@ -120,7 +120,7 @@ effect_index effect_lookup(const char *name)
 {
 	size_t i;
 
-	for (i = 0; i < N_ELEMENTS(effect_names); i++) {
+	for (i = 0; i < N_ELEMENTS(effect_names); ++i) {
 		const char *effect_name = effect_names[i];
 
 		/* Test for equality */

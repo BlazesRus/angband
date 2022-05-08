@@ -1065,7 +1065,7 @@ static void point_based_points(game_event_type type, game_event_data *data,
 	/* Display the costs header */
 	put_str("Cost", COSTS_ROW - 1, COSTS_COL);
 	
-	for (i = 0; i < STAT_MAX; i++) {
+	for (i = 0; i < STAT_MAX; ++i) {
 		/* Remember what's allowed. */
 		buysell[i] = 0;
 		if (spent[i] > 0) {
@@ -1336,7 +1336,7 @@ static void get_screen_loc(size_t cursor, int *x, int *y, size_t n_lines,
 
 	if (!line_starts || !line_lengths) return;
 
-	for (i = 0; i < n_lines; i++) {
+	for (i = 0; i < n_lines; ++i) {
 		if (cursor >= line_starts[i]) {
 			if (cursor <= (line_starts[i] + line_lengths[i])) {
 				*y = i;

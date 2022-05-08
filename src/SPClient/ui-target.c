@@ -987,7 +987,7 @@ static int draw_path(uint16_t path_n, struct loc *path_g, wchar_t *c, int *a,
 	on_screen = panel_contains(y1, x1);
 
 	/* Draw the path. */
-	for (i = 0; i < path_n; i++) {
+	for (i = 0; i < path_n; ++i) {
 		uint8_t colour;
 
 		/* Find the co-ordinates on the level. */
@@ -1058,7 +1058,7 @@ static int draw_path(uint16_t path_n, struct loc *path_g, wchar_t *c, int *a,
 static void load_path(uint16_t path_n, struct loc *path_g, wchar_t *c, int *a)
 {
 	int i;
-	for (i = 0; i < path_n; i++) {
+	for (i = 0; i < path_n; ++i) {
 		int y = path_g[i].y;
 		int x = path_g[i].x;
 
@@ -1300,7 +1300,7 @@ bool target_set_interactive(int mode, int x, int y)
 			show_interesting = false;
 
 			/* ...but turn it on if they clicked an interesting spot */
-			for (int i = 0; i < point_set_size(targets); i++) {
+			for (int i = 0; i < point_set_size(targets); ++i) {
 				if (y == targets->pts[i].y && x == targets->pts[i].x) {
 					target_index = i;
 					show_interesting = true;
@@ -1347,7 +1347,7 @@ bool target_set_interactive(int mode, int x, int y)
 				int min_dist = 999;
 
 				/* Pick the nearest interesting target */
-				for (int i = 0; i < point_set_size(targets); i++) {
+				for (int i = 0; i < point_set_size(targets); ++i) {
 					int dist = distance(loc(x, y), targets->pts[i]);
 					if (dist < min_dist) {
 						target_index = i;

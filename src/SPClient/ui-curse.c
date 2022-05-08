@@ -101,7 +101,7 @@ static int curse_menu(struct object *obj, char *dice_string)
 	static region area = { 20, 1, -1, -2 };
 
 	/* Count and then list the curses */
-	for (i = 1; i < z_info->curse_max; i++) {
+	for (i = 1; i < z_info->curse_max; ++i) {
 		if ((obj->known->curses[i].power > 0) &&
 			(obj->known->curses[i].power < 100) &&
 			player_knows_curse(player, i)) {

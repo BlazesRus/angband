@@ -110,7 +110,7 @@ static void project_player_drain_stats(int num)
 	int i, k = 0;
 	const char *act = NULL;
 
-	for (i = 0; i < num; i++) {
+	for (i = 0; i < num; ++i) {
 		switch (randint1(5)) {
 			case 1: k = STAT_STR; act = "strong"; break;
 			case 2: k = STAT_INT; act = "bright"; break;

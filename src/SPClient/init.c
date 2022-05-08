@@ -211,7 +211,7 @@ static enum parser_error write_book_kind(struct class_book *book,
 	int i;
 
 	/* Check we haven't already made this book */
-	for (i = 0; i < z_info->k_max; i++) {
+	for (i = 0; i < z_info->k_max; ++i) {
 		if (k_info[i].name && streq(name, k_info[i].name)) {
 			book->sval = k_info[i].sval;
 			return PARSE_ERROR_NONE;
@@ -266,7 +266,7 @@ static enum parser_error write_book_kind(struct class_book *book,
 
 	/* Dungeon books get extra properties */
 	if (book->dungeon) {
-		for (i = ELEM_BASE_MIN; i < ELEM_BASE_MAX; i++) {
+		for (i = ELEM_BASE_MIN; i < ELEM_BASE_MAX; ++i) {
 			kind->el_info[i].flags |= EL_INFO_IGNORE;
 		}
 		kf_on(kind->kind_flags, KF_GOOD);
@@ -1008,7 +1008,7 @@ static errr finish_parse_player_prop(struct parser *p) {
 			uint16_t i, n;
 			assert(N_ELEMENTS(list_element_names) < 65536);
 			n = (uint16_t) N_ELEMENTS(list_element_names);
-			for (i = 0; i < n - 1; i++) {
+			for (i = 0; i < n - 1; ++i) {
 				char *name = projections[i].name;
 				new->index = i;
 				new->type = string_make(embryo->ability.type);
@@ -1142,7 +1142,7 @@ static errr finish_parse_names(struct parser *p) {
 	struct names_parse *n = parser_priv(p);
 	struct name *nm;
 	name_sections = mem_zalloc(sizeof(char**) * RANDNAME_NUM_TYPES);
-	for (i = 0; i < RANDNAME_NUM_TYPES; i++) {
+	for (i = 0; i < RANDNAME_NUM_TYPES; ++i) {
 		name_sections[i] = mem_alloc(sizeof(char*) * (n->nnames[i] + 1));
 		for (nm = n->names[i], j = 0; nm && j < n->nnames[i]; nm = nm->next, j++) {
 			name_sections[i][j] = nm->str;
@@ -1162,7 +1162,7 @@ static errr finish_parse_names(struct parser *p) {
 static void cleanup_names(void)
 {
 	int i, j;
-	for (i = 0; i < RANDNAME_NUM_TYPES; i++) {
+	for (i = 0; i < RANDNAME_NUM_TYPES; ++i) {
 		for (j = 0; name_sections[i][j]; j++) {
 			string_free((char *)name_sections[i][j]);
 		}
@@ -1637,7 +1637,7 @@ static errr finish_parse_trap(struct parser *p) {
 static void cleanup_trap(void)
 {
 	int i;
-	for (i = 0; i < z_info->trap_max; i++) {
+	for (i = 0; i < z_info->trap_max; ++i) {
 		string_free(trap_info[i].name);
 		mem_free(trap_info[i].text);
 		string_free(trap_info[i].desc);
@@ -2006,7 +2006,7 @@ static errr finish_parse_body(struct parser *p) {
 			struct equip_slot *s_temp, *s_old = b->slots;
 
 			/* Allocate space and copy */
-			for (i = 0; i < z_info->equip_slots_max; i++) {
+			for (i = 0; i < z_info->equip_slots_max; ++i) {
 				memcpy(&s_new[i], s_old, sizeof(*s_old));
 				s_old = s_old->next;
 				if (!s_old) break;
@@ -3122,7 +3122,7 @@ static enum parser_error parse_class_title(struct parser *p) {
 
 	if (!c)
 		return PARSE_ERROR_MISSING_RECORD_HEADER;
-	for (i = 0; i < PY_MAX_LEVEL / 5; i++) {
+	for (i = 0; i < PY_MAX_LEVEL / 5; ++i) {
 		if (!c->title[i]) {
 			c->title[i] = string_make(parser_getstr(p, "title"));
 			break;
@@ -3603,7 +3603,7 @@ static void cleanup_class(void)
 			mem_free(item);
 			item = item_next;
 		}
-		for (i = 0; i < c->magic.num_books; i++) {
+		for (i = 0; i < c->magic.num_books; ++i) {
 			book = &c->magic.books[i];
 			for (j = 0; j < book->num_spells; j++) {
 				spell = &book->spells[j];
@@ -3614,7 +3614,7 @@ static void cleanup_class(void)
 			mem_free(book->spells);
 		}
 		mem_free(c->magic.books);
-		for (i = 0; i < PY_MAX_LEVEL / 5; i++) {
+		for (i = 0; i < PY_MAX_LEVEL / 5; ++i) {
 			string_free((char *)c->title[i]);
 		}
 		mem_free((char *)c->name);
@@ -3845,7 +3845,7 @@ void init_arrays(void)
 {
 	unsigned int i;
 
-	for (i = 0; i < N_ELEMENTS(pl); i++) {
+	for (i = 0; i < N_ELEMENTS(pl); ++i) {
 		char *msg = string_make(format("Initializing %s...", pl[i].name));
 		event_signal_message(EVENT_INITSTATUS, 0, msg);
 		string_free(msg);
@@ -3954,7 +3954,7 @@ void cleanup_angband(void)
 	int i;
 
 	/* Free the chunk list */
-	for (i = 0; i < chunk_list_max; i++) {
+	for (i = 0; i < chunk_list_max; ++i) {
 		wipe_mon_list(chunk_list[i], player);
 		cave_free(chunk_list[i]);
 	}

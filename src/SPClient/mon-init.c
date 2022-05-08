@@ -75,7 +75,7 @@ static const char *obj_flags[] =
 static int flag_index_by_name(const char *name)
 {
 	size_t i;
-	for (i = 0; i < N_ELEMENTS(obj_flags); i++) {
+	for (i = 0; i < N_ELEMENTS(obj_flags); ++i) {
 		if (streq(name, obj_flags[i])) {
 			return i;
 		}
@@ -557,7 +557,7 @@ static void cleanup_pain(void)
 {
 	int idx, i;
 	for (idx = 0; idx < z_info->mp_max; idx++) {
-		for (i = 0; i < 7; i++) {
+		for (i = 0; i < 7; ++i) {
 			string_free((char *)pain_messages[idx].messages[i]);
 		}
 	}
@@ -1750,7 +1750,7 @@ static errr finish_parse_monster(struct parser *p) {
 			struct monster_blow *b_temp, *b_old = r->blow;
 
 			/* Allocate space and copy */
-			for (i = 0; i < z_info->mon_blows_max; i++) {
+			for (i = 0; i < z_info->mon_blows_max; ++i) {
 				memcpy(&b_new[i], b_old, sizeof(*b_old));
 				b_old = b_old->next;
 				if (!b_old) break;
@@ -1777,7 +1777,7 @@ static errr finish_parse_monster(struct parser *p) {
 	z_info->r_max += 1;
 
 	/* Convert friend and shape names into race pointers */
-	for (i = 0; i < z_info->r_max; i++) {
+	for (i = 0; i < z_info->r_max; ++i) {
 		struct monster_race *race = &r_info[i];
 		struct monster_friends *f;
 		struct monster_shape *s;
@@ -1807,7 +1807,7 @@ static errr finish_parse_monster(struct parser *p) {
 
 	/* Allocate space for the monster lore */
 	l_list = mem_zalloc(z_info->r_max * sizeof(struct monster_lore));
-	for (i = 0; i < z_info->r_max; i++) {
+	for (i = 0; i < z_info->r_max; ++i) {
 		struct monster_lore *l = &l_list[i];
 		l->blows = mem_zalloc(z_info->mon_blows_max * sizeof(struct monster_blow));
 		l->blow_known = mem_zalloc(z_info->mon_blows_max * sizeof(bool));
@@ -2517,7 +2517,7 @@ static errr finish_parse_lore(struct parser *p) {
 	size_t i;
 
 	/* Processing */
-	for (i = 0; i < z_info->r_max; i++) {
+	for (i = 0; i < z_info->r_max; ++i) {
 		struct monster_lore *l = &l_list[i];
 		struct monster_race *r = &r_info[i];
 		struct monster_friends *f;

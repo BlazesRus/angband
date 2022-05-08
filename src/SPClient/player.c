@@ -111,7 +111,7 @@ static const char *stat_name_list[] = {
 int stat_name_to_idx(const char *name)
 {
     int i;
-    for (i = 0; stat_name_list[i]; i++) {
+    for (i = 0; stat_name_list[i]; ++i) {
         if (!my_stricmp(name, stat_name_list[i]))
             return i;
     }
@@ -410,7 +410,7 @@ void player_safe_name(char *safe, size_t safelen, const char *name, bool strip_s
 	/* Limit to maximum size of safename buffer */
 	limit = MIN(limit, safelen);
 
-	for (i = 0; i < limit; i++) {
+	for (i = 0; i < limit; ++i) {
 		char c = name[i];
 
 		/* Convert all non-alphanumeric symbols */

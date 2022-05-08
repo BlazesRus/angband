@@ -44,7 +44,7 @@ struct trap_kind *lookup_trap(const char *desc)
 	struct trap_kind *closest = NULL;
 
 	/* Look for it */
-	for (i = 1; i < z_info->trap_max; i++) {
+	for (i = 1; i < z_info->trap_max; ++i) {
 		struct trap_kind *kind = &trap_info[i];
 		if (!kind->name)
 			continue;
@@ -280,7 +280,7 @@ static int pick_trap(struct chunk *c, int feat, int trap_level)
 
     /* Get trap probabilities */
 	trap_probs = mem_zalloc(z_info->trap_max * sizeof(int));
-	for (i = 0; i < z_info->trap_max; i++) {
+	for (i = 0; i < z_info->trap_max; ++i) {
 		/* Get this trap */
 		struct trap_kind *kind = &trap_info[i];
 		trap_probs[i] = trap_prob_max;
@@ -324,7 +324,7 @@ static int pick_trap(struct chunk *c, int feat, int trap_level)
 
 	/* Pick at random. */
 	pick = randint0(trap_prob_max);
-	for (i = 0; i < z_info->trap_max; i++) {
+	for (i = 0; i < z_info->trap_max; ++i) {
 		if (pick < trap_probs[i]) {
 			break;
 		}

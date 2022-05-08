@@ -339,7 +339,7 @@ static int32_t slay_power(const struct object *obj, int p, int verbose,
 
 	/* Count the brands and slays */
 	if (obj->brands) {
-		for (i = 1; i < z_info->brand_max; i++) {
+		for (i = 1; i < z_info->brand_max; ++i) {
 			if (obj->brands[i]) {
 				num_brands++;
 				if (brands[i].power > best_power)
@@ -348,7 +348,7 @@ static int32_t slay_power(const struct object *obj, int p, int verbose,
 		}
 	}
 	if (obj->slays) {
-		for (i = 1; i < z_info->slay_max; i++) {
+		for (i = 1; i < z_info->slay_max; ++i) {
 			if (obj->slays[i]) {
 				if (slays[i].multiplier <= 3) {
 					num_slays++;
@@ -371,7 +371,7 @@ static int32_t slay_power(const struct object *obj, int p, int verbose,
 		log_obj("Slay and brands: ");
 
 		if (obj->brands) {
-			for (i = 1; i < z_info->brand_max; i++) {
+			for (i = 1; i < z_info->brand_max; ++i) {
 				if (obj->brands[i]) {
 					struct brand *b = &brands[i];
 					log_obj("%sx%d ", b->name,
@@ -380,7 +380,7 @@ static int32_t slay_power(const struct object *obj, int p, int verbose,
 			}
 		}
 		if (obj->slays) {
-			for (i = 1; i < z_info->slay_max; i++) {
+			for (i = 1; i < z_info->slay_max; ++i) {
 				if (obj->slays[i]) {
 					struct slay *s = &slays[i];
 					log_obj("%sx%d ", s->name,
@@ -541,7 +541,7 @@ static int modifier_power(const struct object *obj, int p)
 {
 	int i, k, extra_stat_bonus = 0, q;
 
-	for (i = 0; i < OBJ_MOD_MAX; i++) {
+	for (i = 0; i < OBJ_MOD_MAX; ++i) {
 		/* Get the modifier details */
 		struct obj_property *mod = lookup_obj_property(OBJ_PROPERTY_MOD, i);
 		assert(mod);
@@ -609,7 +609,7 @@ static int flags_power(const struct object *obj, int p, int verbose,
 	}
 
 	/* Add extra power for multiple flags of the same type */
-	for (i = 0; i < N_ELEMENTS(flag_sets); i++) {
+	for (i = 0; i < N_ELEMENTS(flag_sets); ++i) {
 		if (flag_sets[i].count > 1) {
 			q = (flag_sets[i].factor * flag_sets[i].count * flag_sets[i].count);
 			p += q;
@@ -642,7 +642,7 @@ static int element_power(const struct object *obj, int p)
 		element_sets[i].count = 0;
 
 	/* Analyse each element for ignore, vulnerability, resistance or immunity */
-	for (i = 0; i < N_ELEMENTS(el_powers); i++) {
+	for (i = 0; i < N_ELEMENTS(el_powers); ++i) {
 		if (obj->el_info[i].flags & EL_INFO_IGNORE) {
 			if (el_powers[i].ignore_power != 0) {
 				q = (el_powers[i].ignore_power);
@@ -686,7 +686,7 @@ static int element_power(const struct object *obj, int p)
 	}
 
 	/* Add extra power for multiple flags of the same type */
-	for (i = 0; i < N_ELEMENTS(element_sets); i++) {
+	for (i = 0; i < N_ELEMENTS(element_sets); ++i) {
 		if (element_sets[i].count > 1) {
 			q = (element_sets[i].factor * element_sets[i].count * element_sets[i].count);
 			p += q;
@@ -737,7 +737,7 @@ static int curse_power(const struct object *obj, int p, int verbose,
 
 	if (obj->curses) {
 		/* Get the curse object power */
-		for (i = 1; i < z_info->curse_max; i++) {
+		for (i = 1; i < z_info->curse_max; ++i) {
 			if (obj->curses[i].power) {
 				int curse_power;
 				log_obj("Calculating %s curse power...\n",

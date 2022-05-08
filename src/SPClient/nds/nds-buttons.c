@@ -214,7 +214,7 @@ void nds_btn_check_cpad()
 		input_cooldown = NDS_CPAD_MIN_COOLDOWN;
 
 	/* Trigger inputs */
-	for (int i = 0; nds_btn_cpad_map[i].input; i++) {
+	for (int i = 0; nds_btn_cpad_map[i].input; ++i) {
 		if (cpad_ang >= nds_btn_cpad_map[i].min &&
 		    cpad_ang < nds_btn_cpad_map[i].max)
 			nds_event_put_key(nds_btn_cpad_map[i].input, 0);
@@ -230,7 +230,7 @@ void nds_btn_vblank()
 	u32 kh = hidKeysHeld();
 
 	/* Check all mapped inputs */
-	for (int i = 0; i < nds_btn_map_num; i++) {
+	for (int i = 0; i < nds_btn_map_num; ++i) {
 		u32 keys = nds_btn_map[i].keys;
 
 		/* Check if all the buttons are held */
@@ -244,7 +244,7 @@ void nds_btn_vblank()
 		if (!(kd & NDS_BTN_KEYS & keys))
 			continue;
 
-		for (int si = 0; si < NDS_BTN_SEQ_LEN && nds_btn_map[i].input[si]; si++) {
+		for (int si = 0; si < NDS_BTN_SEQ_LEN && nds_btn_map[i].input[si]; s++i) {
 			nds_event_put_key(nds_btn_map[i].input[si], 0);
 		}
 		break;

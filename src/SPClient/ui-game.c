@@ -396,7 +396,7 @@ void cmd_init(void)
 
 		/* Fill everything in */
 		if (cmds_all[j].keymap == 0) {
-			for (i = 0; i < cmds_all[j].len; i++) {
+			for (i = 0; i < cmds_all[j].len; ++i) {
 				/* If a roguelike key isn't set, use default */
 				if (!commands[i].key[1])
 					commands[i].key[1] = commands[i].key[0];
@@ -414,7 +414,7 @@ void cmd_init(void)
 			int kidx = cmds_all[j].keymap - 1;
 
 			assert(kidx < n_nested);
-			for (i = 0; i < cmds_all[j].len; i++) {
+			for (i = 0; i < cmds_all[j].len; ++i) {
 				/*
 				 * Nested commands don't go through a keymap;
 				 * use the default for the roguelike key.
@@ -440,7 +440,7 @@ unsigned char cmd_lookup_key(cmd_code lookup_cmd, int mode)
 
 	assert(mode == KEYMAP_MODE_ROGUE || mode == KEYMAP_MODE_ORIG);
 
-	for (i = 0; i < N_ELEMENTS(converted_list[mode]); i++) {
+	for (i = 0; i < N_ELEMENTS(converted_list[mode]); ++i) {
 		struct cmd_info *cmd = converted_list[mode][i];
 
 		if (cmd && cmd->cmd == lookup_cmd)

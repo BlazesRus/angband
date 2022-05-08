@@ -379,7 +379,7 @@ ignore_type_t ignore_type_of(const struct object *obj)
 	size_t i;
 
 	/* Find the appropriate ignore group */
-	for (i = 0; i < N_ELEMENTS(quality_mapping); i++) {
+	for (i = 0; i < N_ELEMENTS(quality_mapping); ++i) {
 		if (quality_mapping[i].tval == obj->tval) {
 			/* If there's an identifier, it must match */
 			if (quality_mapping[i].identifier[0]) {
@@ -699,7 +699,7 @@ const char *ignore_name_for_type(ignore_type_t type)
 {
 	size_t i;
 
-	for (i = ITYPE_NONE + 1; i < ITYPE_MAX; i++) {
+	for (i = ITYPE_NONE + 1; i < ITYPE_MAX; ++i) {
 		if (quality_choices[i].enum_val == type)
 			return quality_choices[i].name;
 	}

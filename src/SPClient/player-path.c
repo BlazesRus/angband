@@ -163,7 +163,7 @@ static bool set_up_path_distances(struct loc grid)
 	add_to_point_set(reached, player->grid);
 
 	/* Add the neighbours of any marked grid in the area */
-	for (i = 0; i < reached->n; i++) {
+	for (i = 0; i < reached->n; ++i) {
 		int k, cur_distance = path_dist(reached->pts[i]) + 1;
 		for (k = 0; k < 8; k++) {
 			struct loc next = loc_sum(reached->pts[i], ddgrid_ddd[k]);
@@ -584,7 +584,7 @@ static bool run_test(const struct player *p)
 	max = (prev_dir & 0x01) + 1;
 
 	/* Look at every newly adjacent square. */
-	for (i = -max; i <= max; i++) {
+	for (i = -max; i <= max; ++i) {
 		struct object *obj;
 
 		/* New direction */
@@ -663,7 +663,7 @@ static bool run_test(const struct player *p)
 
 
 	/* Look at every soon to be newly adjacent square. */
-	for (i = -max; i <= max; i++) {		
+	for (i = -max; i <= max; ++i) {		
 		/* New direction */
 		new_dir = cycle[chome[prev_dir] + i];
 		
@@ -686,7 +686,7 @@ static bool run_test(const struct player *p)
 	/* Looking for open area */
 	if (run_open_area) {
 		/* Hack -- look again */
-		for (i = -max; i < 0; i++) {
+		for (i = -max; i < 0; ++i) {
 			new_dir = cycle[chome[prev_dir] + i];
 			grid = loc_sum(player->grid, ddgrid[new_dir]);
 

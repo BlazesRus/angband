@@ -331,7 +331,7 @@ static bool try_save(ang_file *file)
 	buffer = mem_alloc(BUFFER_INITIAL_SIZE);
 	buffer_size = BUFFER_INITIAL_SIZE;
 
-	for (i = 0; i < N_ELEMENTS(savers); i++) {
+	for (i = 0; i < N_ELEMENTS(savers); ++i) {
 		buffer_pos = 0;
 		buffer_check = 0;
 
@@ -518,7 +518,7 @@ static loader_t find_loader(struct blockheader *b,
 	size_t i = 0;
 
 	/* Find the right loader */
-	for (i = 0; local_loaders[i].name[0]; i++) {
+	for (i = 0; local_loaders[i].name[0]; ++i) {
 		if (!streq(b->name, local_loaders[i].name)) continue;
 		if (b->version != local_loaders[i].version) continue;
 

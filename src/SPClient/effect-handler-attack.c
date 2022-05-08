@@ -927,7 +927,7 @@ bool effect_handler_LASH(effect_handler_context_t *context)
 		type = mon->race->blow[0].effect->lash_type;
 
 		/* Scan through all blows for damage */
-		for (i = 0; i < z_info->mon_blows_max; i++) {
+		for (i = 0; i < z_info->mon_blows_max; ++i) {
 			/* Extract the attack infomation */
 			random_value dice = mon->race->blow[i].dice;
 
@@ -1032,7 +1032,7 @@ bool effect_handler_STAR(effect_handler_context_t *context)
 	if (!player->timed[TMD_BLIND])
 		msg("Light shoots in all directions!");
 
-	for (i = 0; i < 8; i++) {
+	for (i = 0; i < 8; ++i) {
 		/* Use the current direction */
 		target = loc_sum(player->grid, ddgrid_ddd[i]);
 
@@ -1058,7 +1058,7 @@ bool effect_handler_STAR_BALL(effect_handler_context_t *context)
 
 	int flg = PROJECT_STOP | PROJECT_THRU | PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL;
 
-	for (i = 0; i < 8; i++) {
+	for (i = 0; i < 8; ++i) {
 		/* Use the current direction */
 		target = loc_sum(player->grid, ddgrid_ddd[i]);
 
@@ -1085,7 +1085,7 @@ bool effect_handler_PROJECT_LOS(effect_handler_context_t *context)
 	int flg = PROJECT_JUMP | PROJECT_KILL | PROJECT_HIDE;
 
 	/* Affect all (nearby) monsters */
-	for (i = 1; i < cave_monster_max(cave); i++) {
+	for (i = 1; i < cave_monster_max(cave); ++i) {
 		struct monster *mon = cave_monster(cave, i);
 
 		/* Paranoia -- Skip dead monsters */
@@ -1124,7 +1124,7 @@ bool effect_handler_PROJECT_LOS_AWARE(effect_handler_context_t *context)
 	if (context->aware) flg |= PROJECT_AWARE;
 
 	/* Affect all (nearby) monsters */
-	for (i = 1; i < cave_monster_max(cave); i++) {
+	for (i = 1; i < cave_monster_max(cave); ++i) {
 		struct monster *mon = cave_monster(cave, i);
 		struct loc grid;
 
@@ -1360,7 +1360,7 @@ bool effect_handler_EARTHQUAKE(effect_handler_context_t *context)
 	/* First, affect the player (if necessary) */
 	if (hurt) {
 		/* Check around the player */
-		for (i = 0; i < 8; i++) {
+		for (i = 0; i < 8; ++i) {
 			/* Get the location */
 			struct loc grid = loc_sum(pgrid, ddgrid_ddd[i]);
 
@@ -1461,7 +1461,7 @@ bool effect_handler_EARTHQUAKE(effect_handler_context_t *context)
 					/* Monster can move to escape the wall */
 					if (!rf_has(mon->race->flags, RF_NEVER_MOVE)) {
 						/* Look for safety */
-						for (i = 0; i < 8; i++) {
+						for (i = 0; i < 8; ++i) {
 							/* Get the grid */
 							struct loc safe = loc_sum(grid, ddgrid_ddd[i]);
 
@@ -1758,7 +1758,7 @@ bool effect_handler_MOVE_ATTACK(effect_handler_context_t *context)
 		}
 
 		/* We'll give up to 3 choices: d, d + 1, d - 1 */
-		for (i = 0; i < 3; i++) {
+		for (i = 0; i < 3; ++i) {
 			int d_test = (d + choice[i] + 8) % 8;
 			next_grid = loc_sum(player->grid, clockwise_grid[d_test]);
 			if (square_ispassable(cave, next_grid)) {
@@ -1900,7 +1900,7 @@ bool effect_handler_SWEEP(effect_handler_context_t *context)
 
 	/* Doing these like >1 blows means spinning around multiple times. */
 	while (blows-- > 0) {
-		for (i = 0; i < 8; i++) {
+		for (i = 0; i < 8; ++i) {
 			target = loc_sum(player->grid, clockwise_grid[i]);
 			if (square_monster(cave, target) != NULL)
 				py_attack_real(player, target, &fear);

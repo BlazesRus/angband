@@ -1317,7 +1317,7 @@ void square_smash_wall(struct chunk *c, struct loc grid)
 	int i;
 	square_set_feat(c, grid, FEAT_FLOOR);
 
-	for (i = 0; i < 8; i++) {
+	for (i = 0; i < 8; ++i) {
 		/* Extract adjacent location */
 		struct loc adj_grid = loc_sum(grid, ddgrid_ddd[i]);
 

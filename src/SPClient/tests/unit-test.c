@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
 		return 1;
 	}
 
-	for (i = 0; tests[i].name; i++) {
+	for (i = 0; tests[i].name; ++i) {
 		if (verbose) printf("  %-16s  ", tests[i].name);
 		fflush(stdout);
 		if (tests[i].func(state) == 0) passed++;

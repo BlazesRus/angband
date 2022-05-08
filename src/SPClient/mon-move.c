@@ -327,7 +327,7 @@ static bool get_move_bodyguard(struct monster *mon)
 	if (!los(cave, mon->grid, leader->grid) && (dist > 10)) return false;
 
 	/* Check nearby adjacent grids and assess */
-	for (i = 0; i < 8; i++) {
+	for (i = 0; i < 8; ++i) {
 		/* Get the location */
 		struct loc grid = loc_sum(mon->grid, ddgrid_ddd[i]);
 		int new_dist = distance(grid, leader->grid);
@@ -428,7 +428,7 @@ static bool get_move_advance(struct monster *mon, bool *track)
 	/* Try to use sound */
 	if (monster_can_hear(mon)) {
 		/* Check nearby sound, giving preference to the cardinal directions */
-		for (i = 0; i < 8; i++) {
+		for (i = 0; i < 8; ++i) {
 			/* Get the location */
 			struct loc grid = loc_sum(mon->grid, ddgrid_ddd[i]);
 			int heard_noise = base_hearing - cave->noise.grids[grid.y][grid.x];
@@ -469,7 +469,7 @@ static bool get_move_advance(struct monster *mon, bool *track)
 
 	/* If both vision and sound are no good, use scent */
 	if (monster_can_smell(mon) && !found) {
-		for (i = 0; i < 8; i++) {
+		for (i = 0; i < 8; ++i) {
 			/* Get the location */
 			struct loc grid = loc_sum(mon->grid, ddgrid_ddd[i]);
 			int smelled_scent;
@@ -892,7 +892,7 @@ static bool get_move(struct monster *mon, int *dir, bool *good)
 		int i, open = 0;
 
 		/* Count empty grids next to player */
-		for (i = 0; i < 8; i++) {
+		for (i = 0; i < 8; ++i) {
 			/* Check grid around the player for room interior (room walls count)
 			 * or other empty space */
 			struct loc test = loc_sum(target, ddgrid_ddd[i]);
@@ -941,7 +941,7 @@ static bool get_move(struct monster *mon, int *dir, bool *good)
 		if (mon->cdis > 1) {
 			/* Find an empty square near the player to fill */
 			int tmp = randint0(8);
-			for (i = 0; i < 8; i++) {
+			for (i = 0; i < 8; ++i) {
 				/* Pick squares near player (pseudo-randomly) */
 				grid1 = loc_sum(target, ddgrid_ddd[(tmp + i) % 8]);
 
@@ -1565,7 +1565,7 @@ static void monster_turn(struct monster *mon)
 	 * chosen direction, or next at right angles to the chosen direction.
 	 * Monsters which are tracking by sound or scent will not move if they
 	 * can't move in their chosen direction. */
-	for (i = 0; i < 5 && !did_something; i++) {
+	for (i = 0; i < 5 && !did_something; ++i) {
 		/* Get the direction (or stagger) */
 		int d = (stagger != NO_STAGGER) ? ddd[randint0(8)] : side_dirs[dir][i];
 

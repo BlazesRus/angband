@@ -174,7 +174,7 @@ void nds_kbd_redraw_key(int r, int k, bool initial, bool active)
 
 	/* Calculate the key offset */
 	int key_offset = KBD_MARGIN;
-	for (int i = 0; i < k; i++) {
+	for (int i = 0; i < k; ++i) {
 		key_offset += row.keys[i].width * KBD_UNIT;
 	}
 
@@ -232,7 +232,7 @@ void nds_kbd_redraw_key(int r, int k, bool initial, bool active)
 	}
 
 	/* Print the text */
-	for (int i = 0; i < strlen(s); i++) {
+	for (int i = 0; i < strlen(s); ++i) {
 		nds_draw_char_px(str_x + (i * nds_font->width), str_y, s[i],
 		                 active ? NDS_CURSOR_COLOR : NDS_WHITE_PIXEL, NDS_BLACK_PIXEL);
 	}
@@ -301,7 +301,7 @@ void nds_kbd_vblank()
 
 	nds_kbd_row row = nds_kbd_map[r];
 
-	for (int i = 0; i < row.length; i++) {
+	for (int i = 0; i < row.length; ++i) {
 		x -= row.keys[i].width * KBD_UNIT;
 
 		/* Found the correct key */

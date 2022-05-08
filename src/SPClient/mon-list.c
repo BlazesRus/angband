@@ -146,7 +146,7 @@ void monster_list_collect(monster_list_t *list)
 		return;
 
 	/* Use cave_monster_max() here in case the monster list isn't compacted. */
-	for (i = 1; i < cave_monster_max(cave); i++) {
+	for (i = 1; i < cave_monster_max(cave); ++i) {
 		struct monster *mon = cave_monster(cave, i);
 		monster_list_entry_t *entry = NULL;
 		int j, field;
@@ -200,7 +200,7 @@ void monster_list_collect(monster_list_t *list)
 	}
 
 	/* Collect totals for easier calculations of the list. */
-	for (i = 0; i < (int)list->entries_size; i++) {
+	for (i = 0; i < (int)list->entries_size; ++i) {
 		if (list->entries[i].race == NULL)
 			continue;
 

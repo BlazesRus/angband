@@ -148,7 +148,7 @@ void nds_pixel_to_square(int *const x, int *const y, const int ox,
 void nds_log(const char *msg)
 {
 	static uint8_t x = 2, y = 1;
-	for (uint8_t i = 0; msg[i] != '\0'; i++) {
+	for (uint8_t i = 0; msg[i] != '\0'; ++i) {
 		nds_draw_char(x, y, msg[i], NDS_WHITE_PIXEL, NDS_BLACK_PIXEL);
 		x++;
 		if (msg[i] == '\n' || x > NDS_SCREEN_COLS - 2) {

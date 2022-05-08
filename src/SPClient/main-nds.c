@@ -228,7 +228,7 @@ static errr CheckEvents(bool wait)
 static void init_color_data(void)
 {
 	/* Initialize the "color_data" array */
-	for (int i = 0; i < MAX_COLORS; i++) {
+	for (int i = 0; i < MAX_COLORS; ++i) {
 #ifdef __3DS__
 		color_data[i] = angband_color_table[i][1] << 24 |
 		                angband_color_table[i][2] << 16 |
@@ -478,7 +478,7 @@ static errr Term_wipe_nds(int x, int y, int n)
  */
 static errr Term_text_nds(int x, int y, int n, int a, const wchar_t *s)
 {
-	for (int i = 0; i < n; i++) {
+	for (int i = 0; i < n; ++i) {
 		nds_draw_char(x + i, y, s[i], color_data[a & (MAX_COLORS - 1)], color_data[COLOUR_DARK]);
 	}
 

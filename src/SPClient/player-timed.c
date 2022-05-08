@@ -67,7 +67,7 @@ const char *obj_flags[] = {
 
 int timed_name_to_idx(const char *name)
 {
-    for (size_t i = 0; i < N_ELEMENTS(timed_effects); i++) {
+    for (size_t i = 0; i < N_ELEMENTS(timed_effects); ++i) {
         if (my_stricmp(name, timed_effects[i].name) == 0) {
             return i;
         }
@@ -362,7 +362,7 @@ static errr finish_parse_player_timed(struct parser *p)
 
 static void cleanup_player_timed(void)
 {
-	for (size_t i = 0; i < TMD_MAX; i++) {
+	for (size_t i = 0; i < TMD_MAX; ++i) {
 		struct timed_effect_data *effect = &timed_effects[i];
 		struct timed_grade *grade = effect->grade;
 
@@ -444,13 +444,13 @@ static void player_fix_scramble(struct player *p)
 	int new_cur[STAT_MAX];
 	int new_max[STAT_MAX];
 
-	for (int i = 0; i < STAT_MAX; i++) {
+	for (int i = 0; i < STAT_MAX; ++i) {
 		new_cur[p->stat_map[i]] = p->stat_cur[i];
 		new_max[p->stat_map[i]] = p->stat_max[i];
 	}
 
 	/* Apply new stats and clear the stat_map */
-	for (int i = 0; i < STAT_MAX; i++) {
+	for (int i = 0; i < STAT_MAX; ++i) {
 		p->stat_cur[i] = new_cur[i];
 		p->stat_max[i] = new_max[i];
 		p->stat_map[i] = i;
@@ -480,7 +480,7 @@ static bool player_of_has_not_timed(struct player *p, int flag)
 
     player_flags(p, collect_f);
 
-    for (i = 0; i < p->body.count; i++) {
+    for (i = 0; i < p->body.count; ++i) {
         struct object *obj = slot_object(p, i);
 
         if (!obj) continue;

@@ -395,7 +395,7 @@ int tval_find_idx(const char *name)
 
 	mod_name = de_armour(name);
 
-	for (i = 0; i < N_ELEMENTS(tval_names); i++) {
+	for (i = 0; i < N_ELEMENTS(tval_names); ++i) {
 		if (!my_stricmp(mod_name, tval_names[i].name)) {
 			string_free(mod_name);
 			return tval_names[i].tval;
@@ -432,7 +432,7 @@ int tval_sval_count(const char *name)
 
 	if (tval < 0) return 0;
 
-	for (i = 0; i < z_info->k_max; i++) {
+	for (i = 0; i < z_info->k_max; ++i) {
 		struct object_kind *kind = &k_info[i];
 
 		if (!kind->tval) continue;
@@ -455,7 +455,7 @@ int tval_sval_list(const char *name, int *list, int max_size)
 
 	if (tval < 0) return 0;
 
-	for (i = 0; i < z_info->k_max; i++) {
+	for (i = 0; i < z_info->k_max; ++i) {
 		struct object_kind *kind = &k_info[i];
 
 		if (!kind->tval) continue;

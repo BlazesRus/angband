@@ -1051,7 +1051,7 @@ void calc_inventory(struct player *p)
 	p->upkeep->quiver_cnt = 0;
 
 	/* Copy the current quiver and then leave it empty. */
-	for (i = 0; i < z_info->quiver_size; i++) {
+	for (i = 0; i < z_info->quiver_size; ++i) {
 		if (p->upkeep->quiver[i]) {
 			old_quiver[i] = p->upkeep->quiver[i];
 			p->upkeep->quiver[i] = NULL;
@@ -1173,7 +1173,7 @@ void calc_inventory(struct player *p)
 
 	/* Note reordering */
 	if (character_dungeon) {
-		for (i = 0; i < z_info->quiver_size; i++) {
+		for (i = 0; i < z_info->quiver_size; ++i) {
 			if (old_quiver[i] && p->upkeep->quiver[i] != old_quiver[i]) {
 				msg("You re-arrange your quiver.");
 				break;
@@ -1182,14 +1182,14 @@ void calc_inventory(struct player *p)
 	}
 
 	/* Copy the current pack */
-	for (i = 0; i < z_info->pack_size; i++) {
+	for (i = 0; i < z_info->pack_size; ++i) {
 		old_pack[i] = p->upkeep->inven[i];
 	}
 
 	/* Prepare to fill the inventory */
 	p->upkeep->inven_cnt = 0;
 
-	for (i = 0; i <= z_info->pack_size; i++) {
+	for (i = 0; i <= z_info->pack_size; ++i) {
 		struct object *first = NULL;
 		int jfirst = -1;
 
@@ -1223,7 +1223,7 @@ void calc_inventory(struct player *p)
 
 	/* Note reordering */
 	if (character_dungeon && p->upkeep->inven_cnt == old_inven_cnt) {
-		for (i = 0; i < z_info->pack_size; i++) {
+		for (i = 0; i < z_info->pack_size; ++i) {
 			if (old_pack[i] && p->upkeep->inven[i] != old_pack[i]
 					 && !object_is_equipped(p->body, old_pack[i])) {
 				msg("You re-arrange your pack.");
@@ -1373,7 +1373,7 @@ static void calc_spells(struct player *p)
 	}
 
 	/* Check for spells to remember */
-	for (i = 0; i < num_total; i++) {
+	for (i = 0; i < num_total; ++i) {
 		/* None left to remember */
 		if (p->upkeep->new_spells <= 0) break;
 
@@ -1504,7 +1504,7 @@ static void calc_mana(struct player *p, struct player_state *state, bool update)
 
 	/* Weigh the armor */
 	cur_wgt = 0;
-	for (i = 0; i < p->body.count; i++) {
+	for (i = 0; i < p->body.count; ++i) {
 		struct object *obj_local = slot_object(p, i);
 
 		/* Ignore non-armor */
@@ -1613,7 +1613,7 @@ static void calc_light(struct player *p, struct player_state *state,
 	}
 
 	/* Examine all wielded objects, use the brightest */
-	for (i = 0; i < p->body.count; i++) {
+	for (i = 0; i < p->body.count; ++i) {
 		int amt = 0;
 		struct object *obj = slot_object(p, i);
 
@@ -1781,7 +1781,7 @@ static void calc_shapechange(struct player_state *state,
 	state->to_d += shape->to_d;
 
 	/* Skills */
-	for (i = 0; i < SKILL_MAX; i++) {
+	for (i = 0; i < SKILL_MAX; ++i) {
 		state->skills[i] += shape->skills[i];
 	}
 
@@ -1792,7 +1792,7 @@ static void calc_shapechange(struct player_state *state,
 	pf_union(state->pflags, shape->pflags);
 
 	/* Stats */
-	for (i = 0; i < STAT_MAX; i++) {
+	for (i = 0; i < STAT_MAX; ++i) {
 		state->stat_add[i] += shape->modifiers[i];
 	}
 
@@ -1809,7 +1809,7 @@ static void calc_shapechange(struct player_state *state,
 	*moves += shape->modifiers[OBJ_MOD_MOVES];
 
 	/* Resists and vulnerabilities */
-	for (i = 0; i < ELEM_MAX; i++) {
+	for (i = 0; i < ELEM_MAX; ++i) {
 		if (state->el_info[i].res_level == 0) {
 			/* Simple, just apply shape res/vuln */
 			state->el_info[i].res_level = shape->el_info[i].res_level;
@@ -1883,10 +1883,10 @@ void calc_bonuses(struct player *p, struct player_state *state, bool known_only,
 
 	/* Extract race/class info */
 	state->see_infra = p->race->infra;
-	for (i = 0; i < SKILL_MAX; i++) {
+	for (i = 0; i < SKILL_MAX; ++i) {
 		state->skills[i] = p->race->r_skills[i]	+ p->class->c_skills[i];
 	}
-	for (i = 0; i < ELEM_MAX; i++) {
+	for (i = 0; i < ELEM_MAX; ++i) {
 		vuln[i] = false;
 		if (p->race->el_info[i].res_level == -1) {
 			vuln[i] = true;
@@ -1904,7 +1904,7 @@ void calc_bonuses(struct player *p, struct player_state *state, bool known_only,
 	player_flags(p, collect_f);
 
 	/* Analyze equipment */
-	for (i = 0; i < p->body.count; i++) {
+	for (i = 0; i < p->body.count; ++i) {
 		int index = 0;
 		struct object *obj = slot_object(p, i);
 		struct curse_data *curse = obj ? obj->curses : NULL;
@@ -2010,7 +2010,7 @@ void calc_bonuses(struct player *p, struct player_state *state, bool known_only,
 	of_union(state->flags, collect_f);
 
 	/* Now deal with vulnerabilities */
-	for (i = 0; i < ELEM_MAX; i++) {
+	for (i = 0; i < ELEM_MAX; ++i) {
 		if (vuln[i] && (state->el_info[i].res_level < 3))
 			state->el_info[i].res_level--;
 	}
@@ -2034,7 +2034,7 @@ void calc_bonuses(struct player *p, struct player_state *state, bool known_only,
 	}
 
 	/* Calculate the various stat values */
-	for (i = 0; i < STAT_MAX; i++) {
+	for (i = 0; i < STAT_MAX; ++i) {
 		int add, use, ind;
 
 		add = state->stat_add[i];
@@ -2339,7 +2339,7 @@ static void update_bonuses(struct player *p)
 	 * ------------------------------------ */
 
 	/* Analyze stats */
-	for (i = 0; i < STAT_MAX; i++) {
+	for (i = 0; i < STAT_MAX; ++i) {
 		/* Notice changes */
 		if (state.stat_top[i] != p->state.stat_top[i])
 			/* Redisplay the stats later */
@@ -2681,7 +2681,7 @@ void redraw_stuff(struct player *p)
 		return;
 
 	/* For each listed flag, send the appropriate signal to the UI */
-	for (i = 0; i < N_ELEMENTS(redraw_events); i++) {
+	for (i = 0; i < N_ELEMENTS(redraw_events); ++i) {
 		const struct flag_event_trigger *hnd = &redraw_events[i];
 
 		if (redraw & hnd->flag)

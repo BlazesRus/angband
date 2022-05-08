@@ -200,7 +200,7 @@ static void load_roller_data(birther *saved, birther *prev_player)
 	player->au       = z_info->start_gold;
 
 	/* Load previous stats */
-	for (i = 0; i < STAT_MAX; i++) {
+	for (i = 0; i < STAT_MAX; ++i) {
 		player->stat_max[i] = player->stat_cur[i] = player->stat_birth[i]
 			= saved->stat[i];
 		player->stat_map[i] = i;
@@ -237,7 +237,7 @@ static void get_stats(int stat_use[STAT_MAX])
 	/* Roll and verify some stats */
 	while (true) {
 		/* Roll some dice */
-		for (j = i = 0; i < 3 * STAT_MAX; i++) {
+		for (j = i = 0; i < 3 * STAT_MAX; ++i) {
 			/* Roll the dice */
 			dice[i] = randint1(3 + i % 3);
 
@@ -250,7 +250,7 @@ static void get_stats(int stat_use[STAT_MAX])
 	}
 
 	/* Roll the stats */
-	for (i = 0; i < STAT_MAX; i++) {
+	for (i = 0; i < STAT_MAX; ++i) {
 		int bonus;
 
 		/* Extract 5 + 1d3 + 1d4 + 1d5 */
@@ -291,7 +291,7 @@ static void roll_hp(void)
 	/* Roll out the hitpoints */
 	while (true) {
 		/* Roll the hitpoint values */
-		for (i = 1; i < PY_MAX_LEVEL; i++) {
+		for (i = 1; i < PY_MAX_LEVEL; ++i) {
 			j = randint1(player->hitdie);
 			player->player_hp[i] = player->player_hp[i-1] + j;
 		}
@@ -377,7 +377,7 @@ static void player_embody(struct player *p)
 	my_strcpy(buf, bodies[p->race->body].name, sizeof(buf));
 	p->body.name = string_make(buf);
 	p->body.slots = mem_zalloc(p->body.count * sizeof(struct equip_slot));
-	for (i = 0; i < p->body.count; i++) {
+	for (i = 0; i < p->body.count; ++i) {
 		p->body.slots[i].type = bodies[p->race->body].slots[i].type;
 		my_strcpy(buf, bodies[p->race->body].slots[i].name, sizeof(buf));
 		p->body.slots[i].name = string_make(buf);
@@ -403,7 +403,7 @@ void player_init(struct player *p)
 	memset(p, 0, sizeof(struct player));
 
 	/* Start with no artifacts made yet */
-	for (i = 0; z_info && i < z_info->a_max; i++) {
+	for (i = 0; z_info && i < z_info->a_max; ++i) {
 		mark_artifact_created(&a_info[i], false);
 		mark_artifact_seen(&a_info[i], false);
 	}
@@ -411,13 +411,13 @@ void player_init(struct player *p)
 	/* Start with no quests */
 	player_quests_reset(p);
 
-	for (i = 1; z_info && i < z_info->k_max; i++) {
+	for (i = 1; z_info && i < z_info->k_max; ++i) {
 		struct object_kind *kind = &k_info[i];
 		kind->tried = false;
 		kind->aware = false;
 	}
 
-	for (i = 1; z_info && i < z_info->r_max; i++) {
+	for (i = 1; z_info && i < z_info->r_max; ++i) {
 		struct monster_race *race = &r_info[i];
 		struct monster_lore *lore = get_lore(race);
 		race->cur_num = 0;
@@ -594,7 +594,7 @@ static void player_outfit(struct player *p)
 	p->obj_k->dd = 1;
 	p->obj_k->ds = 1;
 	p->obj_k->ac = 1;
-	for (i = 1; i < OF_MAX; i++) {
+	for (i = 1; i < OF_MAX; ++i) {
 		struct obj_property *prop = lookup_obj_property(OBJ_PROPERTY_FLAG, i);
 		if (prop->subtype == OFT_LIGHT) of_on(p->obj_k->flags, i);
 		if (prop->subtype == OFT_DIG) of_on(p->obj_k->flags, i);
@@ -682,7 +682,7 @@ static void recalculate_stats(int *stats_local_local, int points_left_local)
 	int i;
 
 	/* Variable stat maxes */
-	for (i = 0; i < STAT_MAX; i++) {
+	for (i = 0; i < STAT_MAX; ++i) {
 		player->stat_cur[i] = player->stat_max[i] =
 				player->stat_birth[i] = stats_local_local[i];
 		player->stat_map[i] = i;
@@ -711,7 +711,7 @@ static void reset_stats(int stats_local[STAT_MAX],
 	/* Calculate and signal initial stats and points totals. */
 	*points_left_local = MAX_BIRTH_POINTS;
 
-	for (i = 0; i < STAT_MAX; i++) {
+	for (i = 0; i < STAT_MAX; ++i) {
 		/* Initial stats are all 10 and costs are zero */
 		stats_local[i] = 10;
 		points_spent_local[i] = 0;
@@ -1005,7 +1005,7 @@ void player_generate(struct player *p, const struct player_race *r,
 	 * do the actual rolls so the player can not reset the birth screen
 	 * to get a desirable set of initial rolls.
 	 */
-	for (i = 1; i < p->lev; i++) {
+	for (i = 1; i < p->lev; ++i) {
 		p->player_hp[i] = p->player_hp[i - 1] + p->hitdie;
 	}
 
@@ -1180,7 +1180,7 @@ void do_cmd_roll_stats(struct command *cmd)
 
 	/* Give the UI some dummy info about the points situation. */
 	points_left = 0;
-	for (i = 0; i < STAT_MAX; i++) {
+	for (i = 0; i < STAT_MAX; ++i) {
 		points_spent[i] = 0;
 		points_inc[i] = 0;
 	}
@@ -1448,7 +1448,7 @@ static int roman_to_int(const char *roman)
 
 	/* Check each character for a roman token, and look ahead to the
 	   character after this one to check for subtraction */
-	for (i = 0; i < strlen(roman); i++) {
+	for (i = 0; i < strlen(roman); ++i) {
 		char c1, c2;
 		int c1i, c2i;
 

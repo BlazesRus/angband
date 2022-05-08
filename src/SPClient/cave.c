@@ -305,7 +305,7 @@ int lookup_feat(const char *name)
 	int i;
 
 	/* Look for it */
-	for (i = 0; i < z_info->f_max; i++) {
+	for (i = 0; i < z_info->f_max; ++i) {
 		struct feature *feat = &f_info[i];
 		if (!feat->name)
 			continue;
@@ -405,7 +405,7 @@ void cave_free(struct chunk *c) {
 	cave_connectors_free(c->join);
 
 	/* Look for orphaned objects and delete them. */
-	for (i = 1; i < c->obj_max; i++) {
+	for (i = 1; i < c->obj_max; ++i) {
 		if (c->objects[i] && loc_is_zero(c->objects[i]->grid)) {
 			object_delete(c, p_c, &c->objects[i]);
 		}
@@ -452,7 +452,7 @@ void list_object(struct chunk *c, struct object *obj)
 			return;
 
 	/* Put objects in holes in the object list */
-	for (i = 1; i < c->obj_max; i++) {
+	for (i = 1; i < c->obj_max; ++i) {
 		/* If there is a known object, skip this slot */
 		if ((c == cave) && player->cave && player->cave->objects[i]) {
 			continue;
@@ -511,7 +511,7 @@ void object_lists_check_integrity(struct chunk *c, struct chunk *c_k)
 	int i;
 	if (c_k) {
 		assert(c->obj_max == c_k->obj_max);
-		for (i = 0; i < c->obj_max; i++) {
+		for (i = 0; i < c->obj_max; ++i) {
 			struct object *obj = c->objects[i];
 			struct object *known_obj = c_k->objects[i];
 			if (obj) {
@@ -531,7 +531,7 @@ void object_lists_check_integrity(struct chunk *c, struct chunk *c_k)
 			}
 		}
 	} else {
-		for (i = 0; i < c->obj_max; i++) {
+		for (i = 0; i < c->obj_max; ++i) {
 			struct object *obj = c->objects[i];
 			if (obj) {
 				assert(obj->oidx == i);
