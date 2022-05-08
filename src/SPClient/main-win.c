@@ -170,7 +170,9 @@
 /**
  * Include the support for loading bitmaps
  */
+#ifdef UseOldPNGCode
 #include "win/readdib.h"
+#endif
 
 #include <wingdi.h>
 
@@ -743,7 +745,7 @@ static void save_prefs(void)
         WritePrivateProfileString("Angband", "TileHeight", buf, ini_file);
 
 	/* Save window prefs */
-	for (i = 0; i < MAX_TERM_DATA; i++) {
+	for (i = 0; i < MAX_TERM_DATA; ++i) {
 		term_data *td = &data[i];
 
 		sprintf(buf, "Term-%d", i);
@@ -835,7 +837,7 @@ static void load_prefs(void)
 
 
 	/* Load window prefs */
-	for (i = 0; i < MAX_TERM_DATA; i++) {
+	for (i = 0; i < MAX_TERM_DATA; ++i) {
 		term_data *td = &data[i];
 
 		sprintf(buf, "Term-%d", i);
@@ -916,11 +918,11 @@ static int new_palette(void)
 	pLogPal->palNumEntries = nEntries + 16;
 
 	/* Save the bitmap data */
-	for (i = 0; i < nEntries; i++)
+	for (i = 0; i < nEntries; ++i)
 		pLogPal->palPalEntry[i] = lppe[i];
 
 	/* Save the normal data */
-	for (i = 0; i < BASIC_COLORS; i++) {
+	for (i = 0; i < BASIC_COLORS; ++i) {
 		LPPALETTEENTRY p;
 
 		/* Access the entry */
@@ -1703,7 +1705,7 @@ static errr Term_xtra_win_react(void)
 
 
 	/* Clean up windows */
-	for (i = 0; i < MAX_TERM_DATA; i++) {
+	for (i = 0; i < MAX_TERM_DATA; ++i) {
 		term *old = Term;
 
 		term_data *td = &data[i];
