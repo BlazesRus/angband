@@ -135,9 +135,9 @@ void textui_textblock_place(textblock *tb, region orig_area, const char *header)
 			&line_starts, &line_lengths, area.width);
 
 	if (header != NULL) {
-		area.page_rows--;
+		++area.page_rows;
 		c_prt(COLOUR_L_BLUE, header, area.row, area.col);
-		area.row++;
+		++area.row;
 	}
 
 	if (n_lines > (size_t) area.page_rows)
@@ -174,7 +174,7 @@ struct keypress textui_textblock_show(textblock *tb, region orig_area, const cha
 	if (header != NULL) {
 		area.page_rows--;
 		c_prt(COLOUR_L_BLUE, header, area.row, area.col);
-		area.row++;
+		++area.row;
 	}
 
 	if (n_lines > (size_t) area.page_rows) {
@@ -200,7 +200,7 @@ struct keypress textui_textblock_show(textblock *tb, region orig_area, const cha
 				 * see bug #2120 */
 				break;
 			else if (ch.code == ARROW_DOWN)
-				start_line++;
+				++start_line;
 			else if (ch.code == ' ')
 				start_line += area.page_rows;
 
@@ -281,7 +281,7 @@ void text_out_to_screen(uint8_t a, const char *str)
 		if (*s == L'\n') {
 			/* Wrap */
 			x = text_out_indent;
-			y++;
+			++y;
 
 			/* Clear line, move cursor */
 			Term_erase(x, y, 255);
@@ -325,7 +325,7 @@ void text_out_to_screen(uint8_t a, const char *str)
 
 			/* Wrap */
 			x = text_out_indent;
-			y++;
+			++y;
 
 			/* Clear line, move cursor */
 			Term_erase(x, y, 255);
@@ -426,7 +426,7 @@ void screen_save(void)
 	redraw_stuff(player);
 	event_signal(EVENT_MESSAGE_FLUSH);
 	Term_save();
-	screen_save_depth++;
+	++screen_save_depth;
 }
 
 /**

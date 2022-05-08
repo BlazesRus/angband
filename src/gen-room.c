@@ -61,7 +61,7 @@ static struct room_template *random_room_template(int typ, int rating)
 	do {
 		if ((t->typ == typ) && (t->rat == rating)) {
 			if (one_in_(n)) r = t;
-			n++;
+			++n;
 		}
 		t = t->next;
 	} while(t);
@@ -83,7 +83,7 @@ struct vault *random_vault(int depth, const char *typ)
 		if (streq(v->typ, typ) && (v->min_lev <= depth)
 			&& (v->max_lev >= depth)) {
 			if (one_in_(n)) r = v;
-			n++;
+			++n;
 		}
 		v = v->next;
 	} while(v);
@@ -308,7 +308,7 @@ static void fill_circle(struct chunk *c, int y0, int x0, int radius, int border,
 		int k = (int)(j + 0.5);
 
 		int b = border;
-		if (border && last > k) b++;
+		if (border && last > k) ++b;
 		
 		fill_xrange(c, y0 - i, x0 - k - b, x0 + k + b, feat, flag, light);
 		fill_xrange(c, y0 + i, x0 - k - b, x0 + k + b, feat, flag, light);
@@ -1069,7 +1069,7 @@ static bool find_space(struct loc *centre, int height, int width)
 		/* Save the room location */
 		if (dun->cent_n < z_info->level_room_max) {
 			dun->cent[dun->cent_n] = *centre;
-			dun->cent_n++;
+			++dun->cent_n;
 		}
 
 		reserve_blocks(by1, bx1, by2, bx2);
@@ -1806,7 +1806,7 @@ static void make_chamber(struct chunk *c, int y1, int x1, int y2, int x2)
 
 			/* Count the inner walls. */
 			if (square_iswall_inner(c, loc(xx, yy)))
-				count++;
+				++count;
 
 			/* No more than two walls adjacent (plus the one we're on). */
 			if (count > 3)
@@ -1917,7 +1917,7 @@ bool build_staircase(struct chunk *c, struct loc centre, int rating)
 		/* Save the room location */
 		if (dun->cent_n < z_info->level_room_max) {
 			dun->cent[dun->cent_n] = centre;
-			dun->cent_n++;
+			++dun->cent_n;
 		}
 	} else {
 		/* Never works for the caller to set the location. */
@@ -3302,7 +3302,7 @@ bool build_room_of_chambers(struct chunk *c, struct loc centre, int rating)
 				if ((square(c, grid1)->feat == FEAT_GRANITE) &&
 					(!square_iswall_outer(c, grid1)) &&
 					(!square_iswall_solid(c, grid1)))
-					count++;
+					++count;
 			}
 
 			/* Five adjacent walls: Change non-chamber to wall. */
@@ -3629,8 +3629,8 @@ bool room_build(struct chunk *c, int by0, int bx0, struct room_profile profile,
 	}
 
 	/* Expand the number of blocks if we might overflow */
-	if (profile.height % dun->block_hgt) by2++;
-	if (profile.width % dun->block_wid) bx2++;
+	if (profile.height % dun->block_hgt) ++by2;
+	if (profile.width % dun->block_wid) ++bx2;
 
 	/* Does the profile allocate space, or the room find it? */
 	if (finds_own_space) {
@@ -3654,7 +3654,7 @@ bool room_build(struct chunk *c, int by0, int bx0, struct room_profile profile,
 		 * properly store entrance information). */
 		if (dun->cent_n < z_info->level_room_max) {
 			dun->cent[dun->cent_n] = centre;
-			dun->cent_n++;
+			++dun->cent_n;
 		}
 
 		/* Try to build a room */
@@ -3668,7 +3668,7 @@ bool room_build(struct chunk *c, int by0, int bx0, struct room_profile profile,
 	}
 
 	/* Count pit/nests rooms */
-	if (profile.pit) dun->pit_num++;
+	if (profile.pit) ++dun->pit_num;
 
 	/* Success */
 	event_signal_flag(EVENT_GEN_ROOM_END, true);

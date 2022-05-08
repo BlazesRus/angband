@@ -898,7 +898,7 @@ static bool get_move(struct monster *mon, int *dir, bool *good)
 			struct loc test = loc_sum(target, ddgrid_ddd[i]);
 			if (square_ispassable(cave, test) || square_isroom(cave, test)) {
 				/* One more open grid */
-				open++;
+				++open;
 			}
 		}
 
@@ -1030,9 +1030,9 @@ static bool monster_turn_multiply(struct monster *mon)
 	if (player->upkeep->arena_level) return false;  
 
 	/* Count the adjacent monsters */
-	for (y = mon->grid.y - 1; y <= mon->grid.y + 1; y++)
-		for (x = mon->grid.x - 1; x <= mon->grid.x + 1; x++)
-			if (square(cave, loc(x, y))->mon > 0) k++;
+	for (y = mon->grid.y - 1; y <= mon->grid.y + 1; ++y)
+		for (x = mon->grid.x - 1; x <= mon->grid.x + 1; ++x)
+			if (square(cave, loc(x, y))->mon > 0) ++k;
 
 	/* Multiply slower in crowded areas */
 	if ((k < 4) && (k == 0 || one_in_(k * z_info->repro_monster_rate))) {
@@ -1758,9 +1758,9 @@ static void monster_reduce_sleep(struct monster *mon)
 		/* Update knowledge */
 		if (monster_is_obvious(mon)) {
 			if (!woke_up && lore->ignore < UCHAR_MAX)
-				lore->ignore++;
+				++lore->ignore;
 			else if (woke_up && lore->wake < UCHAR_MAX)
-				lore->wake++;
+				++lore->wake;
 			lore_update(mon->race, lore);
 		}
 	}

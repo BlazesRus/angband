@@ -1303,9 +1303,9 @@ static void calc_spells(struct player *p)
 	num_known = 0;
 
 	/* Count the number of spells we know */
-	for (j = 0; j < num_total; j++)
+	for (j = 0; j < num_total; ++j)
 		if (p->spell_flags[j] & PY_SPELL_LEARNED)
-			num_known++;
+			++num_known;
 
 	/* See how many spells we must forget or may learn */
 	p->upkeep->new_spells = num_allowed - num_known;
@@ -1337,7 +1337,7 @@ static void calc_spells(struct player *p)
 				spell->name);
 
 			/* One more can be learned */
-			p->upkeep->new_spells++;
+			++p->upkeep->new_spells;
 		}
 	}
 
@@ -1368,7 +1368,7 @@ static void calc_spells(struct player *p)
 				spell->name);
 
 			/* One more can be learned */
-			p->upkeep->new_spells++;
+			++p->upkeep->new_spells;
 		}
 	}
 
@@ -1402,7 +1402,7 @@ static void calc_spells(struct player *p)
 				spell->name);
 
 			/* One less can be learned */
-			p->upkeep->new_spells--;
+			--p->upkeep->new_spells;
 		}
 	}
 
@@ -1410,7 +1410,7 @@ static void calc_spells(struct player *p)
 	k = 0;
 
 	/* Count spells that can be learned */
-	for (j = 0; j < num_total; j++) {
+	for (j = 0; j < num_total; ++j) {
 		/* Get the spell */
 		spell = spell_by_index(p, j);
 
@@ -1423,7 +1423,7 @@ static void calc_spells(struct player *p)
 			continue;
 
 		/* Count it */
-		k++;
+		++k;
 	}
 
 	/* Cannot learn more spells than exist */
@@ -1990,14 +1990,14 @@ void calc_bonuses(struct player *p, struct player_state *state, bool known_only,
 
 			/* Move to any unprocessed curse object */
 			if (curse) {
-				index++;
+				++index;
 				obj = NULL;
 				while (index < z_info->curse_max) {
 					if (curse[index].power) {
 						obj = curses[index].obj;
 						break;
 					} else {
-						index++;
+						++index;
 					}
 				}
 			} else {
@@ -2168,19 +2168,19 @@ void calc_bonuses(struct player *p, struct player_state *state, bool known_only,
 		state->speed += 10;
 	}
 	if (p->timed[TMD_OPP_ACID] && (state->el_info[ELEM_ACID].res_level < 2)) {
-			state->el_info[ELEM_ACID].res_level++;
+			++state->el_info[ELEM_ACID].res_level;
 	}
 	if (p->timed[TMD_OPP_ELEC] && (state->el_info[ELEM_ELEC].res_level < 2)) {
-			state->el_info[ELEM_ELEC].res_level++;
+			++state->el_info[ELEM_ELEC].res_level;
 	}
 	if (p->timed[TMD_OPP_FIRE] && (state->el_info[ELEM_FIRE].res_level < 2)) {
-			state->el_info[ELEM_FIRE].res_level++;
+			++state->el_info[ELEM_FIRE].res_level;
 	}
 	if (p->timed[TMD_OPP_COLD] && (state->el_info[ELEM_COLD].res_level < 2)) {
-			state->el_info[ELEM_COLD].res_level++;
+			++state->el_info[ELEM_COLD].res_level;
 	}
 	if (p->timed[TMD_OPP_POIS] && (state->el_info[ELEM_POIS].res_level < 2)) {
-			state->el_info[ELEM_POIS].res_level++;
+			++state->el_info[ELEM_POIS].res_level;
 	}
 	if (p->timed[TMD_CONFUSED]) {
 		adjust_skill_scale(&state->skills[SKILL_DEVICE], -1, 4, 0);

@@ -328,13 +328,13 @@ static bool tile_picker_command(ui_event ke, bool *tile_picker_ptr,
 
 			/* Move the frame */
 			if (*char_left_ptr > MAX(0, (int)c - frame_left))
-				(*char_left_ptr)--;
+				--(*char_left_ptr);
 			if (*char_left_ptr + eff_width <= MIN(255, (int)c + frame_right))
-				(*char_left_ptr)++;
+				++(*char_left_ptr);
 			if (*attr_top_ptr > MAX(0, (int)a - frame_top))
-				(*attr_top_ptr)--;
+				--(*attr_top_ptr);
 			if (*attr_top_ptr + eff_height <= MIN(255, (int)a + frame_bottom))
-				(*attr_top_ptr)++;
+				++(*attr_top_ptr);
 
 			/* Delay */
 			*delay = 100;
@@ -473,15 +473,15 @@ static bool tile_picker_command(ui_event ke, bool *tile_picker_ptr,
 			if ((ddx[d] > 0) &&
 					*char_left_ptr + (width / tile_width) <=
 							MIN(255, (int)c + frame_right))
-			(*char_left_ptr)++;
+			++(*char_left_ptr);
 
 			if (ddy[d] < 0 &&
 					*attr_top_ptr > MAX(0, (int)a - frame_top))
-				(*attr_top_ptr)--;
+				++(*attr_top_ptr);
 			if (ddy[d] > 0 &&
 					*attr_top_ptr + (height / tile_height) <=
 							MIN(255, (int)a + frame_bottom))
-				(*attr_top_ptr)++;
+				++(*attr_top_ptr);
 
 			/* We need to always eat the input even if it is clipped,
 			 * otherwise it will be interpreted as a change object
@@ -506,13 +506,13 @@ static void display_glyphs(int col, int row, int height, int width, uint8_t a,
 	int x, y;
 
 	/* Clear the display lines */
-	for (i = 0; i < height; i++)
+	for (i = 0; i < height; ++i)
 	        Term_erase(col, row + i, width);
 
 	/* Prompt */
 	prt("Choose colour:", row + height/2, col);
 	Term_locate(&x, &y);
-	for (i = 0; i < MAX_COLORS; i++) big_pad(x + i, y, i, c);
+	for (i = 0; i < MAX_COLORS; ++i) big_pad(x + i, y, i, c);
 	
 	/* Place the cursor */
 	Term_gotoxy(x + a, y);
@@ -1284,11 +1284,11 @@ static int count_known_monsters(void)
 
 		if (!race->name) continue;
 
-		if (rf_has(race->flags, RF_UNIQUE)) m_count++;
+		if (rf_has(race->flags, RF_UNIQUE)) ++m_count;
 
-		for (j = 1; j < N_ELEMENTS(monster_group) - 1; j++) {
+		for (j = 1; j < N_ELEMENTS(monster_group) - 1; ++j) {
 			const wchar_t *pat = monster_group[j].chars;
-			if (wcschr(pat, race->d_char)) m_count++;
+			if (wcschr(pat, race->d_char)) ++m_count;
 		}
 	}
 
@@ -1319,11 +1319,11 @@ static void do_cmd_knowledge_monsters(const char *name, int row)
 
 		if (!race->name) continue;
 
-		if (rf_has(race->flags, RF_UNIQUE)) m_count++;
+		if (rf_has(race->flags, RF_UNIQUE)) ++m_count;
 
-		for (j = 1; j < N_ELEMENTS(monster_group) - 1; j++) {
+		for (j = 1; j < N_ELEMENTS(monster_group) - 1; ++j) {
 			const wchar_t *pat = monster_group[j].chars;
-			if (wcschr(pat, race->d_char)) m_count++;
+			if (wcschr(pat, race->d_char)) ++m_count;
 		}
 	}
 
@@ -1339,7 +1339,7 @@ static void do_cmd_knowledge_monsters(const char *name, int row)
 
 		if (!race->name) continue;
 
-		for (j = 0; j < N_ELEMENTS(monster_group) - 1; j++) {
+		for (j = 0; j < N_ELEMENTS(monster_group) - 1; ++j) {
 			const wchar_t *pat = monster_group[j].chars;
 			if (j == 0 && !rf_has(race->flags, RF_UNIQUE)) continue;
 			if (j > 0 && !wcschr(pat, race->d_char)) continue;
@@ -1442,8 +1442,8 @@ static struct object *find_artifact(struct artifact *artifact)
 	struct object *obj;
 
 	/* Ground objects */
-	for (y = 1; y < cave->height; y++) {
-		for (x = 1; x < cave->width; x++) {
+	for (y = 1; y < cave->height; ++y) {
+		for (x = 1; x < cave->width; ++x) {
 			struct loc grid = loc(x, y);
 			for (obj = square_object(cave, grid); obj; obj = obj->next) {
 				if (obj->artifact == artifact) return obj;
@@ -1482,8 +1482,8 @@ static struct object *find_artifact(struct artifact *artifact)
 		if (strstr(c->name, "known")) continue;
 
 		/* Ground objects */
-		for (y = 1; y < c->height; y++) {
-			for (x = 1; x < c->width; x++) {
+		for (y = 1; y < c->height; ++y) {
+			for (x = 1; x < c->width; ++x) {
 				struct loc grid = loc(x, y);
 				for (obj = square_object(c, grid); obj; obj = obj->next) {
 					if (obj->artifact == artifact) return obj;
@@ -1492,7 +1492,7 @@ static struct object *find_artifact(struct artifact *artifact)
 		}
 
 		/* Monster objects */
-		for (j = cave_monster_max(c) - 1; j >= 1; j--) {
+		for (j = cave_monster_max(c) - 1; j >= 1; --j) {
 			struct monster *mon = cave_monster(c, j);
 			obj = mon ? mon->held_obj : NULL;
 
@@ -1621,7 +1621,7 @@ static int collect_known_artifacts(int *artifacts, size_t artifacts_len)
 	if (artifacts)
 		assert(artifacts_len >= z_info->a_max);
 
-	for (j = 0; j < z_info->a_max; j++) {
+	for (j = 0; j < z_info->a_max; ++j) {
 		/* Artifact doesn't exist */
 		if (!a_info[j].name) continue;
 
@@ -1629,7 +1629,7 @@ static int collect_known_artifacts(int *artifacts, size_t artifacts_len)
 			if (artifacts)
 				artifacts[a_count++] = j;
 			else
-				a_count++;
+				++a_count;
 		}
 	}
 
@@ -1744,7 +1744,7 @@ static void do_cmd_knowledge_ego_items(const char *name, int row)
 	default_join = mem_zalloc(max_pairs * sizeof(join_t));
 
 	/* Look at all the ego items */
-	for (i = 0; i < z_info->e_max; i++)	{
+	for (i = 0; i < z_info->e_max; ++i)	{
 		struct ego_item *ego = &e_info[i];
 		if (ego->everseen || OPT(player, cheat_xtra)) {
 			size_t j;
@@ -1754,11 +1754,11 @@ static void do_cmd_knowledge_ego_items(const char *name, int row)
 			/* Note the tvals which are possible for this ego */
 			for (poss = ego->poss_items; poss; poss = poss->next) {
 				struct object_kind *kind = &k_info[poss->kidx];
-				tval[obj_group_order[kind->tval]]++;
+				++tval[obj_group_order[kind->tval]];
 			}
 
 			/* Count and put into the list */
-			for (j = 0; j < TV_MAX; j++) {
+			for (j = 0; j < TV_MAX; ++j) {
 				int gid = obj_group_order[j];
 
 				/* Ignore duplicates */
@@ -4048,14 +4048,14 @@ void do_cmd_query_symbol(void)
 		/* Move to previous or next monster */
 		if (query.code == '-') {
 			/* Previous is a step forward in the array */
-			idx++;
+			++idx;
 			/* Wrap if we're at the end of the array */
 			if (idx == num) {
 				idx = 0;
 			}
 		} else {
 			/* Next is a step back in the array */
-			idx--;
+			--idx;
 			/* Wrap if we're at the start of the array */
 			if (idx < 0) {
 				idx = num - 1;

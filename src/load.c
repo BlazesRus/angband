@@ -171,7 +171,7 @@ static struct object *rd_item(void)
 	}
 	rd_byte(&obj->notice);
 
-	for (i = 0; i < of_size; i++)
+	for (i = 0; i < of_size; ++i)
 		rd_byte(&obj->flags[i]);
 
 	for (i = 0; i < obj_mod_max; ++i) {
@@ -294,17 +294,17 @@ static bool rd_monster(struct chunk *c, struct monster *mon)
 	rd_byte(&mon->energy);
 	rd_byte(&tmp8u);
 
-	for (j = 0; j < tmp8u; j++)
+	for (j = 0; j < tmp8u; ++j)
 		rd_s16b(&mon->m_timed[j]);
 
 	/* Read and extract the flag */
-	for (j = 0; j < mflag_size; j++)
+	for (j = 0; j < mflag_size; ++j)
 		rd_byte(&mon->mflag[j]);
 
-	for (j = 0; j < of_size; j++)
+	for (j = 0; j < of_size; ++j)
 		rd_byte(&mon->known_pstate.flags[j]);
 
-	for (j = 0; j < elem_max; j++)
+	for (j = 0; j < elem_max; ++j)
 		rd_s16b(&mon->known_pstate.el_info[j].res_level);
 
 	rd_u16b(&tmp16u);
@@ -377,7 +377,7 @@ static void rd_trap(struct trap *trap)
 	rd_byte(&trap->power);
 	rd_byte(&trap->timeout);
 
-	for (i = 0; i < trf_size; i++)
+	for (i = 0; i < trf_size; ++i)
 		rd_byte(&trap->flags[i]);
 }
 
@@ -412,7 +412,7 @@ int rd_randomizer(void)
 		rd_u32b(&STATE[i]);
 
 	/* NULL padding */
-	for (i = 0; i < 59 - RAND_DEG; i++)
+	for (i = 0; i < 59 - RAND_DEG; ++i)
 		rd_u32b(&noop);
 
 	Rand_quick = false;
@@ -729,10 +729,10 @@ int rd_player(void)
 		return -1;
 	}
 
-	for (i = 0; i < stat_max; i++) rd_s16b(&player->stat_max[i]);
-	for (i = 0; i < stat_max; i++) rd_s16b(&player->stat_cur[i]);
-	for (i = 0; i < stat_max; i++) rd_s16b(&player->stat_map[i]);
-	for (i = 0; i < stat_max; i++) rd_s16b(&player->stat_birth[i]);
+	for (i = 0; i < stat_max; ++i) rd_s16b(&player->stat_max[i]);
+	for (i = 0; i < stat_max; ++i) rd_s16b(&player->stat_cur[i]);
+	for (i = 0; i < stat_max; ++i) rd_s16b(&player->stat_map[i]);
+	for (i = 0; i < stat_max; ++i) rd_s16b(&player->stat_birth[i]);
 
 	rd_s16b(&player->ht_birth);
 	rd_s16b(&player->wt_birth);
@@ -814,7 +814,7 @@ int rd_player(void)
 
 	if (num <= TMD_MAX) {
 		/* Read all the effects */
-		for (i = 0; i < num; i++)
+		for (i = 0; i < num; ++i)
 			rd_s16b(&player->timed[i]);
 
 		/* Initialize any entries not read */
@@ -822,7 +822,7 @@ int rd_player(void)
 			memset(player->timed + num, 0, (TMD_MAX - num) * sizeof(int16_t));
 	} else {
 		/* Probably in trouble anyway */
-		for (i = 0; i < TMD_MAX; i++)
+		for (i = 0; i < TMD_MAX; ++i)
 			rd_s16b(&player->timed[i]);
 
 		/* Discard unused entries */
@@ -860,7 +860,7 @@ int rd_ignore(void)
 	if (tmp8u != ignore_size) {
 		strip_bytes(tmp8u);
 	} else {
-		for (i = 0; i < ignore_size; i++)
+		for (i = 0; i < ignore_size; ++i)
 			rd_byte(&ignore_level[i]);
 	}
 
@@ -881,12 +881,12 @@ int rd_ignore(void)
 			e_info[i].everseen = (flags & 0x02) ? true : false;
 
 			/* Read and extract the ignore flags */
-			for (j = 0; j < itype_size; j++)
+			for (j = 0; j < itype_size; ++j)
 				rd_byte(&itypes[j]);
 
 			/* If number of ignore types has changed, don't set anything */
 			if (itype_size == ITYPE_SIZE) {
-				for (j = ITYPE_NONE; j < ITYPE_MAX; j++)
+				for (j = ITYPE_NONE; j < ITYPE_MAX; ++j)
 					if (itype_has(itypes, j))
 						ego_ignore_toggle(i, j);
 			}
@@ -991,7 +991,7 @@ int rd_misc(void)
 
 	/* Property knowledge */
 	/* Flags */
-	for (i = 0; i < OF_SIZE; i++)
+	for (i = 0; i < OF_SIZE; ++i)
 		rd_byte(&player->obj_k->flags[i]);
 
 	/* Modifiers */
@@ -1076,7 +1076,7 @@ int rd_player_hp(void)
 	}
 
 	/* Read the player_hp array */
-	for (i = 0; i < tmp16u; i++)
+	for (i = 0; i < tmp16u; ++i)
 		rd_s16b(&player->player_hp[i]);
 
 	return 0;
@@ -1104,11 +1104,11 @@ int rd_player_spells(void)
 	player_spells_init(player);
 	
 	/* Read the spell flags */
-	for (i = 0; i < tmp16u; i++)
+	for (i = 0; i < tmp16u; ++i)
 		rd_byte(&player->spell_flags[i]);
 	
 	/* Read the spell order */
-	for (i = 0, cnt = 0; i < tmp16u; i++, cnt++)
+	for (i = 0, cnt = 0; i < tmp16u; ++i, ++cnt)
 		rd_byte(&player->spell_order[cnt]);
 	
 	/* Success */
@@ -1150,7 +1150,7 @@ static int rd_gear_aux(rd_item_t rd_item_version, struct object **gear)
 		/* If it's equipment, wield it */
 		if (code < player->body.count) {
 			player->body.slots[code].obj = obj;
-			player->upkeep->equip_cnt++;
+			++player->upkeep->equip_cnt;
 		}
 
 		/* Get the next item code */
