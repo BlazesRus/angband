@@ -110,7 +110,7 @@ void Rand_state_init(uint32_t seed)
 		STATE[i] = LCRNG(STATE[i - 1]);
 
 	/* Cycle the table ten times per degree */
-	for (i = 0; i < RAND_DEG * 10; i++) {
+	for (i = 0; i < RAND_DEG * 10; ++i) {
 		/* Acquire the next index */
 		j = (state_i + 1) % RAND_DEG;
 

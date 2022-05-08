@@ -1790,7 +1790,7 @@ static errr CheckEvent(bool wait)
 
 
 	/* Scan the windows */
-	for (i = 0; i < MAX_TERM_DATA; i++) {
+	for (i = 0; i < MAX_TERM_DATA; ++i) {
 		if (xev->xany.window == data[i].win->win) {
 			td = &data[i];
 			iwin = td->win;
@@ -1986,7 +1986,7 @@ static errr Term_xtra_x11_react(void)
 		XSetWindowAttributes xattr;
 
 		/* Check the colors */
-		for (i = 0; i < MAX_COLORS; i++) {
+		for (i = 0; i < MAX_COLORS; ++i) {
 			if ((color_table_x11[i][0] != angband_color_table[i][0]) ||
 			    (color_table_x11[i][1] != angband_color_table[i][1]) ||
 			    (color_table_x11[i][2] != angband_color_table[i][2]) ||
@@ -2168,7 +2168,7 @@ static void save_prefs(void)
 	file_putf(fff, "TERM_WINS=%d\n\n", term_windows_open);
 
 	/* Save window prefs */
-	for (i = 0; i < MAX_TERM_DATA; i++) {
+	for (i = 0; i < MAX_TERM_DATA; ++i) {
 		term_data *td = &data[i];
 
 		if (!td->t.mapped_flag) continue;
@@ -2595,7 +2595,7 @@ static void hook_quit(const char *str)
 	save_prefs();
 
 	/* Free allocated data */
-	for (i = 0; i < term_windows_open; i++) {
+	for (i = 0; i < term_windows_open; ++i) {
 		term_data *td = &data[i];
 		term *t = &td->t;
 
@@ -2654,7 +2654,7 @@ errr init_x11(int argc, char **argv)
 	int line = 0;
 
 	/* Parse args */
-	for (i = 1; i < argc; i++) {
+	for (i = 1; i < argc; ++i) {
 		if (prefix(argv[i], "-d"))
 		{
 			dpy_name = &argv[i][2];
@@ -2792,7 +2792,7 @@ errr init_x11(int argc, char **argv)
 
 
 	/* Initialize the windows */
-	for (i = 0; i < num_term; i++) {
+	for (i = 0; i < num_term; ++i) {
 		term_data *td = &data[i];
 
 		/* Initialize the term_data */

@@ -229,7 +229,7 @@ static void store_base_power(struct artifact_set_data *data)
 	data->var_power = 0;
 	fake_total_power = mem_zalloc(z_info->a_max * sizeof(int));
 	fake_tv_power = mem_zalloc(TV_MAX * sizeof(int*));
-	for (i = 0; i < TV_MAX; i++) {
+	for (i = 0; i < TV_MAX; ++i) {
 		fake_tv_power[i] = mem_zalloc(z_info->a_max * sizeof(int));
 		data->min_tv_power[i] = INHIBIT_POWER + 1;
 		data->max_tv_power[i] = 0;
@@ -272,7 +272,7 @@ static void store_base_power(struct artifact_set_data *data)
 
 	data->avg_power = mean(fake_total_power, num);
 	data->var_power = variance(fake_total_power, num);
-	for (i = 0; i < TV_MAX; i++) {
+	for (i = 0; i < TV_MAX; ++i) {
 		if (data->tv_num[i]) {
 			data->avg_tv_power[i] = mean(fake_tv_power[i], data->tv_num[i]);
 		}
@@ -282,7 +282,7 @@ static void store_base_power(struct artifact_set_data *data)
 			  data->min_power);
 	file_putf(log_file, "Mean is %d, variance is %d\n", data->avg_power,
 			  data->var_power);
-	for (i = 0; i < TV_MAX; i++) {
+	for (i = 0; i < TV_MAX; ++i) {
 		if (data->avg_tv_power[i]) {
 			file_putf(log_file, "Power for tval %s: min %d, max %d, avg %d\n",
 					  tval_find_name(i), data->min_tv_power[i],
@@ -292,7 +292,7 @@ static void store_base_power(struct artifact_set_data *data)
 
 	/* Store the number of different types, for use later */
 	/* ToDo: replace this with full combination tracking */
-	for (i = 0; i < z_info->a_max; i++) {
+	for (i = 0; i < z_info->a_max; ++i) {
 		switch (a_info[i].tval)
 		{
 		case TV_SWORD:
@@ -324,7 +324,7 @@ static void store_base_power(struct artifact_set_data *data)
 		data->total++;
 	}
 
-	for (i = 0; i < TV_MAX; i++) {
+	for (i = 0; i < TV_MAX; ++i) {
 		mem_free(fake_tv_power[i]);
 	}
 	mem_free(fake_tv_power);
@@ -1056,7 +1056,7 @@ static void collect_artifact_data(struct artifact_set_data *data)
 	size_t i;
 
 	/* Go through the list of all artifacts */
-	for (i = 0; i < z_info->a_max; i++) {
+	for (i = 0; i < z_info->a_max; ++i) {
 		struct object_kind *kind;
 		const struct artifact *art = &a_info[i];
 
@@ -1277,7 +1277,7 @@ static void parse_frequencies(struct artifact_set_data *data)
 	collect_artifact_data(data);
 
 	/* Big hack, reduce frequencies of sharp weapons */
-	for (i = 0; i < TV_MAX; i++) {
+	for (i = 0; i < TV_MAX; ++i) {
 		if ((i == TV_SWORD) || (i == TV_POLEARM)) {
 			data->tv_probs[i] *= 2;
 			data->tv_probs[i] /= 3;
@@ -1397,7 +1397,7 @@ static void artifact_prep(struct artifact *art, const struct object_kind *kind,
 	art->activation = NULL;
 	string_free(art->alt_msg);
 	art->alt_msg = NULL;
-	for (i = 0; i < OBJ_MOD_MAX; i++) {
+	for (i = 0; i < OBJ_MOD_MAX; ++i) {
 		art->modifiers[i] = randcalc(kind->modifiers[i], 0, MINIMISE);
 	}
 	for (i = 0; i < ELEM_MAX; i++)
@@ -1473,7 +1473,7 @@ static void build_freq_table(struct artifact *art, int *freq,
 	int f_temp[ART_IDX_TOTAL];
 
 	/* First, set everything to zero */
-	for (i = 0; i < ART_IDX_TOTAL; i++) {
+	for (i = 0; i < ART_IDX_TOTAL; ++i) {
 		f_temp[i] = 0;
 		freq[i] = 0;
 	}
@@ -1827,7 +1827,7 @@ static void add_low_resist(struct artifact *art)
 	r = randint0(count);
 	count = 0;
 
-	for (i = ELEM_BASE_MIN; i < ELEM_HIGH_MIN; i++) {
+	for (i = ELEM_BASE_MIN; i < ELEM_HIGH_MIN; ++i) {
 		if (art->el_info[i].res_level > 0) continue;
 		if (r == count++) {
 			add_resist(art, i);
@@ -1907,7 +1907,7 @@ static void add_brand(struct artifact *art)
 	/* Frequently add the corresponding resist */
 	if (randint0(4)) {
 		size_t i;
-		for (i = ELEM_BASE_MIN; i < ELEM_HIGH_MIN; i++) {
+		for (i = ELEM_BASE_MIN; i < ELEM_HIGH_MIN; ++i) {
 			if (streq(brand->name, projections[i].name) &&
 				(art->el_info[i].res_level <= 0)) {
 				add_resist(art, i);
@@ -2039,7 +2039,7 @@ static void add_activation(struct artifact *art, int target_power,
 	int count = 0;
 
 	/* Work out the maximum allowed activation power */
-	for (i = 0; i < z_info->act_max; i++) {
+	for (i = 0; i < z_info->act_max; ++i) {
 		struct activation *act = &activations[i];
 		if ((act->power > max_effect) && (act->power < INHIBIT_POWER))
 			max_effect = act->power;
@@ -2505,7 +2505,7 @@ static void remove_contradictory(struct artifact *art)
 	/* Remove any conflicting curses */
 	if (art->curses) {
 		int i;
-		for (i = 1; i < z_info->curse_max; i++) {
+		for (i = 1; i < z_info->curse_max; ++i) {
 			if (artifact_curse_conflicts(art, i)) {
 				art->curses[i] = 0;
 				check_artifact_curses(art);
@@ -2578,7 +2578,7 @@ static void make_bad(struct artifact *art, int level)
 	if (one_in_(7))
 		of_on(art->flags, OF_NO_TELEPORT);
 
-	for (i = 0; i < OBJ_MOD_MAX; i++) {
+	for (i = 0; i < OBJ_MOD_MAX; ++i) {
 		if ((art->modifiers[i] > 0) && one_in_(2) && (i != OBJ_MOD_MIGHT)) {
 			art->modifiers[i] = -art->modifiers[i];
 		}
@@ -2876,7 +2876,7 @@ static void create_artifact_set(struct artifact_set_data *data)
 	bool not_done = true;
 
 	/* Get min tval frequencies for the new artifacts */
-	for (i = 0; i < TV_MAX; i++) {
+	for (i = 0; i < TV_MAX; ++i) {
 		/* At least 80% as many for each tval */
 		tval_total[i] = (4 * (data->tv_num[i] + 1)) / 5;
 	}
@@ -2886,7 +2886,7 @@ static void create_artifact_set(struct artifact_set_data *data)
 		not_done = false;
 
 		/* Multiple passes through tvals until all have enough artifacts */ 
-		for (i = 0; i < TV_MAX; i++) {
+		for (i = 0; i < TV_MAX; ++i) {
 			if (tval_total[i] > 0) {
 				design_artifact(data, i, &aidx);
 				tval_total[i]--;
@@ -3114,7 +3114,7 @@ void do_randart(uint32_t randart_seed, bool create_file)
 				  randart_seed);
 
 		/* Write individual entries */
-		for (i = 1; i < z_info->a_max; i++) {
+		for (i = 1; i < z_info->a_max; ++i) {
 			const struct artifact *art = &a_info[i];
 			write_randart_entry(log_file, art);
 		}

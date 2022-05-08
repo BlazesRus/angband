@@ -108,7 +108,7 @@ void nds_scrkey_redraw_key(nds_scrkey_entry *key, bool initial, bool active)
 	int str_x = key->x + key->w / 2 - strnlen(key->label, NDS_SCRKEY_LABEL_LEN) * nds_font->width / 2;
 	int str_y = NDS_SCREEN_HEIGHT + key->y + key->h / 2 - nds_font->height / 2;
 
-	for (int i = 0; i < NDS_SCRKEY_LABEL_LEN && key->label[i]; i++) {
+	for (int i = 0; i < NDS_SCRKEY_LABEL_LEN && key->label[i]; ++i) {
 		nds_draw_char_px(str_x + (i * nds_font->width), str_y, key->label[i],
 		                 active ? NDS_CURSOR_COLOR : NDS_WHITE_PIXEL, NDS_BLACK_PIXEL);
 	}
@@ -121,7 +121,7 @@ void nds_scrkey_redraw(bool initial)
 	nds_font = &nds_font_5x8;
 
 	/* Redraw all keys */
-	for (int i = 0; i < nds_scrkeys_num; i++) {
+	for (int i = 0; i < nds_scrkeys_num; ++i) {
 		nds_scrkey_redraw_key(&nds_scrkeys[i], initial, false);
 	}
 
@@ -156,7 +156,7 @@ void nds_scrkey_vblank()
 	touchPosition touch;
 	touchRead(&touch);
 
-	for (int i = 0; i < nds_scrkeys_num; i++) {
+	for (int i = 0; i < nds_scrkeys_num; ++i) {
 		nds_scrkey_entry *entry = &nds_scrkeys[i];
 
 		if (touch.px < entry->x || touch.py < entry->y ||
@@ -172,7 +172,7 @@ void nds_scrkey_vblank()
 
 		need_redraw = true;
 
-		for (int si = 0; si < NDS_SCRKEY_SEQ_LEN && entry->sequence[si]; si++) {
+		for (int si = 0; si < NDS_SCRKEY_SEQ_LEN && entry->sequence[si]; s++i) {
 			nds_event_put_key(entry->sequence[si], 0);
 		}
 

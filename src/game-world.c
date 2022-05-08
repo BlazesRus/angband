@@ -240,7 +240,7 @@ static void recharge_objects(void)
 	}
 
 	/* Recharge other level objects */
-	for (i = 1; i < cave->obj_max; i++) {
+	for (i = 1; i < cave->obj_max; ++i) {
 		obj = cave->objects[i];
 		if (!obj) continue;
 
@@ -283,7 +283,7 @@ static void decrease_timeouts(void)
 	int i;
 
 	/* Most timed effects decrement by 1 */
-	for (i = 0; i < TMD_MAX; i++) {
+	for (i = 0; i < TMD_MAX; ++i) {
 		int decr = 1;
 		if (!player->timed[i])
 			continue;
@@ -340,7 +340,7 @@ static void decrease_timeouts(void)
 	}
 
 	/* Curse effects always decrement by 1 */
-	for (i = 0; i < player->body.count; i++) {
+	for (i = 0; i < player->body.count; ++i) {
 		struct curse_data *curse = NULL;
 		if (player->body.slots[i].obj == NULL) {
 			continue;
@@ -827,7 +827,7 @@ static void process_player_cleanup(void)
 				player->upkeep->redraw |= (PR_MAP);
 
 			/* Shimmer multi-hued monsters */
-			for (i = 1; i < cave_monster_max(cave); i++) {
+			for (i = 1; i < cave_monster_max(cave); ++i) {
 				struct monster *mon = cave_monster(cave, i);
 				if (!mon->race)
 					continue;
@@ -837,7 +837,7 @@ static void process_player_cleanup(void)
 			}
 
 			/* Clear NICE flag, and show marked monsters */
-			for (i = 1; i < cave_monster_max(cave); i++) {
+			for (i = 1; i < cave_monster_max(cave); ++i) {
 				struct monster *mon = cave_monster(cave, i);
 				mflag_off(mon->mflag, MFLAG_NICE);
 				if (mflag_has(mon->mflag, MFLAG_MARK)) {
@@ -851,7 +851,7 @@ static void process_player_cleanup(void)
 	}
 
 	/* Clear SHOW flag and player drop status */
-	for (i = 1; i < cave_monster_max(cave); i++) {
+	for (i = 1; i < cave_monster_max(cave); ++i) {
 		struct monster *mon = cave_monster(cave, i);
 		mflag_off(mon->mflag, MFLAG_SHOW);
 	}

@@ -295,7 +295,7 @@ int message_lookup_by_name(const char *name)
 	if (sscanf(name, "%u", &number) == 1)
 		return (number < MSG_MAX) ? (int)number : -1;
 
-	for (i = 0; i < N_ELEMENTS(message_names); i++) {
+	for (i = 0; i < N_ELEMENTS(message_names); ++i) {
 		if (my_stricmp(name, message_names[i]) == 0)
 			return (int)i;
 	}
@@ -319,7 +319,7 @@ int message_lookup_by_sound_name(const char *name)
 	size_t i;
 
 	/* Exclude MSG_MAX since it has NULL for the sound's name. */
-	for (i = 0; i < N_ELEMENTS(sound_names) - 1; i++) {
+	for (i = 0; i < N_ELEMENTS(sound_names) - 1; ++i) {
 		if (my_stricmp(name, sound_names[i]) == 0)
 			return (int)i;
 	}

@@ -176,7 +176,7 @@ struct magic_realm *class_magic_realms(const struct player_class *c, int *count)
 		return NULL;
 	}
 
-	for (i = 0; i < c->magic.num_books; i++) {
+	for (i = 0; i < c->magic.num_books; ++i) {
 		struct magic_realm *r_test = r;
 		struct class_book *book = &c->magic.books[i];
 		bool found = false;

@@ -79,7 +79,7 @@ static void info_out_list(textblock *tb, const char *list[], size_t count)
 {
 	size_t i;
 
-	for (i = 0; i < count; i++) {
+	for (i = 0; i < count; ++i) {
 		textblock_append(tb, "%s", list[i]);
 		if (i != (count - 1)) textblock_append(tb, ", ");
 	}
@@ -95,7 +95,7 @@ static size_t element_info_collect(const bool list[], const char *recepticle[])
 {
 	int i, count = 0;
 
-	for (i = 0; i < ELEM_MAX; i++) {
+	for (i = 0; i < ELEM_MAX; ++i) {
 		if (list[i])
 			recepticle[count++] = projections[i].name;
 	}
@@ -121,7 +121,7 @@ static bool describe_curses(textblock *tb, const struct object *obj,
 
 	if (!c)
 		return false;
-	for (i = 1; i < z_info->curse_max; i++) {
+	for (i = 1; i < z_info->curse_max; ++i) {
 		if (c[i].power) {
 			textblock_append(tb, "It ");
 			textblock_append_c(tb, COLOUR_L_RED, "%s", curses[i].desc);
@@ -167,7 +167,7 @@ static bool describe_stats(textblock *tb, const struct object *obj,
 	if (!count)
 		return false;
 
-	for (i = 0; i < OBJ_MOD_MAX; i++) {
+	for (i = 0; i < OBJ_MOD_MAX; ++i) {
 		const char *desc = lookup_obj_property(OBJ_PROPERTY_MOD, i)->name;
 		int val = obj->known->modifiers[i];
 		if (!val) continue;
@@ -241,7 +241,7 @@ static bool describe_protects(textblock *tb, const bitflag flags[OF_SIZE])
 	int i, count = 0;
 
 	/* Protections */
-	for (i = 1; i < OF_MAX; i++) {
+	for (i = 1; i < OF_MAX; ++i) {
 		struct obj_property *prop = lookup_obj_property(OBJ_PROPERTY_FLAG, i);
 		if (prop->subtype != OFT_PROT) continue;
 		if (of_has(flags, prop->index)) {
@@ -311,7 +311,7 @@ static bool describe_sustains(textblock *tb, const bitflag flags[OF_SIZE])
 	const char *descs[STAT_MAX];
 	int i, count = 0;
 
-	for (i = 0; i < STAT_MAX; i++) {
+	for (i = 0; i < STAT_MAX; ++i) {
 		struct obj_property *prop = lookup_obj_property(OBJ_PROPERTY_STAT, i);
 		if (of_has(flags, sustain_flag(prop->index)))
 			descs[count++] = prop->name;
@@ -335,7 +335,7 @@ static bool describe_misc_magic(textblock *tb, const bitflag flags[OF_SIZE])
 	int i;
 	bool printed = false;
 
-	for (i = 1; i < OF_MAX; i++) {
+	for (i = 1; i < OF_MAX; ++i) {
 		struct obj_property *prop = lookup_obj_property(OBJ_PROPERTY_FLAG, i);
 		if ((prop->subtype != OFT_MISC)  && (prop->subtype != OFT_MELEE) &&
 			(prop->subtype != OFT_BAD)) continue;
@@ -367,14 +367,14 @@ static bool describe_slays(textblock *tb, const struct object *obj)
 	else
 		textblock_append(tb, "It causes your melee attacks to slay ");
 
-	for (i = 1; i < z_info->slay_max; i++) {
+	for (i = 1; i < z_info->slay_max; ++i) {
 		if (s[i]) {
 			count++;
 		}
 	}
 
 	assert(count >= 1);
-	for (i = 1; i < z_info->slay_max; i++) {
+	for (i = 1; i < z_info->slay_max; ++i) {
 		if (!s[i]) continue;
 
 		textblock_append(tb, "%s", slays[i].name);
@@ -405,14 +405,14 @@ static bool describe_brands(textblock *tb, const struct object *obj)
 	else
 		textblock_append(tb, "It brands your melee attacks with ");
 
-	for (i = 1; i < z_info->brand_max; i++) {
+	for (i = 1; i < z_info->brand_max; ++i) {
 		if (b[i]) {
 			count++;
 		}
 	}
 
 	assert(count >= 1);
-	for (i = 1; i < z_info->brand_max; i++) {
+	for (i = 1; i < z_info->brand_max; ++i) {
 		if (!b[i]) continue;
 
 		if (brands[i].multiplier < 3)
@@ -558,7 +558,7 @@ static void get_known_elements(const struct object *obj,
 	size_t i;
 
 	/* Grab the element info */
-	for (i = 0; i < ELEM_MAX; i++) {
+	for (i = 0; i < ELEM_MAX; ++i) {
 		/* Report fake egos or known element info */
 		if (player->obj_k->el_info[i].res_level || (mode & OINFO_SPOIL))
 			el_info[i].res_level = obj->known->el_info[i].res_level;
@@ -711,7 +711,7 @@ static bool describe_blows(textblock *tb, const struct object *obj)
 			(blow_info[0].centiblows > 100) ? "s" : "");
 
 	/* Then list combinations that give more blows / speed boost */
-	for (i = 1; i < num_entries; i++) {
+	for (i = 1; i < num_entries; ++i) {
 		struct blow_info entry = blow_info[i];
 
 		if (entry.centiblows % 10 == 0) {
@@ -834,7 +834,7 @@ static bool obj_known_damage(const struct object *obj, int *normal_damage,
 	/* Melee weapons may get slays and brands from other items */
 	*nonweap_slay = false;
 	if (weapon)	{
-		for (i = 2; i < player->body.count; i++) {
+		for (i = 2; i < player->body.count; ++i) {
 			struct object *slot_obj = slot_object(player, i);
 			if (!slot_obj)
 				continue;
@@ -851,7 +851,7 @@ static bool obj_known_damage(const struct object *obj, int *normal_damage,
 	}
 
 	/* Get damage for each brand on the objects */
-	for (i = 1; i < z_info->brand_max; i++) {
+	for (i = 1; i < z_info->brand_max; ++i) {
 		/*
 		 * Must have the brand, possibly from a spell; temporary brands
 		 * only affect melee attacks.
@@ -880,7 +880,7 @@ static bool obj_known_damage(const struct object *obj, int *normal_damage,
 	}
 
 	/* Get damage for each slay on the objects */
-	for (i = 1; i < z_info->slay_max; i++) {
+	for (i = 1; i < z_info->slay_max; ++i) {
 		/*
 		 * Must have the slay, possibly from a spell; temporary slays
 		 * only affect melee attacks.
@@ -1025,7 +1025,7 @@ static bool o_obj_known_damage(const struct object *obj, int *normal_damage,
 	/* Melee weapons may get slays and brands from other items */
 	*nonweap_slay = false;
 	if (weapon)	{
-		for (i = 2; i < player->body.count; i++) {
+		for (i = 2; i < player->body.count; ++i) {
 			struct object *slot_obj = slot_object(player, i);
 			if (!slot_obj)
 				continue;
@@ -1042,7 +1042,7 @@ static bool o_obj_known_damage(const struct object *obj, int *normal_damage,
 	}
 
 	/* Increase die average for each brand on the objects */
-	for (i = 1; i < z_info->brand_max; i++) {
+	for (i = 1; i < z_info->brand_max; ++i) {
 		int brand_average, add = brands[i].o_multiplier - 10;
 
 		/*
@@ -1078,7 +1078,7 @@ static bool o_obj_known_damage(const struct object *obj, int *normal_damage,
 	}
 
 	/* Get damage for each slay on the objects */
-	for (i = 1; i < z_info->slay_max; i++) {
+	for (i = 1; i < z_info->slay_max; ++i) {
 		int slay_average, add = slays[i].o_multiplier - 10;
 
 		/*
@@ -1177,20 +1177,20 @@ static bool describe_damage(textblock *tb, const struct object *obj, bool throw)
 		 * Assemble the indices.  Do the slays first so, if tied
 		 * for damage, they'll appear first.  That's easier to read.
 		 */
-		for (i = 0; i < z_info->slay_max; i++) {
+		for (i = 0; i < z_info->slay_max; ++i) {
 			if (slay_damage[i] > 0) {
 				sortind[nsort] = i + z_info->brand_max;
 				++nsort;
 			}
 		}
-		for (i = 0; i < z_info->brand_max; i++) {
+		for (i = 0; i < z_info->brand_max; ++i) {
 			if (brand_damage[i] > 0) {
 				sortind[nsort] = i;
 				++nsort;
 			}
 		}
 		/* Sort.  Since the number is small, insertion sort is fine. */
-		for (i = 0; i < nsort - 1; i++) {
+		for (i = 0; i < nsort - 1; ++i) {
 			int maxdam = (sortind[i] < z_info->brand_max) ?
 				brand_damage[sortind[i]] :
 				slay_damage[sortind[i] - z_info->brand_max];
@@ -1221,7 +1221,7 @@ static bool describe_damage(textblock *tb, const struct object *obj, bool throw)
 		groupn = 0;
 		lastnm = NULL;
 		last_is_brand = false;
-		for (i = 0; i < nsort; i++) {
+		for (i = 0; i < nsort; ++i) {
 			const char *tgt;
 			int dam;
 			bool is_brand;
@@ -1463,7 +1463,7 @@ static bool obj_known_digging(struct object *obj, int deciturns[])
 	calc_digging_chances(&state, chances);
 
 	/* Digging chance is out of 1600 */
-	for (i = DIGGING_RUBBLE; i < DIGGING_MAX; i++) {
+	for (i = DIGGING_RUBBLE; i < DIGGING_MAX; ++i) {
 		int chance = MIN(1600, chances[i]);
 		deciturns[i] = chance ? (16000 / chance) : 0;
 	}
@@ -1485,7 +1485,7 @@ static bool describe_digger(textblock *tb, const struct object *obj)
 	/* Get useful info or print nothing */
 	if (!obj_known_digging(obj1, deciturns)) return false;
 
-	for (i = DIGGING_RUBBLE; i < DIGGING_DOORS; i++) {
+	for (i = DIGGING_RUBBLE; i < DIGGING_DOORS; ++i) {
 		if (i == 0 && deciturns[0] > 0) {
 			if (tval_is_melee_weapon(obj))
 				textblock_append(tb, "Clears ");
@@ -2002,7 +2002,7 @@ textblock *object_info_ego(struct ego_item *ego)
 	size_t i;
 	textblock *result;
 
-	for (i = 0; i < z_info->k_max; i++) {
+	for (i = 0; i < z_info->k_max; ++i) {
 		kind = &k_info[i];
 		if (!kind->name)
 			continue;

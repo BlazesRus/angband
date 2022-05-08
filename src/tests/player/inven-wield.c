@@ -152,7 +152,7 @@ static bool check_similar(const struct object* obj1, const struct object *obj2) 
 	if (obj1 == NULL) return obj2 == NULL;
 	if (obj1->kind != obj2->kind) return false;
 	if (!of_is_equal(obj1->flags, obj2->flags)) return false;
-	for (i = 0; i < ELEM_MAX; i++) {
+	for (i = 0; i < ELEM_MAX; ++i) {
 		if (obj1->el_info[i].res_level != obj2->el_info[i].res_level)
 			return false;
 		if ((obj1->el_info[i].flags & (EL_INFO_HATES | EL_INFO_IGNORE)) !=
@@ -169,7 +169,7 @@ static bool check_similar(const struct object* obj1, const struct object *obj2) 
 		if (obj1->to_d != obj2->to_d) return false;
 		if (obj1->to_a != obj2->to_a) return false;
 
-		for (i = 0; i < OBJ_MOD_MAX; i++) {
+		for (i = 0; i < OBJ_MOD_MAX; ++i) {
 			if (obj1->modifiers[i] != obj2->modifiers[i])
 				return false;
 		}

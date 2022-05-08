@@ -338,7 +338,7 @@ static void option_toggle_menu(const char *name, int page)
 	m->title = name;
 
 	/* Find the number of valid entries */
-	for (i = 0; i < OPT_PAGE_PER; i++) {
+	for (i = 0; i < OPT_PAGE_PER; ++i) {
 		if (option_page[page][i] == OPT_none)
 			break;
 	}
@@ -406,7 +406,7 @@ static void do_cmd_options_win(const char *name, int row)
 		}
 
 		/* Display the options */
-		for (i = 0; i < PW_MAX_FLAGS; i++) {
+		for (i = 0; i < PW_MAX_FLAGS; ++i) {
 			uint8_t a = COLOUR_WHITE;
 
 			const char *str = window_flag_desc[i];
@@ -876,7 +876,7 @@ static void colors_modify(const char *title, int row)
 		clear_from(10);
 
 		/* Exhibit the normal colors */
-		for (i = 0; i < BASIC_COLORS; i++) {
+		for (i = 0; i < BASIC_COLORS; ++i) {
 			/* Exhibit this color */
 			Term_putstr(i*3, 20, -1, a, "##");
 
@@ -1395,7 +1395,7 @@ static void ego_menu(const char *unused, int also_unused)
 	choice = mem_zalloc(z_info->e_max * ITYPE_MAX * sizeof(struct ego_desc));
 
 	/* Get the valid ego-items */
-	for (i = 0; i < z_info->e_max; i++) {
+	for (i = 0; i < z_info->e_max; ++i) {
 		int itype;
 		ego = &e_info[i];
 
@@ -1665,7 +1665,7 @@ bool ignore_tval(int tval)
 	size_t i;
 
 	/* Only ignore if the tval's allowed */
-	for (i = 0; i < N_ELEMENTS(sval_dependent); i++) {
+	for (i = 0; i < N_ELEMENTS(sval_dependent); ++i) {
 		if (kb_info[tval].num_svals == 0) continue;
 		if (tval == sval_dependent[i].tval)
 			return true;
@@ -1748,7 +1748,7 @@ static int ignore_collect_kind(int tval, ignore_choice **ch)
 	/* Create the array, with entries both for aware and unaware ignore */
 	choice = mem_alloc(2 * z_info->k_max * sizeof *choice);
 
-	for (i = 1; i < z_info->k_max; i++) {
+	for (i = 1; i < z_info->k_max; ++i) {
 		struct object_kind *kind = &k_info[i];
 
 		/* Skip empty objects, unseen objects, and incorrect tvals */
@@ -1847,7 +1847,7 @@ static bool seen_tval(int tval)
 {
 	int i;
 
-	for (i = 1; i < z_info->k_max; i++) {
+	for (i = 1; i < z_info->k_max; ++i) {
 		struct object_kind *kind = &k_info[i];
 
 		/* Skip empty objects, unseen objects, and incorrect tvals */

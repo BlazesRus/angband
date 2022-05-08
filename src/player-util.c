@@ -65,7 +65,7 @@ int dungeon_get_next_level(struct player *p, int dlev, int added)
 	if (target_level < 0) target_level = 0;
 
 	/* Check intermediate levels for quests */
-	for (i = dlev; i <= target_level; i++) {
+	for (i = dlev; i <= target_level; ++i) {
 		if (is_quest(p, i)) return i;
 	}
 
@@ -113,7 +113,7 @@ bool player_get_recall_depth(struct player *p)
 		}
 
 		/* Is that level valid? */
-		for (i = 0; i < chunk_list_max; i++) {
+		for (i = 0; i < chunk_list_max; ++i) {
 			if (chunk_list[i]->depth == new) {
 				level_ok = true;
 				break;
@@ -307,7 +307,7 @@ int16_t modify_stat_value(int value, int amount)
 	/* Reward or penalty */
 	if (amount > 0) {
 		/* Apply each point */
-		for (i = 0; i < amount; i++) {
+		for (i = 0; i < amount; ++i) {
 			/* One point at a time */
 			if (value < 18) value++;
 
@@ -316,7 +316,7 @@ int16_t modify_stat_value(int value, int amount)
 		}
 	} else if (amount < 0) {
 		/* Apply each point */
-		for (i = 0; i < (0 - amount); i++) {
+		for (i = 0; i < (0 - amount); ++i) {
 			/* Ten points at a time */
 			if (value >= 18+10) value -= 10;
 
@@ -1196,7 +1196,7 @@ bool player_book_has_unlearned_spells(struct player *p)
 	/* Check through all available books */
 	item_num = scan_items(item_list, item_max, p, USE_INVEN | USE_FLOOR,
 		obj_can_study);
-	for (i = 0; i < item_num; i++) {
+	for (i = 0; i < item_num; ++i) {
 		const struct class_book *book = player_object_to_book(p, item_list[i]);
 		if (!book) continue;
 

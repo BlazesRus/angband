@@ -703,7 +703,7 @@ static void sdl_ButtonBankDrawAll(sdl_ButtonBank *bank)
 {
 	int i;
 
-	for (i = 0; i < MAX_BUTTONS; i++) {
+	for (i = 0; i < MAX_BUTTONS; ++i) {
 		sdl_Button *button = &bank->buttons[i];
 		
 		if (!bank->used[i]) continue;
@@ -804,7 +804,7 @@ static bool sdl_ButtonBankMouseDown(sdl_ButtonBank *bank, int x, int y)
 	int i;
 
 	/* Check every button */
-	for (i = 0; i < MAX_BUTTONS; i++) {
+	for (i = 0; i < MAX_BUTTONS; ++i) {
 		sdl_Button *button = &bank->buttons[i];
 		
 		/* Discard some */
@@ -832,7 +832,7 @@ static bool sdl_ButtonBankMouseUp(sdl_ButtonBank *bank, int x, int y)
 	int i;
 
 	/* Check every button */
-	for (i = 0; i < MAX_BUTTONS; i++) {
+	for (i = 0; i < MAX_BUTTONS; ++i) {
 		sdl_Button *button = &bank->buttons[i];
 		
 		/* Discard some */
@@ -981,7 +981,7 @@ static void hook_quit(const char *str)
 	string_free(sdl_settings_file);
 
 	/* Free the surfaces of the windows */
-	for (i = 0; i < ANGBAND_TERM_MAX; i++) {
+	for (i = 0; i < ANGBAND_TERM_MAX; ++i) {
 		term_windowFree(&windows[i]);
 		string_free(windows[i].req_font);
 	}
@@ -1147,7 +1147,7 @@ static void sdl_BlitAll(void)
 	/* int32 ccolour = SDL_MapRGB(AppWin->format, 160, 40, 40); */
 	SDL_FillRect(AppWin, NULL, back_pixel_colour);
 
-	for (i = 0; i < ANGBAND_TERM_MAX; i++) {
+	for (i = 0; i < ANGBAND_TERM_MAX; ++i) {
 		term_window *win = &windows[Zorder[i]];
 		
 		if (!win->surface) continue;
@@ -1281,7 +1281,7 @@ static void TermActivate(sdl_Button *sender)
 	int i, maxl = 0; 
 	int width, height = ANGBAND_TERM_MAX * (StatusBar.font.height + 1);
 
-	for (i = 0; i < ANGBAND_TERM_MAX; i++) {
+	for (i = 0; i < ANGBAND_TERM_MAX; ++i) {
 		int l = strlen(angband_term_name[i]); 
 		if (l > maxl) maxl = l;
 	}
@@ -1292,7 +1292,7 @@ static void TermActivate(sdl_Button *sender)
 	PopUp.left = sender->pos.x;
 	PopUp.top = sender->pos.y;
 
-	for (i = 0; i < ANGBAND_TERM_MAX; i++) {
+	for (i = 0; i < ANGBAND_TERM_MAX; ++i) {
 		int h = PopUp.font.height;
 		int b = sdl_ButtonBankNew(&PopUp.buttons);
 		sdl_Button *button = sdl_ButtonBankGet(&PopUp.buttons, b);
@@ -1363,7 +1363,7 @@ static void FontActivate(sdl_Button *sender)
 	int i, maxl = 0; 
 	int width, height = num_fonts * (StatusBar.font.height + 1);
 
-	for (i = 0; i < num_fonts; i++) {
+	for (i = 0; i < num_fonts; ++i) {
 		int l = strlen(FontList[i]); 
 		if (l > maxl) maxl = l;
 	}
@@ -1374,7 +1374,7 @@ static void FontActivate(sdl_Button *sender)
 	PopUp.left = sender->pos.x;
 	PopUp.top = sender->pos.y;
 
-	for (i = 0; i < num_fonts; i++) {
+	for (i = 0; i < num_fonts; ++i) {
 		int h = PopUp.font.height;
 		int b = sdl_ButtonBankNew(&PopUp.buttons);
 		sdl_Button *button = sdl_ButtonBankGet(&PopUp.buttons, b);
@@ -1419,7 +1419,7 @@ static void AcceptChanges(sdl_Button *sender)
 	/* Invalidate all the gfx surfaces */
 	if (do_update) {
 		int i;
-		for (i = 0; i < ANGBAND_TERM_MAX; i++) {
+		for (i = 0; i < ANGBAND_TERM_MAX; ++i) {
 			term_window *win = &windows[i];
 			if (win->tiles) {
 				SDL_FreeSurface(win->tiles);
@@ -1841,7 +1841,7 @@ static errr load_prefs(void)
 	int i;
 
 	/* Initialize the windows with crappy defaults! */
-	for (i = 0; i < ANGBAND_TERM_MAX; i++) {
+	for (i = 0; i < ANGBAND_TERM_MAX; ++i) {
 		win = &windows[i];
 		
 		/* Clear the data */
@@ -1956,7 +1956,7 @@ static errr save_prefs(void)
 	file_putf(fff, "TileWidth = %d\n\n", tile_width);
 	file_putf(fff, "TileHeight = %d\n\n", tile_height);
 
-	for (i = 0; i < ANGBAND_TERM_MAX; i++) {
+	for (i = 0; i < ANGBAND_TERM_MAX; ++i) {
 		term_window *win = &windows[i];
 		
 		file_putf(fff, "Window = %d\n", i);
@@ -2044,7 +2044,7 @@ static void sdl_HandleMouseEvent(SDL_Event *event)
 					Movingy = mouse.y - win->top;
 				}
 				
-				for (i = 0; i < ANGBAND_TERM_MAX; i++) {
+				for (i = 0; i < ANGBAND_TERM_MAX; ++i) {
 					term_window *snapper = &windows[i];
 					
 					/* Can't snap to self... */
@@ -3103,7 +3103,7 @@ static errr Term_pict_sdl(int col, int row, int n, const int *ap,
 	Term_wipe_sdl_helper(col, row, n * tile_width, tile_height);
 
 	/* Blit 'em! (it) */
-	for (i = 0; i < n; i++) {
+	for (i = 0; i < n; ++i) {
 		/* Get the terrain tile */
 		j = (tap[i] & 0x7f);
 		src.x = (tcp[i] & 0x7F) * src.w;
@@ -3377,7 +3377,7 @@ static errr load_gfx(void)
 	overdraw_max = current_graphics_mode->overdrawMax;
 
 	/* Set double-height tile handling for terminals. */
-	for (i = 0; i < ANGBAND_TERM_MAX; i++) {
+	for (i = 0; i < ANGBAND_TERM_MAX; ++i) {
 		if (angband_term[i]) {
 			angband_term[i]->dblh_hook = (overdraw) ?
 				is_dh_tile : NULL;
@@ -3439,7 +3439,7 @@ static void init_windows(void)
 {
 	int i;
 
-	for (i = 0; i < ANGBAND_TERM_MAX; i++) {
+	for (i = 0; i < ANGBAND_TERM_MAX; ++i) {
 		term_window *win = &windows[i];
 		
 		/* Only bother with visible windows */
@@ -3529,7 +3529,7 @@ static void init_sdl_local(void)
 						   back_colour.g, back_colour.b);
 
 	/* Initialize the colours */
-	for (i = 0; i < MAX_COLORS; i++) {
+	for (i = 0; i < MAX_COLORS; ++i) {
 		text_colours[i].r = angband_color_table[i][1];
 		text_colours[i].g = angband_color_table[i][2];
 		text_colours[i].b = angband_color_table[i][3];

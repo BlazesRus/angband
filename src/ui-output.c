@@ -110,7 +110,7 @@ static void display_area(const wchar_t *text, const uint8_t *attrs,
 
 	n_lines = MIN(n_lines, (size_t) area.page_rows);
 
-	for (i = 0; i < n_lines; i++) {
+	for (i = 0; i < n_lines; ++i) {
 		Term_erase(area.col, area.row + i, area.width);
 		for (j = 0; j < line_lengths[line_from + i]; j++) {
 			Term_putch(area.col + j, area.row + i,
@@ -334,7 +334,7 @@ void text_out_to_screen(uint8_t a, const char *str)
 			Term_gotoxy(x, y);
 
 			/* Wrap the word (if any) */
-			for (i = n; i < wrap - 1; i++) {
+			for (i = n; i < wrap - 1; ++i) {
 				/* Dump */
 				Term_addch(av[i], cv[i]);
 

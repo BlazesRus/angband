@@ -387,7 +387,7 @@ static void display_resistance_panel(int ipart, struct char_sheet_config *config
 	int col = config->res_regions[ipart].col;
 	int row = config->res_regions[ipart].row;
 
-	for (i = 0; i < player->body.count; i++) {
+	for (i = 0; i < player->body.count; ++i) {
 		equipment[i] = slot_object(player, i);
 	}
 
@@ -463,7 +463,7 @@ void display_player_stat_info(void)
 	c_put_str(COLOUR_WHITE, "  Best", row-1, col+24);
 
 	/* Display the stats */
-	for (i = 0; i < STAT_MAX; i++) {
+	for (i = 0; i < STAT_MAX; ++i) {
 		/* Reduced or normal */
 		if (player->stat_cur[i] < player->stat_max[i])
 			/* Use lowercase stat name */
@@ -526,7 +526,7 @@ static void display_player_sust_info(struct char_sheet_config *config)
 	struct ui_entry_details render_details;
 	int i, row, col;
 
-	for (i = 0; i < player->body.count; i++) {
+	for (i = 0; i < player->body.count; ++i) {
 		equipment[i] = slot_object(player, i);
 	}
 
@@ -547,7 +547,7 @@ static void display_player_sust_info(struct char_sheet_config *config)
 	render_details.alternate_color_first = false;
 	render_details.known_rune = true;
 	render_details.show_combined = false;
-	for (i = 0; i < config->n_stat_mod_entries; i++) {
+	for (i = 0; i < config->n_stat_mod_entries; ++i) {
 		const struct ui_entry *entry = config->stat_mod_entries[i];
 		int j;
 
@@ -591,7 +591,7 @@ static void display_panel(const struct panel *p, bool left_adj,
 	region_erase(bounds);
 
 	if (left_adj) {
-		for (i = 0; i < p->len; i++) {
+		for (i = 0; i < p->len; ++i) {
 			struct panel_line *pl = &p->lines[i];
 
 			int len = pl->label ? strlen(pl->label) : 0;
@@ -847,7 +847,7 @@ static const struct {
 void display_player_xtra_info(void)
 {
 	size_t i;
-	for (i = 0; i < N_ELEMENTS(panels); i++) {
+	for (i = 0; i < N_ELEMENTS(panels); ++i) {
 		struct panel *p = panels[i].panel();
 		display_panel(p, panels[i].align_left, &panels[i].bounds);
 		panel_free(p);
@@ -1064,7 +1064,7 @@ void write_character_dump(ang_file *fff)
 
 	/* Dump the equipment */
 	file_putf(fff, "  [Character Equipment]\n\n");
-	for (i = 0; i < player->body.count; i++) {
+	for (i = 0; i < player->body.count; ++i) {
 		struct object *obj = slot_object(player, i);
 		if (!obj) continue;
 
@@ -1077,7 +1077,7 @@ void write_character_dump(ang_file *fff)
 
 	/* Dump the inventory */
 	file_putf(fff, "\n\n  [Character Inventory]\n\n");
-	for (i = 0; i < z_info->pack_size; i++) {
+	for (i = 0; i < z_info->pack_size; ++i) {
 		struct object *obj = player->upkeep->inven[i];
 		if (!obj) break;
 
@@ -1090,7 +1090,7 @@ void write_character_dump(ang_file *fff)
 
 	/* Dump the quiver */
 	file_putf(fff, "\n\n  [Character Quiver]\n\n");
-	for (i = 0; i < z_info->quiver_size; i++) {
+	for (i = 0; i < z_info->quiver_size; ++i) {
 		struct object *obj = player->upkeep->quiver[i];
 		if (!obj) continue;
 
@@ -1108,7 +1108,7 @@ void write_character_dump(ang_file *fff)
 		file_putf(fff, "  [Home Inventory]\n\n");
 
 		/* Dump all available items */
-		for (i = 0; i < z_info->store_inven_max; i++) {
+		for (i = 0; i < z_info->store_inven_max; ++i) {
 			struct object *obj = home_list[i];
 			if (!obj) break;
 			object_desc(o_name, sizeof(o_name), obj,
@@ -1130,7 +1130,7 @@ void write_character_dump(ang_file *fff)
 	file_putf(fff, "  [Options]\n\n");
 
 	/* Dump options */
-	for (i = 0; i < OP_MAX; i++) {
+	for (i = 0; i < OP_MAX; ++i) {
 		int opt;
 		const char *title = "";
 		switch (i) {

@@ -275,7 +275,7 @@ errr grab_index_and_int(int *value, int *index, const char **value_type,
 		return PARSE_ERROR_INVALID_VALUE;
 
 	/* Compose the value string and look for it */
-	for (i = 0; value_type[i]; i++) {
+	for (i = 0; value_type[i]; ++i) {
 		my_strcpy(value_string, prefix, sizeof(value_string));
 		my_strcat(value_string, value_type[i],
 				  sizeof(value_string) - strlen(value_string));
@@ -323,7 +323,7 @@ errr grab_name(const char *from, const char *what, const char *list[], int max,
 	int i;
 
 	/* Scan list */
-	for (i = 0; i < max; i++) {
+	for (i = 0; i < max; ++i) {
 		if (streq(what, list[i])) {
 			*num = i;
 			return PARSE_ERROR_NONE;
@@ -421,7 +421,7 @@ void write_mods(ang_file *fff, const int values[])
 	};
 
 	/* Write value list */
-	for (i = 0; i < OBJ_MOD_MAX; i++) {
+	for (i = 0; i < OBJ_MOD_MAX; ++i) {
 		/* If no value, don't write */
 		if (values[i] == 0) continue;
 
@@ -467,7 +467,7 @@ void write_elements(ang_file *fff, const struct element_info *el_info)
 	};
 
 	/* Write value list */
-	for (i = 0; i < ELEM_MAX; i++) {
+	for (i = 0; i < ELEM_MAX; ++i) {
 		/* If no value, don't write */
 		if (el_info[i].res_level == 0) continue;
 
@@ -524,7 +524,7 @@ void file_archive(const char *fname, const char *append)
 			append));
 	} else {
 		/* Check the indices of existing archived files, get the next one */
-		for (i = 1; i < max_arch; i++) {
+		for (i = 1; i < max_arch; ++i) {
 			path_build(arch, sizeof(arch), ANGBAND_DIR_ARCHIVE,
 				format("%s%s_%d.txt",
 				(archive_user_pfx) ? archive_user_pfx : "",

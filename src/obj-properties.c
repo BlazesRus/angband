@@ -27,7 +27,7 @@ struct obj_property *lookup_obj_property(int type, int index)
 	int i;
 
 	/* Find the right property */
-	for (i = 0; i < z_info->property_max; i++) {
+	for (i = 0; i < z_info->property_max; ++i) {
 		prop = &obj_properties[i];
 		if ((prop->type == type) && (prop->index == index)) {
 			return prop;

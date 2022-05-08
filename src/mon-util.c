@@ -123,7 +123,7 @@ struct monster_race *lookup_monster(const char *name)
 	struct monster_race *closest = NULL;
 
 	/* Look for it */
-	for (i = 0; i < z_info->r_max; i++) {
+	for (i = 0; i < z_info->r_max; ++i) {
 		struct monster_race *race = &r_info[i];
 		if (!race->name)
 			continue;
@@ -186,7 +186,7 @@ struct monster *get_commanded_monster(void)
 	int i;
 
 	/* Look for it */
-	for (i = 1; i < cave_monster_max(cave); i++) {
+	for (i = 1; i < cave_monster_max(cave); ++i) {
 		struct monster *mon = cave_monster(cave, i);
 
 		/* Skip dead monsters */
@@ -484,7 +484,7 @@ void update_monsters(bool full)
 	int i;
 
 	/* Update each (live) monster */
-	for (i = 1; i < cave_monster_max(cave); i++) {
+	for (i = 1; i < cave_monster_max(cave); ++i) {
 		struct monster *mon = cave_monster(cave, i);
 
 		/* Update the monster if alive */
@@ -1630,7 +1630,7 @@ bool monster_change_shape(struct monster *mon)
 		/* Pick one */
 		which = randint0(poss);
 		index = rsf_next(summon_spells, FLAG_START);
-		for (i = 0; i < which; i++) {
+		for (i = 0; i < which; ++i) {
 			index = rsf_next(summon_spells, index);
 		}
 		spell = monster_spell_by_index(index);

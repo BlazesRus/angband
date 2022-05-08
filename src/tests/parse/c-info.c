@@ -18,7 +18,7 @@ int teardown_tests(void *state) {
 	struct player_class *c = parser_priv(state);
 	int i;
 	string_free((char *)c->name);
-	for (i = 0; i < PY_MAX_LEVEL / 5; i++) {
+	for (i = 0; i < PY_MAX_LEVEL / 5; ++i) {
 		string_free((char *)c->title[i]);
 	}
 	while (c->start_items) {

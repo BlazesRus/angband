@@ -270,7 +270,7 @@ static errr finish_parse_profile(struct parser *p) {
 
 			/* Allocate space and copy */
 			r_new = mem_zalloc(c->n_room_profiles * sizeof(*r_new));
-			for (i = 0; i < c->n_room_profiles; i++) {
+			for (i = 0; i < c->n_room_profiles; ++i) {
 				memcpy(&r_new[i], r_old, sizeof(*r_old));
 				r_old = r_old->next;
 				if (!r_old) break;
@@ -304,7 +304,7 @@ static errr finish_parse_profile(struct parser *p) {
 static void cleanup_profile(void)
 {
 	int i, j;
-	for (i = 0; i < z_info->profile_max; i++) {
+	for (i = 0; i < z_info->profile_max; ++i) {
 		for (j = 0; j < cave_profiles[i].n_room_profiles; j++)
 			string_free((char *) cave_profiles[i].room_profiles[j].name);
 		mem_free(cave_profiles[i].room_profiles);
@@ -688,7 +688,7 @@ static void place_feeling(struct chunk *c)
 	int i, j;
 	int tries = 500;
 	
-	for (i = 0; i < z_info->feeling_total; i++) {
+	for (i = 0; i < z_info->feeling_total; ++i) {
 		for (j = 0; j < tries; j++) {
 			/* Pick a random dungeon coordinate */
 			struct loc grid = loc(randint0(c->width), randint0(c->height));
@@ -777,7 +777,7 @@ static const struct cave_profile *find_cave_profile(const char *name)
 {
 	int i;
 
-	for (i = 0; i < z_info->profile_max; i++) {
+	for (i = 0; i < z_info->profile_max; ++i) {
 		const struct cave_profile *profile;
 
 		profile = &cave_profiles[i];
@@ -869,7 +869,7 @@ static const struct cave_profile *choose_profile(struct player *p)
 		 * alloc(l))) which, by the canceling of successive numerators
 		 * and denominators is alloc(m) / sum(l = 0 to n - 1, alloc(l)).
 		 */
-		for (i = 0; i < z_info->profile_max; i++) {
+		for (i = 0; i < z_info->profile_max; ++i) {
 			struct cave_profile *test_profile = &cave_profiles[i];
 			if (test_profile->alloc <= 0 ||
 				 p->depth < test_profile->min_level) continue;
@@ -1092,7 +1092,7 @@ static struct chunk *cave_generate(struct player *p, int height, int width)
 		p->cave->objects = mem_realloc(p->cave->objects, (chunk->obj_max + 1)
 									   * sizeof(struct object*));
 		p->cave->obj_max = chunk->obj_max;
-		for (i = 0; i <= p->cave->obj_max; i++) {
+		for (i = 0; i <= p->cave->obj_max; ++i) {
 			p->cave->objects[i] = NULL;
 		}
 
@@ -1226,7 +1226,7 @@ static struct chunk *cave_generate(struct player *p, int height, int width)
 	p->cave->objects = mem_realloc(p->cave->objects, (chunk->obj_max + 1)
 								   * sizeof(struct object*));
 	p->cave->obj_max = chunk->obj_max;
-	for (i = 0; i <= p->cave->obj_max; i++) {
+	for (i = 0; i <= p->cave->obj_max; ++i) {
 		p->cave->objects[i] = NULL;
 	}
 	if (p->upkeep->light_level) {
@@ -1405,7 +1405,7 @@ void prepare_next_level(struct player *p)
 			p->cave = old_known;
 
 			/* Associate known objects */
-			for (i = 0; i < p->cave->obj_max; i++) {
+			for (i = 0; i < p->cave->obj_max; ++i) {
 				if (cave->objects[i] && p->cave->objects[i]) {
 					cave->objects[i]->known = p->cave->objects[i];
 				}

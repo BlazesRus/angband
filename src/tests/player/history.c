@@ -57,7 +57,7 @@ int setup_tests(void **state) {
 
 static int test_0(void *state) {
 	int i;
-	for (i = 0; i < 100; i++) {
+	for (i = 0; i < 100; ++i) {
 		char *h = get_history(&ca);
 		assert(h);
 		eq(h[0], 'A');

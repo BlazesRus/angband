@@ -192,7 +192,7 @@ expression_t *expression_copy(const expression_t *source)
 		return NULL;
 	}
 
-	for (i = 0; i < copy->operation_count; i++) {
+	for (i = 0; i < copy->operation_count; ++i) {
 		copy->operations[i].operand = source->operations[i].operand;
 		copy->operations[i].operator = source->operations[i].operator;
 	}
@@ -221,7 +221,7 @@ int32_t expression_evaluate(expression_t const * const expression)
 	if (expression->base_value != NULL)
 		value = expression->base_value();
 
-	for (i = 0; i < expression->operation_count; i++) {
+	for (i = 0; i < expression->operation_count; ++i) {
 		switch (expression->operations[i].operator) {
 			case OPERATOR_ADD:
 				value += expression->operations[i].operand;
@@ -378,7 +378,7 @@ int16_t expression_add_operations_string(expression_t *expression,
 		token = strtok(NULL, EXPRESSION_DELIMITER);
 	}
 
-	for (i = 0; i < count; i++) {
+	for (i = 0; i < count; ++i) {
 		expression_add_operation(expression, operations[i]);
 	}
 
@@ -406,7 +406,7 @@ bool expression_test_copy(const expression_t *a, const expression_t *b)
 	if (a->operation_count != b->operation_count)
 		return false;
 
-	for (i = 0; i < a->operation_count; i++) {
+	for (i = 0; i < a->operation_count; ++i) {
 		success &= (a->operations[i].operand == b->operations[i].operand);
 		success &= (a->operations[i].operator == b->operations[i].operator);
 	}

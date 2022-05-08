@@ -72,7 +72,7 @@ static int test_defaults(void *state) {
 	/* Monster bases */
 	eq(process_pref_file_command("monster-base:giant:3:3"), 0);
 
-	for (i = 0; i < z_info->r_max; i++) {
+	for (i = 0; i < z_info->r_max; ++i) {
 		struct monster_race *race = &r_info[i];
 
 		if (race->base != mb) continue;
@@ -84,7 +84,7 @@ static int test_defaults(void *state) {
 	/* Object tvals */
 	eq(process_pref_file_command("object:sword:*:3:3"), 0);
 
-	for (i = 0; i < z_info->k_max; i++) {
+	for (i = 0; i < z_info->k_max; ++i) {
 		struct object_kind *kind = &k_info[i];
 
 		if (kind->tval != tval)
@@ -97,7 +97,7 @@ static int test_defaults(void *state) {
 	/* Traps */
 	eq(process_pref_file_command("trap:*:*:3:3"), 0);
 
-	for (i = 0; i < z_info->trap_max; i++) {
+	for (i = 0; i < z_info->trap_max; ++i) {
 		int light_idx;
 
 		for (light_idx = 0; light_idx < LIGHTING_MAX; light_idx++) {

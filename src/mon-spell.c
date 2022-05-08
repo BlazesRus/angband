@@ -302,7 +302,7 @@ static int chance_of_spell_hit(const struct monster *mon,
 	int to_hit = chance_of_spell_hit_base(mon->race, spell);
 
 	/* Apply confusion hit reduction for each level of confusion */
-	for (int i = 0; i < monster_effect_level(mon, MON_TMD_CONF); i++) {
+	for (int i = 0; i < monster_effect_level(mon, MON_TMD_CONF); ++i) {
 		to_hit = to_hit * (100 - CONF_HIT_REDUCTION) / 100;
 	}
 
@@ -513,7 +513,7 @@ static int nonhp_dam(const struct monster_spell *spell,
 			int i;
 
 			/* Scan through all blows for damage */
-			for (i = 0; i < z_info->mon_blows_max; i++) {
+			for (i = 0; i < z_info->mon_blows_max; ++i) {
 				/* Extract the attack infomation */
 				random_value dice = race->blow[i].dice;
 

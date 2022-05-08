@@ -60,7 +60,7 @@ static const char *proj_name_list[] =
 int proj_name_to_idx(const char *name)
 {
     int i;
-    for (i = 0; proj_name_list[i]; i++) {
+    for (i = 0; proj_name_list[i]; ++i) {
         if (!my_stricmp(name, proj_name_list[i]))
             return i;
     }
@@ -796,7 +796,7 @@ bool project(struct source origin, int rad, struct loc finish,
 					if (!square_isprojectable(cave, grid)) {
 						bool can_see_one = false;
 						/* Check neighbors */
-						for (i = 0; i < 8; i++) {
+						for (i = 0; i < 8; ++i) {
 							struct loc adj_grid = loc_sum(grid, ddgrid_ddd[i]);
 							if (los(cave, centre, adj_grid)) {
 								can_see_one = true;
@@ -817,7 +817,7 @@ bool project(struct source origin, int rad, struct loc finish,
 					continue;
 
 				/* Mark grids which are on the projection path */
-				for (i = 0; i < num_path_grids; i++) {
+				for (i = 0; i < num_path_grids; ++i) {
 					if (loc_eq(grid, path_grid[i])) {
 						on_path = true;
 					}
@@ -858,7 +858,7 @@ bool project(struct source origin, int rad, struct loc finish,
 	}
 
 	/* Calculate and store the actual damage at each distance. */
-	for (i = 0; i <= z_info->max_range; i++) {
+	for (i = 0; i <= z_info->max_range; ++i) {
 		if (i > rad) {
 			/* No damage outside the radius. */
 			dam_temp = 0;
@@ -881,7 +881,7 @@ bool project(struct source origin, int rad, struct loc finish,
 
 
 	/* Sort the blast grids by distance from the centre. */
-	for (i = 0, k = 0; i <= rad; i++) {
+	for (i = 0, k = 0; i <= rad; ++i) {
 		/* Collect all the grids of a given distance together. */
 		for (j = k; j < num_grids; j++) {
 			if (distance_to_grid[j] == i) {
@@ -902,7 +902,7 @@ bool project(struct source origin, int rad, struct loc finish,
 	}
 
 	/* Establish which grids are visible - no blast visuals with PROJECT_HIDE */
-	for (i = 0; i < num_grids; i++) {
+	for (i = 0; i < num_grids; ++i) {
 		if (panel_contains(blast_grid[i].y, blast_grid[i].x) &&
 			square_isview(cave, blast_grid[i]) &&
 			!blind && !(flg & (PROJECT_HIDE))) {
@@ -918,7 +918,7 @@ bool project(struct source origin, int rad, struct loc finish,
 
 	/* Affect objects on every relevant grid */
 	if (flg & (PROJECT_ITEM)) {
-		for (i = 0; i < num_grids; i++) {
+		for (i = 0; i < num_grids; ++i) {
 			if (project_o(origin, distance_to_grid[i], blast_grid[i],
 						  dam_at_dist[distance_to_grid[i]], typ, obj)) {
 				notice = true;
@@ -934,7 +934,7 @@ bool project(struct source origin, int rad, struct loc finish,
 		struct loc last_hit_grid = loc(0, 0);
 
 		/* Scan for monsters */
-		for (i = 0; i < num_grids; i++) {
+		for (i = 0; i < num_grids; ++i) {
 			struct monster *mon = NULL;
 
 			/* Check this monster hasn't been processed already */
@@ -994,7 +994,7 @@ bool project(struct source origin, int rad, struct loc finish,
 			if (monster_is_powerful(mon))
 				power = MAX(power, 80);
 		}
-		for (i = 0; i < num_grids; i++) {
+		for (i = 0; i < num_grids; ++i) {
 			if (project_p(origin, distance_to_grid[i], blast_grid[i],
 						  dam_at_dist[distance_to_grid[i]], typ, power,
 						  flg & PROJECT_SELF)) {
@@ -1010,7 +1010,7 @@ bool project(struct source origin, int rad, struct loc finish,
 
 	/* Affect features in every relevant grid */
 	if (flg & (PROJECT_GRID)) {
-		for (i = 0; i < num_grids; i++) {
+		for (i = 0; i < num_grids; ++i) {
 			if (project_f(origin, distance_to_grid[i], blast_grid[i],
 						  dam_at_dist[distance_to_grid[i]], typ)) {
 				notice = true;
@@ -1019,7 +1019,7 @@ bool project(struct source origin, int rad, struct loc finish,
 	}
 
 	/* Clear all the processing marks. */
-	for (i = 0; i < num_grids; i++) {
+	for (i = 0; i < num_grids; ++i) {
 		/* Clear the mark */
 		sqinfo_off(square(cave, blast_grid[i])->info, SQUARE_PROJECT);
 	}

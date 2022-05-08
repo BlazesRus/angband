@@ -303,7 +303,7 @@ static void fill_circle(struct chunk *c, int y0, int x0, int radius, int border,
 {
 	int i, last = 0;
 	int r2 = radius * radius;
-	for(i = 0; i <= radius; i++) {
+	for(i = 0; i <= radius; ++i) {
 		double j = sqrt(r2 - (i * i));
 		int k = (int)(j + 0.5);
 
@@ -687,7 +687,7 @@ extern bool generate_starburst_room(struct chunk *c, int y1, int x1, int y2,
 
 
 	/* Determine the start degrees and expansion distance for each arc. */
-	for (i = 0; i < arc_num; i++) {
+	for (i = 0; i < arc_num; ++i) {
 		/* Get the first degree for this arc. */
 		arc[i][0] = degree_first;
 
@@ -958,7 +958,7 @@ void set_pit_type(int depth, int type)
 	/* Hack -- set initial distance large */
 	int pit_dist = 999;
 
-	for (i = 0; i < z_info->pit_max; i++) {
+	for (i = 0; i < z_info->pit_max; ++i) {
 		int offset, dist;
 		struct pit_profile *pit = &pit_info[i];
 
@@ -1051,7 +1051,7 @@ static bool find_space(struct loc *centre, int height, int width)
 	int blocks_wide = 1 + ((width - 1) / dun->block_wid);
 
 	/* We'll allow twenty-five guesses. */
-	for (i = 0; i < 25; i++) {
+	for (i = 0; i < 25; ++i) {
 		/* Pick a top left block at random */
 		by1 = randint0(dun->row_blocks);
 		bx1 = randint0(dun->col_blocks);
@@ -1770,7 +1770,7 @@ static void make_chamber(struct chunk *c, int y1, int x1, int y2, int x2)
 	}
 
 	/* Try a few times to place a door. */
-	for (i = 0; i < 20; i++) {
+	for (i = 0; i < 20; ++i) {
 		/* Pick a square along the edge, not a corner. */
 		if (one_in_(2)) {
 			/* Somewhere along the (interior) side walls. */
@@ -2679,7 +2679,7 @@ bool build_nest(struct chunk *c, struct loc centre, int rating)
 	get_mon_num_prep(mon_pit_hook);
 
 	/* Pick some monster types */
-	for (i = 0; i < 64; i++) {
+	for (i = 0; i < 64; ++i) {
 		/* Get a (hard) monster type */
 		what[i] = get_mon_num(c->depth + 10, c->depth);
 
@@ -2805,7 +2805,7 @@ bool build_pit(struct chunk *c, struct loc centre, int rating)
 	get_mon_num_prep(mon_pit_hook);
 
 	/* Pick some monster types */
-	for (i = 0; i < 16; i++) {
+	for (i = 0; i < 16; ++i) {
 		/* Get a (hard) monster type */
 		what[i] = get_mon_num(c->depth + 10, c->depth);
 
@@ -2823,7 +2823,7 @@ bool build_pit(struct chunk *c, struct loc centre, int rating)
 	ROOM_LOG("Monster pit (%s)", dun->pit_type->name);
 
 	/* Sort the entries XXX XXX XXX */
-	for (i = 0; i < 16 - 1; i++) {
+	for (i = 0; i < 16 - 1; ++i) {
 		/* Sort the entries */
 		for (j = 0; j < 16 - 1; j++) {
 			int i1 = j;
@@ -3131,7 +3131,7 @@ bool build_moria(struct chunk *c, struct loc centre, int rating)
 
 
 	/* Try twice to find space for a room. */
-	for (i = 0; i < 2; i++) {
+	for (i = 0; i < 2; ++i) {
 		/* Really large room - only on first try. */
 		if ((i == 0) && one_in_(15)) {
 			height *= 1 + randint1(2);
@@ -3260,7 +3260,7 @@ bool build_room_of_chambers(struct chunk *c, struct loc centre, int rating)
 	num_chambers = 10 + area / 80;
 
 	/* Build the chambers. */
-	for (i = 0; i < num_chambers; i++) {
+	for (i = 0; i < num_chambers; ++i) {
 		int c_y1, c_x1, c_y2, c_x2;
 		int size, width_local, height_local;
 
@@ -3316,7 +3316,7 @@ bool build_room_of_chambers(struct chunk *c, struct loc centre, int rating)
 	}
 
 	/* Pick a random magma spot near the center of the room. */
-	for (i = 0; i < 50; i++) {
+	for (i = 0; i < 50; ++i) {
 		grid = loc(x1 + ABS(x2 - x1) / 4 + randint0(ABS(x2 - x1) / 2),
 				   y1 + ABS(y2 - y1) / 4 + randint0(ABS(y2 - y1) / 2));
 		if (square(c, grid)->feat == FEAT_MAGMA)
@@ -3328,7 +3328,7 @@ bool build_room_of_chambers(struct chunk *c, struct loc centre, int rating)
 	hollow_out_room(c, grid);
 
 	/* Attempt to change every in-room magma grid to open floor. */
-	for (i = 0; i < 100; i++) {
+	for (i = 0; i < 100; ++i) {
 		/* Assume this run will do no useful work. */
 		bool joy = false;
 
@@ -3564,7 +3564,7 @@ bool build_huge(struct chunk *c, struct loc centre, int rating)
 		count = height * width * randint1(2) / 1100;
 
 		/* Make the rubble fields. */
-		for (i = 0; i < count; i++) {
+		for (i = 0; i < count; ++i) {
 			height_tmp = 8 + randint0(16);
 			width_tmp = 10 + randint0(24);
 

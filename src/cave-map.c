@@ -380,7 +380,7 @@ void light_room(struct loc grid, bool light)
 	cave_room_aux(ps, grid);
 
 	/* While grids are in the queue, add their neighbors */
-	for (i = 0; i < ps->n; i++) {
+	for (i = 0; i < ps->n; ++i) {
 		/* Walls get lit, but stop light */
 		if (!square_isprojectable(cave, ps->pts[i])) continue;
 
@@ -428,7 +428,7 @@ void wiz_light(struct chunk *c, struct player *p, bool full)
 				if (!square_in_bounds_fully(c, grid)) continue;
 
 				/* Scan all neighbors */
-				for (i = 0; i < 9; i++) {
+				for (i = 0; i < 9; ++i) {
 					struct loc a_grid = loc_sum(grid, ddgrid_ddd[i]);
 
 					/* Perma-light the grid */
@@ -494,7 +494,7 @@ void wiz_dark(struct chunk *c, struct player *p, bool full)
 				if (!square_in_bounds_fully(c, grid)) continue;
 
 				/* Scan all neighbors */
-				for (i = 0; i < 9; i++) {
+				for (i = 0; i < 9; ++i) {
 					struct loc a_grid = loc_sum(grid, ddgrid_ddd[i]);
 
 					/* Perma-darken the grid */
@@ -586,7 +586,7 @@ void cave_illuminate(struct chunk *c, bool daytime)
 			struct loc grid = loc(x, y);
 			if (!square_isshop(c, grid))
 				continue;
-			for (i = 0; i < 8; i++) {
+			for (i = 0; i < 8; ++i) {
 				struct loc a_grid = loc_sum(grid, ddgrid_ddd[i]);
 				sqinfo_on(square(c, a_grid)->info, SQUARE_GLOW);
 				square_memorize(c, a_grid);

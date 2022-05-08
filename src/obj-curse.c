@@ -35,7 +35,7 @@ int lookup_curse(const char *name)
 {
 	int i;
 
-	for (i = 1; i < z_info->curse_max; i++) {
+	for (i = 1; i < z_info->curse_max; ++i) {
 		struct curse *curse = &curses[i];
 		if (curse->name && streq(name, curse->name))
 			return i;
@@ -59,7 +59,7 @@ void copy_curses(struct object *obj, int *source)
 		obj->curses = mem_zalloc(z_info->curse_max * sizeof(struct curse_data));
 	}
 
-	for (i = 0; i < z_info->curse_max; i++) {
+	for (i = 0; i < z_info->curse_max; ++i) {
 		if (!source[i]) continue;
 		obj->curses[i].power = source[i];
 
@@ -82,7 +82,7 @@ bool curses_are_equal(const struct object *obj1, const struct object *obj2)
 	if (obj1->curses && !obj2->curses) return false;
 	if (!obj1->curses && obj2->curses) return false;
 
-	for (i = 0; i < z_info->curse_max; i++) {
+	for (i = 0; i < z_info->curse_max; ++i) {
 		if (obj1->curses[i].power != obj2->curses[i].power) return false;
 	}
 
@@ -121,7 +121,7 @@ static void check_object_curses(struct object *obj)
 	int i;
 
 	/* Look for a valid curse, return if one found */
-	for (i = 0; i < z_info->curse_max; i++) {
+	for (i = 0; i < z_info->curse_max; ++i) {
 		if (obj->curses[i].power) {
 			return;
 		}
@@ -149,7 +149,7 @@ bool append_object_curse(struct object *obj, int pick, int power)
 		obj->curses = mem_zalloc(z_info->curse_max * sizeof(struct curse_data));
 
 	/* Reject conflicting curses */
-	for (i = 0; i < z_info->curse_max; i++) {
+	for (i = 0; i < z_info->curse_max; ++i) {
 		if (obj->curses[i].power && curses_conflict(i, pick)) {
 			check_object_curses(obj);
 			return false;
@@ -238,7 +238,7 @@ void check_artifact_curses(struct artifact *art)
 	int i;
 
 	/* Look for a valid curse, return if one found */
-	for (i = 0; i < z_info->curse_max; i++) {
+	for (i = 0; i < z_info->curse_max; ++i) {
 		if (art->curses && art->curses[i]) {
 			return;
 		}
@@ -308,7 +308,7 @@ bool append_artifact_curse(struct artifact *art, int pick, int power)
 		art->curses = mem_zalloc(z_info->curse_max * sizeof(int));
 
 	/* Reject conflicting curses */
-	for (i = 0; i < z_info->curse_max; i++) {
+	for (i = 0; i < z_info->curse_max; ++i) {
 		if (art->curses[i] && curses_conflict(i, pick)) {
 			check_artifact_curses(art);
 			return false;

@@ -373,7 +373,7 @@ int default_layout_win(term_data *data, int maxterms)
 	}
 
 	/* Set up subwindows */
-	for (i = 1; i < maxterms; i++) {
+	for (i = 1; i < maxterms; ++i) {
 		string_free(data[i].font_want);
 		data[i].font_want = string_make(sub_font);
 		data[i].font_wid = fx2;

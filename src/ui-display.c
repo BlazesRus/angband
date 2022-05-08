@@ -279,7 +279,7 @@ static void prt_equippy(int row, int col)
 	if (tile_width > 1 || tile_height > 1) return;
 
 	/* Dump equippy chars */
-	for (i = 0; i < player->body.count; i++) {
+	for (i = 0; i < player->body.count; ++i) {
 		/* Object */
 		obj = slot_object(player, i);
 
@@ -856,7 +856,7 @@ static void update_sidebar(game_event_type type, game_event_data *data,
 	max_priority = y - 2;
 
 	/* Display list entries */
-	for (i = 0, row = 1; i < N_ELEMENTS(side_handlers); i++) {
+	for (i = 0, row = 1; i < N_ELEMENTS(side_handlers); ++i) {
 		const struct side_handler_t *hnd = &side_handlers[i];
 		int priority = hnd->priority;
 		bool from_bottom = false;
@@ -1158,12 +1158,12 @@ static size_t prt_moves(int row, int col)
 static int longest_terrain_name(void)
 {
 	size_t i, max = 0;
-	for (i = 0; i < z_info->trap_max; i++) {
+	for (i = 0; i < z_info->trap_max; ++i) {
 		if (strlen(trap_info[i].name) > max) {
 			max = strlen(trap_info[i].name);
 		}
 	}
-	for (i = 0; i < z_info->f_max; i++) {
+	for (i = 0; i < z_info->f_max; ++i) {
 		if (strlen(f_info[i].name) > max) {
 			max = strlen(f_info[i].name);
 		}
@@ -1244,7 +1244,7 @@ static size_t prt_tmd(int row, int col)
 {
 	size_t i, len = 0;
 
-	for (i = 0; i < TMD_MAX; i++) {
+	for (i = 0; i < TMD_MAX; ++i) {
 		if (player->timed[i]) {
 			struct timed_grade *grade = timed_effects[i].grade;
 			while (player->timed[i] > grade->max) {
@@ -1428,7 +1428,7 @@ static void do_animation(void)
 {
 	int i;
 
-	for (i = 1; i < cave_monster_max(cave); i++) {
+	for (i = 1; i < cave_monster_max(cave); ++i) {
 		uint8_t attr;
 		struct monster *mon = cave_monster(cave, i);
 
@@ -1564,7 +1564,7 @@ static void display_explosion(game_event_type type, game_event_data *data,
 	struct loc centre = data->explosion.centre;
 
 	/* Draw the blast from inside out */
-	for (i = 0; i < num_grids; i++) {
+	for (i = 0; i < num_grids; ++i) {
 		/* Extract the location */
 		y = blast_grid[i].y;
 		x = blast_grid[i].x;
@@ -1611,7 +1611,7 @@ static void display_explosion(game_event_type type, game_event_data *data,
 	/* Erase and flush */
 	if (drawn) {
 		/* Erase the explosion drawn above */
-		for (i = 0; i < num_grids; i++) {
+		for (i = 0; i < num_grids; ++i) {
 			/* Extract the location */
 			y = blast_grid[i].y;
 			x = blast_grid[i].x;
@@ -1773,7 +1773,7 @@ void toggle_inven_equip(void)
 	flip_inven = !flip_inven;
 
 	/* Redraw any subwindows showing the inventory/equipment lists */
-	for (i = 0; i < ANGBAND_TERM_MAX; i++) {
+	for (i = 0; i < ANGBAND_TERM_MAX; ++i) {
 		/* Skip unused subwindows. */
 		if (!angband_term[i]) continue;
 
@@ -1894,7 +1894,7 @@ static void update_messages_subwindow(game_event_type type,
 	Term_get_size(&w, &h);
 
 	/* Dump messages */
-	for (i = 0; i < h; i++) {
+	for (i = 0; i < h; ++i) {
 		uint8_t color = message_color(i);
 		uint16_t count = message_count(i);
 		const char *str = message_str(i);

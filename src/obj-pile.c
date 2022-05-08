@@ -416,7 +416,7 @@ bool object_similar(const struct object *obj1, const struct object *obj2,
 	if (!of_is_equal(obj1->flags, obj2->flags)) return false;
 
 	/* Different elements don't stack */
-	for (i = 0; i < ELEM_MAX; i++) {
+	for (i = 0; i < ELEM_MAX; ++i) {
 		if (obj1->el_info[i].res_level != obj2->el_info[i].res_level)
 			return false;
 		if ((obj1->el_info[i].flags & (EL_INFO_HATES | EL_INFO_IGNORE)) !=
@@ -1082,7 +1082,7 @@ static void drop_find_grid(const struct player *p, struct chunk *c,
 	} else if (!drop->artifact) {
 		return;
 	}
-	for (i = 0; i < 2000; i++) {
+	for (i = 0; i < 2000; ++i) {
 		/* Start bouncing from grid to grid, stopping if we find an empty one */
 		if (i < 1000) {
 			best = rand_loc(best, 1, 1);
@@ -1382,19 +1382,19 @@ int scan_items(struct object **item_list, size_t item_max, struct player *p,
 	size_t item_num = 0;
 
 	if (use_inven)
-		for (i = 0; i < z_info->pack_size && item_num < item_max; i++) {
+		for (i = 0; i < z_info->pack_size && item_num < item_max; ++i) {
 			if (object_test(tester, p->upkeep->inven[i]))
 				item_list[item_num++] = p->upkeep->inven[i];
 		}
 
 	if (use_equip)
-		for (i = 0; i < p->body.count && item_num < item_max; i++) {
+		for (i = 0; i < p->body.count && item_num < item_max; ++i) {
 			if (object_test(tester, slot_object(p, i)))
 				item_list[item_num++] = slot_object(p, i);
 		}
 
 	if (use_quiver)
-		for (i = 0; i < z_info->quiver_size && item_num < item_max; i++) {
+		for (i = 0; i < z_info->quiver_size && item_num < item_max; ++i) {
 			if (object_test(tester, p->upkeep->quiver[i]))
 				item_list[item_num++] = p->upkeep->quiver[i];
 		}

@@ -117,7 +117,7 @@ bool show_file(const char *name, const char *what, int line, int mode)
 	n = strlen(filename);
 
 	/* Extract the tag from the filename */
-	for (i = 0; i < n; i++) {
+	for (i = 0; i < n; ++i) {
 		if (filename[i] == '#') {
 			filename[i] = '\0';
 			tag = filename + i + 1;

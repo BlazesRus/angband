@@ -178,7 +178,7 @@ void dump_monsters(ang_file *fff)
 {
 	int i;
 
-	for (i = 0; i < z_info->r_max; i++) {
+	for (i = 0; i < z_info->r_max; ++i) {
 		struct monster_race *race = &r_info[i];
 		uint8_t attr = monster_x_attr[i];
 		wint_t chr = monster_x_char[i];
@@ -199,7 +199,7 @@ void dump_objects(ang_file *fff)
 
 	file_putf(fff, "# Objects\n");
 
-	for (i = 0; i < z_info->k_max; i++) {
+	for (i = 0; i < z_info->k_max; ++i) {
 		struct object_kind *kind = &k_info[i];
 		char name[120] = "";
 
@@ -216,7 +216,7 @@ void dump_objects(ang_file *fff)
  */
 void dump_autoinscriptions(ang_file *f) {
 	int i;
-	for (i = 0; i < z_info->k_max; i++) {
+	for (i = 0; i < z_info->k_max; ++i) {
 		struct object_kind *k = &k_info[i];
 		char name[120];
 		const char *note;
@@ -239,7 +239,7 @@ void dump_features(ang_file *fff)
 {
 	int i;
 
-	for (i = 0; i < z_info->f_max; i++) {
+	for (i = 0; i < z_info->f_max; ++i) {
 		struct feature *feat = &f_info[i];
 		size_t j;
 
@@ -294,7 +294,7 @@ void dump_colors(ang_file *fff)
 {
 	int i;
 
-	for (i = 0; i < MAX_COLORS; i++) {
+	for (i = 0; i < MAX_COLORS; ++i) {
 		int kv = angband_color_table[i][0];
 		int rv = angband_color_table[i][1];
 		int gv = angband_color_table[i][2];
@@ -329,7 +329,7 @@ void dump_ui_entry_renderers(ang_file *fff)
 	file_putf(fff, "# Look at lib/gamedata/ui_entry_renderers.txt for more information\n");
 	file_putf(fff, "# about how colors, label_colors, and symbols are used\n");
 
-	for (i = ui_entry_renderer_get_min_index(); i < n; i++) {
+	for (i = ui_entry_renderer_get_min_index(); i < n; ++i) {
 		char* colors = ui_entry_renderer_get_colors(i);
 		char* labcolors = ui_entry_renderer_get_label_colors(i);
 		char* symbols = ui_entry_renderer_get_symbols(i);
@@ -354,7 +354,7 @@ void option_dump(ang_file *fff)
 	file_putf(fff, "# Options\n\n");
 
 	/* Dump window flags */
-	for (i = 1; i < ANGBAND_TERM_MAX; i++) {
+	for (i = 1; i < ANGBAND_TERM_MAX; ++i) {
 		/* Require a real window */
 		if (!angband_term[i]) continue;
 
@@ -619,7 +619,7 @@ static enum parser_error parse_prefs_object(struct parser *p)
 		if (!streq(sval, "*"))
 			return PARSE_ERROR_UNRECOGNISED_SVAL;
 
-		for (i = 0; i < z_info->k_max; i++) {
+		for (i = 0; i < z_info->k_max; ++i) {
 			struct object_kind *kind_local = &k_info[i];
 
 			kind_x_attr[kind_local->kidx] = attr;
@@ -642,7 +642,7 @@ static enum parser_error parse_prefs_object(struct parser *p)
 			size_t i;
 			struct flavor *flavor;
 
-			for (i = 0; i < z_info->k_max; i++) {
+			for (i = 0; i < z_info->k_max; ++i) {
 				struct object_kind *kind_local = &k_info[i];
 
 				if (kind_local->tval != tvi)
@@ -716,7 +716,7 @@ static enum parser_error parse_prefs_monster_base(struct parser *p)
 	a = (uint8_t)parser_getint(p, "attr");
 	c = (wchar_t)parser_getint(p, "char");
 
-	for (i = 0; i < z_info->r_max; i++) {
+	for (i = 0; i < z_info->r_max; ++i) {
 		struct monster_race *race = &r_info[i];
 
 		if (race->base != mb) continue;
@@ -781,7 +781,7 @@ static enum parser_error parse_prefs_trap(struct parser *p)
 
 	if (trap_idx == -1) {
 		size_t i;
-		for (i = 0; i < z_info->trap_max; i++) {
+		for (i = 0; i < z_info->trap_max; ++i) {
 			set_trap_graphic(i, light_idx,
 					parser_getint(p, "attr"), parser_getint(p, "char"));
 		}
@@ -881,7 +881,7 @@ static enum parser_error parse_prefs_gf(struct parser *p)
 	else
 		return PARSE_ERROR_INVALID_VALUE;
 
-	for (i = 0; i < PROJ_MAX; i++) {
+	for (i = 0; i < PROJ_MAX; ++i) {
 		if (!types[i]) continue;
 
 		proj_to_attr[i][motion] = (uint8_t)parser_getuint(p, "attr");
@@ -1111,7 +1111,7 @@ static struct parser *init_parse_prefs(bool user)
 
 	parser_setpriv(p, pd);
 	pd->user = user;
-	for (i = 0; i < ANGBAND_TERM_MAX; i++) {
+	for (i = 0; i < ANGBAND_TERM_MAX; ++i) {
 		pd->loaded_window_flag[i] = false;
 	}
 
@@ -1150,7 +1150,7 @@ static errr finish_parse_prefs(struct parser *p)
 	 * Build a complete set to pass to subwindows_set_flags() by loading
 	 * any that weren't read in by the parser from the existing set.
 	 */
-	for (i = 0; i < ANGBAND_TERM_MAX; i++) {
+	for (i = 0; i < ANGBAND_TERM_MAX; ++i) {
 		if (!d->loaded_window_flag[i])
 			d->window_flags[i] = window_flag[i];
 	}
@@ -1328,7 +1328,7 @@ void reset_visuals(bool load_prefs)
 	struct flavor *f;
 
 	/* Extract default attr/char code for features */
-	for (i = 0; i < z_info->f_max; i++) {
+	for (i = 0; i < z_info->f_max; ++i) {
 		struct feature *feat = &f_info[i];
 
 		/* Assume we will use the underlying values */
@@ -1339,7 +1339,7 @@ void reset_visuals(bool load_prefs)
 	}
 
 	/* Extract default attr/char code for objects */
-	for (i = 0; i < z_info->k_max; i++) {
+	for (i = 0; i < z_info->k_max; ++i) {
 		struct object_kind *kind = &k_info[i];
 
 		/* Default attr/char */
@@ -1348,7 +1348,7 @@ void reset_visuals(bool load_prefs)
 	}
 
 	/* Extract default attr/char code for monsters */
-	for (i = 0; i < z_info->r_max; i++) {
+	for (i = 0; i < z_info->r_max; ++i) {
 		struct monster_race *race = &r_info[i];
 
 		/* Default attr/char */
@@ -1357,7 +1357,7 @@ void reset_visuals(bool load_prefs)
 	}
 
 	/* Extract default attr/char code for traps */
-	for (i = 0; i < z_info->trap_max; i++) {
+	for (i = 0; i < z_info->trap_max; ++i) {
 		struct trap_kind *trap = &trap_info[i];
 
 		/* Default attr/char */
@@ -1406,11 +1406,11 @@ void textui_prefs_init(void)
 	monster_x_char = mem_zalloc(z_info->r_max * sizeof(wchar_t));
 	kind_x_attr = mem_zalloc(z_info->k_max * sizeof(uint8_t));
 	kind_x_char = mem_zalloc(z_info->k_max * sizeof(wchar_t));
-	for (i = 0; i < LIGHTING_MAX; i++) {
+	for (i = 0; i < LIGHTING_MAX; ++i) {
 		feat_x_attr[i] = mem_zalloc(z_info->f_max * sizeof(uint8_t));
 		feat_x_char[i] = mem_zalloc(z_info->f_max * sizeof(wchar_t));
 	}
-	for (i = 0; i < LIGHTING_MAX; i++) {
+	for (i = 0; i < LIGHTING_MAX; ++i) {
 		trap_x_attr[i] = mem_zalloc(z_info->trap_max * sizeof(uint8_t));
 		trap_x_char[i] = mem_zalloc(z_info->trap_max * sizeof(wchar_t));
 	}
@@ -1434,11 +1434,11 @@ void textui_prefs_free(void)
 	mem_free(monster_x_char);
 	mem_free(kind_x_attr);
 	mem_free(kind_x_char);
-	for (i = 0; i < LIGHTING_MAX; i++) {
+	for (i = 0; i < LIGHTING_MAX; ++i) {
 		mem_free(feat_x_attr[i]);
 		mem_free(feat_x_char[i]);
 	}
-	for (i = 0; i < LIGHTING_MAX; i++) {
+	for (i = 0; i < LIGHTING_MAX; ++i) {
 		mem_free(trap_x_attr[i]);
 		mem_free(trap_x_char[i]);
 	}

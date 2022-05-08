@@ -148,7 +148,7 @@ void keymap_free(void)
 {
 	size_t i;
 	struct keymap *k;
-	for (i = 0; i < N_ELEMENTS(keymaps); i++) {
+	for (i = 0; i < N_ELEMENTS(keymaps); ++i) {
 		k = keymaps[i];
 		while (k) {
 			struct keymap *next = k->next;
