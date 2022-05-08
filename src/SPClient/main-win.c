@@ -433,7 +433,7 @@ static const char *extract_file_name(const char *s)
 	p = s + strlen(s) - 1;
 
 	/* Back up to divider */
-	while ((p >= s) && (*p != ':') && (*p != '\\')) p--;
+	while ((p >= s) && (*p != ':') && (*p != '\\')) --p;
 
 	/* Return file name */
 	return (p+1);
@@ -743,7 +743,7 @@ static void save_prefs(void)
         WritePrivateProfileString("Angband", "TileHeight", buf, ini_file);
 
 	/* Save window prefs */
-	for (i = 0; i < MAX_TERM_DATA; i++) {
+	for (i = 0; i < MAX_TERM_DATA; ++i) {
 		term_data *td = &data[i];
 
 		sprintf(buf, "Term-%d", i);
@@ -835,7 +835,7 @@ static void load_prefs(void)
 
 
 	/* Load window prefs */
-	for (i = 0; i < MAX_TERM_DATA; i++) {
+	for (i = 0; i < MAX_TERM_DATA; ++i) {
 		term_data *td = &data[i];
 
 		sprintf(buf, "Term-%d", i);
@@ -916,11 +916,11 @@ static int new_palette(void)
 	pLogPal->palNumEntries = nEntries + 16;
 
 	/* Save the bitmap data */
-	for (i = 0; i < nEntries; i++)
+	for (i = 0; i < nEntries; ++i)
 		pLogPal->palPalEntry[i] = lppe[i];
 
 	/* Save the normal data */
-	for (i = 0; i < BASIC_COLORS; i++) {
+	for (i = 0; i < BASIC_COLORS; ++i) {
 		LPPALETTEENTRY p;
 
 		/* Access the entry */
@@ -1128,7 +1128,7 @@ typedef struct
 {
 	int		type;
 	MCI_OPEN_PARMS	op;
-	char		*filename;
+	char	*filename;
 } win_sample;
 
 /**
