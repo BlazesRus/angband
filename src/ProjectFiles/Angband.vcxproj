@@ -74,33 +74,35 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros">
-    <!--Legacy builds store zlib and libpng in src/SPClient/win/ -->
-    <ZLibDir Condition="'$(Configuration)'!='LegacyDebug' And '$(Configuration)'!='LegacyRelease'">..\..\..\zlib-win64\</ZLibDir>
-    <ZLibLibrary Condition="'$(Configuration)'=='LegacyDebug' Or '$(Configuration)'=='LegacyRelease'">..\SPClient\win\include\</ZLibLibrary>
-    <ZLibLibrary Condition="'$(Configuration)'=='LegacyDebug' And '$(Platform)'=='x64'">../SPClient/win/zlib_x64.lib</ZLibLibrary>
-    <ZLibLibrary Condition="'$(Configuration)'=='LegacyDebug' And '$(Platform)'=='Win32'">../SPClient/win/zlib.lib</ZLibLibrary>
-    <ZLibLibrary Condition="'$(Configuration)'=='LegacyRelease' And '$(Platform)'=='x64'">../SPClient/win/zlib_x64.lib</ZLibLibrary>
-    <ZLibLibrary Condition="'$(Configuration)'=='LegacyRelease' And '$(Platform)'=='Win32'">$(ZLibDir)$(Platform)\$(Configuration)\zlib.lib</ZLibLibrary>
-    <LibPngDir Condition="'$(Configuration)'!='LegacyDebug' And '$(Configuration)'!='LegacyRelease'">..\..\..\libpng\</LibPngDir>
-    <LibPngDir Condition="'$(Configuration)'=='LegacyDebug' Or '$(Configuration)'=='LegacyRelease'">..\SPClient\win\include\</LibPngDir>
+    <LibraryConfiguration Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='LegacyDebug'">Debug</LibraryConfiguration>
+    <LibraryConfiguration Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='LegacyRelease'">Release</LibraryConfiguration>
+	<BuildType Condition="'$(Configuration)'=='LegacyDebug' Or '$(Configuration)'=='LegacyRelease'">Legacy</BuildType>
+	<BuildType Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Release'"></BuildType>
+    <ZLibDir Condition="'$(BuildType)'!='Legacy">..\..\..\zlib-win64\</ZLibDir>
+<!--    <ZLibDir Condition="'$(BuildType)'=='Legacy'">..\SPClient\win\</ZLibDir>-->
+    <ZLibLibrary Condition="'$(BuildType)'=='Legacy' And '$(Platform)'=='x64'">..\SPClient\win\zlib_x64.lib</ZLibLibrary>
+    <ZLibLibrary Condition="'$(BuildType)'=='Legacy' And '$(Platform)'=='Win32'">..\SPClient\win\zlib.lib</ZLibLibrary>
+    <ZLibLibrary Condition="'$(BuildType)'!='Legacy'">$(ZLibDir)$(Platform)\$(Configuration)\zlib.lib</ZLibLibrary>
+    <LibPngDir Condition="'$(BuildType)'!='Legacy">..\..\..\libpng\</LibPngDir>
+<!--    <LibPngDir Condition="'$(BuildType)'=='Legacy">..\SPClient\win\include\</LibPngDir>-->
     <LibPngLibrary Condition="'$(Configuration)'!='LegacyDebug' And '$(Configuration)'!='LegacyRelease'">$(LibPngDir)projects\vstudio\$(Platform)\$(Configuration)Library\libpng.lib</LibPngLibrary>
-    <LibPngLibrary Condition="'$(Configuration)'=='LegacyDebug' And '$(Platform)'=='x64'">../SPClient/win/libpng_x64.lib</LibPngLibrary>
-    <LibPngLibrary Condition="'$(Configuration)'=='LegacyDebug' And '$(Platform)'=='Win32'">../SPClient/win/libpng.lib</LibPngLibrary>
-    <LibPngLibrary Condition="'$(Configuration)'=='LegacyRelease' And '$(Platform)'=='x64'">../SPClient/win/libpng_x64.lib</LibPngLibrary>
-    <LibPngLibrary Condition="'$(Configuration)'=='LegacyRelease' And '$(Platform)'=='Win32'">../SPClient/win/libpng.lib</LibPngLibrary>
+    <LibPngLibrary Condition="'$(BuildType)'=='Legacy' And '$(Platform)'=='x64'">..\SPClient\win\libpng_x64.lib</LibPngLibrary>
+    <LibPngLibrary Condition="'$(BuildType)'=='Legacy' And '$(Platform)'=='Win32'">..\SPClient\win\libpng.lib</LibPngLibrary>
+	<IntegratedLibDir Condition="'$(BuildType)'=='Legacy'">..\SPClient\win\lib\</IntegratedLibDir>
+	<IntegratedLibIncludes Condition="'$(BuildType)'=='Legacy'">..\SPClient\win\</IntegratedLibIncludes>
   </PropertyGroup>
   <PropertyGroup Label="OutputInfo">
     <OutDir>..\$(Configuration)_$(Platform)\</OutDir>
     <IntDir>..\ObjectFiles\SPClient\$(Configuration)_$(Platform)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Platform)'=='Win32'" Label="LibraryInfo">
-    <IncludePath Condition="'$(Configuration)'!='LegacyDebug' And '$(Configuration)'!='LegacyRelease'">$(VC_IncludePath);$(WindowsSDK_IncludePath);$(MSBuildProjectDirectory)\src;$(MSBuildProjectDirectory)\..\win;$(MSBuildProjectDirectory)\..\win\include;$(ZLibDir);$(LibPngDir)</IncludePath>
-    <IncludePath Condition="'$(Configuration)'=='LegacyDebug' Or '$(Configuration)'=='LegacyRelease'">$(VC_IncludePath);$(WindowsSDK_IncludePath);$(MSBuildProjectDirectory)\src;$(MSBuildProjectDirectory)\..\win;$(MSBuildProjectDirectory)\..\win\include;</IncludePath>
+    <IncludePath Condition="'$(BuildType)'!='Legacy'">$(VC_IncludePath);$(WindowsSDK_IncludePath);$(MSBuildProjectDirectory)\src;$(MSBuildProjectDirectory)\..\win;$(MSBuildProjectDirectory)\..\win\include;$(ZLibDir);$(LibPngDir)</IncludePath>
+    <IncludePath Condition="'$(BuildType)'=='Legacy'">$(VC_IncludePath);$(WindowsSDK_IncludePath);$(MSBuildProjectDirectory)\src;$(MSBuildProjectDirectory)\..\win;$(MSBuildProjectDirectory)\..\win\include</IncludePath>
     <LibraryPath>$(MSBuildProjectDirectory)\..\win\lib;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)..\lib\um\x86;$(ZLibLibrary);$(LibPngLibrary);</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Platform)'=='x64'" Label="LibraryInfo">
-    <IncludePath Condition="'$(Configuration)'!='LegacyDebug' And '$(Configuration)'!='LegacyRelease'">$(VC_IncludePath);$(WindowsSDK_IncludePath);$(MSBuildProjectDirectory)\src;$(MSBuildProjectDirectory)\..\win;$(MSBuildProjectDirectory)\..\win\include;$(ZLibDir);$(LibPngDir)</IncludePath>
-    <IncludePath Condition="'$(Configuration)'=='LegacyDebug' Or '$(Configuration)'=='LegacyRelease'">$(VC_IncludePath);$(WindowsSDK_IncludePath);$(MSBuildProjectDirectory)\src;$(MSBuildProjectDirectory)\..\win;$(MSBuildProjectDirectory)\..\win\include;$(ZLibDir);$(LibPngDir)</IncludePath>
+    <IncludePath Condition="'$(BuildType)'!='Legacy'">$(VC_IncludePath);$(WindowsSDK_IncludePath);$(MSBuildProjectDirectory)\src;$(MSBuildProjectDirectory)\..\win;$(MSBuildProjectDirectory)\..\win\include;$(ZLibDir);$(LibPngDir)</IncludePath>
+    <IncludePath Condition="'$(BuildType)'=='Legacy'">$(VC_IncludePath);$(WindowsSDK_IncludePath);$(MSBuildProjectDirectory)\src;$(MSBuildProjectDirectory)\..\win;$(MSBuildProjectDirectory)\..\win\include</IncludePath>
     <LibraryPath>$(MSBuildProjectDirectory)\..\win\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)..\lib\um\x64;$(ZLibLibrary);$(LibPngLibrary);</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -120,29 +122,31 @@
   <ItemDefinitionGroup>
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <FunctionLevelLinking Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='LegacyRelease'">true</FunctionLevelLinking>
-      <IntrinsicFunctions Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='LegacyRelease'">true</IntrinsicFunctions>
+      <FunctionLevelLinking Condition="'$(LibraryConfiguration)'=='Release'">true</FunctionLevelLinking>
+      <IntrinsicFunctions Condition="'$(LibraryConfiguration)'=='Release'">true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions Condition="'$(Configuration)'=='Debug'">SOUND;USE_PRIVATE_PATHS;WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)'=='LegacyDebug'">SOUND;USE_PRIVATE_PATHS;WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;UseOldPNGCode;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)'=='LegacyDebug'">SOUND;USE_PRIVATE_PATHS;WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;UseLegacyCode;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)'=='Release'">SOUND;USE_PRIVATE_PATHS;WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)'=='LegacyRelease'">SOUND;USE_PRIVATE_PATHS;WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;UseOldPNGCode;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)'=='LegacyRelease'">SOUND;USE_PRIVATE_PATHS;WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;UseLegacyCode;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
-      <EnableCOMDATFolding Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='LegacyRelease'">true</EnableCOMDATFolding>
-      <OptimizeReferences Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='LegacyRelease'">true</OptimizeReferences>
+      <EnableCOMDATFolding Condition="'$(LibraryConfiguration)'=='Release'">true</EnableCOMDATFolding>
+      <OptimizeReferences Condition="'$(LibraryConfiguration)'=='Release'">true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='LegacyDebug'">$(ZLibLibrary);$(LibPngLibrary);msimg32.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalDependencies Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='LegacyRelease'">$(ZLibLibrary);$(LibPngLibrary);msimg32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories Condition="'$(Configuration)'=='Debug'">$(ZLibDir);$(LibPngDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalLibraryDirectories Condition="'$(Configuration)'=='Release'">$(ZLibDir);$(LibPngDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies Condition="'$(Configuration)'=='Debug'">$(ZLibLibrary);$(LibPngLibrary);msimg32.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies Condition="'$(Configuration)'=='Release'">$(ZLibLibrary);$(LibPngLibrary);$(LibPngLibrary);msimg32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies Condition="'$(Configuration)'=='LegacyDebug'">$(IntegratedLibDir);msimg32.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies Condition="'$(Configuration)'=='LegacyRelease'">$(IntegratedLibDir);msimg32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories Condition="'$(BuildType)'!='Legacy'">$(ZLibDir);$(LibPngDir);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories Condition="'$(BuildType)'=='Legacy'">$(IntegratedLibIncludes);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
-    <CustomBuildStep Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='LegacyDebug'">
+    <CustomBuildStep Condition="'$(LibraryConfiguration)'=='Debug'">
       <Command>xcopy  "$(MSBuildProjectDirectory)\..\..\lib" "$(OutDir)lib" /s /e /y /d</Command>
     </CustomBuildStep>
-    <PostBuildEvent Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='LegacyRelease'">
+    <PostBuildEvent Condition="'$(LibraryConfiguration)'=='Release'">
       <Command>xcopy $(MSBuildProjectDirectory)\..\..\lib\* $(OutDir)..\lib\ /DESY /exclude:$(MSBuildProjectDirectory)\..\..\lib\xcopy_exclude.txt</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -282,10 +286,10 @@
     <ClCompile Include="..\SPClient\ui-visuals.c" />
     <ClCompile Include="..\SPClient\ui-wizard.c" />
     <ClCompile Include="..\SPClient\win\readdib.c">
-      <ExcludedFromBuild Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='LegacyRelease'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(BuildType)'=='Legacy'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\SPClient\win\readpng.c">
-      <ExcludedFromBuild Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='LegacyRelease'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(BuildType)'=='Legacy'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\SPClient\win\scrnshot.c" />
     <ClCompile Include="..\SPClient\win\win-layout.c" />
@@ -460,19 +464,19 @@
     <ClInclude Include="..\SPClient\ui-visuals.h" />
     <ClInclude Include="..\SPClient\ui-wizard.h" />
     <ClInclude Include="..\SPClient\win\include\png.h">
-      <ExcludedFromBuild Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='LegacyRelease'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(BuildType)'=='Legacy'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\SPClient\win\include\pngconf.h">
-      <ExcludedFromBuild Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='LegacyRelease'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(BuildType)'=='Legacy'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\SPClient\win\include\zconf.h">
-      <ExcludedFromBuild Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='LegacyRelease'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(BuildType)'=='Legacy'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\SPClient\win\include\zlib.h">
-      <ExcludedFromBuild Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='LegacyRelease'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(BuildType)'=='Legacy'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\SPClient\win\readdib.h">
-      <ExcludedFromBuild Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='LegacyRelease'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(BuildType)'=='Legacy'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\SPClient\win\win-menu.h" />
     <ClInclude Include="..\SPClient\win\win-term.h" />
