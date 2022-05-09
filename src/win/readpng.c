@@ -4,8 +4,7 @@
  * This package provides a routine to read a PNG file and set up the
  * device dependent version of the image.
  *
- * This file has been modified for use with "Angband 2.9.2"
- * This file has been modified for use with "z+Angband 0.3.3"
+ * This file has been modified for use with "Angband and it's varients"
  *
  * COPYRIGHT:
  *
@@ -72,17 +71,20 @@ bool ReadDIB2_PNG(HWND hWnd, LPSTR lpFileName, DIBINIT *pInfo, DIBINIT *pMask, b
 	bool update = false;
 	
 	/* open the file and test it for being a png */
-	FILE *fp = fopen(lpFileName, "rb");
-	if (!fp)
+    errno_t fileErrorCode;
+	FILE *filePointer = NULL;//FILE *filePointer = fopen(lpFileName, "rb");
+    fileErrorCode = _tfopen_s(&filePointer, lpFileName, "rb");
+    //;
+	if (!filePointer)
 	{
 		/*plog_fmt("Unable to open PNG file."); */
 		return (false);
 	}
 
-	fread(header, 1, 8, fp);
+	fread(header, 1, 8, filePointer);
 	if (png_sig_cmp(header, 0, 8)) {
 		/*plog_fmt("Unable to open PNG file - not a PNG file."); */
-		fclose(fp);
+		fclose(filePointer);
 		return (false);
 	}
 	
@@ -91,7 +93,7 @@ bool ReadDIB2_PNG(HWND hWnd, LPSTR lpFileName, DIBINIT *pInfo, DIBINIT *pMask, b
 	if(!png_ptr)
 	{
 		/*plog_fmt("Unable to initialize PNG library"); */
-		fclose(fp);
+		fclose(filePointer);
 		return (false);
 	}
 	
@@ -101,12 +103,12 @@ bool ReadDIB2_PNG(HWND hWnd, LPSTR lpFileName, DIBINIT *pInfo, DIBINIT *pMask, b
 	{
 		png_destroy_read_struct(&png_ptr, (png_infopp)NULL, (png_infopp)NULL);
 		/*plog_fmt("Failed to create PNG info structure."); */
-		fclose(fp);
+		fclose(filePointer);
 		return false;
 	}
 	
 	/* setup error handling for init */
-	png_set_read_fn(png_ptr, fp, ReadFileFunc);
+	png_set_read_fn(png_ptr, filePointer, ReadFileFunc);
 	png_set_sig_bytes(png_ptr, 8);
 
 	png_read_info(png_ptr, info_ptr);
@@ -162,7 +164,7 @@ bool ReadDIB2_PNG(HWND hWnd, LPSTR lpFileName, DIBINIT *pInfo, DIBINIT *pMask, b
 	png_read_image(png_ptr, row_pointers);
 
 	/* we are done with the file pointer, so close it */
-	fclose(fp);
+	fclose(filePointer);
 
 	/* pre multiply the image colors by the alhpa if thats what we want */
 	if (premultiply && (color_type == PNG_COLOR_TYPE_RGB_ALPHA)) {
