@@ -7,20 +7,20 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Angband", "Angband.vcxproj"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
-		Release|x64 = Release|x64
 		Release|x86 = Release|x86
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F9D9B5D4-3694-4705-8651-82EB225E68FA}.Debug|x64.ActiveCfg = LegacyDebug|x64
-		{F9D9B5D4-3694-4705-8651-82EB225E68FA}.Debug|x64.Build.0 = LegacyDebug|x64
 		{F9D9B5D4-3694-4705-8651-82EB225E68FA}.Debug|x86.ActiveCfg = Debug|Win32
 		{F9D9B5D4-3694-4705-8651-82EB225E68FA}.Debug|x86.Build.0 = Debug|Win32
-		{F9D9B5D4-3694-4705-8651-82EB225E68FA}.Release|x64.ActiveCfg = LegacyRelease|x64
-		{F9D9B5D4-3694-4705-8651-82EB225E68FA}.Release|x64.Build.0 = LegacyRelease|x64
 		{F9D9B5D4-3694-4705-8651-82EB225E68FA}.Release|x86.ActiveCfg = Release|Win32
 		{F9D9B5D4-3694-4705-8651-82EB225E68FA}.Release|x86.Build.0 = Release|Win32
+		{F9D9B5D4-3694-4705-8651-82EB225E68FA}.Debug|x64.ActiveCfg = Debug|x64
+		{F9D9B5D4-3694-4705-8651-82EB225E68FA}.Debug|x64.Build.0 = Debug|x64
+		{F9D9B5D4-3694-4705-8651-82EB225E68FA}.Release|x64.ActiveCfg = Release|x64
+		{F9D9B5D4-3694-4705-8651-82EB225E68FA}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

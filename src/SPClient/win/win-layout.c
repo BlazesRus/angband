@@ -372,25 +372,25 @@ int default_layout_win(term_data *data, int maxterms)
 		return 0;
 	}
 
-	/* Set up subwindows */
-	for (i = 1; i < maxterms; ++i) {
-		string_free(data[i].font_want);
-		data[i].font_want = string_make(sub_font);
-		data[i].font_wid = fx2;
-		data[i].font_hgt = fy2;
-		data[i].tile_wid = fx2;
-		data[i].tile_hgt = fy2;
-		data[i].pos_x = i * tx;
-		data[i].pos_y = i * ty;
-		data[i].cols = (2 * ((sx - 2 * borderx)/tx) / 10) * tx/fx2;
-		data[i].rows = (2 * ((sy - 2 * bordery - cap - bar)/ty)/10) * ty/fy2;
-		data[i].visible = 0;
-		data[i].maximized = 0;
-	}
-	/* Position the specific sub windows */
-	data[1].pos_x = 0;
-	data[1].pos_y = (lcap + bar + (data[0].rows * ty) + 2 * bordery) - cap;
-	data[1].rows = (sy - data[1].pos_y - 2 * cap) / fy2;
+    /* Set up subwindows */
+    for (i = 1; i < maxterms; ++i) {
+        string_free(data[i].font_want);
+        data[i].font_want = string_make(sub_font);
+        data[i].font_wid = fx2;
+        data[i].font_hgt = fy2;
+        data[i].tile_wid = fx2;
+        data[i].tile_hgt = fy2;
+        data[i].pos_x = i * tx;
+        data[i].pos_y = i * ty;
+        data[i].cols = (2 * ((sx - 2 * borderx)/tx) / 10) * tx/fx2;
+        data[i].rows = (2 * ((sy - 2 * bordery - cap - bar)/ty)/10) * ty/fy2;
+        data[i].visible = 0;
+        data[i].maximized = 0;
+    }
+    /* Position the specific sub windows */
+    data[1].pos_x = 0;
+    data[1].pos_y = (lcap + bar + (data[0].rows * ty) + 2 * bordery) - cap;
+    data[1].rows = (sy - data[1].pos_y - 2 * cap) / fy2;
 
 	data[2].pos_x = (2 * borderx + data[0].cols * tx);
 	data[2].pos_y = 0;

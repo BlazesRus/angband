@@ -52,27 +52,6 @@
     <Filter Include="Resource Files\screens">
       <UniqueIdentifier>{8a54c5c2-3c10-4cf2-b6a8-9588ab62a502}</UniqueIdentifier>
     </Filter>
-    <Filter Include="LibPng Files">
-      <UniqueIdentifier>{37ef86d2-dfeb-4920-bc37-3843383c8435}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="LibPng Files\ExternalFiles">
-      <UniqueIdentifier>{4fd3cb21-ed6d-4145-a7df-0bc55d066164}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="LibPng Files\IntegratedFiles">
-      <UniqueIdentifier>{dec64d86-049c-4a20-91bc-72712de37d35}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ZLib Files">
-      <UniqueIdentifier>{8dd1214f-ddd7-4767-b796-7022b6afce09}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ZLib Files\IntegratedFiles">
-      <UniqueIdentifier>{4c203884-cbc9-4359-a01a-b11cc94cc69f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ZLib Files\ExternalFiles">
-      <UniqueIdentifier>{5b1692ed-231c-4991-9606-8e57eb453308}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="LibPng Files\IntegratedFiles\AngbandBased">
-      <UniqueIdentifier>{1af1aff8-4d05-4d00-9da6-6cd4f7634ee3}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\SPClient\buildid.c">
@@ -507,6 +486,15 @@
     <ClCompile Include="..\SPClient\z-virt.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\SPClient\win\readdib.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SPClient\win\readpng.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\SPClient\win\scrnshot.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="..\SPClient\win\win-layout.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -530,15 +518,6 @@
     </ClCompile>
     <ClCompile Include="..\SPClient\player-properties.c">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\SPClient\win\readpng.c">
-      <Filter>LibPng Files\IntegratedFiles</Filter>
-    </ClCompile>
-    <ClCompile Include="..\SPClient\win\readdib.c">
-      <Filter>LibPng Files\IntegratedFiles\AngbandBased</Filter>
-    </ClCompile>
-    <ClCompile Include="..\SPClient\win\scrnshot.c">
-      <Filter>LibPng Files\IntegratedFiles\AngbandBased</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1025,10 +1004,25 @@
     <ClInclude Include="..\SPClient\z-virt.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\SPClient\win\readdib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\SPClient\win\win-menu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\SPClient\win\win-term.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SPClient\win\include\png.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SPClient\win\include\pngconf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SPClient\win\include\zconf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SPClient\win\include\zlib.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\SPClient\ui-entry.h">
@@ -1048,21 +1042,6 @@
     </ClInclude>
     <ClInclude Include="..\SPClient\player-properties.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\SPClient\win\include\pngconf.h">
-      <Filter>LibPng Files\IntegratedFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="..\SPClient\win\include\png.h">
-      <Filter>LibPng Files\IntegratedFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="..\SPClient\win\include\zconf.h">
-      <Filter>ZLib Files\IntegratedFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="..\SPClient\win\include\zlib.h">
-      <Filter>ZLib Files\IntegratedFiles</Filter>
-    </ClInclude>
-    <ClInclude Include="..\SPClient\win\readdib.h">
-      <Filter>LibPng Files\IntegratedFiles\AngbandBased</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
