@@ -54,14 +54,65 @@
   <ImportGroup Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <PropertyGroup Label="UserMacros"/>
+  <PropertyGroup Label="UserMacros">
+    <ParentOfRoot>$(MSBuildProjectDirectory)\..\..\</ParentOfRoot>
+<!--     <RootDirectory>$(MSBuildProjectDirectory)\..\</RootDirectory> -->
+    <SPRoot>$(MSBuildProjectDirectory)\..\SPClient\</SPRoot>
+	<LibSrcDir>$(MSBuildProjectDirectory)\..\..\lib</LibSrcDir>
+    <LibPngLocType>Integrated</LibPngLocType><!--Using Integrated until get newest LibPng working with the code-->
+    <LibPngDir>$(SPRoot)\win\IntegratedLibPng\</LibPngDir>
+    <LibPngLibrary>$(SPRoot)\win\lib\$(Platform)\libpng.lib</LibPngLibrary>
+  </PropertyGroup>
+  <!--Use Integrated version of the code if GitProject of ZLib not found in parent of root-->
+  <Choose>
+	  <When Condition="Exists('$(ParentOfRoot)\zlib-win64\zlib.h')">
+		<PropertyGroup>
+		  <ZLibLocType>X64</ZLibLocType>
+		  <ZLibDir>$(ParentOfRoot)zlib-win64\</ZLibDir>
+		  <ZLibLibrary>$(ZLibDir)$(Platform)\$(Configuration)\zlib.lib</ZLibLibrary>
+		</PropertyGroup>          
+	   </When>
+	  <When Condition="Exists('$(ParentOfRoot)\zlib\zlib.h')">
+		<PropertyGroup>
+		  <ZLibLocType>Normal</ZLibLocType>
+		  <ZLibDir>$(ParentOfRoot)zlib\</ZLibDir>
+		  <ZLibLibrary>$(ZLibDir)$(Platform)\$(Configuration)\zlib.lib</ZLibLibrary>
+		</PropertyGroup>          
+	  </When>
+	  <Otherwise>
+		<PropertyGroup>
+		  <ZLibLocType>Integrated</ZLibLocType>
+		  <ZLibDir>$(SPRoot)\win\IntegratedZLib\</ZLibDir>
+		  <ZLibLibrary>$(SPRoot)\win\lib\$(Platform)\zlib.lib</ZLibLibrary>
+		</PropertyGroup>
+	  </Otherwise>
+  </Choose>
+  <!--Use Integrated version of the code if GitProject of LibPng not found in parent of root-->
+<!--
+   <Choose>
+	  <When Condition="Exists('$(ParentOfRoot)\libpng\png.h')">
+		<PropertyGroup>
+		  <LibPngLocType>Normal</LibPngLocType>
+		  <LibPngDir>$(ParentOfRoot)libpng\</LibPngDir>
+		  <LibPngLibrary>$(LibPngDir)$(Platform)\$(Configuration)\zlib.lib</LibPngLibrary>
+		</PropertyGroup>          
+	  </When>
+	  <Otherwise>
+		<PropertyGroup>
+		  <LibPngLocType>Integrated</LibPngLocType>
+		  <LibPngDir>$(ParentOfRoot)\win\IntegratedLibPng\</LibPngDir>
+		  <LibPngLibrary>$(SPRoot)\win\lib\$(Platform)\libpng.lib</LibPngLibrary>
+		</PropertyGroup>
+	  </Otherwise>
+  </Choose> 
+ -->
   <PropertyGroup Condition="'$(Platform)'=='Win32'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(MSBuildProjectDirectory)\src;$(MSBuildProjectDirectory)\..\SPClient\win;$(MSBuildProjectDirectory)\..\SPClient\win\include;..\..\zlib-win64\</IncludePath>
-    <LibraryPath>$(MSBuildProjectDirectory)\..\SPClient\win\lib;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)..\lib\um\x86;..\..\zlib-win64\Win32\$(Configuration)\</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(MSBuildProjectDirectory)\src;$(MSBuildProjectDirectory)\..\SPClient\win;$(ZLibDir);$(LibPngDir)</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)..\lib\um\x86;</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Platform)'=='x64'">
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(MSBuildProjectDirectory)\src;$(MSBuildProjectDirectory)\..\SPClient\win;$(MSBuildProjectDirectory)\..\SPClient\win\include;..\..\zlib-win64\</IncludePath>
-    <LibraryPath>$(MSBuildProjectDirectory)\..\SPClient\win\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)..\lib\um\x64;..\..\zlib-win64\x64\$(Configuration)\</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(MSBuildProjectDirectory)\src;$(MSBuildProjectDirectory)\..\SPClient\win;$(ZLibDir);$(LibPngDir)</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)..\lib\um\x64;</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
@@ -91,15 +142,15 @@
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding Condition="'$(Configuration)'=='Release'">true</EnableCOMDATFolding>
       <OptimizeReferences Condition="'$(Configuration)'=='Release'">true</OptimizeReferences>
-      <GenerateDebugInformation>true</GenerateDebugInformation><!--..\..\zlib-win64\Win32\$(Platform)\-->
-      <AdditionalDependencies Condition="'$(Configuration)'=='Debug'">zlib.lib;libpng.lib;msimg32.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalDependencies Condition="'$(Configuration)'=='Release'">zlib.lib;libpng.lib;msimg32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies Condition="'$(Configuration)'=='Debug'">$(ZLibLibrary);$(LibPngLibrary);msimg32.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies Condition="'$(Configuration)'=='Release'">$(ZLibLibrary);$(LibPngLibrary);msimg32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CustomBuildStep Condition="'$(LibraryConfiguration)'=='Debug'">
       <Command>xcopy  "$(MSBuildProjectDirectory)\..\..\lib" "$(OutDir)lib" /s /e /y /d</Command>
     </CustomBuildStep>
     <PostBuildEvent Condition="'$(LibraryConfiguration)'=='Release'">
-      <Command>xcopy $(MSBuildProjectDirectory)\..\..\lib\* $(OutDir)..\lib\ /DESY /exclude:$(MSBuildProjectDirectory)\..\..\lib\xcopy_exclude.txt</Command>
+      <Command>xcopy $(LibSrcDir)\* $(OutDir)..\lib\ /DESY /exclude:$(LibSrcDir)\xcopy_exclude.txt</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Platform)'=='x64'">
@@ -116,15 +167,15 @@
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding Condition="'$(Configuration)'=='Release'">true</EnableCOMDATFolding>
       <OptimizeReferences Condition="'$(Configuration)'=='Release'">true</OptimizeReferences>
-      <GenerateDebugInformation>true</GenerateDebugInformation><!--..\..\zlib-win64\x64\$(Configuration)\-->
-      <AdditionalDependencies Condition="'$(Configuration)'=='Debug'">zlib.lib;libpng.lib;msimg32.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalDependencies Condition="'$(Configuration)'=='Release'">zlib.lib;libpng.lib;msimg32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies Condition="'$(Configuration)'=='Debug'">$(ZLibLibrary);$(LibPngLibrary);msimg32.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies Condition="'$(Configuration)'=='Release'">$(ZLibLibrary);$(LibPngLibrary);msimg32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <CustomBuildStep Condition="'$(LibraryConfiguration)'=='Debug'">
-      <Command>xcopy  "$(MSBuildProjectDirectory)\..\..\lib" "$(OutDir)lib" /s /e /y /d</Command>
+      <Command>xcopy  "$(LibSrcDir)" "$(OutDir)lib" /s /e /y /d</Command>
     </CustomBuildStep>
     <PostBuildEvent Condition="'$(LibraryConfiguration)'=='Release'">
-      <Command>xcopy $(MSBuildProjectDirectory)\..\..\lib\* $(OutDir)..\lib\ /DESY /exclude:$(MSBuildProjectDirectory)\..\..\lib\xcopy_exclude.txt</Command>
+      <Command>xcopy $(LibSrcDir)\* $(OutDir)..\lib\ /DESY /exclude:$(LibSrcDir)\xcopy_exclude.txt</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
