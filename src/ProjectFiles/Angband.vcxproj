@@ -78,13 +78,13 @@
     <LibraryConfiguration Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='LegacyRelease'">Release</LibraryConfiguration>
 	<BuildType Condition="'$(Configuration)'=='LegacyDebug' Or '$(Configuration)'=='LegacyRelease'">Legacy</BuildType>
 	<BuildType Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Release'"></BuildType>
-    <ZLibDir Condition="'$(BuildType)'!='Legacy">..\..\..\zlib-win64\</ZLibDir>
+    <ZLibDir Condition="'$(BuildType)'!='Legacy'">..\..\..\zlib-win64\</ZLibDir>
 <!--    <ZLibDir Condition="'$(BuildType)'=='Legacy'">..\SPClient\win\</ZLibDir>-->
     <ZLibLibrary Condition="'$(BuildType)'=='Legacy' And '$(Platform)'=='x64'">..\SPClient\win\zlib_x64.lib</ZLibLibrary>
     <ZLibLibrary Condition="'$(BuildType)'=='Legacy' And '$(Platform)'=='Win32'">..\SPClient\win\zlib.lib</ZLibLibrary>
     <ZLibLibrary Condition="'$(BuildType)'!='Legacy'">$(ZLibDir)$(Platform)\$(Configuration)\zlib.lib</ZLibLibrary>
-    <LibPngDir Condition="'$(BuildType)'!='Legacy">..\..\..\libpng\</LibPngDir>
-<!--    <LibPngDir Condition="'$(BuildType)'=='Legacy">..\SPClient\win\include\</LibPngDir>-->
+    <LibPngDir Condition="'$(BuildType)'!='Legacy'">..\..\..\libpng\</LibPngDir>
+<!--    <LibPngDir Condition="'$(BuildType)'=='Legacy'">..\SPClient\win\include\</LibPngDir>-->
     <LibPngLibrary Condition="'$(Configuration)'!='LegacyDebug' And '$(Configuration)'!='LegacyRelease'">$(LibPngDir)projects\vstudio\$(Platform)\$(Configuration)Library\libpng.lib</LibPngLibrary>
     <LibPngLibrary Condition="'$(BuildType)'=='Legacy' And '$(Platform)'=='x64'">..\SPClient\win\libpng_x64.lib</LibPngLibrary>
     <LibPngLibrary Condition="'$(BuildType)'=='Legacy' And '$(Platform)'=='Win32'">..\SPClient\win\libpng.lib</LibPngLibrary>
