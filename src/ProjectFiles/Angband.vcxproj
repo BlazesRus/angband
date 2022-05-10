@@ -26,8 +26,9 @@
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ConfigurationType>Application</ConfigurationType>
     <RootNamespace>AngBand</RootNamespace>
-	<ProjectName>Angband</ProjectName>
-	<PlatformToolset>v142</PlatformToolset><!-- 142 for VS2019(Default);143 for VS2022-->
+    <ProjectName>Angband</ProjectName>
+    <PlatformToolset>v142</PlatformToolset>
+    <!-- 142 for VS2019(Default);143 for VS2022-->
     <PlatformToolset Condition="'$(VisualStudioVersion)' == '16' Or '$(VisualStudioVersion)' == ''">v142</PlatformToolset>
     <PlatformToolset Condition="'$(VisualStudioVersion)' == '17'">v143</PlatformToolset>
   </PropertyGroup>
@@ -56,39 +57,43 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros">
     <ParentOfRoot>$(MSBuildProjectDirectory)\..\..\</ParentOfRoot>
-<!--     <RootDirectory>$(MSBuildProjectDirectory)\..\</RootDirectory> -->
+    <!--     <RootDirectory>$(MSBuildProjectDirectory)\..\</RootDirectory> -->
     <SPRoot>$(MSBuildProjectDirectory)\..\SPClient\</SPRoot>
-	<LibSrcDir>$(MSBuildProjectDirectory)\..\..\lib</LibSrcDir>
-    <LibPngLocType>Integrated</LibPngLocType><!--Using Integrated until get newest LibPng working with the code-->
+    <LibSrcDir>$(MSBuildProjectDirectory)\..\..\lib</LibSrcDir>
+    <LibPngLocType>Integrated</LibPngLocType>
+    <!--Using Integrated until get newest LibPng working with the code-->
     <LibPngDir>$(SPRoot)\win\IntegratedLibPng\</LibPngDir>
     <LibPngLibrary>$(SPRoot)\win\lib\$(Platform)\libpng.lib</LibPngLibrary>
   </PropertyGroup>
   <!--Use Integrated version of the code if GitProject of ZLib not found in parent of root-->
   <Choose>
-	  <When Condition="Exists('$(ParentOfRoot)\zlib-win64\zlib.h')">
-		<PropertyGroup>
-		  <ZLibLocType>X64</ZLibLocType>
-		  <ZLibDir>$(ParentOfRoot)zlib-win64\</ZLibDir>
-		  <ZLibLibrary>$(ZLibDir)$(Platform)\$(Configuration)\zlib.lib</ZLibLibrary>
-		</PropertyGroup>          
-	   </When>
-	  <When Condition="Exists('$(ParentOfRoot)\zlib\zlib.h')">
-		<PropertyGroup>
-		  <ZLibLocType>Normal</ZLibLocType>
-		  <ZLibDir>$(ParentOfRoot)zlib\</ZLibDir>
-		  <ZLibLibrary>$(ZLibDir)$(Platform)\$(Configuration)\zlib.lib</ZLibLibrary>
-		</PropertyGroup>          
-	  </When>
-	  <Otherwise>
-		<PropertyGroup>
-		  <ZLibLocType>Integrated</ZLibLocType>
-		  <ZLibDir>$(SPRoot)\win\IntegratedZLib\</ZLibDir>
-		  <ZLibLibrary>$(SPRoot)\win\lib\$(Platform)\zlib.lib</ZLibLibrary>
-		</PropertyGroup>
-	  </Otherwise>
+    <When Condition="Exists('$(ParentOfRoot)\zlib\out\build\x64-Release\zlib.lib') And Exists('$(ParentOfRoot)zlib\out\build\$(Platform)-$(Configuration)\zlib.lib')">
+      <PropertyGroup>
+        <ZLibLocType>Normal</ZLibLocType>
+        <ZLibDir>$(ParentOfRoot)zlib\</ZLibDir>
+        <ZLibLibrary>$(ZLibDir)out\build\$(Platform)-$(Configuration)\zlib.lib</ZLibLibrary>
+      </PropertyGroup>
+    </When>
+    <When Condition="Exists('$(ParentOfRoot)\zlib-win64\zlib.h') And (Exists('$(ParentOfRoot)zlib-win64\out\build\$(Platform)-$(Configuration)\zlib.lib') Or Exists('$(ParentOfRoot)zlib-win64\$(Platform)\$(Configuration)\zlib.lib'))">
+      <PropertyGroup>
+        <ZLibLocType>X64</ZLibLocType>
+        <ZLibDir>$(ParentOfRoot)zlib-win64\</ZLibDir>
+        <!--Open Visual Studio 2022 and build via nmake-->
+        <ZLibLibrary Condition="Exists('$(ParentOfRoot)\zlib\out\build\$(Platform)-$(Configuration)\zlib.lib')">$(ZLibDir)$(Platform)\$(Configuration)\zlib.lib</ZLibLibrary>
+        <!--Or just use Visual Studio project in Contribution/vs16 folder-->
+        <ZLibLibrary Condition="Exists('$(ZLibDir)$(Platform)\$(Configuration)\zlib.lib')">$(ZLibDir)$(Platform)\$(Configuration)\zlib.lib</ZLibLibrary>
+      </PropertyGroup>
+    </When>
+    <Otherwise>
+      <PropertyGroup>
+        <ZLibLocType>Integrated</ZLibLocType>
+        <ZLibDir>$(SPRoot)\win\IntegratedZLib\</ZLibDir>
+        <ZLibLibrary>$(SPRoot)\win\lib\$(Platform)\zlib.lib</ZLibLibrary>
+      </PropertyGroup>
+    </Otherwise>
   </Choose>
   <!--Use Integrated version of the code if GitProject of LibPng not found in parent of root-->
-<!--
+  <!--
    <Choose>
 	  <When Condition="Exists('$(ParentOfRoot)\libpng\png.h')">
 		<PropertyGroup>
@@ -116,11 +121,11 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-	<CustomBuildAfterTargets>Build</CustomBuildAfterTargets>
+    <CustomBuildAfterTargets>Build</CustomBuildAfterTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-	<CustomBuildAfterTargets>Build</CustomBuildAfterTargets>
+    <CustomBuildAfterTargets>Build</CustomBuildAfterTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -137,6 +142,8 @@
       <PreprocessorDefinitions Condition="'$(Configuration)'=='Debug'">SOUND;USE_PRIVATE_PATHS;WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)'=='Release'">SOUND;USE_PRIVATE_PATHS;WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdcpp20</LanguageStandard>
+      <LanguageStandard_C Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -162,6 +169,8 @@
       <PreprocessorDefinitions Condition="'$(Configuration)'=='Debug'">SOUND;USE_PRIVATE_PATHS;WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)'=='Release'">SOUND;USE_PRIVATE_PATHS;WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release|x64'">stdcpp20</LanguageStandard>
+      <LanguageStandard_C Condition="'$(Configuration)|$(Platform)'=='Release|x64'">stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
