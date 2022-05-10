@@ -121,6 +121,10 @@
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(MSBuildProjectDirectory)\src;$(MSBuildProjectDirectory)\..\SPClient\win;$(ZLibDir);$(LibPngDir)</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)..\lib\um\x64;</LibraryPath>
   </PropertyGroup>
+  <PropertyGroup Label="OutputInfo">
+    <OutDir>..\$(Configuration)_$(Platform)\</OutDir>
+    <IntDir>..\ObjectFiles\SPClient\$(Configuration)_$(Platform)\</IntDir>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <CustomBuildAfterTargets>Build</CustomBuildAfterTargets>
@@ -155,12 +159,12 @@
     </Link>
     <CustomBuildStep Condition="'$(LibraryConfiguration)'=='Debug'">
       <Command>xcopy  "$(MSBuildProjectDirectory)\..\..\lib" "$(OutDir)lib" /s /e /y /d</Command>
-	  <Command Condition="'$(ZLibLocType)'=='Integrated'">xcopy $(RootDirectory)\IntegratedDLLs\$(Platform)\zlib.dll $(OutDir) /DY </Command>
+      <Command Condition="'$(ZLibLocType)'=='Integrated'">xcopy $(RootDirectory)\IntegratedDLLs\$(Platform)\zlib.dll $(OutDir) /DY </Command>
       <Command Condition="'$(LibPngLocType)'=='Integrated'">xcopy $(RootDirectory)\IntegratedDLLs\$(Platform)\libpng.dll $(OutDir) /DY </Command>
     </CustomBuildStep>
     <PostBuildEvent Condition="'$(LibraryConfiguration)'=='Release'">
       <Command>xcopy $(LibSrcDir)\* $(OutDir)..\lib\ /DESY /exclude:$(LibSrcDir)\xcopy_exclude.txt</Command>
-	  <Command Condition="'$(ZLibLocType)'=='Integrated'">xcopy $(RootDirectory)\IntegratedDLLs\$(Platform)\zlib.dll $(OutDir) /DY </Command>
+      <Command Condition="'$(ZLibLocType)'=='Integrated'">xcopy $(RootDirectory)\IntegratedDLLs\$(Platform)\zlib.dll $(OutDir) /DY </Command>
       <Command Condition="'$(LibPngLocType)'=='Integrated'">xcopy $(RootDirectory)\IntegratedDLLs\$(Platform)\libpng.dll $(OutDir) /DY </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -475,13 +479,17 @@
     <ClInclude Include="..\SPClient\ui-term.h" />
     <ClInclude Include="..\SPClient\ui-visuals.h" />
     <ClInclude Include="..\SPClient\ui-wizard.h" />
-    <ClInclude Include="..\SPClient\win\IntegratedLibPng\png.h"><!--Was "..\SPClient\win\include\png.h" -->
+    <ClInclude Include="..\SPClient\win\IntegratedLibPng\png.h">
+      <!--Was "..\SPClient\win\include\png.h" -->
     </ClInclude>
-    <ClInclude Include="..\SPClient\win\IntegratedLibPng\pngconf.h"><!--Was "..\SPClient\win\include\pngconf.h" -->
+    <ClInclude Include="..\SPClient\win\IntegratedLibPng\pngconf.h">
+      <!--Was "..\SPClient\win\include\pngconf.h" -->
     </ClInclude>
-    <ClInclude Include="..\SPClient\win\IntegratedZLib\zconf.h"><!--Was "..\SPClient\win\include\zconf.h" -->
+    <ClInclude Include="..\SPClient\win\IntegratedZLib\zconf.h">
+      <!--Was "..\SPClient\win\include\zconf.h" -->
     </ClInclude>
-    <ClInclude Include="..\SPClient\win\IntegratedZLib\zlib.h"><!--Was "..\SPClient\win\include\zlib.h" -->
+    <ClInclude Include="..\SPClient\win\IntegratedZLib\zlib.h">
+      <!--Was "..\SPClient\win\include\zlib.h" -->
     </ClInclude>
     <ClInclude Include="..\SPClient\win\readdib.h">
     </ClInclude>
