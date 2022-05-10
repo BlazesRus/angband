@@ -56,9 +56,10 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros">
-    <ParentOfRoot>$(MSBuildProjectDirectory)\..\..\</ParentOfRoot>
-    <!--     <RootDirectory>$(MSBuildProjectDirectory)\..\</RootDirectory> -->
+    <ParentOfRoot>$(MSBuildProjectDirectory)\..\..\..\</ParentOfRoot>
+    <RootDirectory>$(MSBuildProjectDirectory)\..\..\</RootDirectory>
     <SPRoot>$(MSBuildProjectDirectory)\..\SPClient\</SPRoot>
+    <WinIncludeRoot>$(MSBuildProjectDirectory)\..\SPClient\win\</WinIncludeRoot>
     <LibSrcDir>$(MSBuildProjectDirectory)\..\..\lib</LibSrcDir>
     <LibPngLocType>Integrated</LibPngLocType>
     <!--Using Integrated until get newest LibPng working with the code-->
@@ -67,21 +68,22 @@
   </PropertyGroup>
   <!--Use Integrated version of the code if GitProject of ZLib not found in parent of root-->
   <Choose>
-    <When Condition="Exists('$(ParentOfRoot)\zlib\out\build\x64-Release\zlib.lib') And Exists('$(ParentOfRoot)zlib\out\build\$(Platform)-$(Configuration)\zlib.lib')">
-      <PropertyGroup>
-        <ZLibLocType>Normal</ZLibLocType>
-        <ZLibDir>$(ParentOfRoot)zlib\</ZLibDir>
-        <ZLibLibrary>$(ZLibDir)out\build\$(Platform)-$(Configuration)\zlib.lib</ZLibLibrary>
-      </PropertyGroup>
-    </When>
     <When Condition="Exists('$(ParentOfRoot)\zlib-win64\zlib.h') And (Exists('$(ParentOfRoot)zlib-win64\out\build\$(Platform)-$(Configuration)\zlib.lib') Or Exists('$(ParentOfRoot)zlib-win64\$(Platform)\$(Configuration)\zlib.lib'))">
       <PropertyGroup>
         <ZLibLocType>X64</ZLibLocType>
         <ZLibDir>$(ParentOfRoot)zlib-win64\</ZLibDir>
         <!--Open Visual Studio 2022 and build via nmake-->
-        <ZLibLibrary Condition="Exists('$(ParentOfRoot)\zlib\out\build\$(Platform)-$(Configuration)\zlib.lib')">$(ZLibDir)$(Platform)\$(Configuration)\zlib.lib</ZLibLibrary>
+        <ZLibLibrary Condition="$(ZLibLibrary)=='' And Exists('$(ParentOfRoot)\zlib\out\build\$(Platform)-$(Configuration)\zlib.lib')">$(ZLibDir)$(Platform)\$(Configuration)\zlib.lib</ZLibLibrary>
         <!--Or just use Visual Studio project in Contribution/vs16 folder-->
-        <ZLibLibrary Condition="Exists('$(ZLibDir)$(Platform)\$(Configuration)\zlib.lib')">$(ZLibDir)$(Platform)\$(Configuration)\zlib.lib</ZLibLibrary>
+        <ZLibLibrary Condition="$(ZLibLibrary)=='' And Exists('$(ZLibDir)$(Platform)\$(Configuration)\zlib.lib')">$(ZLibDir)$(Platform)\$(Configuration)\zlib.lib</ZLibLibrary>
+        <ZLibLibrary Condition="$(ZLibLibrary)==''">$(ZLibDir)$(Platform)\$(Configuration)\zlib.lib</ZLibLibrary>
+      </PropertyGroup>
+    </When>
+    <When Condition="Exists('$(ParentOfRoot)\zlib\out\build\x64-Release\zlib.lib') And Exists('$(ParentOfRoot)zlib\out\build\$(Platform)-$(Configuration)\zlib.lib')">
+      <PropertyGroup>
+        <ZLibLocType>Normal</ZLibLocType>
+        <ZLibDir>$(ParentOfRoot)zlib\</ZLibDir>
+        <ZLibLibrary>$(ZLibDir)out\build\$(Platform)-$(Configuration)\zlib.lib</ZLibLibrary>
       </PropertyGroup>
     </When>
     <Otherwise>
@@ -133,7 +135,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Platform)'=='Win32'">
+  <ItemDefinitionGroup>
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking Condition="'$(Configuration)'=='Release'">true</FunctionLevelLinking>
@@ -142,8 +144,6 @@
       <PreprocessorDefinitions Condition="'$(Configuration)'=='Debug'">SOUND;USE_PRIVATE_PATHS;WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessorDefinitions Condition="'$(Configuration)'=='Release'">SOUND;USE_PRIVATE_PATHS;WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdcpp20</LanguageStandard>
-      <LanguageStandard_C Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -155,36 +155,13 @@
     </Link>
     <CustomBuildStep Condition="'$(LibraryConfiguration)'=='Debug'">
       <Command>xcopy  "$(MSBuildProjectDirectory)\..\..\lib" "$(OutDir)lib" /s /e /y /d</Command>
+	  <Command Condition="'$(ZLibLocType)'=='Integrated'">xcopy $(RootDirectory)\IntegratedDLLs\$(Platform)\zlib.dll $(OutDir) /DY </Command>
+      <Command Condition="'$(LibPngLocType)'=='Integrated'">xcopy $(RootDirectory)\IntegratedDLLs\$(Platform)\libpng.dll $(OutDir) /DY </Command>
     </CustomBuildStep>
     <PostBuildEvent Condition="'$(LibraryConfiguration)'=='Release'">
       <Command>xcopy $(LibSrcDir)\* $(OutDir)..\lib\ /DESY /exclude:$(LibSrcDir)\xcopy_exclude.txt</Command>
-    </PostBuildEvent>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Platform)'=='x64'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <FunctionLevelLinking Condition="'$(Configuration)'=='Release'">true</FunctionLevelLinking>
-      <IntrinsicFunctions Condition="'$(Configuration)'=='Release'">true</IntrinsicFunctions>
-      <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions Condition="'$(Configuration)'=='Debug'">SOUND;USE_PRIVATE_PATHS;WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)'=='Release'">SOUND;USE_PRIVATE_PATHS;WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release|x64'">stdcpp20</LanguageStandard>
-      <LanguageStandard_C Condition="'$(Configuration)|$(Platform)'=='Release|x64'">stdc17</LanguageStandard_C>
-    </ClCompile>
-    <Link>
-      <SubSystem>Windows</SubSystem>
-      <EnableCOMDATFolding Condition="'$(Configuration)'=='Release'">true</EnableCOMDATFolding>
-      <OptimizeReferences Condition="'$(Configuration)'=='Release'">true</OptimizeReferences>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies Condition="'$(Configuration)'=='Debug'">$(ZLibLibrary);$(LibPngLibrary);msimg32.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalDependencies Condition="'$(Configuration)'=='Release'">$(ZLibLibrary);$(LibPngLibrary);msimg32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
-    </Link>
-    <CustomBuildStep Condition="'$(LibraryConfiguration)'=='Debug'">
-      <Command>xcopy  "$(LibSrcDir)" "$(OutDir)lib" /s /e /y /d</Command>
-    </CustomBuildStep>
-    <PostBuildEvent Condition="'$(LibraryConfiguration)'=='Release'">
-      <Command>xcopy $(LibSrcDir)\* $(OutDir)..\lib\ /DESY /exclude:$(LibSrcDir)\xcopy_exclude.txt</Command>
+	  <Command Condition="'$(ZLibLocType)'=='Integrated'">xcopy $(RootDirectory)\IntegratedDLLs\$(Platform)\zlib.dll $(OutDir) /DY </Command>
+      <Command Condition="'$(LibPngLocType)'=='Integrated'">xcopy $(RootDirectory)\IntegratedDLLs\$(Platform)\libpng.dll $(OutDir) /DY </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -498,13 +475,13 @@
     <ClInclude Include="..\SPClient\ui-term.h" />
     <ClInclude Include="..\SPClient\ui-visuals.h" />
     <ClInclude Include="..\SPClient\ui-wizard.h" />
-    <ClInclude Include="..\SPClient\win\include\png.h">
+    <ClInclude Include="..\SPClient\win\IntegratedLibPng\png.h"><!--Was "..\SPClient\win\include\png.h" -->
     </ClInclude>
-    <ClInclude Include="..\SPClient\win\include\pngconf.h">
+    <ClInclude Include="..\SPClient\win\IntegratedLibPng\pngconf.h"><!--Was "..\SPClient\win\include\pngconf.h" -->
     </ClInclude>
-    <ClInclude Include="..\SPClient\win\include\zconf.h">
+    <ClInclude Include="..\SPClient\win\IntegratedZLib\zconf.h"><!--Was "..\SPClient\win\include\zconf.h" -->
     </ClInclude>
-    <ClInclude Include="..\SPClient\win\include\zlib.h">
+    <ClInclude Include="..\SPClient\win\IntegratedZLib\zlib.h"><!--Was "..\SPClient\win\include\zlib.h" -->
     </ClInclude>
     <ClInclude Include="..\SPClient\win\readdib.h">
     </ClInclude>

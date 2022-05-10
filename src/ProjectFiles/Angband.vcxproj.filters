@@ -1013,18 +1013,6 @@
     <ClInclude Include="..\SPClient\win\win-term.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\SPClient\win\include\png.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\SPClient\win\include\pngconf.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\SPClient\win\include\zconf.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\SPClient\win\include\zlib.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\SPClient\ui-entry.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1041,6 +1029,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\SPClient\player-properties.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SPClient\win\IntegratedLibPng\png.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SPClient\win\IntegratedLibPng\pngconf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SPClient\win\IntegratedZLib\zconf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\SPClient\win\IntegratedZLib\zlib.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

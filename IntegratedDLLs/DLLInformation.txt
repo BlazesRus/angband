@@ -1,0 +1,2 @@
+ZLib Statically linked into LibPng from https://github.com/BlazesRus/zlib-win64(multiple branches merged in but mostly official branch code and plus some changes of my own to reduce warnings)
+LibPng from https://github.com/BlazesRus/libpng/tree/master(Multiple branches merged into)
