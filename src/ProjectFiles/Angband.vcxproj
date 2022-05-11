@@ -485,6 +485,9 @@
     <ClInclude Include="..\SPClient\win\IntegratedLibPng\pngconf.h">
       <!--Was "..\SPClient\win\include\pngconf.h" -->
     </ClInclude>
+    <ClInclude Include="..\SPClient\win\IntegratedLibPng\pnglibconf.h">
+      <!--Needed for latest png.h -->
+    </ClInclude>
     <ClInclude Include="..\SPClient\win\IntegratedZLib\zconf.h">
       <!--Was "..\SPClient\win\include\zconf.h" -->
     </ClInclude>
