@@ -32,6 +32,7 @@
 #  include <SDL/SDL.h>
 #  include <SDL/SDL_mixer.h>
 # endif/* USE_SDL */
+
 #elif defined(SOUND_SDL2)
 # ifdef WINDOWS
 #  include "..\_SDL2\SDL.h"
@@ -40,6 +41,7 @@
 #  include <SDL.h>
 #  include <SDL_mixer.h>
 # endif
+
 #else /* USE_SDL2 */
 #  include <SDL.h>
 #  include <SDL_mixer.h>

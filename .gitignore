@@ -47,3 +47,5 @@ ObjectFiles/**
 **/ObjectFiles/**
 
 Release_Win32/
+
+src/client/main-WindowsSDL.c
