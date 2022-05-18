@@ -21,28 +21,29 @@
 
 #include "c-angband.h"
 
-#ifdef SOUND_SDL
+#if defined(BUILDINGWithVS)
+#  include <SDL.h>
+#  include <SDL_mixer.h>
+#elif SOUND_SDL
 # ifdef WINDOWS
 #  include "..\_SDL\SDL.h"
 #  include "..\_SDL\SDL_mixer.h"
 # else
 #  include <SDL/SDL.h>
 #  include <SDL/SDL_mixer.h>
-# endif
-#endif /* USE_SDL */
-
-#if defined(BUILDINGWithVS)
-#  include <SDL/SDL.h>
-#  include <SDL/SDL_mixer.h>
+# endif/* USE_SDL */
 #elif defined(SOUND_SDL2)
 # ifdef WINDOWS
-#  include "..\..\..\SDL\include\SDL.h"
-#  include "..\..\..\SDL\include\SDL_mixer.h"
+#  include "..\_SDL2\SDL.h"
+#  include "..\_SDL2\SDL_mixer.h"
 # else
 #  include <SDL.h>
 #  include <SDL_mixer.h>
 # endif
-#endif /* USE_SDL2 */
+#else /* USE_SDL2 */
+#  include <SDL.h>
+#  include <SDL_mixer.h>
+#endif
 
 /* Supported file types */
 enum
