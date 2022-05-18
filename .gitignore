@@ -45,4 +45,5 @@ ObjectFiles/*
 ObjectFiles/**
 */ObjectFiles/**
 **/ObjectFiles/**
-*.pdb
+
+Release_Win32/
