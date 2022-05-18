@@ -2210,14 +2210,14 @@ static void handle_menu_tile_sets(struct window *window,
 
     graphics_mode *mode = graphics_modes;
     while (mode != NULL) {
-        num_elems++;
+        ++num_elems;
         mode = mode->pNext;
     }
 
     struct menu_elem elems[num_elems];
 
     mode = graphics_modes;
-    for (size_t i = 0; i < num_elems; i++) {
+    for (size_t i = 0; i < num_elems; ++i) {
         elems[i].caption = mode->menuname;
         elems[i].data.type = BUTTON_DATA_INT;
         elems[i].data.value.int_value = mode->grafID;
@@ -2936,7 +2936,7 @@ static void crop_rects(SDL_Rect *src, SDL_Rect *dst)
 static void try_snap(struct window *window,
         struct subwindow *subwindow, SDL_Rect *rect)
 {
-    for (size_t i = N_ELEMENTS(window->subwindows); i > 0; i--) {
+    for (size_t i = N_ELEMENTS(window->subwindows); i > 0; --i) {
         struct subwindow *other = window->subwindows[i - 1];
         if (other == NULL
                 || !other->visible
