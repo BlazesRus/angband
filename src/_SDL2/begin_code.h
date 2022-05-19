@@ -1,6 +1,6 @@
 /*
   Simple DirectMedia Layer
-  Copyright (C) 1997-2021 Sam Lantinga <slouken@libsdl.org>
+  Copyright (C) 1997-2022 Sam Lantinga <slouken@libsdl.org>
 
   This software is provided 'as-is', without any express or implied
   warranty.  In no event will the authors be held liable for any damages
@@ -101,15 +101,13 @@
 #ifdef _MSC_VER
 #pragma warning(disable: 4103)
 #endif
-#ifndef __BORLANDC__
 #ifdef __clang__
 #pragma clang diagnostic ignored "-Wpragma-pack"
-#endif
 #endif
 #ifdef __BORLANDC__
 #pragma nopackwarning
 #endif
-#ifdef _M_X64
+#ifdef _WIN64
 /* Use 8-byte alignment on 64-bit architectures, so pointers are aligned */
 #pragma pack(push,8)
 #else
@@ -166,3 +164,24 @@
 #endif
 #endif /* NULL */
 #endif /* ! Mac OS X - breaks precompiled headers */
+
+#ifndef SDL_FALLTHROUGH
+#if (defined(__cplusplus) && __cplusplus >= 201703L) || \
+    (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 202000L)
+#define SDL_FALLTHROUGH [[fallthrough]]
+#else
+#if defined(__has_attribute)
+#define _HAS_FALLTHROUGH __has_attribute(__fallthrough__)
+#else
+#define _HAS_FALLTHROUGH 0
+#endif /* __has_attribute */
+#if _HAS_FALLTHROUGH && \
+   ((defined(__GNUC__) && __GNUC__ >= 7) || \
+    (defined(__clang_major__) && __clang_major__ >= 10))
+#define SDL_FALLTHROUGH __attribute__((__fallthrough__))
+#else
+#define SDL_FALLTHROUGH do {} while (0) /* fallthrough */
+#endif /* _HAS_FALLTHROUGH */
+#undef _HAS_FALLTHROUGH
+#endif /* C++17 or C2x */
+#endif /* SDL_FALLTHROUGH not defined */
