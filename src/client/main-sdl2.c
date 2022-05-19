@@ -2828,63 +2828,64 @@ static bool is_point_in_rect(int x, int y, const SDL_Rect *rect)
         && y >= rect->y && y < rect->y + rect->h;
 }
 
-static bool is_rect_in_rect(const SDL_Rect *small, const SDL_Rect *big)
+//Renaming with postfix Rec to prevent conflict with typedef from rpcndr.h
+static bool is_rect_in_rect(const SDL_Rect *smallRec, const SDL_Rect *bigRec)
 {
-    return small->x >= big->x
-        && small->x + small->w <= big->x + big->w
-        && small->y >= big->y
-        && small->y + small->h <= big->y + big->h;
+    return smallRec->x >= bigRec->x
+        && smallRec->x + smallRec->w <= bigRec->x + bigRec->w
+        && smallRec->y >= bigRec->y
+        && smallRec->y + smallRec->h <= bigRec->y + bigRec->h;
 }
 
-static void fit_rect_in_rect_by_hw(SDL_Rect *small, const SDL_Rect *big)
+static void fit_rect_in_rect_by_hw(SDL_Rect *smallRec, const SDL_Rect *bigRec)
 {
-    if (small->x < big->x) {
-        small->w -= big->x - small->x;
-        small->x = big->x;
+    if (smallRec->x < bigRec->x) {
+        smallRec->w -= bigRec->x - smallRec->x;
+        smallRec->x = bigRec->x;
     }
-    if (small->x + small->w > big->x + big->w) {
-        small->w = big->x + big->w - small->x;
+    if (smallRec->x + smallRec->w > bigRec->x + bigRec->w) {
+        smallRec->w = bigRec->x + bigRec->w - smallRec->x;
     }
-    if (small->y < big->y) {
-        small->h -= big->y - small->y;
-        small->y = big->y;
+    if (smallRec->y < bigRec->y) {
+        smallRec->h -= bigRec->y - smallRec->y;
+        smallRec->y = bigRec->y;
     }
-    if (small->y + small->h > big->y + big->h) {
-        small->h = big->y + big->h - small->y;
-    }
-}
-
-static void fit_rect_in_rect_by_xy(SDL_Rect *small, const SDL_Rect *big)
-{
-    if (small->x < big->x) {
-        small->x = big->x;
-    }
-    if (small->y < big->y) {
-        small->y = big->y;
-    }
-    if (small->x + small->w > big->x + big->w) {
-        small->x = MAX(big->x, big->x + big->w - small->w);
-    }
-    if (small->y + small->h > big->y + big->h) {
-        small->y = MAX(big->y, big->y + big->h - small->h);
+    if (smallRec->y + smallRec->h > bigRec->y + bigRec->h) {
+        smallRec->h = bigRec->y + bigRec->h - smallRec->y;
     }
 }
 
-static void fit_rect_in_rect_proportional(SDL_Rect *small, const SDL_Rect *big)
+static void fit_rect_in_rect_by_xy(SDL_Rect *smallRec, const SDL_Rect *bigRec)
 {
-    if (small->x < big->x) {
-        small->x = big->x;
+    if (smallRec->x < bigRec->x) {
+        smallRec->x = bigRec->x;
     }
-    if (small->y < big->y) {
-        small->y = big->y;
+    if (smallRec->y < bigRec->y) {
+        smallRec->y = bigRec->y;
     }
-    if (small->w > big->w) {
-        small->h = small->h * big->w / small->w;
-        small->w = big->w;
+    if (smallRec->x + smallRec->w > bigRec->x + bigRec->w) {
+        smallRec->x = MAX(bigRec->x, bigRec->x + bigRec->w - smallRec->w);
     }
-    if (small->h > big->h) {
-        small->w = small->w * big->h / small->h;
-        small->h = big->h;
+    if (smallRec->y + smallRec->h > bigRec->y + bigRec->h) {
+        smallRec->y = MAX(bigRec->y, bigRec->y + bigRec->h - smallRec->h);
+    }
+}
+
+static void fit_rect_in_rect_proportional(SDL_Rect *smallRec, const SDL_Rect *bigRec)
+{
+    if (smallRec->x < bigRec->x) {
+        smallRec->x = bigRec->x;
+    }
+    if (smallRec->y < bigRec->y) {
+        smallRec->y = bigRec->y;
+    }
+    if (smallRec->w > bigRec->w) {
+        smallRec->h = smallRec->h * bigRec->w / smallRec->w;
+        smallRec->w = bigRec->w;
+    }
+    if (smallRec->h > bigRec->h) {
+        smallRec->w = smallRec->w * bigRec->h / smallRec->h;
+        smallRec->h = bigRec->h;
     }
 }
 
