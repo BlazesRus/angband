@@ -52,6 +52,7 @@ enum
 {
     SDL_NULL = 0,
     SDL_CHUNK_LOOP,
+    SDL_MUSIC_LOOP,
     SDL_CHUNK,
     SDL_MUSIC
 };
@@ -60,7 +61,8 @@ enum
 static const struct sound_file_type supported_sound_files[] =
 {
     {".ogg", SDL_CHUNK},
-    {".ogg0", SDL_CHUNK_LOOP},
+    {".ogg.0", SDL_CHUNK_LOOP},
+    {".mp3.0", SDL_MUSIC_LOOP},
     {".mp3", SDL_MUSIC},
     {"", SDL_NULL}
 };
@@ -76,6 +78,7 @@ typedef struct
         Mix_Chunk *chunk;   /* Sample in WAVE format */
         Mix_Chunk *chunk_loop;   /* Sample in WAVE format with looping */
         Mix_Music *music;   /* Sample in MP3 format */
+        Mix_Music *music_loop;   /* Sample in MP3 format with looping */
     } sample_data;
     int sample_type;
 } sdl_sample;
@@ -132,8 +135,18 @@ static bool play_music_aux(const char *dirpath)
         Mix_VolumeMusic((music_volume * MIX_MAX_VOLUME) / 100);
     }
 
-    /* Play music file (once) */
-    Mix_PlayMusic(music, 1);
+    // Check tag '_file' for music looped playback
+    if (buf[0] == '_')
+    {
+        /* Play music file (loop) */
+        Mix_PlayMusic(music, -1);
+    }
+    else
+    {
+        /* Play music file (once) */
+        Mix_PlayMusic(music, 1);
+    }
+
     return true;
 }
 
@@ -153,31 +166,19 @@ static void play_music_sdl(void)
     /* Check location */
     if (!STRZERO(player->locname))
     {
-        /* Play music from corresponding music subdirectory */
+        char dirpaths[MSG_LEN];
+
+        // Play music dependent on location depth subdirectory
         path_build(dirpath, sizeof(dirpath), ANGBAND_DIR_MUSIC, player->locname);
+        path_build(dirpaths, sizeof(dirpaths), dirpath, format("%d", player->wpos.depth));
+        played = play_music_aux(dirpaths);
 
-        // custom depth music-ambience for Sewers
-        if (streq(player->locname, "Severs"))
+        if (!played)
         {
-            if (player->wpos.depth == 8)
-                path_build(dirpath, sizeof(dirpath), ANGBAND_DIR_MUSIC, "Severs\\1");
-            else if (player->wpos.depth == 9)
-                path_build(dirpath, sizeof(dirpath), ANGBAND_DIR_MUSIC, "Severs\\2");
-            else if (player->wpos.depth == 10)
-                path_build(dirpath, sizeof(dirpath), ANGBAND_DIR_MUSIC, "Severs\\3");
-            else if (player->wpos.depth == 11)
-                path_build(dirpath, sizeof(dirpath), ANGBAND_DIR_MUSIC, "Severs\\4");            
-            else if (player->wpos.depth == 12)
-                path_build(dirpath, sizeof(dirpath), ANGBAND_DIR_MUSIC, "Severs\\3");
-            else if (player->wpos.depth == 13)
-                path_build(dirpath, sizeof(dirpath), ANGBAND_DIR_MUSIC, "Severs\\2");
-            else if (player->wpos.depth == 14)
-                path_build(dirpath, sizeof(dirpath), ANGBAND_DIR_MUSIC, "Severs\\5");
-            else if (player->wpos.depth == 15)
-                path_build(dirpath, sizeof(dirpath), ANGBAND_DIR_MUSIC, "Severs\\6");
+            /* Play music from corresponding music subdirectory */
+            path_build(dirpath, sizeof(dirpath), ANGBAND_DIR_MUSIC, player->locname);
+            played = play_music_aux(dirpath);
         }
-
-        played = play_music_aux(dirpath);
 
         /* Hack -- don't fall back for intro music */
         if (streq(player->locname, "intro")) return;
@@ -297,6 +298,14 @@ static bool load_sample_sdl(const char *filename, int ft, sdl_sample *sample)
             break;
         }
 
+        case SDL_MUSIC_LOOP:
+        {
+            if (sample->sample_data.music_loop) Mix_FreeMusic(sample->sample_data.music_loop);
+            sample->sample_data.music_loop = Mix_LoadMUS(filename);
+            if (sample->sample_data.music_loop) return true;
+            break;
+        }
+
         default:
             plog("Oops - Unsupported file type");
             break;
@@ -343,6 +352,9 @@ static bool play_sound_sdl(struct sound_data *data)
     /* Play some music */
     if (data == NULL)
     {
+        /* Halt music playback */
+        if (Mix_PlayingMusic()) Mix_HaltMusic();
+
         play_music_sdl();
         return true;
     }
@@ -433,6 +445,25 @@ static bool play_sound_sdl(struct sound_data *data)
                 break;
             }
 
+            case SDL_MUSIC_LOOP:
+            {
+                /* Hack -- force reload next time a sound is played */
+                data->loaded = false;
+
+                if (sample->sample_data.music_loop)
+                {
+                    /* Adjust sound volume if needed */
+                    if (music_volume != current_music_volume)
+                    {
+                        current_music_volume = music_volume;
+                        Mix_VolumeMusic((music_volume * MIX_MAX_VOLUME) / 100);
+                    }
+
+                    return (0 == Mix_PlayMusic(sample->sample_data.music_loop, -1));
+                }
+                break;
+            }
+
             default: break;
         }
     }
@@ -470,6 +501,13 @@ static bool unload_sound_sdl(struct sound_data *data)
             {
                 if (sample->sample_data.music)
                     Mix_FreeMusic(sample->sample_data.music);
+                break;
+            }
+
+            case SDL_MUSIC_LOOP:
+            {
+                if (sample->sample_data.music_loop)
+                    Mix_FreeMusic(sample->sample_data.music_loop);
                 break;
             }
 

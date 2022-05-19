@@ -254,6 +254,7 @@ static void recharge_objects(struct player *p)
     }
 }
 
+
 /*
  * Play an ambient sound dependent on dungeon level, and day or night in towns
  */
@@ -264,7 +265,7 @@ static void play_ambient_sound(struct player *p)
     {
         if (in_town(&p->wpos))
         {
-            if ((p->wpos.grid.x ==  0 && p->wpos.grid.y ==  0) && one_in_(2))
+            if ((p->wpos.grid.x ==  0 && p->wpos.grid.y ==  1) && one_in_(2))
             {
                 if (one_in_(5))
                     sound(p, MSG_TOWN_RARE);
@@ -361,6 +362,26 @@ static void play_ambient_sound(struct player *p)
         sound(p, MSG_AMBIENT_XAKAZE);
     else
         sound(p, MSG_AMBIENT_MELKOR);
+}
+
+
+/*
+ * Play an ambient sound dependent on location
+ */
+static void play_ambient_sound_location(struct player *p)
+{
+    // custom depth music-ambience for Sewers
+    if (streq(p->locname, "Severs"))
+    {
+        if (p->wpos.depth == 8) sound(p, MSG_SEWERS1);
+        else if (p->wpos.depth == 9) sound(p, MSG_SEWERS2);
+        else if (p->wpos.depth == 10) sound(p, MSG_SEWERS3);
+        else if (p->wpos.depth == 11) sound(p, MSG_SEWERS4);           
+        else if (p->wpos.depth == 12) sound(p, MSG_SEWERS3);
+        else if (p->wpos.depth == 13) sound(p, MSG_SEWERS2);
+        else if (p->wpos.depth == 14) sound(p, MSG_SEWERS5);
+        else if (p->wpos.depth == 15) sound(p, MSG_SEWERS6);
+    }
 }
 
 
@@ -2145,7 +2166,10 @@ static void generate_new_level(struct player *p)
         sound(p, MSG_AMBIENT_VOICE); // hi from Yaga
     else if (p->wpos.grid.x == 0 && p->wpos.grid.y == 0 && p->wpos.depth == 1)
     {
-        player_inc_timed(p, TMD_BLIND, 6, false, false);
+        player_inc_timed(p, TMD_BLIND, 5, false, false); // kinda 'splash' screen
+        player_inc_timed(p, TMD_INVIS, 5, false, false);
+        player_inc_timed(p, TMD_REVIVE, 5, false, false);
+        player_inc_timed(p, TMD_OCCUPIED, 5, false, false);
         sound(p, MSG_ENTER_RUINS); // enter Old Ruins
     }
     else if (p->wpos.grid.x == 1 && p->wpos.grid.y == 1 && p->wpos.depth == 4)
@@ -2206,6 +2230,9 @@ static void generate_new_level(struct player *p)
     /* Play music */
     redraw_stuff(p);
     Send_sound(p, -1);
+
+    /* Play an ambient sound dependent on location */
+    play_ambient_sound_location(p);
 }
 
 

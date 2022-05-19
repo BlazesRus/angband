@@ -334,14 +334,15 @@ void do_cmd_takeoff(struct player *p, int item)
         return;
     }
 
+    // can't take off cursed items right on..
     if (obj->curses && !one_in_(8))
     {
         msg(p, "You fail to take off cursed item this time. Try ones more..");
         return;
     }
 
-    /* Take a turn */
-    use_energy(p);
+    /* Take half a turn */
+    use_energy_aux(p, 50);
 
     /* Take off the item */
     inven_takeoff(p, obj);
@@ -614,8 +615,8 @@ void do_cmd_drop(struct player *p, int item, int quantity)
         return;
     }
 
-    /* Take a turn */
-    use_energy(p);
+    /* Take half a turn */
+    use_energy_aux(p, 50);
 
     /* Hack -- farmers plant seeds */
     if (tval_is_crop(obj) && square_iscropbase(chunk_get(&p->wpos), &p->grid))
@@ -1098,7 +1099,9 @@ static bool spell_cast(struct player *p, int spell_index, int dir, quark_t note,
         /* A spell was cast */
         // spells' effect's indexes can be found:
         // effects.c -> effect_subtype()
-        if (spell->effect->index == EF_BALL || spell->effect->index == EF_BALL_OBVIOUS ||
+        if (streq(p->clazz->name, "Knight"))
+            ; // Knight got separate sound
+        else if (spell->effect->index == EF_BALL || spell->effect->index == EF_BALL_OBVIOUS ||
             spell->effect->index == EF_STAR_BALL || spell->effect->index == EF_SWARM)
             sound(p, MSG_BALL);
         else if (spell->effect->index >= EF_BOLT && spell->effect->index <= EF_BOLT_STATUS_DAM)
@@ -1122,8 +1125,6 @@ static bool spell_cast(struct player *p, int spell_index, int dir, quark_t note,
             sound(p, MSG_LASH);
         else if (spell->effect->index == EF_MELEE_BLOWS)
             sound(p, MSG_MELEE_BLOWS);
-        else if (spell->effect->index >= EF_PROJECT || spell->effect->index <= EF_PROJECT_LOS_AWARE)
-            sound(p, MSG_PROJECT);
         else if (spell->effect->index == EF_SPOT)
             sound(p, MSG_SPOT);
         else if (spell->effect->index == EF_STAR)
@@ -1136,8 +1137,12 @@ static bool spell_cast(struct player *p, int spell_index, int dir, quark_t note,
             sound(p, MSG_CREATE_TREES);
         else if (spell->effect->index == EF_GLYPH)
             sound(p, MSG_GLYPH);
+        else if (spell->effect->index <= EF_PROJECT_LOS_AWARE)
+            sound(p, MSG_PROJECT);
+        else if (pious)
+            sound(p, MSG_PRAYER);
         else
-            sound(p, (pious? MSG_PRAYER: MSG_SPELL));
+            sound(p, MSG_SPELL); // including EF_PROJECT
 
         cast_spell_end(p);
 
@@ -2171,8 +2176,8 @@ void do_cmd_refill(struct player *p, int item)
         return;
     }
 
-    /* Take a turn */
-    use_energy(p);
+    /* Take half a turn */
+    use_energy_aux(p, 50);
 
     refill_lamp(p, light, obj);
 }
