@@ -494,7 +494,7 @@ static void player_pict(struct player *p, struct chunk *cv, struct player *q, bo
                 // Handle Werewolf
                 if (streq(p->race->name, "Werewolf"))
                 {
-                    struct monster_race *race = get_race("battle-scarred veteran");
+                    struct monster_race *race = get_race("daylight_werewolf");
 
                     *a = p->r_attr[race->ridx];
                     *c = p->r_char[race->ridx];
