@@ -51,3 +51,5 @@ Release_Win32/
 src/client/main-WindowsSDL.c
 
 ProjectFilesBackup
+
+src/_SDL/__history/
