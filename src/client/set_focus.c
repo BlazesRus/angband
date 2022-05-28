@@ -32,7 +32,8 @@
  * We only need scrolling along the x axis.
  */
 
-/* Hack -- set focus to chat message control */
+#ifndef WINDOWS//Already defined in main-win.c
+ /* Hack -- set focus to chat message control */
 void set_chat_focus( void )
 {
 #ifdef __MSVC__
@@ -48,6 +49,7 @@ void unset_chat_focus( void )
     if (old_focus) SetFocus(old_focus);
 #endif
 }
+#endif
 
 void stretch_chat_ctrl( void )
 {

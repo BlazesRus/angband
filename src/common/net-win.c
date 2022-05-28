@@ -18,7 +18,7 @@
 
 #include "angband.h"
 
-#ifdef BUILDINGWithVS
+#ifdef UsingModernC
 #pragma comment(lib,  "ws2_32.lib") 
 #endif
 
