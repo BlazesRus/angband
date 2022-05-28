@@ -20,6 +20,9 @@
 
 #include "angband.h"
 
+#ifdef STB_SPRINTF_IMPLEMENTATION//Improved version of sprintf
+    #include "stb_sprintf.h"
+#endif
 
 /*
  * Here is some information about the routines in this file.
@@ -425,7 +428,11 @@ size_t vstrnfmt(char *buf, size_t max, const char *fmt, va_list vp)
                     arg = va_arg(vp, int);
 
                     /* Hack -- append the "length" */
+#ifdef STB_SPRINTF_IMPLEMENTATION
+                    stbsp_snprintf(aux + q, sizeof(aux) - q, "%d", arg);
+#else
                     snprintf(aux + q, sizeof(aux) - q, "%d", arg);
+#endif
 
                     /* Hack -- accept the "length" */
                     while (aux[q]) q++;
@@ -459,7 +466,11 @@ size_t vstrnfmt(char *buf, size_t max, const char *fmt, va_list vp)
                 arg = va_arg(vp, int);
 
                 /* Format the argument */
+#ifdef STB_SPRINTF_IMPLEMENTATION
+                stbsp_snprintf(tmp, sizeof(tmp), aux, arg);
+#else
                 snprintf(tmp, sizeof(tmp), aux, arg);
+#endif
 
                 /* Done */
                 break;
@@ -476,7 +487,11 @@ size_t vstrnfmt(char *buf, size_t max, const char *fmt, va_list vp)
                     arg = va_arg(vp, short);
 
                     /* Format the argument */
+#ifdef STB_SPRINTF_IMPLEMENTATION
+					stbsp_snprintf(tmp, sizeof(tmp), aux, arg);
+#else
                     snprintf(tmp, sizeof(tmp), aux, arg);
+#endif
                 }
                 else if (do_long)
                 {
@@ -486,7 +501,11 @@ size_t vstrnfmt(char *buf, size_t max, const char *fmt, va_list vp)
                     arg = va_arg(vp, long);
 
                     /* Format the argument */
+#ifdef STB_SPRINTF_IMPLEMENTATION
+					stbsp_snprintf(tmp, sizeof(tmp), aux, arg);
+#else
                     snprintf(tmp, sizeof(tmp), aux, arg);
+#endif
                 }
                 else if (do_long_long)
                 {
@@ -496,7 +515,11 @@ size_t vstrnfmt(char *buf, size_t max, const char *fmt, va_list vp)
                     arg = va_arg(vp, long long);
 
                     /* Format the argument */
+#ifdef STB_SPRINTF_IMPLEMENTATION
+					stbsp_snprintf(tmp, sizeof(tmp), aux, arg);
+#else
                     snprintf(tmp, sizeof(tmp), aux, arg);
+#endif
                 }
                 else
                 {
@@ -506,7 +529,11 @@ size_t vstrnfmt(char *buf, size_t max, const char *fmt, va_list vp)
                     arg = va_arg(vp, int);
 
                     /* Format the argument */
+#ifdef STB_SPRINTF_IMPLEMENTATION
+					stbsp_snprintf(tmp, sizeof(tmp), aux, arg);
+#else
                     snprintf(tmp, sizeof(tmp), aux, arg);
+#endif
                 }
 
                 /* Done */
@@ -524,7 +551,11 @@ size_t vstrnfmt(char *buf, size_t max, const char *fmt, va_list vp)
                     arg = va_arg(vp, unsigned short);
 
                     /* Format the argument */
+#ifdef STB_SPRINTF_IMPLEMENTATION
+					stbsp_snprintf(tmp, sizeof(tmp), aux, arg);
+#else
                     snprintf(tmp, sizeof(tmp), aux, arg);
+#endif
                 }
                 else if (do_long)
                 {
@@ -534,7 +565,11 @@ size_t vstrnfmt(char *buf, size_t max, const char *fmt, va_list vp)
                     arg = va_arg(vp, unsigned long);
 
                     /* Format the argument */
+#ifdef STB_SPRINTF_IMPLEMENTATION
+					stbsp_snprintf(tmp, sizeof(tmp), aux, arg);
+#else
                     snprintf(tmp, sizeof(tmp), aux, arg);
+#endif
                 }
                 else if (do_long_long)
                 {
@@ -544,7 +579,11 @@ size_t vstrnfmt(char *buf, size_t max, const char *fmt, va_list vp)
                     arg = va_arg(vp, unsigned long long);
 
                     /* Format the argument */
+#ifdef STB_SPRINTF_IMPLEMENTATION
+					stbsp_snprintf(tmp, sizeof(tmp), aux, arg);
+#else
                     snprintf(tmp, sizeof(tmp), aux, arg);
+#endif
                 }
                 else
                 {
@@ -554,7 +593,11 @@ size_t vstrnfmt(char *buf, size_t max, const char *fmt, va_list vp)
                     arg = va_arg(vp, unsigned int);
 
                     /* Format the argument */
+#ifdef STB_SPRINTF_IMPLEMENTATION
+					stbsp_snprintf(tmp, sizeof(tmp), aux, arg);
+#else
                     snprintf(tmp, sizeof(tmp), aux, arg);
+#endif
                 }
 
                 /* Done */
@@ -572,7 +615,11 @@ size_t vstrnfmt(char *buf, size_t max, const char *fmt, va_list vp)
                 arg = va_arg(vp, double);
 
                 /* Format the argument */
+#ifdef STB_SPRINTF_IMPLEMENTATION
+				stbsp_snprintf(tmp, sizeof(tmp), aux, arg);
+#else
                 snprintf(tmp, sizeof(tmp), aux, arg);
+#endif
 
                 /* Done */
                 break;
@@ -587,7 +634,11 @@ size_t vstrnfmt(char *buf, size_t max, const char *fmt, va_list vp)
                 arg = va_arg(vp, void*);
 
                 /* Format the argument */
+#ifdef STB_SPRINTF_IMPLEMENTATION
+				stbsp_snprintf(tmp, sizeof(tmp), aux, arg);
+#else
                 snprintf(tmp, sizeof(tmp), aux, arg);
+#endif
 
                 /* Done */
                 break;
@@ -609,7 +660,11 @@ size_t vstrnfmt(char *buf, size_t max, const char *fmt, va_list vp)
                 my_strcpy(arg2, arg, sizeof(arg2));
 
                 /* Format the argument */
+#ifdef STB_SPRINTF_IMPLEMENTATION
+				stbsp_snprintf(tmp, sizeof(tmp), aux, arg2);
+#else
                 snprintf(tmp, sizeof(tmp), aux, arg2);
+#endif
 
                 /* Done */
                 break;
@@ -647,7 +702,11 @@ size_t vstrnfmt(char *buf, size_t max, const char *fmt, va_list vp)
                 out[max] = '\0';
 
                 /* Append the argument */
+//#ifdef BUILDINGWithVS
+//				//Replace with better function later
+//#else
                 my_strcpy(tmp, out, sizeof(tmp));
+//#endif
 
                 /* Done */
                 break;
