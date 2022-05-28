@@ -20,6 +20,9 @@
 
 #include "c-angband.h"
 
+#ifdef BUILDINGWithVS
+    #include "ui-player-properties.h"//unresolved external symbol fix
+#endif
 
 /* See the "inkey()" function */
 static bool inkey_xtra = false;
