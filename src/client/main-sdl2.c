@@ -20,10 +20,15 @@
 
 #ifdef USE_SDL2
 
-#ifdef USE_EXTERNALSDL2
+#ifdef BUILDINGWithVS
 #include "SDL.h"
 #include "SDL_image.h"
 #include "SDL_ttf.h"
+
+#ifdef STB_DS_IMPLEMENTATION
+    #include "stb_ds.h"
+#endif
+
 #elif WINDOWS
 #include "..\_SDL2\SDL.h"
 #include "..\_SDL2\SDL_image.h"
@@ -2214,7 +2219,12 @@ static void handle_menu_tile_sets(struct window *window,
         mode = mode->pNext;
     }
 
+#ifdef STB_DS_IMPLEMENTATION
+    struct menu_elem* elems = NULL;
+    arrsetlen(elems, num_elems);
+#else
     struct menu_elem elems[num_elems];
+#endif
 
     mode = graphics_modes;
     for (size_t i = 0; i < num_elems; ++i) {
