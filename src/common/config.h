@@ -62,7 +62,9 @@
 /* Use private paths: /save and /scores subdirectories are put in /user if defined */
 /* PWMAngband: since we only work under Windows, we define this here -- do not modify! */
 #ifdef WINDOWS
+#if !defined(USE_PRIVATE_PATHS)//Prevent macro redefinition
 # define USE_PRIVATE_PATHS
+#endif
 #endif
 
 #if defined(ON_ANDROID)
