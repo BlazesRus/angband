@@ -132,7 +132,7 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-ANGBAND ICON "angbandServer.ico"
+ANGBAND ICON "tangaria.ico"
 
 ABOUT DIALOGEX 0, 0, 283, 139
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
