@@ -72,6 +72,7 @@ static const uint8_t extract_energy[200] =
 
 /*
  * Say whether a turn is during day or not
+// Note: number of turns from dawn to dawn world:day-length:10000
  */
 bool is_daytime_turn(hturn *ht_ptr)
 {
@@ -770,14 +771,21 @@ static void process_world(struct player *p, struct chunk *c)
         return;
     }
 
-    /*** Check the Time ***/
-
     /* Play an ambient sound at regular intervals. */
     // instead of '1000' there was z_'info->day_length' (10.000)
     if (!(turn.turn % ((10L * 1000) / 4))) play_ambient_sound(p);
 
+/// T: moved this up for day/night change in the OPEN_SKY dungeons
+    /* Get the dungeon */
+    wpos_init(&dpos, &c->wpos.grid, 0);
+    dungeon = get_dungeon(&dpos);
+///
+
+    /*** Check the Time ***/
     /* Daybreak/Nighfall in towns or wilderness */
-    if ((p->wpos.depth == 0) && !(turn.turn % ((10L * z_info->day_length) / 2)))
+    // T: added check for OPEN_SKY dungeons
+    if (((p->wpos.depth == 0) || (dungeon && df_has(dungeon->flags, DF_OPEN_SKY))) &&
+         !(turn.turn % ((10L * z_info->day_length) / 2)))
     {
         /* Check for dawn */
         bool dawn = (!(turn.turn % (10L * z_info->day_length)));
@@ -796,10 +804,6 @@ static void process_world(struct player *p, struct chunk *c)
      * this corresponds in game time to them appearing at faster rates
      * deeper in the dungeon.
      */
-
-    /* Get the dungeon */
-    wpos_init(&dpos, &c->wpos.grid, 0);
-    dungeon = get_dungeon(&dpos);
 
     respawn_rate = 1;
     /* Hack -- increase respawn rate on no_recall server */
@@ -1998,6 +2002,10 @@ static void generate_new_level(struct player *p)
     bool new_level = false;
     struct chunk *c;
     struct loc grid;
+/// T: moved this up for day/night change in the OPEN_SKY dungeons
+    struct worldpos dpos;
+    struct location *dungeon;
+///
 
     id = get_player_index(get_connection(p->conn));
     c = chunk_get(&p->wpos);
@@ -2027,8 +2035,27 @@ static void generate_new_level(struct player *p)
         c = prepare_next_level(p);
 
         wild_deserted_message(p);
-    }
 
+        // T: added check for OPEN_SKY
+        // 1) labyrinths become lit in gen-cave.c
+        // 2) cavern, gaunt and h-centre doesn't have any illumination in the gen-cave code
+        if (c->profile == dun_labyrinth || c->profile == dun_cavern || c->profile == dun_gauntlet ||
+            c->profile == dun_hard_centre)
+        {
+            wpos_init(&dpos, &c->wpos.grid, 0);
+            dungeon = get_dungeon(&dpos);
+            if (dungeon)
+            {   // Mirkwood (must be always dark)
+                if (p->wpos.grid.x == 0 && p->wpos.grid.y == -3 && p->wpos.depth > 0)
+                    wiz_unlit(p, c);
+                // last levels of Erebor (Lonely Mountain) - dark
+                else if (p->wpos.grid.x == -1 && p->wpos.grid.y == -3 && p->wpos.depth > 70)
+                    wiz_unlit(p, c);
+                else if (df_has(dungeon->flags, DF_OPEN_SKY))
+                    cave_illuminate(p, c, is_daytime());
+            }
+        }
+    }
     /* Apply illumination */
     else
     {
@@ -2233,6 +2260,9 @@ static void generate_new_level(struct player *p)
 
     /* Play an ambient sound dependent on location */
     play_ambient_sound_location(p);
+
+    //// !Test - Weather
+    //Send_weather(p, 1, 2, 3);
 }
 
 

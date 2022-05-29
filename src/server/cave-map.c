@@ -635,15 +635,42 @@ void wiz_dark(struct player *p, struct chunk *c, bool full)
 }
 
 /*
- * Completely forget the level
+ ////// Completely unlit the level
  */
-void wiz_forget(struct player *p, struct chunk *c, bool full)
+void wiz_unlit(struct player *p, struct chunk *c)
 {
     struct loc begin, end;
     struct loc_iterator iter;
 
-    /* Hack -- DM has full detection */
-    if (p->dm_flags & DM_SEE_LEVEL) full = true;
+    loc_init(&begin, 1, 1);
+    loc_init(&end, c->width - 1, c->height - 1);
+    loc_iterator_first(&iter, &begin, &end);
+
+    /* Scan all grids */
+    do
+    {
+        /* PWMAngband: unlight the grid */
+        square_unglow(c, &iter.cur);
+
+        /* Forget grids in the mapping area */
+        square_forget(p, &iter.cur);
+    }
+    while (loc_iterator_next_strict(&iter));
+
+    /* Fully update the visuals */
+    p->upkeep->update |= (PU_UPDATE_VIEW | PU_MONSTERS);
+
+    /* Redraw whole map, monster list */
+    p->upkeep->redraw |= (PR_MAP | PR_MONLIST | PR_ITEMLIST);
+}
+
+/*
+ ////// Completely forget the level
+ */
+void wiz_forget(struct player *p, struct chunk *c)
+{
+    struct loc begin, end;
+    struct loc_iterator iter;
 
     loc_init(&begin, 1, 1);
     loc_init(&end, c->width - 1, c->height - 1);
@@ -657,10 +684,6 @@ void wiz_forget(struct player *p, struct chunk *c, bool full)
             square_forget(p, &iter.cur);
     }
     while (loc_iterator_next_strict(&iter));
-
-    loc_init(&begin, 0, 0);
-    loc_init(&end, c->width, c->height);
-    loc_iterator_first(&iter, &begin, &end);
 
     /* Fully update the visuals */
     p->upkeep->update |= (PU_UPDATE_VIEW | PU_MONSTERS);
@@ -680,8 +703,27 @@ void cave_illuminate(struct player *p, struct chunk *c, bool daytime)
     struct loc begin, end;
     struct loc_iterator iter;
 
+    /// for OPEN_SKY dungeons - there we need to turn on/off light for day/night changes in dusk_or_dawn():
+    struct worldpos dpos;
+    struct location *dungeon;
+    wpos_init(&dpos, &c->wpos.grid, 0);
+    dungeon = get_dungeon(&dpos);
+    ///
+
+    // OPEN_SKY dungeons dynamic night/day change
+    if (dungeon && df_has(dungeon->flags, DF_OPEN_SKY))
+    {
+        // unlight everything (cause rooms lighten, eg build_room_template()
+        daytime = is_daytime(); // we need to define it there cause some dungeons hardcode daytime = 0;
+        if (!daytime)
+        {
+            wiz_unlit(p, c); // unlit and forget
+            return;
+        }
+    }
     /* Not on random levels */
-    if (random_level(&c->wpos)) return;
+    else if (random_level(&c->wpos))
+        return;
 
     /* Make sure we're not in a store */
     if (p && in_store(p)) return;
