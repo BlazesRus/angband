@@ -63,3 +63,5 @@ src/win/RCb19052
 src/win/RCc19052
 
 src/win/RCd19052
+
+src/_SDL2VC/ClangWin32/
