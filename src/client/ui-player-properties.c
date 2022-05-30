@@ -17,8 +17,7 @@
  *    and not for profit purposes provided that this copyright and statement
  *    are included in all such copies.  Other copyrights may also apply.
  */
-
-
+#include "ui-player-properties.h"//Linking C file to it's header file
 #include "c-angband.h"
 
 
