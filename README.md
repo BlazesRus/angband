@@ -10,4 +10,4 @@ It combines the complexity and unpredictability of **roguelike genre** and socia
 
 
 
-✅ This is source code repo. To play the game - download client from binaries repo: https://github.com/igroglaz/Tangaria_release
+✅ This is source code repo. To play the game - download client from binaries repo: https://github.com/BlazesRus/Tangaria_release
