@@ -4086,7 +4086,7 @@ static void init_stuff_win(void)
     i = strlen(path);
 
     /* Get the path */
-    for (; i > 0; i--)
+    for (; i > 0; --i)
     {
         if (path[i] == '\\')
         {

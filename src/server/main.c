@@ -16,9 +16,7 @@
  *    and not for profit purposes provided that this copyright and statement
  *    are included in all such copies.  Other copyrights may also apply.
  */
-
-
-#include "s-angband.h" 
+#include "s-angband.h"
 
 
 /* Daily log file */
@@ -64,6 +62,7 @@ static void init_stuff(void)
     char configpath[MSG_LEN];
     char libpath[MSG_LEN];
     char datapath[MSG_LEN];
+#ifndef BUILDINGWithVS
 
     /* Use default */
     my_strcpy(configpath, DEFAULT_CONFIG_PATH, sizeof(configpath));
@@ -77,6 +76,24 @@ static void init_stuff(void)
         my_strcat(libpath, PATH_SEP, sizeof(libpath));
     if (!suffix(datapath, PATH_SEP))
         my_strcat(datapath, PATH_SEP, sizeof(datapath));
+#else//Create absolute path
+    char path[MSG_LEN];//Based on https://www.delftstack.com/howto/c/get-current-directory-in-c/
+
+    errno = 0;
+    if (getcwd(path, MSG_LEN) == NULL) {
+        if (errno == ERANGE)
+            printf("[ERROR] pathname length exceeds the buffer size\n");
+        else
+            perror("getcwd");
+        exit(EXIT_FAILURE);
+    }
+    strcat(path, PATH_SEP);
+    printf("Current working directory: %s\n", path);
+    //Constructing absolute directory for paths
+    strcpy(configpath, path); strcat(configpath, DEFAULT_CONFIG_PATH);
+    strcpy(libpath, path); strcat(libpath, DEFAULT_LIB_PATH);
+    strcpy(datapath, path); strcat(datapath, DEFAULT_DATA_PATH);
+#endif
 
     /* Initialize */
     init_file_paths(configpath, libpath, datapath);

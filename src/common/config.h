@@ -35,15 +35,27 @@
  * possible you should use a packaging system which does this for you.
  */
 #ifndef DEFAULT_CONFIG_PATH
-# define DEFAULT_CONFIG_PATH "." PATH_SEP "lib" PATH_SEP
+    #ifndef BUILDINGWithVS
+        # define DEFAULT_CONFIG_PATH "." PATH_SEP "lib" PATH_SEP
+    #else//Get Absolute path instead
+        # define DEFAULT_CONFIG_PATH "lib" PATH_SEP
+    #endif
 #endif
 
 #ifndef DEFAULT_LIB_PATH
-# define DEFAULT_LIB_PATH "." PATH_SEP "lib" PATH_SEP
+    #ifndef BUILDINGWithVS
+        # define DEFAULT_LIB_PATH "." PATH_SEP "lib" PATH_SEP
+    #else
+        # define DEFAULT_LIB_PATH "lib" PATH_SEP
+    #endif
 #endif
 
 #ifndef DEFAULT_DATA_PATH
-# define DEFAULT_DATA_PATH "." PATH_SEP "lib" PATH_SEP
+    #ifndef BUILDINGWithVS
+        # define DEFAULT_DATA_PATH "." PATH_SEP "lib" PATH_SEP
+    #else
+        # define DEFAULT_DATA_PATH PATH_SEP "lib" PATH_SEP
+    #endif
 #endif
 
 /*
