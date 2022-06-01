@@ -208,13 +208,9 @@
 
 typedef int errr;
 
-/* Use a char otherwise */
 #ifndef bool
-typedef char bool;
+    typedef enum { false, true } bool;//Size is 1 Byte(But saves from adding another 2 macros).
 #endif
-
-#define true    1
-#define false   0
 
 /* MAngband hacks */
 #if (UINT_MAX == 0xFFFFFFFFUL) && (ULONG_MAX > 0xFFFFFFFFUL)
