@@ -208,7 +208,9 @@
 
 typedef int errr;
 
-#ifndef bool
+#if defined(UsingClangToolset)
+    #include <stdbool.h>
+#elif !defined(bool)
     typedef enum { false, true } bool;//Size is 1 Byte(But saves from adding another 2 macros).
 #endif
 
