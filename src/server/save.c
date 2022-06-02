@@ -497,6 +497,7 @@ void wr_player_misc(void *data)
     // Tangaria
     wr_u32b(p->account_id);
     wr_string(p->account_name);
+    wr_u32b(p->account_score);
 
     if (p->is_dead) return;
 
@@ -1472,6 +1473,7 @@ static void wr_house(struct house_type *house)
     wr_s32b(house->price);
     wr_s32b(house->ownerid);
     wr_string(house->ownername);
+    wr_s32b((int32_t)house->last_visit_time);
     wr_byte(house->color);
     wr_byte(house->state);
     wr_byte(house->free);

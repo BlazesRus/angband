@@ -770,6 +770,7 @@ int rd_player_misc(struct player *p)
     // Tangaria
     rd_u32b(&p->account_id);
     rd_string(p->account_name, NORMAL_WID);
+    rd_u32b(&p->account_score);
 
     if (p->is_dead) return 0;
 
@@ -1990,6 +1991,7 @@ static int rd_house(void)
     rd_s32b(&h_local.price);
     rd_s32b(&h_local.ownerid);
     rd_string(h_local.ownername, NORMAL_WID);
+    rd_s32b((int32_t*)&h_local.last_visit_time);
     rd_byte(&h_local.color);
     rd_byte(&h_local.state);
     rd_byte(&h_local.free);
