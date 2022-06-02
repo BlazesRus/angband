@@ -257,6 +257,36 @@ void init_stuff(void)
     /* LOGD("app_configpath: %s", app_configpath); */
     /* LOGD("app_libpath: %s", app_libpath); */
     /* LOGD("app_datapath: %s", app_datapath); */
+#elseif defined(BUILDINGWithVS)
+    char path[MSG_LEN];//Based on https://www.delftstack.com/howto/c/get-current-directory-in-c/
+
+    errno = 0;
+    if (getcwd(path, MSG_LEN) == NULL) {
+        if (errno == ERANGE)
+            printf("[ERROR] pathname length exceeds the buffer size\n");
+        else
+            perror("getcwd");
+        exit(EXIT_FAILURE);
+    }
+#ifdef UsingClangToolset
+    strcat(path, "\");
+#else
+    strcat(path, PATH_SEP);
+#endif
+#ifdef _DEBUG
+    printf("Current working directory: %s\n", path);
+#endif
+    //Constructing absolute directory for paths
+#ifdef UsingModernC
+    strcpy(configpath, path); strcat(configpath, DEFAULT_CONFIG_PATH);
+    strcpy(libpath, path); strcat(libpath, DEFAULT_LIB_PATH);
+    strcpy(datapath, path); strcat(datapath, DEFAULT_DATA_PATH);
+#else
+    strlcpy(configpath, path, 200); strlcat(configpath, DEFAULT_CONFIG_PATH, 200);
+    strlcpy(libpath, path, 200); strlcat(libpath, DEFAULT_LIB_PATH, 200);
+    strlcpy(datapath, path, 200); strlcat(datapath, DEFAULT_DATA_PATH, 200);
+#endif
+
 #else
     /* Use default */
     my_strcpy(configpath, DEFAULT_CONFIG_PATH, sizeof(configpath));

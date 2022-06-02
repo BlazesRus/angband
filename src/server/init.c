@@ -396,6 +396,10 @@ void init_file_paths(const char *configpath, const char *libpath, const char *da
 #else /* !USE_PRIVATE_PATHS */
     userpath = (char *)datapath;
 #endif /* USE_PRIVATE_PATHS */
+#ifdef _DEBUG
+    printf("Current userpath: %s\n", userpath);
+#endif
+
 
     /* Build the path to the score and save directories */
     BUILD_DIRECTORY_PATH(ANGBAND_DIR_SCORES, userpath, "scores");

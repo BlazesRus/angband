@@ -17,6 +17,9 @@
  *    are included in all such copies.  Other copyrights may also apply.
  */
 #include "s-angband.h"
+#ifdef UsingClangToolset
+#include <string.h>
+#endif
 
 
 /* Daily log file */
@@ -87,12 +90,24 @@ static void init_stuff(void)
             perror("getcwd");
         exit(EXIT_FAILURE);
     }
+#ifdef UsingClangToolset
+    strcat(path, "\\");
+#else
     strcat(path, PATH_SEP);
+#endif
+#ifdef _DEBUG
     printf("Current working directory: %s\n", path);
+#endif
     //Constructing absolute directory for paths
-    strcpy(configpath, path); strcat(configpath, DEFAULT_CONFIG_PATH);
-    strcpy(libpath, path); strcat(libpath, DEFAULT_LIB_PATH);
-    strcpy(datapath, path); strcat(datapath, DEFAULT_DATA_PATH);
+    #ifdef UsingModernC
+        strcpy(configpath, path); strcat(configpath, DEFAULT_CONFIG_PATH);
+        strcpy(libpath, path); strcat(libpath, DEFAULT_LIB_PATH);
+        strcpy(datapath, path); strcat(datapath, DEFAULT_DATA_PATH);
+    #else
+        strlcpy(configpath, path, 200); strlcat(configpath, DEFAULT_CONFIG_PATH, 200);
+        strlcpy(libpath, path, 200); strlcat(libpath, DEFAULT_LIB_PATH, 200);
+        strlcpy(datapath, path, 200); strlcat(datapath, DEFAULT_DATA_PATH, 200);
+    #endif
 #endif
 
     /* Initialize */

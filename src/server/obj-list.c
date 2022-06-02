@@ -332,7 +332,7 @@ uint8_t object_list_entry_line_attribute(struct player *p, const object_list_ent
     else
         attr = COLOUR_WHITE;
 
-	return attr;
+    return attr;
 }
 
 
