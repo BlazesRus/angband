@@ -17,9 +17,6 @@
  *    are included in all such copies.  Other copyrights may also apply.
  */
 #include "s-angband.h"
-#ifdef UsingClangToolset
-#include <string.h>
-#endif
 
 
 /* Daily log file */

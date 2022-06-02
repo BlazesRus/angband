@@ -421,16 +421,20 @@ void create_needed_dirs(void)
     char dirpath[MSG_LEN];
 
     path_build(dirpath, sizeof(dirpath), ANGBAND_DIR_USER, "");
-    if (!dir_create(dirpath)) quit_fmt("Cannot create '%s'", dirpath);
+    if (!dir_create(dirpath)) 
+        quit_fmt("Cannot create '%s'", dirpath);
 
     path_build(dirpath, sizeof(dirpath), ANGBAND_DIR_SAVE, "");
-    if (!dir_create(dirpath)) quit_fmt("Cannot create '%s'", dirpath);
+    if (!dir_create(dirpath)) 
+        quit_fmt("Cannot create '%s'", dirpath);
 
     path_build(dirpath, sizeof(dirpath), ANGBAND_DIR_PANIC, "");
-    if (!dir_create(dirpath)) quit_fmt("Cannot create '%s'", dirpath);
+    if (!dir_create(dirpath)) 
+        quit_fmt("Cannot create '%s'", dirpath);
 
     path_build(dirpath, sizeof(dirpath), ANGBAND_DIR_SCORES, "");
-    if (!dir_create(dirpath)) quit_fmt("Cannot create '%s'", dirpath);
+    if (!dir_create(dirpath)) 
+        quit_fmt("Cannot create '%s'", dirpath);
 }
 
 
@@ -449,7 +453,8 @@ static enum parser_error parse_constants_level_max(struct parser *p)
     label = parser_getsym(p, "label");
     value = parser_getint(p, "value");
 
-    if (value < 0) return PARSE_ERROR_INVALID_VALUE;
+    if (value < 0) 
+        return PARSE_ERROR_INVALID_VALUE;
 
     if (streq(label, "monsters"))
         z->level_monster_max = value;

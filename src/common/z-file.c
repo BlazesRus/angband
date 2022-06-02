@@ -24,6 +24,8 @@
 #include <sys/stat.h>
 #ifndef BUILDINGWithVS
 #include <dir.h>
+#else
+#include "shlobj_core.h"//for Create directory including intermediate directories
 #endif
 
 #define INVALID_FILE_NAME (DWORD)0xFFFFFFFF
@@ -835,6 +837,7 @@ bool dir_exists(const char *path)
  */
 bool dir_create(const char *path)
 {
+#ifndef BUILDINGWithVS
 #if defined (WINDOWS) || defined (HAVE_STAT)
     const char *ptr;
     #ifndef WINDOWS
@@ -844,7 +847,8 @@ bool dir_create(const char *path)
     #endif
 
     /* If the directory already exists then we're done */
-    if (dir_exists(path)) return true;
+    if (dir_exists(path)) 
+        return true;
 
 	#ifdef WINDOWS
     /* If we're on windows, we need to skip past the "C:" part. */
@@ -872,7 +876,8 @@ bool dir_create(const char *path)
             #ifndef WINDOWS
 			if (len - 1 > 512) return false;
             #else
-            if (len - 1 > MSG_LEN) return false;
+            if (len - 1 > MSG_LEN)
+                return false;
             #endif
 
             /* Create the parent path string, plus null-padding */
@@ -897,6 +902,14 @@ bool dir_create(const char *path)
     #endif
 #else
     return false;
+#endif
+#else//Alternative code as fix for not creating directory in VS(Based on https://aljensencprogramming.wordpress.com/tag/createdirectory/)
+    /* If the directory already exists then we're done */
+    DWORD dwAttributes = GetFileAttributes(path);
+    if ((bool)(dwAttributes != INVALID_FILE_ATTRIBUTES))
+        return true;
+    if (!CreateDirectory(path, NULL))
+        return false;
 #endif
 }
 
