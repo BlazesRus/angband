@@ -54,7 +54,7 @@
     #ifndef BUILDINGWithVS
         # define DEFAULT_DATA_PATH "." PATH_SEP "lib" PATH_SEP
     #else
-        # define DEFAULT_DATA_PATH PATH_SEP "lib" PATH_SEP
+        # define DEFAULT_DATA_PATH "lib" PATH_SEP
     #endif
 #endif
 
