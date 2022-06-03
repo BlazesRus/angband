@@ -257,7 +257,7 @@ void init_stuff(void)
     /* LOGD("app_configpath: %s", app_configpath); */
     /* LOGD("app_libpath: %s", app_libpath); */
     /* LOGD("app_datapath: %s", app_datapath); */
-#elseif defined(BUILDINGWithVS)
+#elif defined(BUILDINGWithVS)
     char path[MSG_LEN];//Based on https://www.delftstack.com/howto/c/get-current-directory-in-c/
 
     errno = 0;
