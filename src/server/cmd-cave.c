@@ -88,7 +88,7 @@ void do_cmd_go_up(struct player *p)
     use_energy(p);
 
     // Stop weather
-    Send_weather(p, -1, 0, 0);
+    Send_weather(p, 256, 0, 0);
 
     // empty sound to halt playback on all channels .ogg (see: SDL_CHUNK)
     sound(p, MSG_SILENT);
@@ -208,7 +208,7 @@ void do_cmd_go_down(struct player *p)
     use_energy(p);
 
     // Stop weather
-    Send_weather(p, -1, 0, 0);
+    Send_weather(p, 256, 0, 0);
 
     // empty sound to halt playback on all channels .ogg (see: SDL_CHUNK)
     sound(p, MSG_SILENT);
@@ -369,6 +369,9 @@ static bool do_cmd_open_aux(struct player *p, struct chunk *c, struct loc *grid)
 
             /* Open the door */
             square_open_homedoor(c, grid);
+
+            // refresh house (update when we last time opened door)
+            time(&house->last_visit_time);
 
             /* Update the visuals */
             square_memorize(p, c, grid);

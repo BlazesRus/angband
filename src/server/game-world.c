@@ -277,7 +277,7 @@ static void make_weather(struct player *p)
                 // halt playback on all channels
                 sound(p, MSG_SILENT);
                 // Stop weather
-                Send_weather(p, -1, 0, 0);
+                Send_weather(p, 256, 0, 0);
             }
         }
     }
@@ -298,7 +298,7 @@ static void make_weather(struct player *p)
     else
     {
         // Stop weather
-        Send_weather(p, -1, 0, 0);
+        Send_weather(p, 256, 0, 0);
     }
 }
 
@@ -1578,10 +1578,9 @@ static void on_leave_level(void)
                 /* Don't deallocate special levels */
                 if (level_keep_allocated(w_ptr->chunk_list[i])) continue;
 
-/// moved to admin menu: ///
-//              /* Hack -- deallocate custom houses */
-//              wipe_custom_houses(&w_ptr->chunk_list[i]->wpos);
-////////////////////////////
+                // also exist in admin menu
+                /* Hack -- deallocate custom houses */
+                wipe_custom_houses(&w_ptr->chunk_list[i]->wpos);
 
                 /* Deallocate the level */
                 cave_wipe(w_ptr->chunk_list[i]);
@@ -2869,11 +2868,11 @@ bool level_keep_allocated(struct chunk *c)
     if (special_level(&c->wpos)) return true;
 
     /* Hack -- don't deallocate levels which contain owned houses */
-//  return level_has_owned_houses(&c->wpos);
+    return level_has_owned_houses(&c->wpos);
 
     /* Hack -- don't deallocate levels which contain owned houses */
     // as we don't want to remove walls of unowned custom houses
-    return level_has_any_houses(&c->wpos);
+    // return level_has_any_houses(&c->wpos);
 }
 
 
