@@ -795,7 +795,8 @@ static struct file_parser constants_parser =
 static void init_game_constants(void)
 {
     plog("Initializing constants...");
-    if (run_parser(&constants_parser)) quit("Cannot initialize constants");
+    if (run_parser(&constants_parser)) 
+        quit("Cannot initialize constants");
 }
 
 

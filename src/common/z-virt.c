@@ -86,7 +86,8 @@ void *mem_realloc(void *p, size_t len)
     m += sizeof(size_t);
 
     /* Handle OOM */
-    if (!m) quit("Out of Memory!");
+    if (!m) 
+        quit("Out of Memory!");
     SZ(m) = len;
 
     return m;
