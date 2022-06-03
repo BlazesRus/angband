@@ -202,7 +202,7 @@ static void server_log(const char *str)
 
 static void show_version(void)
 {
-    printf("PWMAngband Server %s\n", version_build(NULL, true));
+    printf("PWMAngband Server(BlazesRus Branch)%s\n", version_build(NULL, true));
     puts("Copyright (c) 2007-2022 MAngband and PWMAngband Project Team");
 
     /* Actually abort the process */
