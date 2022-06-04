@@ -4112,6 +4112,25 @@ static void init_stuff_win(void)
     validate_dir(ANGBAND_DIR_SOUNDS);
     validate_dir(ANGBAND_DIR_MUSIC);
     validate_dir(ANGBAND_DIR_ICONS);
+    //Generate User files if don't exist
+    char dirpath[MSG_LEN];
+
+    path_build(dirpath, sizeof(dirpath), ANGBAND_DIR_USER, "");
+    if (!dir_create(dirpath))
+        quit_fmt("Cannot create '%s'", dirpath);
+
+    path_build(dirpath, sizeof(dirpath), ANGBAND_DIR_SAVE, "");
+    if (!dir_create(dirpath))
+        quit_fmt("Cannot create '%s'", dirpath);
+
+    path_build(dirpath, sizeof(dirpath), ANGBAND_DIR_PANIC, "");
+    if (!dir_create(dirpath))
+        quit_fmt("Cannot create '%s'", dirpath);
+
+    path_build(dirpath, sizeof(dirpath), ANGBAND_DIR_SCORES, "");
+    if (!dir_create(dirpath))
+        quit_fmt("Cannot create '%s'", dirpath);
+
     validate_dir(ANGBAND_DIR_USER);
 
     /* Build the filename */
