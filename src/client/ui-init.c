@@ -150,6 +150,24 @@ void init_file_paths(const char *configpath, const char *libpath, const char *da
 #endif /* MACH_O_CARBON */
 #endif /* PRIVATE_USER_PATH */
 
+    //Make sure paths for saves and logs exist
+    if (ANGBAND_DIR_SCORES == NULL || ANGBAND_DIR_SAVE == NULL || ANGBAND_DIR_PANIC == NULL)
+    {
+        char* userpath = NULL;
+#ifdef USE_PRIVATE_PATHS
+        userpath = ANGBAND_DIR_USER;
+#else /* !USE_PRIVATE_PATHS */
+        userpath = (char*)datapath;
+#endif /* USE_PRIVATE_PATHS */
+#ifdef _DEBUG
+        printf("Current userpath: %s\n", userpath);
+#endif
+
+        /* Build the path to the score and save directories */
+        BUILD_DIRECTORY_PATH(ANGBAND_DIR_SCORES, userpath, "scores");
+        BUILD_DIRECTORY_PATH(ANGBAND_DIR_SAVE, userpath, "save");
+        BUILD_DIRECTORY_PATH(ANGBAND_DIR_PANIC, userpath, "panic");
+    }
 #undef BUILD_DIRECTORY_PATH
 }
 
