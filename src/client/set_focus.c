@@ -32,7 +32,7 @@
  * We only need scrolling along the x axis.
  */
 
-#ifndef WINDOWS//Already defined in main-win.c
+#if !defined(BUILDINGWithVS) && defined(WINDOWS)//Already defined in main-win.c
  /* Hack -- set focus to chat message control */
 void set_chat_focus( void )
 {

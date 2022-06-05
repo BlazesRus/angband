@@ -92,6 +92,7 @@
     (DEFAULT_BORDER * 2)
 #define DEFAULT_VISIBLE_BORDER 2
 
+#define DEFAULT_FONT_SIZE 0
 /* XXX hack: the widest character present in a font
  * for determining font advance (width) */
 #define GLYPH_FOR_ADVANCE 'W'
@@ -102,6 +103,8 @@
 #define DEFAULT_FONT_H 20
 
 #define DEFAULT_STATUS_BAR_FONT "8x13x.fon"
+#define DEFAULT_STATUS_BAR_FONT_W 8
+#define DEFAULT_STATUS_BAR_FONT_H 13
 
 #define MAX_VECTOR_FONT_SIZE 36
 #define MIN_VECTOR_FONT_SIZE 4
@@ -2205,7 +2208,9 @@ static void handle_menu_tile_sets(struct window *window,
     }
 
     size_t num_elems = 0;
+#ifdef BUILDINGWithVS
     struct menu_elem *elems;
+#endif
 
     graphics_mode *mode = graphics_modes;
     while (mode != NULL) {
@@ -2213,7 +2218,11 @@ static void handle_menu_tile_sets(struct window *window,
         mode = mode->pNext;
     }
 
+#ifndef BUILDINGWithVS
+    struct menu_elem elems[num_elems];
+#else
     elems = mem_alloc(num_elems * sizeof(*elems));
+#endif
 
     mode = graphics_modes;
     for (size_t i = 0; i < num_elems; ++i) {
@@ -2228,7 +2237,9 @@ static void handle_menu_tile_sets(struct window *window,
 
     load_next_menu_panel(window, menu_panel, button, num_elems, elems);
 
+#ifdef BUILDINGWithVS
     mem_free(elems);
+#endif
 }
 
 static void handle_menu_tiles(struct window *window,
@@ -4757,10 +4768,12 @@ static bool handle_button_open_subwindow(struct window *window,
         subwindow = make_subwindow(window, index);
         assert(subwindow != NULL);
         bring_to_top(window, subwindow);
+
         /* Reinitialize all subwindows */
         subwindows_reinit_flags();
         /* Set up the subwindows */
         subwindows_init_flags();
+
         refresh_angband_terms();
     }
 
