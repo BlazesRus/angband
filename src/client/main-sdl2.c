@@ -25,10 +25,6 @@
 #include "SDL_image.h"
 #include "SDL_ttf.h"
 
-#ifdef STB_DS_IMPLEMENTATION
-    #include "stb_ds.h"
-#endif
-
 #elif WINDOWS
 #include "..\_SDL2\SDL.h"
 #include "..\_SDL2\SDL_image.h"
@@ -1129,13 +1125,13 @@ static SDL_Texture *make_subwindow_texture(const struct window *window, int w, i
     SDL_Texture *texture = SDL_CreateTexture(window->renderer,
             window->pixelformat, SDL_TEXTUREACCESS_TARGET, w, h);
     if (texture == NULL) {
-        quit_fmt("cannot create texture for subwindow in window %u: %s",
+        quit_fmt("can't create texture for subwindow in window %u: %s",
                 window->index, SDL_GetError());
     }
 
     if (SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND) != 0) {
         SDL_DestroyTexture(texture);
-        quit_fmt("cannot set blend mode for texture in window %u: %s",
+        quit_fmt("can't set blend mode for texture in window %u: %s",
                 window->index, SDL_GetError());
     }
 
@@ -4233,11 +4229,11 @@ static SDL_Texture *load_image(const struct window *window, const char *path)
 {
     SDL_Surface *surface = IMG_Load(path);
     if (surface == NULL) {
-        quit_fmt("cannot load image '%s': %s", path, IMG_GetError());
+        quit_fmt("can't load image '%s': %s", path, IMG_GetError());
     }
     SDL_Texture *texture = SDL_CreateTextureFromSurface(window->renderer, surface);
     if (texture == NULL) {
-        quit_fmt("cannot create texture from image '%s': %s", path, SDL_GetError());
+        quit_fmt("can't create texture from image '%s': %s", path, SDL_GetError());
     }
     SDL_FreeSurface(surface);
 
@@ -4331,7 +4327,7 @@ static void load_graphics(struct window *window, graphics_mode *mode)
         char path[4096];
         path_build(path, sizeof(path), mode->path, mode->file);
         if (!file_exists(path)) {
-            quit_fmt("cannot load graphics: file '%s' doesnt exist", path);
+            quit_fmt("can't load graphics: file '%s' doesnt exist", path);
         }
 
         window->graphics.texture = load_image(window, path);
@@ -4410,7 +4406,7 @@ static void make_font_cache(const struct window *window, struct font *font)
 
         SDL_Texture *texture = SDL_CreateTextureFromSurface(window->renderer, surface);
         if (texture == NULL)
-            quit_fmt("cannot create texture for cache in font '%s': %s", font->name, SDL_GetError());
+            quit_fmt("can't create texture for cache in font '%s': %s", font->name, SDL_GetError());
 
         SDL_Rect src = {0, 0, surface->w, surface->h};
         SDL_Rect dst = {glyph_w * i, 0, glyph_w, glyph_h};
@@ -4494,7 +4490,7 @@ static void load_font(struct font *font)
 
     font->ttf.handle = TTF_OpenFont(font->path, font->size);
     if (font->ttf.handle == NULL) {
-        quit_fmt("cannot open font '%s': %s", font->path, TTF_GetError());
+        quit_fmt("can't open font '%s': %s", font->path, TTF_GetError());
     }
 
     font->ttf.glyph.h = TTF_FontHeight(font->ttf.handle);
@@ -4502,7 +4498,7 @@ static void load_font(struct font *font)
     if (TTF_GlyphMetrics(font->ttf.handle, GLYPH_FOR_ADVANCE,
                 NULL, NULL, NULL, NULL, &font->ttf.glyph.w) != 0)
     {
-        quit_fmt("cannot query glyph metrics for font '%s': %s",
+        quit_fmt("can't query glyph metrics for font '%s': %s",
                 font->path, TTF_GetError());
     }
 
@@ -4892,17 +4888,17 @@ static void load_status_bar(struct window *window)
     if (SDL_SetRenderDrawColor(window->renderer,
                 window->status_bar.color.r, window->status_bar.color.g,
                 window->status_bar.color.b, window->status_bar.color.a) != 0) {
-        quit_fmt("cannot set render color for status bar in window %u: %s",
+        quit_fmt("can't set render color for status bar in window %u: %s",
                 window->index, SDL_GetError());
     }
     /* well, renderer seems to work */
     if (SDL_SetRenderTarget(window->renderer, window->status_bar.texture) != 0) {
-        quit_fmt("cannot set status bar texture as target in window %u: %s",
+        quit_fmt("can't set status bar texture as target in window %u: %s",
                 window->index, SDL_GetError());
     }
     /* does it render? */
     if (SDL_RenderClear(window->renderer) != 0) {
-        quit_fmt("cannot clear status bar texture in window %u: %s",
+        quit_fmt("can't clear status bar texture in window %u: %s",
                 window->index, SDL_GetError());
     }
 
@@ -4970,7 +4966,7 @@ static void set_window_delay(struct window *window)
 
     int display = SDL_GetWindowDisplayIndex(window->window);
     if (display < 0) {
-        quit_fmt("cannot get display of window %u: %s",
+        quit_fmt("can't get display of window %u: %s",
                 window->index, SDL_GetError());
     }
 
@@ -5056,17 +5052,17 @@ static void start_window(struct window *window)
                 -1, window->config->renderer_flags);
     }
     if (window->renderer == NULL) {
-        quit_fmt("cannot create renderer for window %u: %s",
+        quit_fmt("can't create renderer for window %u: %s",
                 window->index, SDL_GetError());
     }
 
     SDL_RendererInfo info;
     if (SDL_GetRendererInfo(window->renderer, &info) != 0) {
-        quit_fmt("cannot query renderer in window %u", window->index);
+        quit_fmt("can't query renderer in window %u", window->index);
     }
 
     if (!choose_pixelformat(window, &info)) {
-        quit_fmt("cannot choose pixelformat for window %u", window->index);
+        quit_fmt("can't choose pixelformat for window %u", window->index);
     }
 
     load_window(window);
@@ -5095,7 +5091,7 @@ static void wipe_window_aux_config(struct window *window)
 
     SDL_RendererInfo rinfo;
     if (SDL_GetRendererInfo(main_window->renderer, &rinfo) != 0) {
-        quit_fmt("cannot get renderer info for main window: %s", SDL_GetError());
+        quit_fmt("can't get renderer info for main window: %s", SDL_GetError());
     }
     window->config->renderer_flags = rinfo.flags;
     window->config->renderer_index = -1;
@@ -5115,7 +5111,7 @@ static void wipe_window_aux_config(struct window *window)
 
     int display = SDL_GetWindowDisplayIndex(main_window->window);
     if (display < 0) {
-        quit_fmt("cannot get display from main window: %s", SDL_GetError());
+        quit_fmt("can't get display from main window: %s", SDL_GetError());
     }
 
     /* center it on the screen */
@@ -5144,7 +5140,7 @@ static void wipe_window(struct window *window, int display)
 
     SDL_DisplayMode mode;
     if (SDL_GetCurrentDisplayMode(display, &mode) != 0) {
-        quit_fmt("cannot get display mode for window %u: %s",
+        quit_fmt("can't get display mode for window %u: %s",
                 window->index, SDL_GetError());
     }
 
@@ -5335,7 +5331,7 @@ static void load_subwindow(struct window *window, struct subwindow *subwindow)
         assert(subwindow->font != NULL);
     }
     if (!adjust_subwindow_geometry(window, subwindow)) {
-        quit_fmt("cannot adjust geometry of subwindow %u in window %u",
+        quit_fmt("can't adjust geometry of subwindow %u in window %u",
                 subwindow->index, window->index);
     }
     subwindow->texture = make_subwindow_texture(window,
@@ -5351,15 +5347,15 @@ static void load_subwindow(struct window *window, struct subwindow *subwindow)
                 subwindow->color.r, subwindow->color.g,
                 subwindow->color.b, subwindow->color.a) != 0)
     {
-        quit_fmt("cannot set draw color for subwindow %u window %u: %s",
+        quit_fmt("can't set draw color for subwindow %u window %u: %s",
                 subwindow->index, window->index, SDL_GetError());
     }
     if (SDL_SetRenderTarget(window->renderer, subwindow->texture) != 0) {
-        quit_fmt("cannot set subwindow %u as render target in window %u: %s",
+        quit_fmt("can't set subwindow %u as render target in window %u: %s",
                 subwindow->index, window->index, SDL_GetError());
     }
     if (SDL_RenderClear(window->renderer) != 0) {
-        quit_fmt("cannot clear texture in subwindow %u window %u: %s",
+        quit_fmt("can't clear texture in subwindow %u window %u: %s",
                 subwindow->index, window->index, SDL_GetError());
     }
 
@@ -5488,7 +5484,7 @@ static void get_string_metrics(struct font *font, const char *str, int *w, int *
     assert(font->ttf.handle != NULL);
 
     if (TTF_SizeUTF8(font->ttf.handle, str, w, h) != 0) {
-        quit_fmt("cannot get string metrics for string '%s': %s", str, TTF_GetError());
+        quit_fmt("can't get string metrics for string '%s': %s", str, TTF_GetError());
     }
 }
 
