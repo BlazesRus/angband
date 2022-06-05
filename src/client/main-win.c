@@ -3808,7 +3808,8 @@ static LRESULT FAR PASCAL AngbandListProc(HWND hWnd, UINT uMsg, WPARAM wParam, L
             if (!td) return 1;
 
             /* It was sent from inside CreateWindowEx */
-            if (!td->w) return 1;
+            if (!td->w) 
+                return 1;
 
             /* Was sent from WM_SIZE */
             if (td->size_hack) return 1;
