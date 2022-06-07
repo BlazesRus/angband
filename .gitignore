@@ -51,3 +51,5 @@ Release/
 angband.3dsx
 angband.nds
 angband.smdh
+
+src/_SDL2VC/ObjectFiles/
