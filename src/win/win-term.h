@@ -28,6 +28,8 @@
  * Additional code by Robert Ruehlmann <rr9@thangorodrim.net>.
  */
 
+#ifndef INCLUDED_WINTERM_H
+#define INCLUDED_WINTERM_H
 
 /**
  * Forward declare
@@ -41,7 +43,7 @@ typedef struct _term_data term_data;
  * the user, and the use of "font_file" for the currently active font file.
  *
  * The "font_file" is uppercased, and takes the form "8X13.FON", while
- * "font_want" can be in almost any form as long as it could be construed
+ * "font_want" can be in almost any form as long as it could be constructed
  * as attempting to represent the name of a font.
  */
 struct _term_data
@@ -101,3 +103,4 @@ struct _term_data
  */
 #define MAX_TERM_DATA 8
 
+#endif /* INCLUDED_WINTERM_H */
