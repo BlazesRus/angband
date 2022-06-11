@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <Choose>
+    <When Condition="'$(SDLLibraryType)'=='ExternalSDL2'">
+      <PropertyGroup>
+        <SDLDir>$([System.IO.Path]::GetFullPath('$(ParentOfTools)SDL\include\'))</SDLDir>
+		<SDLImageDir>$([System.IO.Path]::GetFullPath('$(ParentOfTools)SDL_image\'))</SDLImageDir>
+		<SDLMixerDir>$([System.IO.Path]::GetFullPath('$(ParentOfTools)SDL_mixer\'))</SDLMixerDir>
+		<SDLMixerIncludes>$([System.IO.Path]::GetFullPath('$(SDLMixerDir)include\'))</SDLMixerIncludes>
+		<SDLTTFDir>$([System.IO.Path]::GetFullPath('$(ParentOfTools)SDL_ttf\'))</SDLTTFDir>
+		<FreeTypeDir>$([System.IO.Path]::GetFullPath('$(ParentOfTools)freetype\'))</FreeTypeDir>
+		<SDLNetDir>$([System.IO.Path]::GetFullPath('$(ParentOfTools)SDL_net\'))</SDLNetDir>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(SDLLibraryType)'=='SDL2Output'">
+      <PropertyGroup>
+        <SDLOutputDir>$([System.IO.Path]::GetFullPath('$(ParentOfTools)SDL2Output\'))</SDLOutputDir>
+		<SDLImageDir>$([System.IO.Path]::GetFullPath('$(ParentOfTools)SDL_image\'))</SDLImageDir>
+		<SDLMixerDir>$([System.IO.Path]::GetFullPath('$(ParentOfTools)SDL_mixer\'))</SDLMixerDir>
+		<SDLMixerIncludes>$([System.IO.Path]::GetFullPath('$(SDLMixerDir)include\'))</SDLMixerIncludes>
+		<SDLTTFDir>$([System.IO.Path]::GetFullPath('$(ParentOfTools)SDL_ttf\'))</SDLTTFDir>
+		<FreeTypeDir>$([System.IO.Path]::GetFullPath('$(ParentOfTools)freetype\'))</FreeTypeDir>
+		<SDLNetDir>$([System.IO.Path]::GetFullPath('$(ParentOfTools)SDL_net\'))</SDLNetDir>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(SDLLibraryType)'=='SDL2' Or '$(SDLLibraryType)'=='GLAD'">
+      <PropertyGroup>
+        <SDLDir Condition="'$(PlatformToolset)'!='ClangCL'">$([System.IO.Path]::GetFullPath('$(SourceRoot)SDL2\'))</SDLDir>
+      </PropertyGroup>
+    </When>
+    <Otherwise>
+      <!--SDL 1.X Option Or Custom SDL Configuration-->
+      <PropertyGroup>
+        <SDLLibraryType Condition="'$(SDLLibraryType)'!='SDL'">SDL</SDLLibraryType>
+        <SDLDir>$([System.IO.Path]::GetFullPath('$(SourceRoot)SDL\'))</SDLDir>
+      </PropertyGroup>
+    </Otherwise>
+  </Choose>
+  <PropertyGroup Label="LibraryLocation">
+    <SDLLibDir Condition="'$(PlatformToolset)'!='ClangCL'">$([System.IO.Path]::GetFullPath('$(SDLDir)$(Platform)\'))</SDLLibDir>
+    <SDLLibDir Condition="'$(PlatformToolset)'=='ClangCL'">$([System.IO.Path]::GetFullPath('$(SDLDir)Clang$(Platform)\'))</SDLLibDir>
+  </PropertyGroup>
+  <!--Now set the definition of the library files-->
+  <Choose>
+    <When Condition="'$(SDLLibraryType)'=='ExternalSDL2'">
+      <PropertyGroup>
+        <SDLImageLibrary>$([System.IO.Path]::GetFullPath('$(SDLImageDir)$(Platform)\SDL2_image.lib'))</SDLImageLibrary>
+        <SDLMixerLibrary>$([System.IO.Path]::GetFullPath('$(SDLMixerDir)$(Platform)\SDL2_mixer.lib'))</SDLMixerLibrary>
+        <SDLTTFLibrary>$([System.IO.Path]::GetFullPath('$(SDLTTFDir)$(Platform)\SDL2_ttf.lib'))</SDLTTFLibrary>
+        <FreeTypeLibrary>$([System.IO.Path]::GetFullPath('$(FreeTypeDir)$(Platform)\Freetype.lib'))</FreeTypeLibrary>
+        <SDLNetLibrary>$([System.IO.Path]::GetFullPath('$(SDLNetDir)$(Platform)\SDL_net.lib'))</SDLNetLibrary>
+        <SDLLibraryType Condition="'$(SDLLibraryType)'!='SDL2'">SDL2</SDLLibraryType>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(SDLLibraryType)'=='SDL2Output'">
+      <PropertyGroup>
+        <SDLOutputDir>$([System.IO.Path]::GetFullPath('$(ParentOfTools)SDL2Output\'))</SDLOutputDir>
+        <SDLDir>$([System.IO.Path]::GetFullPath('$(ParentOfTools)SDL\include\'))</SDLDir>
+        <SDLLibrary>$([System.IO.Path]::GetFullPath('$(SDLOutputDir)$(Platform)\SDL2.lib'))</SDLLibrary>
+        <SDLImageDir>$([System.IO.Path]::GetFullPath('$(ParentOfTools)SDL_image\'))</SDLImageDir>
+        <SDLImageLibrary>$([System.IO.Path]::GetFullPath('$(SDLOutputDir)$(Platform)\SDL2_image.lib'))</SDLImageLibrary>
+        <SDLMixerDir>$([System.IO.Path]::GetFullPath('$(ParentOfTools)SDL_mixer\include\'))</SDLMixerDir>
+        <SDLMixerLibrary>$([System.IO.Path]::GetFullPath('$(SDLOutputDir)$(Platform)\SDL2_mixer.lib'))</SDLMixerLibrary>
+        <SDLTTFDir>$([System.IO.Path]::GetFullPath('$(ParentOfTools)SDL_ttf\'))</SDLTTFDir>
+        <SDLTTFLibrary>$([System.IO.Path]::GetFullPath('$(SDLOutputDir)$(Platform)\SDL2_ttf.lib'))</SDLTTFLibrary>
+        <FreeTypeLibrary>$([System.IO.Path]::GetFullPath('$(SDLOutputDir)$(Platform)\freetype.lib'))</FreeTypeLibrary>
+        <SDLNetLibrary>$([System.IO.Path]::GetFullPath('$(SDLOutputDir)$(Platform)\SDL_net.lib'))</SDLNetLibrary>
+        <SDLLibraryType Condition="'$(SDLLibraryType)'!='SDL2'">SDL2</SDLLibraryType>
+      </PropertyGroup>
+    </When>
+    <When Condition="'$(SDLLibraryType)'=='SDL2' Or '$(SDLLibraryType)'=='GLAD'">
+      <PropertyGroup>
+        <SDLLibrary>$([System.IO.Path]::GetFullPath('$(SDLLibDir)SDL2.lib'))</SDLLibrary>
+        <SDLImageLibrary>$([System.IO.Path]::GetFullPath('$(SDLLibDir)SDL2_image.lib'))</SDLImageLibrary>
+        <SDLMixerLibrary>$([System.IO.Path]::GetFullPath('$(SDLLibDir)SDL2_mixer.lib'))</SDLMixerLibrary>
+        <SDLTTFLibrary>$([System.IO.Path]::GetFullPath('$(SDLLibDir)SDL2_ttf.lib'))</SDLTTFLibrary>
+        <FreeTypeLibrary>$([System.IO.Path]::GetFullPath('$(SDLLibDir)FreetypeBlazesRus.lib'))</FreeTypeLibrary>
+		<FreeTypeLibrary Condition="!exists('$(FreeTypeLibrary)')">$([System.IO.Path]::GetFullPath('$(SDLLibDir)freetype.lib'))</FreeTypeLibrary>
+      </PropertyGroup>
+    </When>
+    <Otherwise>
+      <!--SDL 1.X Option Or Custom SDL Configuration-->
+      <PropertyGroup>
+	    <SDLLibraryType Condition="'$(SDLLibraryType)'!='SDL'">SDL</SDLLibraryType>
+        <SDLLibrary>$([System.IO.Path]::GetFullPath('$(SDLLibDir)SDL.lib'))</SDLLibrary>
+        <SDLImageLibrary>$([System.IO.Path]::GetFullPath('$(SDLLibDir)SDL_image.lib'))</SDLImageLibrary>
+        <SDLMixerLibrary>$([System.IO.Path]::GetFullPath('$(SDLLibDir)SDL_mixer.lib'))</SDLMixerLibrary>
+        <SDLTTFLibrary>$([System.IO.Path]::GetFullPath('$(SDLLibDir)SDL_ttf.lib'))</SDLTTFLibrary>
+        <FreeTypeLibrary>$([System.IO.Path]::GetFullPath('$(SDLLibDir)freetype.lib'))</FreeTypeLibrary>
+      </PropertyGroup>
+    </Otherwise>
+  </Choose>
+  <ItemDefinitionGroup />
+  <ItemGroup />
+</Project>
