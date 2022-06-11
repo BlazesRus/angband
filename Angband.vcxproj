@@ -24,19 +24,67 @@
     <RootNamespace>AngBand</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>Angband</ProjectName>
-	<PlatformToolset>v142</PlatformToolset>
-    <PlatformToolset Condition="'$(VisualStudioVersion)' == '16' Or '$(VisualStudioVersion)' == ''">v142</PlatformToolset>
-    <PlatformToolset Condition="'$(VisualStudioVersion)' == '17'">v143</PlatformToolset>
-	<CharacterSet>NotSet</CharacterSet>
-	<ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>NotSet</CharacterSet>
+    <ConfigurationType>Application</ConfigurationType>
+  </PropertyGroup>
+  <PropertyGroup Label="UserMacros">
+    <ParentOfTools>$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)\..\'))</ParentOfTools>
+    <RootDirectory>$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)'))</RootDirectory>
+    <SourceRoot>$([System.IO.Path]::GetFullPath('$(RootDirectory)\src\'))</SourceRoot>
+    <LibDataDir>$([System.IO.Path]::GetFullPath('$(RootDirectory)\lib\'))</LibDataDir>
+    <WinRoot>$([System.IO.Path]::GetFullPath('$(SourceRoot)\win\'))</WinRoot>
+    <WinIncludeRoot>$([System.IO.Path]::GetFullPath('$(WinRoot)\include\'))</WinIncludeRoot>
+    <SDLLibraryType>Minimal</SDLLibraryType>
+    <CommonRoot>$([System.IO.Path]::GetFullPath('$(SourceRoot)\common\'))</CommonRoot>
+    <ServerRoot>$([System.IO.Path]::GetFullPath('$(SourceRoot)\server\'))</ServerRoot>
+    <ClientRoot>$([System.IO.Path]::GetFullPath('$(SourceRoot)\client\'))</ClientRoot>
+    <UserProjectSettingsFile>$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)Angband.vcxproj.user'))</UserProjectSettingsFile>
+    <OutDirInfo Condition="'$(SDLLibraryType)'!='Default'">$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)\$(ProjectName)\'))</OutDirInfo>
+    <OutDirInfo Condition="'$(SDLLibraryType)'=='Default'">$([System.IO.Path]::GetFullPath('$(RootDirectory)\$(Configuration)\$(Platform)\'))</OutDirInfo>
+  </PropertyGroup>
+  <Choose>
+    <When Condition="'$(Configuration)' == 'Release' Or '$(Configuration)' == 'ReleaseC99'">
+      <PropertyGroup>
+        <ConfigurationStyle>Release</ConfigurationStyle>
+        <WholeProgramOptimization>true</WholeProgramOptimization>
+        <UseDebugLibraries>false</UseDebugLibraries>
+        <LinkIncremental>false</LinkIncremental>
+      </PropertyGroup>
+    </When>
+    <Otherwise>
+      <PropertyGroup>
+        <ConfigurationStyle>Debug</ConfigurationStyle>
+        <UseDebugLibraries>true</UseDebugLibraries>
+        <LinkIncremental>true</LinkIncremental>
+      </PropertyGroup>
+    </Otherwise>
+  </Choose>
+  <!--Import macro overrides from user props-->
+  <Import Project="$(UserProjectSettingsFile)" Condition="exists('$(UserProjectSettingsFile)')" />
+  <ImportGroup Label="PropertySheets">
+    <Import Project="LibPngMacros.props" />
+    <!--
+    <Import Project="SDLMacros.props" />
+-->
+  </ImportGroup>
+  <PropertyGroup Label="OutputDirectoryInfo">
+    <OutLibFolder>$([System.IO.Path]::GetFullPath('$(OutDirInfo)lib\'))</OutLibFolder>
+    <LocalDebuggerWorkingDirectory>$(OutDirInfo)</LocalDebuggerWorkingDirectory>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
+  <PropertyGroup Label="RenameBasedOnSDLAndDebug">
+    <TargetName Condition="'$(ConfigurationStyle)'!='Debug'">angband_$(SDLLibraryType)</TargetName>
+    <TargetName Condition="'$(ConfigurationStyle)'=='Debug'">angbandDebug_$(SDLLibraryType)</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Label="ToolsetOptions">
+    <!-- 142 for VS2019(Default);143 for VS2022-->
+    <PlatformToolset Condition="'$(Configuration)' == 'ReleaseC99' Or '$(Configuration)' == 'DebugC99'">ClangCL</PlatformToolset>
+    <PlatformToolset Condition="'$(PlatformToolset)'!='ClangCL' And '$(VisualStudioVersion)' != '17'">v142</PlatformToolset>
+    <PlatformToolset Condition="'$(PlatformToolset)'!='ClangCL' And '$(VisualStudioVersion)' == '17'">v143</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition="'$(Configuration)'=='Debug'" Label="Configuration">
-    <UseDebugLibraries>true</UseDebugLibraries>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)'=='Release'" Label="Configuration">
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
+  <PropertyGroup Label="Configuration" Condition="'$(Platform)'=='x64'">
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -46,259 +94,141 @@
   <ImportGroup Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(MSBuildProjectDirectory)\src;$(MSBuildProjectDirectory)\src\win;$(MSBuildProjectDirectory)\src\win\include</IncludePath>
-    <LibraryPath>$(MSBuildProjectDirectory)\src\win\lib;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86</LibraryPath>
-    <CustomBuildAfterTargets>Build</CustomBuildAfterTargets>
+  <PropertyGroup>
+    <IncludePath Condition="'$(SDLLibraryType)'=='Default'">$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SourceRoot);$(WinRoot);$(WinIncludeRoot);$(IncludePath)</IncludePath>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(MSBuildProjectDirectory)\src;$(MSBuildProjectDirectory)\src\win;$(MSBuildProjectDirectory)\src\win\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(MSBuildProjectDirectory)\src\win\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)..\lib\um\x64;</LibraryPath>
-    <CustomBuildAfterTargets>Build</CustomBuildAfterTargets>
+  <PropertyGroup Condition="'$(Platform)'=='Win32'">
+    <LibraryPath Condition="'$(SDLLibraryType)'=='Default'">$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)...\lib\um\x86;$(ZPngLibDir);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(MSBuildProjectDirectory)\src;$(MSBuildProjectDirectory)\src\win;$(MSBuildProjectDirectory)\src\win\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(MSBuildProjectDirectory)\src\win\lib;$(LibraryPath)</LibraryPath>
+  <PropertyGroup Condition="'$(Platform)'=='x64'">
+    <LibraryPath Condition="'$(SDLLibraryType)'=='Default'">$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)...\lib\um\x64;$(ZPngLibDir);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(MSBuildProjectDirectory)\src;$(MSBuildProjectDirectory)\src\win;$(MSBuildProjectDirectory)\src\win\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(MSBuildProjectDirectory)\src\win\lib;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)..\lib\um\x64;</LibraryPath>
+  <PropertyGroup Condition="'$(SDLLibraryType)'=='Minimal'">
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SourceRoot);$(WinRoot);$(WinIncludeRoot);$(IncludePath)</IncludePath>
+    <LibraryPath Condition="'$(Platform)'=='Win32'">$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)...\lib\um\x86;$(ZPngLibDir);$(LibraryPath)</LibraryPath>
+    <LibraryPath Condition="'$(Platform)'=='x64'">$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)...\lib\um\x64;$(ZPngLibDir);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+  <PropertyGroup Label="OutputInfo">
+    <OutDir>$(OutDirInfo)</OutDir>
+    <IntDir>.\ObjectFiles\$(ProjectName)\$(Configuration)_$(Platform)\</IntDir>
+    <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking Condition="'$(ConfigurationStyle)'=='Release'">true</FunctionLevelLinking>
+      <IntrinsicFunctions Condition="'$(ConfigurationStyle)'=='Release'">true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>SOUND;USE_PRIVATE_PATHS;WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(CStandardType)'=='Modern'">%(PreprocessorDefinitions);UsingModernC;</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(PlatformToolset)'=='ClangCL'">%(PreprocessorDefinitions);UsingClangToolset;</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(SDLLibraryType)'=='SDL2'">%(PreprocessorDefinitions);SOUND_SDL2;USE_SDL2;</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(SDLLibraryType)'=='SDL'">%(PreprocessorDefinitions);SOUND_SDL;USE_SDL;</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(SDLLibraryType)'=='GCU'">%(PreprocessorDefinitions);USE_GCU;</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(ConfigurationStyle)'=='Debug'">%(PreprocessorDefinitions);_DEBUG</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(ConfigurationStyle)'=='Release'">%(PreprocessorDefinitions);NDEBUG</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Platform)'=='x64'">%(PreprocessorDefinitions);_WIN64;WIN64</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);SOUND;USE_PRIVATE_PATHS;WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;_CONSOLE;BUILDINGWithVS;WINDOWS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <CompileAs>Default</CompileAs>
+      <DisableSpecificWarnings>4703;2057;2055</DisableSpecificWarnings>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <DisableLanguageExtensions Condition="'$(CStandardType)'=='C89'">true</DisableLanguageExtensions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding Condition="'$(ConfigurationStyle)'=='Release'">true</EnableCOMDATFolding>
+      <OptimizeReferences Condition="'$(ConfigurationStyle)'=='Release'">true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>zlib.lib;libpng.lib;msimg32.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies Condition="'$(ZLibLibrary)'!=''">$(ZLibLibrary);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies Condition="'$(LibPngLibrary)'!=''">$(LibPngLibrary);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies Condition="'$(SDLLibraryType)'=='SDL' Or '$(SDLLibraryType)'=='SDL2'">%(AdditionalDependencies);$(SDLLibrary);$(SDLImageLibrary);$(SDLMixerLibrary);$(SDLTTFLibrary);$(FreeTypeLibrary);</AdditionalDependencies>
+      <AdditionalDependencies Condition="'$(ConfigurationStyle)'=='Debug'">msimg32.lib;winmm.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies Condition="'$(ConfigurationStyle)'=='Release'">msimg32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>libcmt.lib</IgnoreSpecificDefaultLibraries>
     </Link>
-    <PostBuildEvent>
+    <PreBuildEvent Condition="'$(SDLLibraryType)'=='SDL' Or '$(SDLLibraryType)'=='SDL2'">
       <Command>
+                robocopy "$(LibDataDir)customize" "$(OutLibFolder)customize" /mir
+                robocopy "$(LibDataDir)fonts" "$(OutLibFolder)fonts" /mir
+                robocopy "$(LibDataDir)gamedata" "$(OutLibFolder)gamedata" /mir
+                robocopy "$(LibDataDir)help" "$(OutLibFolder)help" /mir
+                robocopy "$(LibDataDir)icons" "$(OutLibFolder)icons" /mir
+                robocopy "$(LibDataDir)music" "$(OutLibFolder)music" /mir
+                robocopy "$(LibDataDir)screens" "$(OutLibFolder)screens" /mir
+                robocopy "$(LibDataDir)sounds" "$(OutLibFolder)sounds" /mir
+                robocopy "$(LibDataDir)tiles" "$(OutLibFolder)tiles" /mir
+                xcopy  "$(SDLLibDir)" "$(OutDirInfo)" /s /e /y /d
+                xcopy  "$(ZPngLibDir)" "$(OutDirInfo)" /s /e /y /d
       </Command>
-    </PostBuildEvent>
-    <CustomBuildStep>
-      <Command>xcopy "$(MSBuildProjectDirectory)\src\win\dll\*.dll" "$(OutDir)" /DY
-xcopy  "$(MSBuildProjectDirectory)\lib" "$(OutDir)lib" /DEISY </Command>
-    </CustomBuildStep>
-    <CustomBuildStep>
-      <Outputs>$(OutDir)suppress_post_build.txt</Outputs>
-    </CustomBuildStep>
+      <Message>Syncing Lib Data, Syncing SDL, and LibPng Dlls</Message>
+    </PreBuildEvent>
+    <PreBuildEvent Condition="'$(SDLLibraryType)'!='SDL' And '$(SDLLibraryType)'!='SDL2'">
+      <Command>
+                robocopy "$(LibDataDir)customize" "$(OutLibFolder)customize" /mir
+                robocopy "$(LibDataDir)fonts" "$(OutLibFolder)fonts" /mir
+                robocopy "$(LibDataDir)gamedata" "$(OutLibFolder)gamedata" /mir
+                robocopy "$(LibDataDir)help" "$(OutLibFolder)help" /mir
+                robocopy "$(LibDataDir)icons" "$(OutLibFolder)icons" /mir
+                robocopy "$(LibDataDir)music" "$(OutLibFolder)music" /mir
+                robocopy "$(LibDataDir)screens" "$(OutLibFolder)screens" /mir
+                robocopy "$(LibDataDir)sounds" "$(OutLibFolder)sounds" /mir
+                robocopy "$(LibDataDir)tiles" "$(OutLibFolder)tiles" /mir
+                xcopy  "$(ZPngLibDir)" "$(OutDirInfo)" /s /e /y /d
+      </Command>
+      <Message>Syncing Lib Data, and LibPng Dlls</Message>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>SOUND;USE_PRIVATE_PATHS;WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
-    </ClCompile>
-    <Link>
-      <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>zlib.lib;libpng.lib;msimg32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>SOUND;USE_PRIVATE_PATHS;WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
-    </ClCompile>
-    <Link>
-      <SubSystem>Windows</SubSystem>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>zlib.lib;libpng.lib;msimg32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
-    </Link>
-    <PostBuildEvent>
-      <Command>xcopy $(MSBuildProjectDirectory)\src\win\dll\*.dll $(OutDir) /DY 
-xcopy $(MSBuildProjectDirectory)\lib\* $(OutDir)lib\ /DESY /exclude:$(MSBuildProjectDirectory)\lib\xcopy_exclude.txt</Command>
-    </PostBuildEvent>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>SOUND;USE_PRIVATE_PATHS;WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ConformanceMode>true</ConformanceMode>
-    </ClCompile>
-    <Link>
-      <SubSystem>Windows</SubSystem>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="src\buildid.c" />
-    <ClCompile Include="src\cave-map.c" />
-    <ClCompile Include="src\cave-square.c" />
-    <ClCompile Include="src\cave-view.c" />
-    <ClCompile Include="src\cave.c" />
-    <ClCompile Include="src\cmd-cave.c" />
-    <ClCompile Include="src\cmd-core.c" />
-    <ClCompile Include="src\cmd-misc.c" />
-    <ClCompile Include="src\cmd-obj.c" />
-    <ClCompile Include="src\cmd-pickup.c" />
-    <ClCompile Include="src\cmd-spoil.c" />
-    <ClCompile Include="src\cmd-wizard.c" />
-    <ClCompile Include="src\datafile.c" />
-    <ClCompile Include="src\debug.c" />
-    <ClCompile Include="src\effect-handler-attack.c" />
-    <ClCompile Include="src\effect-handler-general.c" />
-    <ClCompile Include="src\effects-info.c" />
-    <ClCompile Include="src\effects.c" />
-    <ClCompile Include="src\game-event.c" />
-    <ClCompile Include="src\game-input.c" />
-    <ClCompile Include="src\game-world.c" />
-    <ClCompile Include="src\gen-cave.c" />
-    <ClCompile Include="src\gen-chunk.c" />
-    <ClCompile Include="src\gen-monster.c" />
-    <ClCompile Include="src\gen-room.c" />
-    <ClCompile Include="src\gen-util.c" />
-    <ClCompile Include="src\generate.c" />
-    <ClCompile Include="src\grafmode.c" />
-    <ClCompile Include="src\guid.c" />
-    <ClCompile Include="src\init.c" />
-    <ClCompile Include="src\load.c" />
-    <ClCompile Include="src\main-win.c" />
-    <ClCompile Include="src\message.c" />
-    <ClCompile Include="src\mon-attack.c" />
-    <ClCompile Include="src\mon-blows.c" />
-    <ClCompile Include="src\mon-desc.c" />
-    <ClCompile Include="src\mon-group.c" />
-    <ClCompile Include="src\mon-init.c" />
-    <ClCompile Include="src\mon-list.c" />
-    <ClCompile Include="src\mon-lore.c" />
-    <ClCompile Include="src\mon-make.c" />
-    <ClCompile Include="src\mon-move.c" />
-    <ClCompile Include="src\mon-msg.c" />
-    <ClCompile Include="src\mon-predicate.c" />
-    <ClCompile Include="src\mon-spell.c" />
-    <ClCompile Include="src\mon-summon.c" />
-    <ClCompile Include="src\mon-timed.c" />
-    <ClCompile Include="src\mon-util.c" />
-    <ClCompile Include="src\obj-chest.c" />
-    <ClCompile Include="src\obj-curse.c" />
-    <ClCompile Include="src\obj-desc.c" />
-    <ClCompile Include="src\obj-gear.c" />
-    <ClCompile Include="src\obj-ignore.c" />
-    <ClCompile Include="src\obj-info.c" />
-    <ClCompile Include="src\obj-init.c" />
-    <ClCompile Include="src\obj-knowledge.c" />
-    <ClCompile Include="src\obj-list.c" />
-    <ClCompile Include="src\obj-make.c" />
-    <ClCompile Include="src\obj-pile.c" />
-    <ClCompile Include="src\obj-power.c" />
-    <ClCompile Include="src\obj-properties.c" />
-    <ClCompile Include="src\obj-randart.c" />
-    <ClCompile Include="src\obj-slays.c" />
-    <ClCompile Include="src\obj-tval.c" />
-    <ClCompile Include="src\obj-util.c" />
-    <ClCompile Include="src\option.c" />
-    <ClCompile Include="src\parser.c" />
-    <ClCompile Include="src\player-attack.c" />
-    <ClCompile Include="src\player-birth.c" />
-    <ClCompile Include="src\player-calcs.c" />
-    <ClCompile Include="src\player-class.c" />
-    <ClCompile Include="src\player-history.c" />
-    <ClCompile Include="src\player-path.c" />
-    <ClCompile Include="src\player-properties.c" />
-    <ClCompile Include="src\player-quest.c" />
-    <ClCompile Include="src\player-race.c" />
-    <ClCompile Include="src\player-spell.c" />
-    <ClCompile Include="src\player-timed.c" />
-    <ClCompile Include="src\player-util.c" />
-    <ClCompile Include="src\player.c" />
-    <ClCompile Include="src\project-feat.c" />
-    <ClCompile Include="src\project-mon.c" />
-    <ClCompile Include="src\project-obj.c" />
-    <ClCompile Include="src\project-player.c" />
-    <ClCompile Include="src\project.c" />
-    <ClCompile Include="src\randname.c" />
-    <ClCompile Include="src\save-charoutput.c" />
-    <ClCompile Include="src\save.c" />
-    <ClCompile Include="src\savefile.c" />
-    <ClCompile Include="src\score.c" />
-    <ClCompile Include="src\sound-core.c" />
-    <ClCompile Include="src\source.c" />
-    <ClCompile Include="src\store.c" />
-    <ClCompile Include="src\target.c" />
-    <ClCompile Include="src\trap.c" />
-    <ClCompile Include="src\ui-birth.c" />
-    <ClCompile Include="src\ui-command.c" />
-    <ClCompile Include="src\ui-context.c" />
-    <ClCompile Include="src\ui-curse.c" />
-    <ClCompile Include="src\ui-death.c" />
-    <ClCompile Include="src\ui-display.c" />
-    <ClCompile Include="src\ui-effect.c" />
-    <ClCompile Include="src\ui-entry-combiner.c" />
-    <ClCompile Include="src\ui-entry-renderers.c" />
-    <ClCompile Include="src\ui-entry.c" />
-    <ClCompile Include="src\ui-equip-cmp.c" />
-    <ClCompile Include="src\ui-event.c" />
-    <ClCompile Include="src\ui-game.c" />
-    <ClCompile Include="src\ui-help.c" />
-    <ClCompile Include="src\ui-history.c" />
-    <ClCompile Include="src\ui-init.c" />
-    <ClCompile Include="src\ui-input.c" />
-    <ClCompile Include="src\ui-keymap.c" />
-    <ClCompile Include="src\ui-knowledge.c" />
-    <ClCompile Include="src\ui-map.c" />
-    <ClCompile Include="src\ui-menu.c" />
-    <ClCompile Include="src\ui-mon-list.c" />
-    <ClCompile Include="src\ui-mon-lore.c" />
-    <ClCompile Include="src\ui-obj-list.c" />
-    <ClCompile Include="src\ui-object.c" />
-    <ClCompile Include="src\ui-options.c" />
-    <ClCompile Include="src\ui-output.c" />
-    <ClCompile Include="src\ui-player-properties.c" />
-    <ClCompile Include="src\ui-player.c" />
-    <ClCompile Include="src\ui-prefs.c" />
-    <ClCompile Include="src\ui-score.c" />
-    <ClCompile Include="src\ui-signals.c" />
-    <ClCompile Include="src\ui-spell.c" />
-    <ClCompile Include="src\ui-spoil.c" />
-    <ClCompile Include="src\ui-store.c" />
-    <ClCompile Include="src\ui-target.c" />
-    <ClCompile Include="src\ui-term.c" />
-    <ClCompile Include="src\ui-visuals.c" />
-    <ClCompile Include="src\ui-wizard.c" />
+  <!--
+  <ItemGroup Label="SDLHeaders" Condition="'$(SDLLibraryType)'=='SDL' Or '$(SDLLibraryType)'=='SDL2'">
+    <ClInclude Include="$(SDLDir)\begin_code.h" />
+    <ClInclude Include="$(SDLDir)\close_code.h" />
+    <ClInclude Include="$(SDLDir)\SDL.h" />
+    <ClInclude Include="$(SDLDir)\SDL_active.h" />
+    <ClInclude Include="$(SDLDir)\SDL_audio.h" />
+    <ClInclude Include="$(SDLDir)\SDL_cdrom.h" />
+    <ClInclude Include="$(SDLDir)\SDL_config.h" />
+    <ClInclude Include="$(SDLDir)\SDL_config_win32.h" />
+    <ClInclude Include="$(SDLDir)\SDL_cpuinfo.h" />
+    <ClInclude Include="$(SDLDir)\SDL_endian.h" />
+    <ClInclude Include="$(SDLDir)\SDL_error.h" />
+    <ClInclude Include="$(SDLDir)\SDL_events.h" />
+    <ClInclude Include="$(SDLDir)\SDL_image.h" />
+    <ClInclude Include="$(SDLDir)\SDL_joystick.h" />
+    <ClInclude Include="$(SDLDir)\SDL_keyboard.h" />
+    <ClInclude Include="$(SDLDir)\SDL_keysym.h" />
+    <ClInclude Include="$(SDLDir)\SDL_loadso.h" />
+    <ClInclude Include="$(SDLDir)\SDL_main.h" />
+    <ClInclude Include="$(SDLDir)\SDL_mixer.h" />
+    <ClInclude Include="$(SDLDir)\SDL_mouse.h" />
+    <ClInclude Include="$(SDLDir)\SDL_mutex.h" />
+    <ClInclude Include="$(SDLDir)\SDL_platform.h" />
+    <ClInclude Include="$(SDLDir)\SDL_quit.h" />
+    <ClInclude Include="$(SDLDir)\SDL_rwops.h" />
+    <ClInclude Include="$(SDLDir)\SDL_stdinc.h" />
+    <ClInclude Include="$(SDLDir)\SDL_thread.h" />
+    <ClInclude Include="$(SDLDir)\SDL_timer.h" />
+    <ClInclude Include="$(SDLDir)\SDL_ttf.h" />
+    <ClInclude Include="$(SDLDir)\SDL_types.h" />
+    <ClInclude Include="$(SDLDir)\SDL_version.h" />
+    <ClInclude Include="$(SDLDir)\SDL_video.h" />
+  </ItemGroup>
+-->
+  <ItemGroup Label="ZLibPng">
+    <ClInclude Include="src\win\include\png.h" />
+    <ClInclude Include="src\win\include\pngconf.h" />
+    <ClInclude Include="src\win\include\zconf.h" />
+    <ClInclude Include="src\win\include\zlib.h" />
+  </ItemGroup>
+  <ItemGroup Label="ImageAndScreenshotStuff">
+    <ClInclude Include="src\win\readdib.h" />
+    <ClInclude Include="src\win\win-menu.h" />
+    <ClInclude Include="src\win\win-term.h" />
     <ClCompile Include="src\win\readdib.c" />
     <ClCompile Include="src\win\readpng.c" />
     <ClCompile Include="src\win\scrnshot.c" />
     <ClCompile Include="src\win\win-layout.c" />
-    <ClCompile Include="src\wiz-debug.c" />
-    <ClCompile Include="src\wiz-spoil.c" />
-    <ClCompile Include="src\wiz-stats.c" />
-    <ClCompile Include="src\z-bitflag.c" />
-    <ClCompile Include="src\z-color.c" />
-    <ClCompile Include="src\z-dice.c" />
-    <ClCompile Include="src\z-expression.c" />
-    <ClCompile Include="src\z-file.c" />
-    <ClCompile Include="src\z-form.c" />
-    <ClCompile Include="src\z-quark.c" />
-    <ClCompile Include="src\z-queue.c" />
-    <ClCompile Include="src\z-rand.c" />
-    <ClCompile Include="src\z-set.c" />
-    <ClCompile Include="src\z-textblock.c" />
-    <ClCompile Include="src\z-type.c" />
-    <ClCompile Include="src\z-util.c" />
-    <ClCompile Include="src\z-virt.c" />
+    <ClInclude Include="src\win\resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\alloc.h" />
@@ -452,13 +382,6 @@ xcopy $(MSBuildProjectDirectory)\lib\* $(OutDir)lib\ /DESY /exclude:$(MSBuildPro
     <ClInclude Include="src\ui-term.h" />
     <ClInclude Include="src\ui-visuals.h" />
     <ClInclude Include="src\ui-wizard.h" />
-    <ClInclude Include="src\win\include\png.h" />
-    <ClInclude Include="src\win\include\pngconf.h" />
-    <ClInclude Include="src\win\include\zconf.h" />
-    <ClInclude Include="src\win\include\zlib.h" />
-    <ClInclude Include="src\win\readdib.h" />
-    <ClInclude Include="src\win\win-menu.h" />
-    <ClInclude Include="src\win\win-term.h" />
     <ClInclude Include="src\wizard.h" />
     <ClInclude Include="src\z-bitflag.h" />
     <ClInclude Include="src\z-color.h" />
@@ -477,73 +400,179 @@ xcopy $(MSBuildProjectDirectory)\lib\* $(OutDir)lib\ /DESY /exclude:$(MSBuildPro
     <ClInclude Include="src\z-virt.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="lib\icons\att-128.png" />
-    <Image Include="lib\icons\att-16.png" />
-    <Image Include="lib\icons\att-256.png" />
-    <Image Include="lib\icons\att-32.png" />
-    <Image Include="lib\icons\att-512.png" />
-    <Image Include="lib\tiles\adam-bolt\16x16.png" />
-    <Image Include="lib\tiles\gervais\32x32.png" />
-    <Image Include="lib\tiles\nomad\8x16.png" />
-    <Image Include="lib\tiles\old\8x8.png" />
-    <Image Include="lib\tiles\shockbolt\64x64.png" />
-    <Image Include="src\win\angband.ico" />
+    <ClCompile Include="src\buildid.c" />
+    <ClCompile Include="src\cave-map.c" />
+    <ClCompile Include="src\cave-square.c" />
+    <ClCompile Include="src\cave-view.c" />
+    <ClCompile Include="src\cave.c" />
+    <ClCompile Include="src\cmd-cave.c" />
+    <ClCompile Include="src\cmd-core.c" />
+    <ClCompile Include="src\cmd-misc.c" />
+    <ClCompile Include="src\cmd-obj.c" />
+    <ClCompile Include="src\cmd-pickup.c" />
+    <ClCompile Include="src\cmd-spoil.c" />
+    <ClCompile Include="src\cmd-wizard.c" />
+    <ClCompile Include="src\datafile.c" />
+    <ClCompile Include="src\debug.c" />
+    <ClCompile Include="src\effect-handler-attack.c" />
+    <ClCompile Include="src\effect-handler-general.c" />
+    <ClCompile Include="src\effects-info.c" />
+    <ClCompile Include="src\effects.c" />
+    <ClCompile Include="src\game-event.c" />
+    <ClCompile Include="src\game-input.c" />
+    <ClCompile Include="src\game-world.c" />
+    <ClCompile Include="src\gen-cave.c" />
+    <ClCompile Include="src\gen-chunk.c" />
+    <ClCompile Include="src\gen-monster.c" />
+    <ClCompile Include="src\gen-room.c" />
+    <ClCompile Include="src\gen-util.c" />
+    <ClCompile Include="src\generate.c" />
+    <ClCompile Include="src\grafmode.c" />
+    <ClCompile Include="src\guid.c" />
+    <ClCompile Include="src\init.c" />
+    <ClCompile Include="src\load.c" />
+    <ClCompile Include="src\message.c" />
+    <ClCompile Include="src\mon-attack.c" />
+    <ClCompile Include="src\mon-blows.c" />
+    <ClCompile Include="src\mon-desc.c" />
+    <ClCompile Include="src\mon-group.c" />
+    <ClCompile Include="src\mon-init.c" />
+    <ClCompile Include="src\mon-list.c" />
+    <ClCompile Include="src\mon-lore.c" />
+    <ClCompile Include="src\mon-make.c" />
+    <ClCompile Include="src\mon-move.c" />
+    <ClCompile Include="src\mon-msg.c" />
+    <ClCompile Include="src\mon-predicate.c" />
+    <ClCompile Include="src\mon-spell.c" />
+    <ClCompile Include="src\mon-summon.c" />
+    <ClCompile Include="src\mon-timed.c" />
+    <ClCompile Include="src\mon-util.c" />
+    <ClCompile Include="src\obj-chest.c" />
+    <ClCompile Include="src\obj-curse.c" />
+    <ClCompile Include="src\obj-desc.c" />
+    <ClCompile Include="src\obj-gear.c" />
+    <ClCompile Include="src\obj-ignore.c" />
+    <ClCompile Include="src\obj-info.c" />
+    <ClCompile Include="src\obj-init.c" />
+    <ClCompile Include="src\obj-knowledge.c" />
+    <ClCompile Include="src\obj-list.c" />
+    <ClCompile Include="src\obj-make.c" />
+    <ClCompile Include="src\obj-pile.c" />
+    <ClCompile Include="src\obj-power.c" />
+    <ClCompile Include="src\obj-properties.c" />
+    <ClCompile Include="src\obj-randart.c" />
+    <ClCompile Include="src\obj-slays.c" />
+    <ClCompile Include="src\obj-tval.c" />
+    <ClCompile Include="src\obj-util.c" />
+    <ClCompile Include="src\option.c" />
+    <ClCompile Include="src\parser.c" />
+    <ClCompile Include="src\player-attack.c" />
+    <ClCompile Include="src\player-birth.c" />
+    <ClCompile Include="src\player-calcs.c" />
+    <ClCompile Include="src\player-class.c" />
+    <ClCompile Include="src\player-history.c" />
+    <ClCompile Include="src\player-path.c" />
+    <ClCompile Include="src\player-properties.c" />
+    <ClCompile Include="src\player-quest.c" />
+    <ClCompile Include="src\player-race.c" />
+    <ClCompile Include="src\player-spell.c" />
+    <ClCompile Include="src\player-timed.c" />
+    <ClCompile Include="src\player-util.c" />
+    <ClCompile Include="src\player.c" />
+    <ClCompile Include="src\project-feat.c" />
+    <ClCompile Include="src\project-mon.c" />
+    <ClCompile Include="src\project-obj.c" />
+    <ClCompile Include="src\project-player.c" />
+    <ClCompile Include="src\project.c" />
+    <ClCompile Include="src\randname.c" />
+    <ClCompile Include="src\save-charoutput.c" />
+    <ClCompile Include="src\save.c" />
+    <ClCompile Include="src\savefile.c" />
+    <ClCompile Include="src\score.c" />
+    <ClCompile Include="src\sound-core.c" />
+    <ClCompile Include="src\source.c" />
+    <ClCompile Include="src\store.c" />
+    <ClCompile Include="src\target.c" />
+    <ClCompile Include="src\trap.c" />
+    <ClCompile Include="src\ui-birth.c" />
+    <ClCompile Include="src\ui-command.c" />
+    <ClCompile Include="src\ui-context.c" />
+    <ClCompile Include="src\ui-curse.c" />
+    <ClCompile Include="src\ui-death.c" />
+    <ClCompile Include="src\ui-display.c" />
+    <ClCompile Include="src\ui-effect.c" />
+    <ClCompile Include="src\ui-entry-combiner.c" />
+    <ClCompile Include="src\ui-entry-renderers.c" />
+    <ClCompile Include="src\ui-entry.c" />
+    <ClCompile Include="src\ui-equip-cmp.c" />
+    <ClCompile Include="src\ui-event.c" />
+    <ClCompile Include="src\ui-game.c" />
+    <ClCompile Include="src\ui-help.c" />
+    <ClCompile Include="src\ui-history.c" />
+    <ClCompile Include="src\ui-init.c" />
+    <ClCompile Include="src\ui-input.c" />
+    <ClCompile Include="src\ui-keymap.c" />
+    <ClCompile Include="src\ui-knowledge.c" />
+    <ClCompile Include="src\ui-map.c" />
+    <ClCompile Include="src\ui-menu.c" />
+    <ClCompile Include="src\ui-mon-list.c" />
+    <ClCompile Include="src\ui-mon-lore.c" />
+    <ClCompile Include="src\ui-obj-list.c" />
+    <ClCompile Include="src\ui-object.c" />
+    <ClCompile Include="src\ui-options.c" />
+    <ClCompile Include="src\ui-output.c" />
+    <ClCompile Include="src\ui-player-properties.c" />
+    <ClCompile Include="src\ui-player.c" />
+    <ClCompile Include="src\ui-prefs.c" />
+    <ClCompile Include="src\ui-score.c" />
+    <ClCompile Include="src\ui-signals.c" />
+    <ClCompile Include="src\ui-spell.c" />
+    <ClCompile Include="src\ui-spoil.c" />
+    <ClCompile Include="src\ui-store.c" />
+    <ClCompile Include="src\ui-target.c" />
+    <ClCompile Include="src\ui-term.c" />
+    <ClCompile Include="src\ui-visuals.c" />
+    <ClCompile Include="src\ui-wizard.c" />
+    <ClCompile Include="src\wiz-debug.c" />
+    <ClCompile Include="src\wiz-spoil.c" />
+    <ClCompile Include="src\wiz-stats.c" />
+    <ClCompile Include="src\z-bitflag.c" />
+    <ClCompile Include="src\z-color.c" />
+    <ClCompile Include="src\z-dice.c" />
+    <ClCompile Include="src\z-expression.c" />
+    <ClCompile Include="src\z-file.c" />
+    <ClCompile Include="src\z-form.c" />
+    <ClCompile Include="src\z-quark.c" />
+    <ClCompile Include="src\z-queue.c" />
+    <ClCompile Include="src\z-rand.c" />
+    <ClCompile Include="src\z-set.c" />
+    <ClCompile Include="src\z-textblock.c" />
+    <ClCompile Include="src\z-type.c" />
+    <ClCompile Include="src\z-util.c" />
+    <ClCompile Include="src\z-virt.c" />
+  </ItemGroup>
+  <ItemGroup Label="MainClientProcessing">
+    <ClInclude Include="src\main.h">
+      <ExcludedFromBuild Condition="'$(SDLLibraryType)'!='SDL' And '$(SDLLibraryType)'!='SDL2'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClCompile Include="src\main.c">
+      <ExcludedFromBuild Condition="'$(SDLLibraryType)'!='SDL' And '$(SDLLibraryType)'!='SDL2'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="src\main-win.c">
+      <ExcludedFromBuild Condition="'$(SDLLibraryType)'=='SDL' Or '$(SDLLibraryType)'=='SDL2'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="src\main-gcu.c">
+      <ExcludedFromBuild Condition="'$(SDLLibraryType)'!='GCU'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="src\main-sdl.c">
+      <ExcludedFromBuild Condition="'$(SDLLibraryType)'!='SDL'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="src\main-sdl2.c">
+      <ExcludedFromBuild Condition="'$(SDLLibraryType)'!='SDL2'">true</ExcludedFromBuild>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="src\win\angband.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="lib\customize\font-gcu.prf" />
-    <None Include="lib\customize\font-sdl.prf" />
-    <None Include="lib\customize\font-sdl2.prf" />
-    <None Include="lib\customize\font-win.prf" />
-    <None Include="lib\customize\font-x11.prf" />
-    <None Include="lib\customize\font.prf" />
-    <None Include="lib\customize\keys-gcu.prf" />
-    <None Include="lib\customize\message.prf" />
-    <None Include="lib\customize\pref.prf" />
-    <None Include="lib\customize\sound.prf" />
-    <None Include="lib\customize\user.prf" />
-    <None Include="lib\fonts\10x14x.fon" />
-    <None Include="lib\fonts\10x14xb.fon" />
-    <None Include="lib\fonts\10x20x.fon" />
-    <None Include="lib\fonts\12x18x.fon" />
-    <None Include="lib\fonts\12x24x.fon" />
-    <None Include="lib\fonts\16x16x.fon" />
-    <None Include="lib\fonts\16x16xw.fon" />
-    <None Include="lib\fonts\16x24x.fon" />
-    <None Include="lib\fonts\5x8x.fon" />
-    <None Include="lib\fonts\6x10x.fon" />
-    <None Include="lib\fonts\6x12x.fon" />
-    <None Include="lib\fonts\6x13x.fon" />
-    <None Include="lib\fonts\6x13xb.fon" />
-    <None Include="lib\fonts\7x13x.fon" />
-    <None Include="lib\fonts\7x13xb.fon" />
-    <None Include="lib\fonts\8x12x.fon" />
-    <None Include="lib\fonts\8x12xb.fon" />
-    <None Include="lib\fonts\8x13x.fon" />
-    <None Include="lib\fonts\8x16x.fon" />
-    <None Include="lib\fonts\8x8x.fon" />
-    <None Include="lib\fonts\8x8xb.fon" />
-    <None Include="lib\fonts\9x15x.fon" />
-    <None Include="lib\fonts\9x15xb.fon" />
-    <None Include="lib\sounds\sound.cfg" />
-    <None Include="lib\tiles\adam-bolt\flvr-new.prf" />
-    <None Include="lib\tiles\adam-bolt\graf-new.prf" />
-    <None Include="lib\tiles\adam-bolt\xtra-new.prf" />
-    <None Include="lib\tiles\gervais\flvr-dvg.prf" />
-    <None Include="lib\tiles\gervais\graf-dvg.prf" />
-    <None Include="lib\tiles\gervais\xtra-dvg.prf" />
-    <None Include="lib\tiles\nomad\flvr-nmd.prf" />
-    <None Include="lib\tiles\nomad\graf-nmd.prf" />
-    <None Include="lib\tiles\nomad\xtra-nmd.prf" />
-    <None Include="lib\tiles\old\flvr-xxx.prf" />
-    <None Include="lib\tiles\old\graf-xxx.prf" />
-    <None Include="lib\tiles\old\xtra-xxx.prf" />
-    <None Include="lib\tiles\shockbolt\flvr-shb.prf" />
-    <None Include="lib\tiles\shockbolt\graf-shb-dark.prf" />
-    <None Include="lib\tiles\shockbolt\graf-shb-light.prf" />
-    <None Include="lib\tiles\shockbolt\xtra-shb.prf" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="lib\gamedata\activation.txt" />
@@ -590,230 +619,6 @@ xcopy $(MSBuildProjectDirectory)\lib\* $(OutDir)lib\ /DESY /exclude:$(MSBuildPro
     <Text Include="lib\gamedata\vault.txt" />
     <Text Include="lib\gamedata\visuals.txt" />
     <Text Include="lib\gamedata\world.txt" />
-    <Text Include="lib\help\commands.txt" />
-    <Text Include="lib\help\index.txt" />
-    <Text Include="lib\help\r_comm.txt" />
-    <Text Include="lib\help\r_index.txt" />
-    <Text Include="lib\help\symbols.txt" />
-    <Text Include="lib\screens\crown.txt" />
-    <Text Include="lib\screens\dead.txt" />
-    <Text Include="lib\screens\news.txt" />
-    <Text Include="lib\tiles\list.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Media Include="lib\sounds\amb_bell_metal1.mp3" />
-    <Media Include="lib\sounds\amb_bell_metal2.mp3" />
-    <Media Include="lib\sounds\amb_bell_tibet1.mp3" />
-    <Media Include="lib\sounds\amb_bell_tibet2.mp3" />
-    <Media Include="lib\sounds\amb_bell_tibet3.mp3" />
-    <Media Include="lib\sounds\amb_door_doom.mp3" />
-    <Media Include="lib\sounds\amb_door_iron.mp3" />
-    <Media Include="lib\sounds\amb_dungeon_echo.mp3" />
-    <Media Include="lib\sounds\amb_dungeon_echowet.mp3" />
-    <Media Include="lib\sounds\amb_gong_chinese.mp3" />
-    <Media Include="lib\sounds\amb_gong_low.mp3" />
-    <Media Include="lib\sounds\amb_gong_strike.mp3" />
-    <Media Include="lib\sounds\amb_gong_undertone.mp3" />
-    <Media Include="lib\sounds\amb_guitar_chord.mp3" />
-    <Media Include="lib\sounds\amb_pulse_low.mp3" />
-    <Media Include="lib\sounds\amb_thunder_rain.mp3" />
-    <Media Include="lib\sounds\amb_thunder_roll.mp3" />
-    <Media Include="lib\sounds\id_bad_aww.mp3" />
-    <Media Include="lib\sounds\id_bad_dang.mp3" />
-    <Media Include="lib\sounds\id_bad_hmm.mp3" />
-    <Media Include="lib\sounds\id_bad_hmph.mp3" />
-    <Media Include="lib\sounds\id_bad_ohh.mp3" />
-    <Media Include="lib\sounds\id_ego_whoa.mp3" />
-    <Media Include="lib\sounds\id_ego_woohoo.mp3" />
-    <Media Include="lib\sounds\id_ego_yeah.mp3" />
-    <Media Include="lib\sounds\id_ego_yeah2.mp3" />
-    <Media Include="lib\sounds\id_ego_yes.mp3" />
-    <Media Include="lib\sounds\id_good_hey.mp3" />
-    <Media Include="lib\sounds\id_good_hey2.mp3" />
-    <Media Include="lib\sounds\id_good_hmm.mp3" />
-    <Media Include="lib\sounds\id_good_huh.mp3" />
-    <Media Include="lib\sounds\id_good_ooh.mp3" />
-    <Media Include="lib\sounds\id_good_ooo.mp3" />
-    <Media Include="lib\sounds\id_good_wow.mp3" />
-    <Media Include="lib\sounds\mco_attack_breath.mp3" />
-    <Media Include="lib\sounds\mco_attack_spray.mp3" />
-    <Media Include="lib\sounds\mco_bite_chew.mp3" />
-    <Media Include="lib\sounds\mco_bite_chomp.mp3" />
-    <Media Include="lib\sounds\mco_bite_dainty.mp3" />
-    <Media Include="lib\sounds\mco_bite_gnash.mp3" />
-    <Media Include="lib\sounds\mco_bite_hard.mp3" />
-    <Media Include="lib\sounds\mco_bite_long.mp3" />
-    <Media Include="lib\sounds\mco_bite_munch.mp3" />
-    <Media Include="lib\sounds\mco_bite_regular.mp3" />
-    <Media Include="lib\sounds\mco_bite_short.mp3" />
-    <Media Include="lib\sounds\mco_bite_small.mp3" />
-    <Media Include="lib\sounds\mco_bite_soft.mp3" />
-    <Media Include="lib\sounds\mco_card_shuffle.mp3" />
-    <Media Include="lib\sounds\mco_castanet_trill.mp3" />
-    <Media Include="lib\sounds\mco_ceramic_trill.mp3" />
-    <Media Include="lib\sounds\mco_click_vibra.mp3" />
-    <Media Include="lib\sounds\mco_creature_choking.mp3" />
-    <Media Include="lib\sounds\mco_creature_groan.mp3" />
-    <Media Include="lib\sounds\mco_creature_yelp.mp3" />
-    <Media Include="lib\sounds\mco_cuica_rubbing.mp3" />
-    <Media Include="lib\sounds\mco_dino_low.mp3" />
-    <Media Include="lib\sounds\mco_dino_slur.mp3" />
-    <Media Include="lib\sounds\mco_dino_talk.mp3" />
-    <Media Include="lib\sounds\mco_dino_yawn.mp3" />
-    <Media Include="lib\sounds\mco_dub_wobble.mp3" />
-    <Media Include="lib\sounds\mco_frog_trill.mp3" />
-    <Media Include="lib\sounds\mco_hit_whip.mp3" />
-    <Media Include="lib\sounds\mco_howl_croak.mp3" />
-    <Media Include="lib\sounds\mco_howl_deep.mp3" />
-    <Media Include="lib\sounds\mco_howl_distressed.mp3" />
-    <Media Include="lib\sounds\mco_howl_high.mp3" />
-    <Media Include="lib\sounds\mco_howl_long.mp3" />
-    <Media Include="lib\sounds\mco_liquid_squirt.mp3" />
-    <Media Include="lib\sounds\mco_man_mumble.mp3" />
-    <Media Include="lib\sounds\mco_mouse_squeaks.mp3" />
-    <Media Include="lib\sounds\mco_rubber_thud.mp3" />
-    <Media Include="lib\sounds\mco_scurry_dry.mp3" />
-    <Media Include="lib\sounds\mco_shake_roll.mp3" />
-    <Media Include="lib\sounds\mco_snarl_short.mp3" />
-    <Media Include="lib\sounds\mco_spray_long.mp3" />
-    <Media Include="lib\sounds\mco_squish_hit.mp3" />
-    <Media Include="lib\sounds\mco_squish_snap.mp3" />
-    <Media Include="lib\sounds\mco_strange_music.mp3" />
-    <Media Include="lib\sounds\mco_strange_thwoink.mp3" />
-    <Media Include="lib\sounds\mco_thoing_backwards.mp3" />
-    <Media Include="lib\sounds\mco_thoing_deep.mp3" />
-    <Media Include="lib\sounds\mco_thud_crash.mp3" />
-    <Media Include="lib\sounds\mco_tube_hit.mp3" />
-    <Media Include="lib\sounds\plc_bell_warn.mp3" />
-    <Media Include="lib\sounds\plc_die_laugh.mp3" />
-    <Media Include="lib\sounds\plc_hit_anvil.mp3" />
-    <Media Include="lib\sounds\plc_hit_anvil2.mp3" />
-    <Media Include="lib\sounds\plc_hit_arrow.mp3" />
-    <Media Include="lib\sounds\plc_hit_body.mp3" />
-    <Media Include="lib\sounds\plc_hit_groan.mp3" />
-    <Media Include="lib\sounds\plc_hit_grunt.mp3" />
-    <Media Include="lib\sounds\plc_hit_grunt2.mp3" />
-    <Media Include="lib\sounds\plc_hit_hay.mp3" />
-    <Media Include="lib\sounds\plc_miss_arrow.mp3" />
-    <Media Include="lib\sounds\plc_miss_arrow2.mp3" />
-    <Media Include="lib\sounds\plc_miss_swish.mp3" />
-    <Media Include="lib\sounds\plm_aim_wand.mp3" />
-    <Media Include="lib\sounds\plm_bang_ceramic.mp3" />
-    <Media Include="lib\sounds\plm_bang_dumpster.mp3" />
-    <Media Include="lib\sounds\plm_bang_metal.mp3" />
-    <Media Include="lib\sounds\plm_book_pageturn.mp3" />
-    <Media Include="lib\sounds\plm_bottle_clinks.mp3" />
-    <Media Include="lib\sounds\plm_break_canister.mp3" />
-    <Media Include="lib\sounds\plm_break_glass.mp3" />
-    <Media Include="lib\sounds\plm_break_glass2.mp3" />
-    <Media Include="lib\sounds\plm_break_plates.mp3" />
-    <Media Include="lib\sounds\plm_break_shatter.mp3" />
-    <Media Include="lib\sounds\plm_break_smash.mp3" />
-    <Media Include="lib\sounds\plm_break_wood.mp3" />
-    <Media Include="lib\sounds\plm_cabinet_open.mp3" />
-    <Media Include="lib\sounds\plm_cabinet_shut.mp3" />
-    <Media Include="lib\sounds\plm_chain_light.mp3" />
-    <Media Include="lib\sounds\plm_chest_latch.mp3" />
-    <Media Include="lib\sounds\plm_chest_unlatch.mp3" />
-    <Media Include="lib\sounds\plm_chimes_jangle.mp3" />
-    <Media Include="lib\sounds\plm_click_dry.mp3" />
-    <Media Include="lib\sounds\plm_click_switch.mp3" />
-    <Media Include="lib\sounds\plm_click_switch2.mp3" />
-    <Media Include="lib\sounds\plm_click_switch3.mp3" />
-    <Media Include="lib\sounds\plm_click_wood.mp3" />
-    <Media Include="lib\sounds\plm_close_hatch.mp3" />
-    <Media Include="lib\sounds\plm_coins_dump.mp3" />
-    <Media Include="lib\sounds\plm_coins_light.mp3" />
-    <Media Include="lib\sounds\plm_coins_pour.mp3" />
-    <Media Include="lib\sounds\plm_coins_shake.mp3" />
-    <Media Include="lib\sounds\plm_cork_pop.mp3" />
-    <Media Include="lib\sounds\plm_cork_squeak.mp3" />
-    <Media Include="lib\sounds\plm_door_bolt.mp3" />
-    <Media Include="lib\sounds\plm_door_creak.mp3" />
-    <Media Include="lib\sounds\plm_door_creakshut.mp3" />
-    <Media Include="lib\sounds\plm_door_dungeon.mp3" />
-    <Media Include="lib\sounds\plm_door_echolock.mp3" />
-    <Media Include="lib\sounds\plm_door_entrance.mp3" />
-    <Media Include="lib\sounds\plm_door_knob.mp3" />
-    <Media Include="lib\sounds\plm_door_latch.mp3" />
-    <Media Include="lib\sounds\plm_door_open.mp3" />
-    <Media Include="lib\sounds\plm_door_opening.mp3" />
-    <Media Include="lib\sounds\plm_door_rusty.mp3" />
-    <Media Include="lib\sounds\plm_door_shut.mp3" />
-    <Media Include="lib\sounds\plm_door_slam.mp3" />
-    <Media Include="lib\sounds\plm_door_squeaky.mp3" />
-    <Media Include="lib\sounds\plm_door_wooden.mp3" />
-    <Media Include="lib\sounds\plm_drop_boot.mp3" />
-    <Media Include="lib\sounds\plm_eat_bite.mp3" />
-    <Media Include="lib\sounds\plm_floor_creak.mp3" />
-    <Media Include="lib\sounds\plm_floor_creak2.mp3" />
-    <Media Include="lib\sounds\plm_glass_break.mp3" />
-    <Media Include="lib\sounds\plm_glass_breaking.mp3" />
-    <Media Include="lib\sounds\plm_glass_smashing.mp3" />
-    <Media Include="lib\sounds\plm_jar_ding.mp3" />
-    <Media Include="lib\sounds\plm_levelup.mp3" />
-    <Media Include="lib\sounds\plm_lock_case.mp3" />
-    <Media Include="lib\sounds\plm_lock_distant.mp3" />
-    <Media Include="lib\sounds\plm_metal_clank.mp3" />
-    <Media Include="lib\sounds\plm_metal_sharpen.mp3" />
-    <Media Include="lib\sounds\plm_open_case.mp3" />
-    <Media Include="lib\sounds\plm_spell1.mp3" />
-    <Media Include="lib\sounds\plm_spell2.mp3" />
-    <Media Include="lib\sounds\plm_spell3.mp3" />
-    <Media Include="lib\sounds\plm_use_staff.mp3" />
-    <Media Include="lib\sounds\plm_wood_thud.mp3" />
-    <Media Include="lib\sounds\plm_zap_rod.mp3" />
-    <Media Include="lib\sounds\pls_bell_bowl.mp3" />
-    <Media Include="lib\sounds\pls_bell_chime_new.mp3" />
-    <Media Include="lib\sounds\pls_bell_glass.mp3" />
-    <Media Include="lib\sounds\pls_bell_hibell_soft.mp3" />
-    <Media Include="lib\sounds\pls_bell_mute.mp3" />
-    <Media Include="lib\sounds\pls_bell_sustain.mp3" />
-    <Media Include="lib\sounds\pls_breathe_in.mp3" />
-    <Media Include="lib\sounds\pls_man_argoh.mp3" />
-    <Media Include="lib\sounds\pls_man_gulp_new.mp3" />
-    <Media Include="lib\sounds\pls_man_oooh.mp3" />
-    <Media Include="lib\sounds\pls_man_scream2.mp3" />
-    <Media Include="lib\sounds\pls_man_sigh.mp3" />
-    <Media Include="lib\sounds\pls_man_sniff.mp3" />
-    <Media Include="lib\sounds\pls_man_sob.mp3" />
-    <Media Include="lib\sounds\pls_man_spit.mp3" />
-    <Media Include="lib\sounds\pls_man_ugh.mp3" />
-    <Media Include="lib\sounds\pls_man_yell.mp3" />
-    <Media Include="lib\sounds\pls_tone_blurk.mp3" />
-    <Media Include="lib\sounds\pls_tone_clave6.mp3" />
-    <Media Include="lib\sounds\pls_tone_clavelo8.mp3" />
-    <Media Include="lib\sounds\pls_tone_conk.mp3" />
-    <Media Include="lib\sounds\pls_tone_elec.mp3" />
-    <Media Include="lib\sounds\pls_tone_goblet.mp3" />
-    <Media Include="lib\sounds\pls_tone_guiro.mp3" />
-    <Media Include="lib\sounds\pls_tone_headstock.mp3" />
-    <Media Include="lib\sounds\pls_tone_scrape.mp3" />
-    <Media Include="lib\sounds\pls_tone_stick.mp3" />
-    <Media Include="lib\sounds\sto_bell_desk.mp3" />
-    <Media Include="lib\sounds\sto_bell_ding.mp3" />
-    <Media Include="lib\sounds\sto_bell_dingaling.mp3" />
-    <Media Include="lib\sounds\sto_bell_jingles.mp3" />
-    <Media Include="lib\sounds\sto_bell_register1.mp3" />
-    <Media Include="lib\sounds\sto_bell_register2.mp3" />
-    <Media Include="lib\sounds\sto_bell_ringing.mp3" />
-    <Media Include="lib\sounds\sto_bell_shop.mp3" />
-    <Media Include="lib\sounds\sto_coins_countertop.mp3" />
-    <Media Include="lib\sounds\sto_man_haha.mp3" />
-    <Media Include="lib\sounds\sto_man_hey.mp3" />
-    <Media Include="lib\sounds\sto_man_whoohaha.mp3" />
-    <Media Include="lib\sounds\sum_angel_song.mp3" />
-    <Media Include="lib\sounds\sum_bell_crystal.mp3" />
-    <Media Include="lib\sounds\sum_bell_hand.mp3" />
-    <Media Include="lib\sounds\sum_bell_tone.mp3" />
-    <Media Include="lib\sounds\sum_chime_jangle.mp3" />
-    <Media Include="lib\sounds\sum_ghost_moan.mp3" />
-    <Media Include="lib\sounds\sum_ghost_oooo.mp3" />
-    <Media Include="lib\sounds\sum_ghost_wail.mp3" />
-    <Media Include="lib\sounds\sum_gong_temple.mp3" />
-    <Media Include="lib\sounds\sum_laugh_evil2.mp3" />
-    <Media Include="lib\sounds\sum_lion_growl.mp3" />
-    <Media Include="lib\sounds\sum_piano_scrape.mp3" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
