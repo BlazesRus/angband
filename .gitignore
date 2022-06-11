@@ -53,3 +53,7 @@ angband.nds
 angband.smdh
 
 src/_SDL2VC/ObjectFiles/
+
+ObjectFiles/
+
+Angband/
