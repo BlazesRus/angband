@@ -48,7 +48,7 @@
         <SDLTTFLibrary>$([System.IO.Path]::GetFullPath('$(SDLTTFDir)$(Platform)\SDL2_ttf.lib'))</SDLTTFLibrary>
         <FreeTypeLibrary>$([System.IO.Path]::GetFullPath('$(FreeTypeDir)$(Platform)\Freetype.lib'))</FreeTypeLibrary>
         <SDLNetLibrary>$([System.IO.Path]::GetFullPath('$(SDLNetDir)$(Platform)\SDL_net.lib'))</SDLNetLibrary>
-        <SDLLibraryType Condition="'$(SDLLibraryType)'!='SDL2'">SDL2</SDLLibraryType>
+        <SDLLibraryType>SDL2</SDLLibraryType>
       </PropertyGroup>
     </When>
     <When Condition="'$(SDLLibraryType)'=='SDL2Output'">
@@ -64,7 +64,7 @@
         <SDLTTFLibrary>$([System.IO.Path]::GetFullPath('$(SDLOutputDir)$(Platform)\SDL2_ttf.lib'))</SDLTTFLibrary>
         <FreeTypeLibrary>$([System.IO.Path]::GetFullPath('$(SDLOutputDir)$(Platform)\freetype.lib'))</FreeTypeLibrary>
         <SDLNetLibrary>$([System.IO.Path]::GetFullPath('$(SDLOutputDir)$(Platform)\SDL_net.lib'))</SDLNetLibrary>
-        <SDLLibraryType Condition="'$(SDLLibraryType)'!='SDL2'">SDL2</SDLLibraryType>
+        <SDLLibraryType>SDL2</SDLLibraryType>
       </PropertyGroup>
     </When>
     <When Condition="'$(SDLLibraryType)'=='SDL'">
