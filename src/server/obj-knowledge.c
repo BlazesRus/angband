@@ -986,7 +986,7 @@ void player_know_object(struct player *p, struct object *obj)
             /* Set jewelry type if known */
             if (object_non_curse_runes_known(copy, aware))
             {
-                seen = p->kind_everseen[obj->kind->kidx];
+                seen = (obj->artifact? true: p->kind_everseen[obj->kind->kidx]);
                 object_flavor_aware(p, obj);
             }
 
@@ -2649,7 +2649,7 @@ void object_know_everything(struct player *p, struct object *obj)
         int slot = equipped_item_slot(p->body, obj);
 
         /* Format and capitalise */
-        char *msg = format("%s: %s (%c).", equip_describe(p, slot), o_name, I2A(slot));
+        char *msg = format("%s: %s (%c).", equip_describe(p, slot), o_name, gear_to_label(p, obj));
 
         my_strcap(msg);
         msgt(p, msg_type, msg);

@@ -800,7 +800,7 @@ void inven_carry(struct player *p, struct object *obj, bool absorb, bool message
 
         /*
          * Show an aggregate total if the description doesn't have
-         * a charge/charging notice that's specific to the stack.
+         * a charge/recharging notice that's specific to the stack.
          */
         if (tval_can_have_charges(local_obj) || tval_is_rod(local_obj) || local_obj->timeout > 0)
         {
@@ -988,11 +988,11 @@ void inven_wield(struct player *p, struct object *obj, int slot, char *message, 
     object_desc(p, o_name, sizeof(o_name), wielded, ODESC_PREFIX | ODESC_FULL);
 
     /* Message */
-    if (message) strnfmt(message, len, fmt, o_name, I2A(slot));
+    if (message) strnfmt(message, len, fmt, o_name, gear_to_label(p, wielded));
     else
     {
         // message
-        msg(p, fmt, o_name, I2A(slot));
+        msg(p, fmt, o_name, gear_to_label(p, wielded));
         // sound
         if (tval_is_weapon(obj))
         {

@@ -437,7 +437,7 @@ sound:quaff:plm_bottle_clinks plm_cork_pop plm_cork_squeak pls_man_gulp_new tome
 # You zap a rod.
 sound:zap_rod:plm_zap_rod
 
-# You take a step.  (unimplemented)
+# You take a step (unimplemented)
 #sound:walk:
 
 # You teleport someone else away.
@@ -480,7 +480,7 @@ sound:lockpick_fail:plm_click_dry plm_click_switch plm_click_wood plm_door_echol
 sound:lockpick:plm_break_wood plm_cabinet_open plm_chest_unlatch plm_lock_case plm_lock_distant plm_open_case tomenet/player/commands/open_pick/picklock
 
 # open chest (which we've just lockpicked)
-sound:open_chest:player/commands/open/chest/open1 player/commands/open/chest/open2
+sound:open_chest:tomenet/player/commands/open/chest/open1 tomenet/player/commands/open/chest/open2
 
 # You disarm a trap.
 sound:disarm:plm_bang_ceramic plm_chest_latch plm_click_switch3 tomenet/player/commands/disarm/disarm
@@ -498,7 +498,7 @@ sound:act_artifact:plm_aim_wand
 sound:use_staff:plm_use_staff
 
 # An object is destroyed.
-sound:destroy:plm_bang_metal plm_break_canister plm_break_plates   plm_glass_breaking plm_glass_smashing
+sound:destroy:plm_bang_metal plm_break_canister plm_break_plates plm_glass_breaking plm_glass_smashing
 
 # shatter potion (by enemy)
 sound:destroy_potion:plm_break_glass plm_break_glass2 plm_break_shatter plm_break_smash plm_glass_break tomenet/misc/shatter_potion/glass1 tomenet/misc/shatter_potion/glass2 tomenet/misc/shatter_potion/glass3

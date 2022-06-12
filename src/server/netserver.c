@@ -559,7 +559,7 @@ static int Check_names(char *nick_name, char *real_name, char *host_name)
 
     /* The "server", "account" and "players" names are reserved */
     if (!my_stricmp(nick_name, "server") || !my_stricmp(nick_name, "account") ||
-        !my_stricmp(nick_name, "players") || !my_stricmp(nick_name, "ladder"))
+        !my_stricmp(nick_name, "players"))
     {
         return E_INVAL;
     }
@@ -1756,7 +1756,7 @@ int Send_kind_struct_info(int ind)
 {
     connection_t *connp = get_connection(ind);
     uint32_t i;
-    int j;
+    unsigned j;
 
     if (connp->state != CONN_SETUP)
     {
@@ -3403,6 +3403,10 @@ int Send_weather(struct player *p, int weather_type, int weather_wind, int weath
 {
     connection_t *connp = get_connp(p, "weather");
     if (connp == NULL) return 0;
+
+    p->weather_type = weather_type;
+    p->weather_wind = weather_wind;
+    p->weather_intensity = weather_intensity;
 
     return Packet_printf(&connp->c, "%b%hd%hd%hd", (unsigned)PKT_WEATHER, weather_type, weather_wind, weather_intensity);
 }
@@ -7278,6 +7282,7 @@ static int Receive_store_leave(int ind)
                     dis = dis * 2;
                 }
                 monster_swap(c, &p->grid, &grid);
+                player_handle_post_move(p, c, true, true, 0, player_is_trapsafe(p));
                 handle_stuff(p);
             }
 
@@ -7291,6 +7296,9 @@ static int Receive_store_leave(int ind)
 
             /* Restore music volume */
             sound(p, MSG_SILENT101);
+
+            // Check weather sound
+            if (p->weather_type == 1) sound(p, MSG_WILD_RAIN);
 
             /* Reapply illumination */
             cave_illuminate(p, c, is_daytime());

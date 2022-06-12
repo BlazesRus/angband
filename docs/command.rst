@@ -79,7 +79,7 @@ Drop gold (``$``)
 
 ..
 
-Ignore an item (``k``) or Ignore an item ('^D')
+Ignore an item (``k``) or Ignore an item ('^d')
   This ignores (or destroys) an item in your inventory or on the dungeon floor.
   When ignored, the game will sometimes prompt you whether to ignore only this
   item or all others like it. If the second option is chosen, all similar
@@ -184,7 +184,7 @@ Get objects (``g``)
 
 ..
 
-Do autopickup ('^A')
+Do autopickup ('^a')
   Pick up objects you would normally pick up automatically.
 
 ..
@@ -218,7 +218,7 @@ Alter Commands
 
 ..
 
-Tunnel (``T``) or Tunnel ('^T')
+Tunnel (``T``) or Tunnel ('^t')
   Tunnelling or mining is a very useful art. There are many kinds of rock,
   with varying hardness, including permanent rock (permanent), granite
   (very hard), quartz veins (hard), magma veins (soft), and rubble (very
@@ -632,7 +632,7 @@ List visible items (``]``)
 
 ..
 
-Full wilderness map ('^W')
+Full wilderness map ('^w')
   This command will show a metamap of the world, relative to your current
   position on the world map. This is particularly useful in locating where
   the Town is relative to your current position, or for identifying unexplored
@@ -644,19 +644,19 @@ Message Commands
 
 ..
 
-Repeat level feeling ('^F')
+Repeat level feeling ('^f')
   Repeats the feeling about the monsters in the dungeon level that you got
   when you first entered the level. If you have explored enough of the
   level, you will also get a feeling about how good the treasures are.
 
 ..
 
-View previous message ('^O')
+View previous message ('^o')
   This command shows you the most recent message.
 
 ..
 
-View previous messages ('^P')
+View previous messages ('^p')
   This command shows you all the recent messages. You can scroll through
   them, or exit with ESCAPE.
 
@@ -667,14 +667,14 @@ Enter chat mode (``:``)
 
 ..
 
-Use chat command ('^Z')
+Use chat command ('^z')
   This command allows to interact with chat channels. You can open, close, or
   navigate through different chat channels to customize the pool of connected
   players you wish to interact with.
 
 ..
 
-Describe object ('^D') or Describe object ('BACKSPACE')
+Describe object ('^d') or Describe object ('BACKSPACE')
   This command allows you to display a description of any object in your
   inventory in the chat window.
 
@@ -706,17 +706,76 @@ Character Description (``C``)
 
 Check knowledge (``~``)
   This command allows you to ask about the knowledge possessed by your
-  character. Currently, this includes being able to list all known
-  "artifacts", "uniques", and "objects". Normally, once an artifact is
-  "generated", and "identified", it becomes "known" to the player.
-  The "uniques" are special "unique" monsters which can only be killed once
-  per game. Certain "objects" come in "flavors", and you must determine
-  the effect of each "flavor" once for each such type of object, and
-  this command will allow you to display all "known" flavors. This command
-  will also list all ego items discovered, all known monsters (and their powers
-  and abilities), all terrain features, the top players (highscore list), all
-  items worn by party members, the character history (in-game achievements),
-  and all houses owned by the player.
+  character. Information that you can look up is:
+
+  objects
+    Will display which objects your character is familiar with. For each
+    type of object, allows you to change whether or not it is ignored,
+    the representation of that type on the screen, or the inscription
+    automatically applied to all objects of that type. Some types of
+    objects your character will be familiar with from the start of the game.
+    Others come in "flavors", and your character must determine the effect
+    of each "flavor" once for each such type of object. For a type of object
+    with a known "flavor", you be also be able to display a summary of
+    what the object can do.
+
+  runes
+    Will display the "runes", properties of enchanted objects, your
+    character is familiar with. Allows you to change the inscription that
+    is automatically appended to an object that has the rune. Once your
+    character identifies a "rune" on one object, he or she will recognize
+    that property on other objects.
+
+  artifacts
+    Will display all artifacts that your character has encountered. Normally,
+    once an artifact is "generated" and "lost", it can never again be found,
+    and will become "known" to the player. With "preserve" mode, an artifact
+    can never be "lost" until it is "known" to the player. In either case,
+    any "known" artifacts not in the possession of the player will never
+    again be "generated".
+
+  ego items
+    Will display the "egos" your character has encountered. Each "ego" is
+    a collection of enchantments that can appear on an object. "Egos" are
+    often restricted to only a few specific types of objects.
+
+  monsters
+    Displays the kinds of monsters your current or previous characters have
+    encountered. For each kind of monster, allows you to change its
+    representation on the screen. Some monsters are "uniques" which can be
+    only be killed once per game. For a "unique" that your current or
+    previous characters have encountered, this will display whether that
+    "unique" is still alive in this game.
+
+  features
+    Displays the types of map grids that can appear in the game. For each
+    type, allows you to change its representation on the screen and how
+    that representation changes depending on the amount of light present.
+
+  traps
+    Displays the types of traps that can appear in the game. For each type,
+    allows you to change its representation on the screen and how that
+    representation changes depending on the amount of light present.
+
+  hall of fame
+    Displays a list of current and past characters, sorted by how far they
+    progressed.
+
+  character history
+    Displays a summary of what your current character has done.
+
+  known uniques
+    Displays a summary of who killed which uniques in the game.
+
+  party gear
+    Displays the list of items equipped by party members.
+
+  owned houses
+    Displays the list of houses owned and their location.
+
+  visited dungeons and towns
+    Displays the list of dungeons and towns known to the player and their
+    location.
 
 ..
 
@@ -727,7 +786,7 @@ Access party menu (``P``) or Access party menu (``!``)
 
 ..
 
-Display connected players (``@``) or Display connected players ('^V')
+Display connected players (``@``) or Display connected players ('^v')
   This command allows you to see who's currently connected to the same server.
 
 ..
@@ -746,7 +805,7 @@ Saving and Exiting Commands
 
 ..
 
-Save and Quit ('^X')
+Save and Quit ('^x')
   To save your game so that you can return to it later, use this command.
   Save files will also be generated (hopefully) if the game crashes due to
   a system error. After you die, you can use your savefile to play again
@@ -824,13 +883,13 @@ Extra Commands
 
 ..
 
-Toggle Choice Window ('^E')
+Toggle Choice Window ('^e')
   Toggles the display in any sub-windows (if available) which are
   displaying your inventory or equipment.
 
 ..
 
-Redraw Screen ('^R')
+Redraw Screen ('^r')
   This command adapts to various changes in global options, and redraws all
   of the windows. It is normally only necessary in abnormal situations,
   such as after changing the visual attr/char mappings, or enabling
@@ -846,21 +905,21 @@ Save screen dump (|``)``|)
 
 ..
 
-Get a quest ('^Q')
+Get a quest ('^q')
   This command allows players to do some random quests. Each quest will be
   in the form of "Find and kill n monsters of the (foo) race." Each quest has
   a time limit, and will give a nice reward if completed.
 
 ..
 
-Socials ('^S')
+Socials ('^s')
   This command allows players to display some predefined messages in the
   message window. Messages will be broadcast to all players in the immediate
   vicinity of the sender.
 
 ..
         
-Center map ('^L') or Center map (``@``)
+Center map ('^l') or Center map (``@``)
   This command allows to center the map on the player.
 
 ..

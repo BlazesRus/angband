@@ -1129,6 +1129,17 @@ bool square_ispassable(struct chunk *c, struct loc *grid)
 
 
 /*
+ * True if the square is seen as passable by the player.
+ */
+bool square_ispassable_p(struct player *p, struct loc *grid)
+{
+    my_assert(player_square_in_bounds(p, grid));
+
+    return feat_is_passable(square_p(p, grid)->feat);
+}
+
+
+/*
  * True if any projectable can pass through the square.
  */
 bool square_isprojectable(struct chunk *c, struct loc *grid)
@@ -2363,6 +2374,13 @@ int square_apparent_feat(struct player *p, struct chunk *c, struct loc *grid)
 }
 
 
+/*
+ * Return the name for the terrain in a grid. Accounts for the fact that
+ * some terrain mimics another terrain.
+ *
+ * c Is the chunk to use. Usually it is the player's version of the chunk.
+ * grid Is the grid to use.
+ */
 const char *square_apparent_name(struct player *p, struct chunk *c, struct loc *grid)
 {
     struct feature *f = &f_info[square_apparent_feat(p, c, grid)];
@@ -2372,6 +2390,15 @@ const char *square_apparent_name(struct player *p, struct chunk *c, struct loc *
 }
 
 
+/*
+ * Return the prefix, appropriate for describing looking at the grid in
+ * question, for the name returned by square_name().
+ *
+ * c Is the chunk to use. Usually it is the player's version of the chunk.
+ * grid Is the grid to use.
+ *
+ * The prefix is usually an indefinite article. It may be an empty string.
+ */
 const char *square_apparent_look_prefix(struct player *p, struct chunk *c, struct loc *grid)
 {
     struct feature *f = &f_info[square_apparent_feat(p, c, grid)];
@@ -2381,6 +2408,14 @@ const char *square_apparent_look_prefix(struct player *p, struct chunk *c, struc
 }
 
 
+/*
+ * Return a preposition, appropriate for describing the grid the viewer is on,
+ * for the name returned by square_name(). May return an empty string when
+ * the name doesn't require a preposition.
+ *
+ * c Is the chunk to use. Usually it is the player's version of the chunk.
+ * grid Is the grid to use.
+ */
 const char *square_apparent_look_in_preposition(struct player *p, struct chunk *c, struct loc *grid)
 {
     struct feature *f = &f_info[square_apparent_feat(p, c, grid)];
@@ -2818,9 +2853,6 @@ void square_build_new_permhouse(struct chunk *c, struct loc *grid, char wall_typ
 
     else if (wall_type == 'h') // DC E1... but we use only E1
     {
-
-        int E1_counter = 0; // light reroll
-
         if (rng < 32) rng = rand_range(32, 63);  // we don't want pictures there
         if ((rng >= 52) && (rng <= 55)) rng = rand_range(32, 63); // lights reroll
     }

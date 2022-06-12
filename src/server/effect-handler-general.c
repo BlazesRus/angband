@@ -2502,15 +2502,12 @@ bool effect_handler_DETECT_DOORS(effect_handler_context_t *context)
     struct loc begin, end;
     struct loc_iterator iter;
 
-    // Detect works starting with dlvl 20...
-    // ..and player must be good in searching.
-    // On high dlvl detect doors works always.
+    // To detect magically you must be good in searching.
     // (note: mages of good searching races shouldn't have problem)
-    if (context->cave->wpos.depth < 20 ||
-        (context->origin->player->state.skills[SKILL_SEARCH] < context->cave->wpos.depth && 
-        context->cave->wpos.depth < 60))
+    if (context->origin->player->state.skills[SKILL_SEARCH] <
+      (((context->cave->wpos.depth + context->origin->player->lev) / 2) + (10 - context->origin->player->lev / 5)))
     {
-        msg(context->origin->player, "You are not so good in searching yet to detect doors with magic.");
+        msg(context->origin->player, "You are not so good in \"Searching\" yet to detect doors with magic.");
         return false;
     }            
 
@@ -2540,6 +2537,17 @@ bool effect_handler_DETECT_DOORS(effect_handler_context_t *context)
             square_light_spot(context->cave, &iter.cur);
 
             /* Obvious */
+            doors = true;
+
+            redraw = true;
+        }
+
+        /* Detect other types of doors. */
+        else if (square_isdoor(context->cave, &iter.cur) &&
+            square_isnotknown(context->origin->player, context->cave, &iter.cur))
+        {
+            square_memorize(context->origin->player, context->cave, &iter.cur);
+            square_light_spot(context->cave, &iter.cur);
             doors = true;
 
             redraw = true;
@@ -3002,13 +3010,12 @@ bool effect_handler_DETECT_TRAPS(effect_handler_context_t *context)
     struct loc begin, end;
     struct loc_iterator iter;
 
-    // detect traps works starting with 20 lvl and depends on searching skills.
-    // At dlvl 60+ it works for all players alright.
-    if (context->cave->wpos.depth < 20 || 
-       (context->origin->player->state.skills[SKILL_SEARCH] < context->cave->wpos.depth && 
-        context->cave->wpos.depth < 60))
+    // To detect magically you must be good in searching.
+    // (note: mages of good searching races shouldn't have problem)
+    if (context->origin->player->state.skills[SKILL_SEARCH] <
+      (((context->cave->wpos.depth + context->origin->player->lev) / 2) + (10 - context->origin->player->lev / 5)))
     {
-        msg(context->origin->player, "You are not so good in searching to detect traps with magic.");
+        msg(context->origin->player, "You are not so good in \"Searching\" to detect traps with magic.");
         return false;
     }
 
@@ -3276,8 +3283,8 @@ bool effect_handler_DISENCHANT(effect_handler_context_t *context)
     if (obj->artifact && magik(60))
     {
         /* Message */
-        msg(context->origin->player, "Your %s (%c) resist%s disenchantment!", o_name, I2A(i),
-        SINGULAR(obj->number));
+        msg(context->origin->player, "Your %s (%c) resist%s disenchantment!", o_name,
+            gear_to_label(context->origin->player, obj), SINGULAR(obj->number));
 
         return true;
     }
@@ -3302,8 +3309,8 @@ bool effect_handler_DISENCHANT(effect_handler_context_t *context)
     }
 
     /* Message */
-    msg(context->origin->player, "Your %s (%c) %s disenchanted!", o_name, I2A(i),
-        ((obj->number != 1)? "were": "was"));
+    msg(context->origin->player, "Your %s (%c) %s disenchanted!", o_name,
+        gear_to_label(context->origin->player, obj), ((obj->number != 1)? "were": "was"));
 
     /* Recalculate bonuses */
     context->origin->player->upkeep->update |= (PU_BONUS);
@@ -4374,10 +4381,9 @@ bool effect_handler_READ_MINDS(effect_handler_context_t *context)
     {
         msg(context->origin->player, "Images form in your mind!");
         context->ident = true;
-        return true;
     }
 
-    return false;
+    return true;
 }
 
 
@@ -5408,6 +5414,11 @@ bool effect_handler_TELEPORT(effect_handler_context_t *context)
 
     /* Move the target */
     monster_swap(context->cave, &start, &iter.cur);
+    if (is_player)
+    {
+        player_handle_post_move(context->origin->player, context->cave, true, true, 0,
+            player_is_trapsafe(context->origin->player));
+    }
 
     /* Clear any projection marker to prevent double processing */
     sqinfo_off(square(context->cave, &iter.cur)->info, SQUARE_PROJECT);
@@ -5810,6 +5821,11 @@ bool effect_handler_TELEPORT_TO(effect_handler_context_t *context)
 
     /* Move player or monster */
     monster_swap(context->cave, &start, &land);
+    if (is_player)
+    {
+        player_handle_post_move(context->origin->player, context->cave, true, true, 0,
+            player_is_trapsafe(context->origin->player));
+    }
 
     /* Cancel target if necessary */
     if (is_player) target_set_monster(context->origin->player, NULL);

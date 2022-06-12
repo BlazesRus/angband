@@ -35,8 +35,11 @@ static bool get_pref_path(const char *what, int row, char *buf, size_t max)
     screen_save();
 
     /* Prompt */
+    if (row > 0) prt("", row - 1, 0);
     prt(format("%s to a pref file", what), row, 0);
+    prt("", row + 1, 0);
     prt("File: ", row + 2, 0);
+    prt("", row + 3, 0);
 
     /* Default filename */
     strnfmt(ftmp, sizeof(ftmp), "%s.prf", strip_suffix(nick));
@@ -211,6 +214,7 @@ static const menu_iter option_toggle_iter =
  */
 static void option_toggle_menu(const char *name, int page)
 {
+    static const char selections[] = "abcdefgimopquvwzABCDEFGHIJKLMOPQUVWZ";
     int i;
     struct menu *m = menu_new(MN_SKIN_SCROLL, &option_toggle_iter);
     ui_event ke;
@@ -219,7 +223,7 @@ static void option_toggle_menu(const char *name, int page)
     /* For all menus */
     m->prompt = "Set option (y/n/t), select with movement keys or index";
     m->cmd_keys = "YyNnTt";
-    m->selections = "abcdefghijklmopqrsuvwxz";
+    m->selections = selections;
     m->flags = MN_DBL_TAP;
 
     /* We add 10 onto the page amount to indicate we're at birth */
@@ -233,7 +237,6 @@ static void option_toggle_menu(const char *name, int page)
     {
         m->prompt = "Set option (y/n/t), 's' to save, 'r' to restore, 'x' to reset";
         m->cmd_keys = "YyNnTtSsRrXx";
-        m->selections = "abcdefghijklmopquvwzABC";
         if (page == OP_BIRTH + 10) page -= 10;
     }
 
@@ -1201,7 +1204,7 @@ static bool askfor_aux_numbers(char *buf, size_t buflen, size_t *curs,
 /*
  * Set base delay factor
  */
-static void do_cmd_delay(const char *name, int row)
+static void do_cmd_delay(const char *name, int unused)
 {
     int res;
     char tmp[4] = "";
@@ -1212,10 +1215,11 @@ static void do_cmd_delay(const char *name, int row)
     screen_save();
 
     /* Prompt */
+    prt("", 19, 0);
     prt("Command: Base Delay Factor", 20, 0);
-
-    prt(format("Current base delay factor: %d msec", player->opts.delay_factor), 22, 0);
     prt("New base delay factor (0-255): ", 21, 0);
+    prt(format("Current base delay factor: %d msec", player->opts.delay_factor), 22, 0);
+    prt("", 23, 0);
 
     /* Ask for a numeric value */
     res = askfor_ex(tmp, sizeof(tmp), askfor_aux_numbers, false);
@@ -1235,7 +1239,7 @@ static void do_cmd_delay(const char *name, int row)
 /*
  * Set hitpoint warning level
  */
-static void do_cmd_hp_warn(const char *name, int row)
+static void do_cmd_hp_warn(const char *name, int unused)
 {
     ui_event ea = EVENT_ABORT;
     bool done = false;
@@ -1249,6 +1253,7 @@ static void do_cmd_hp_warn(const char *name, int row)
     screen_save();
 
     /* Prompt */
+    prt("", 19, 0);
     prt("Command: Hitpoint Warning", 20, 0);
 
     /* Get a new value */
@@ -1256,9 +1261,10 @@ static void do_cmd_hp_warn(const char *name, int row)
     {
         struct keypress cx;
 
+        prt("New hitpoint warning (0-9): ", 21, 0);
         prt(format("Current hitpoint warning: %d (%d%%)",
             player->opts.hitpoint_warn, player->opts.hitpoint_warn * 10), 22, 0);
-        prt("New hitpoint warning (0-9): ", 21, 0);
+        prt("", 23, 0);
 
         cx = inkey();
         done = true;
@@ -1301,7 +1307,7 @@ static void do_cmd_hp_warn(const char *name, int row)
 /*
  * Set "lazy-movement" delay
  */
-static void do_cmd_lazymove_delay(const char *name, int row)
+static void do_cmd_lazymove_delay(const char *name, int unused)
 {
     int res;
     char tmp[2] = "";
@@ -1312,11 +1318,12 @@ static void do_cmd_lazymove_delay(const char *name, int row)
     screen_save();
 
     /* Prompt */
+    prt("", 19, 0);
     prt("Command: Movement Delay Factor", 20, 0);
-
+    prt("New movement delay factor (0-9): ", 21, 0);
     prt(format("Current movement delay factor: %d (%d msec)",
         player->opts.lazymove_delay, player->opts.lazymove_delay * 100), 22, 0);
-    prt("New movement delay factor (0-9): ", 21, 0);
+    prt("", 23, 0);
 
     /* Ask the user for a string */
     res = askfor_ex(tmp, sizeof(tmp), askfor_aux_numbers, false);
@@ -1351,10 +1358,11 @@ static void do_cmd_pref_file_hack(long row)
     screen_save();
 
     /* Prompt */
+    if (row > 0) prt("", row - 1, 0);
     prt("Command: Load a user pref file", row, 0);
-
-    /* Prompt */
+    prt("", row + 1, 0);
     prt("File: ", row + 2, 0);
+    prt("", row + 3, 0);
 
     /* Default filename */
     strnfmt(ftmp, sizeof(ftmp), "%s.prf", strip_suffix(nick));
@@ -2189,7 +2197,7 @@ static char tag_options_item(struct menu *menu, int oid)
     size_t line = (size_t)oid;
 
     if (line < N_ELEMENTS(sval_dependent))
-        return I2A(oid);
+        return all_letters_nohjkl[oid];
 
     /* Separator - blank line. */
     if (line == N_ELEMENTS(sval_dependent))
@@ -2314,7 +2322,7 @@ static menu_action option_actions[] =
     {0, 'a', "User interface options", option_toggle_menu},
     {0, 'b', "MAngband options", option_toggle_menu},
     {0, 'c', "Birth (difficulty) options", option_toggle_menu},
-    {0, 'e', "Advanced options", option_toggle_menu},
+    {0, 'x', "Advanced options", option_toggle_menu},
     {0, 'w', "Subwindow setup", do_cmd_options_win},
     {0, 'i', "Item ignoring setup", do_cmd_options_item},
     {0, 0, NULL, NULL},
@@ -2322,11 +2330,11 @@ static menu_action option_actions[] =
     {0, 'h', "Set hitpoint warning", do_cmd_hp_warn},
     {0, 'm', "Set movement delay", do_cmd_lazymove_delay},
     {0, 0, NULL, NULL},
-    {0, 'l', "Load a user pref file", options_load_pref_file},
+    {0, 'p', "Load a user pref file", options_load_pref_file},
     {0, 's', "Save options to pref file", do_dump_options},
     {0, 't', "Save autoinscriptions to pref file", do_dump_autoinsc},
     {0, 0, NULL, NULL},
-    {0, 'k', "Edit keymaps (advanced)", do_cmd_keymaps},
+    {0, 'e', "Edit keymaps (advanced)", do_cmd_keymaps},
     {0, 'v', "Edit colours (advanced)", do_cmd_colors}
 };
 

@@ -102,6 +102,9 @@ void dusk_or_dawn(struct player *p, struct chunk *c, bool dawn)
 
     /* Illuminate */
     cave_illuminate(p, c, dawn);
+
+    // also we will check for old houses
+    wipe_old_houses(&p->wpos);
 }
 
 
@@ -110,7 +113,9 @@ void dusk_or_dawn(struct player *p, struct chunk *c, bool dawn)
  */
 int turn_energy(int speed)
 {
-    return extract_energy[MIN(speed, N_ELEMENTS(extract_energy) - 1)] * z_info->move_energy / 100;
+    int n_energy = N_ELEMENTS(extract_energy);
+
+    return extract_energy[MIN(speed, n_energy - 1)] * z_info->move_energy / 100;
 }
 
 
@@ -122,7 +127,9 @@ int turn_energy(int speed)
  */
 int frame_energy(int speed)
 {
-    return extract_energy[MIN(speed, N_ELEMENTS(extract_energy) - 1)] * 100;
+    int n_energy = N_ELEMENTS(extract_energy);
+
+    return extract_energy[MIN(speed, n_energy - 1)] * 100;
 }
 
 
@@ -267,6 +274,7 @@ static void make_weather(struct player *p)
         {
             // thunder
             if (one_in_(2)) sound(p, MSG_AMBIENT_NITE);
+            // Rain
             Send_weather(p, 1, randint1(4), randint1(3));
             sound(p, MSG_WILD_RAIN);
         }
@@ -274,8 +282,24 @@ static void make_weather(struct player *p)
         {
             if (one_in_(5))
             {
-                // halt playback on all channels
-                sound(p, MSG_SILENT);
+                // empty sound to break sound loop .ogg.0
+                sound(p, MSG_SILENT0);
+                // Stop weather
+                Send_weather(p, 256, 0, 0);
+            }
+        }
+    }
+    else if (streq(p->locname, "Helcaraxe"))
+    {
+        if (one_in_(5))
+        {
+            // Snow
+            Send_weather(p, 2, randint1(4), randint1(3));
+        }
+        else
+        {
+            if (one_in_(5))
+            {
                 // Stop weather
                 Send_weather(p, 256, 0, 0);
             }
@@ -285,14 +309,16 @@ static void make_weather(struct player *p)
     {
         if (one_in_(5))
         {
-            if (p->wpos.depth == 23) Send_weather(p, 3, randint1(4), randint1(3));
-            else if (p->wpos.depth == 24) Send_weather(p, 3, randint1(4), randint1(3));
-            else if (p->wpos.depth == 25) Send_weather(p, 3, randint1(4), randint1(3));
-            else if (p->wpos.depth == 26) Send_weather(p, 3, randint1(4), randint1(3));
-            else if (p->wpos.depth == 27) Send_weather(p, 3, randint1(4), randint1(3));
-            else if (p->wpos.depth == 28) Send_weather(p, 3, randint1(4), 3);
-            else if (p->wpos.depth == 29) Send_weather(p, 3, randint1(4), 3);
-            else if (p->wpos.depth == 30) Send_weather(p, 3, randint1(4), 3);
+            // Sandstorm
+            Send_weather(p, 3, randint1(4), randint1(3));
+        }
+        else
+        {
+            if (one_in_(5))
+            {
+                // Stop weather
+                Send_weather(p, 256, 0, 0);
+            }
         }
     }
     else
@@ -1576,6 +1602,7 @@ static void on_leave_level(void)
                 if (!w_ptr->chunk_list[i]) continue;
 
                 /* Don't deallocate special levels */
+                // note: it doesn't count DM! When testing - use regular char
                 if (level_keep_allocated(w_ptr->chunk_list[i])) continue;
 
                 // also exist in admin menu
@@ -2862,6 +2889,7 @@ void kingly(struct player *p)
 bool level_keep_allocated(struct chunk *c)
 {
     /* Don't deallocate levels which contain players */
+    // note: it doesn't count DM! When testing - use regular char
     if (chunk_has_players(&c->wpos)) return true;
 
     /* Don't deallocate special levels */

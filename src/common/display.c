@@ -309,7 +309,7 @@ static void display_resistance_panel(struct player *p, const char **rec, const r
     display_equippy(p, row++, col + 5);
 
     /* Header */
-    put_str_hook(col, row++, -1, COLOUR_WHITE, "     abcdefghijklm@");
+    put_str_hook(col, row++, -1, COLOUR_WHITE, "     abcdefgimnopq@");
 
     /* Lines */
     for (i = 0; i < RES_ROWS; i++, row++)
@@ -364,7 +364,7 @@ static void display_resistance_panel(struct player *p, const char **rec, const r
 
 static void display_player_flag_info(struct player *p)
 {
-    int i;
+    unsigned i;
     int res_cols = p->body.count + 6;
     region resist_region[] =
     {
@@ -495,7 +495,7 @@ static void display_player_sust_info(struct player *p)
     col = 24;
 
     /* Header */
-    put_str_hook(col, row - 1, -1, COLOUR_WHITE, "abcdefghijklm@");
+    put_str_hook(col, row - 1, -1, COLOUR_WHITE, "abcdefgimnopq@");
 
     for (stat = 0; stat < STAT_MAX; ++stat)
     {
