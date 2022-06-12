@@ -82,6 +82,24 @@
     <Filter Include="Source Files\SPClientExclusive">
       <UniqueIdentifier>{fbb1134c-51b1-407e-87bf-319763d5c57e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\TangeriaExServer">
+      <UniqueIdentifier>{d185f26b-fa93-4718-8e0f-a122a1318455}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\TangeriaExServer">
+      <UniqueIdentifier>{e13bc4c4-31e6-4d1a-b8f6-7643057565be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\TangeriaExCommon">
+      <UniqueIdentifier>{f010b325-5fa6-4095-a377-915bb8c8a0d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\TangeriaExClient">
+      <UniqueIdentifier>{a92c48c1-0be0-4fbd-84d8-0ebae1314121}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\TangeriaExCommon">
+      <UniqueIdentifier>{1f674a76-c445-4168-aef9-0ad638226e59}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\TangeriaExClient">
+      <UniqueIdentifier>{07a6a9ca-8d80-481b-9bf4-ed705f0e2021}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(SDLDir)\SDL.h">
@@ -177,6 +195,8 @@
     <ClInclude Include="$(SDLDir)\SDL_video.h">
       <Filter>SDL</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
     <ClInclude Include="$(WinIncludeRoot)pngconf.h">
       <Filter>Header Files\ZLibPng</Filter>
     </ClInclude>
@@ -192,16 +212,15 @@
     <ClInclude Include="$(WinIncludeRoot)zconf.h">
       <Filter>Header Files\ZLibPng</Filter>
     </ClInclude>
+    <ClInclude Include="$(WinRoot)readdib.h">
+      <Filter>Header Files\ZLibPng</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
     <ClInclude Include="src\debug.h">
       <Filter>Header Files\SPClientExclusive</Filter>
     </ClInclude>
     <ClInclude Include="src\list-ui-entry-renderers.h">
-      <Filter>Header Files\SPClientExclusive</Filter>
-    </ClInclude>
-    <ClInclude Include="$(WinRoot)readdib.h">
-      <Filter>Header Files\SPClientExclusive</Filter>
-    </ClInclude>
-    <ClInclude Include="$(WinRoot)resource.h">
       <Filter>Header Files\SPClientExclusive</Filter>
     </ClInclude>
     <ClInclude Include="src\save-charoutput.h">
@@ -412,6 +431,77 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="$(CommonRoot)bit.h">
+      <Filter>Header Files\TangeriaExCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)display.h">
+      <Filter>Header Files\TangeriaExCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)h-net.h">
+      <Filter>Header Files\TangeriaExCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)h-quark.h">
+      <Filter>Header Files\TangeriaExCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)list-packets.h">
+      <Filter>Header Files\TangeriaExCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)md5.h">
+      <Filter>Header Files\TangeriaExCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)mon-common.h">
+      <Filter>Header Files\TangeriaExCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)net-unix.h">
+      <Filter>Header Files\TangeriaExCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)net-win.h">
+      <Filter>Header Files\TangeriaExCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)obj-common.h">
+      <Filter>Header Files\TangeriaExCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)obj-gear-common.h">
+      <Filter>Header Files\TangeriaExCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)pack.h">
+      <Filter>Header Files\TangeriaExCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)player-common-calcs.h">
+      <Filter>Header Files\TangeriaExCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)player-common.h">
+      <Filter>Header Files\TangeriaExCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)player-state.h">
+      <Filter>Header Files\TangeriaExCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)sockbuf.h">
+      <Filter>Header Files\TangeriaExCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)store-types.h">
+      <Filter>Header Files\TangeriaExCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)trap-common.h">
+      <Filter>Header Files\TangeriaExCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)util.h">
+      <Filter>Header Files\TangeriaExCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)version.h">
+      <Filter>Header Files\TangeriaExCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)z-defines.h">
+      <Filter>Header Files\TangeriaExCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)z-msg.h">
+      <Filter>Header Files\TangeriaExCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)z-spells.h">
+      <Filter>Header Files\TangeriaExCommon</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
     <ClInclude Include="$(ClientRoot)ui-term.h">
       <Filter>Header Files\Client</Filter>
     </ClInclude>
@@ -502,6 +592,32 @@
     <ClCompile Include="$(ClientRoot)ui-player-properties.h">
       <Filter>Header Files\Client</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(ClientRoot)ui-message.h">
+      <Filter>Header Files\TangeriaExClient</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ClientRoot)netclient.h">
+      <Filter>Header Files\TangeriaExClient</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ClientRoot)mangclient_sdlPCH1.h">
+      <Filter>Header Files\TangeriaExClient</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ClientRoot)c-player.h">
+      <Filter>Header Files\TangeriaExClient</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ClientRoot)c-option.h">
+      <Filter>Header Files\TangeriaExClient</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ClientRoot)conf.h">
+      <Filter>Header Files\TangeriaExClient</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ClientRoot)c-cmds.h">
+      <Filter>Header Files\TangeriaExClient</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ClientRoot)c-angband.h">
+      <Filter>Header Files\TangeriaExClient</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(ServerRoot)alloc.h">
@@ -713,6 +829,86 @@
     </ClInclude>
     <ClInclude Include="$(ServerRoot)z-textblock.h">
       <Filter>Header Files\Server</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(ServerRoot)s-angband.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)channel.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)display-ui.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)help-ui.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)history-ui.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)house.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)list-attack-effects.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)list-dungeon-flags.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)list-wild-feats.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)mangbandPCH1.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)map-ui.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)metaclient.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)mon-lore-ui.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)netserver.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)obj-inscrip.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)obj-list-ui.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)obj-ui.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)party.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)player-ui.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)prefs-ui.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)s-util.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)sched-win.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)score-ui.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)target-ui.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)visuals-ui.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)wilderness.h">
+      <Filter>Header Files\TangariaExServer</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -947,6 +1143,94 @@
     <ClCompile Include="$(ServerRoot)z-textblock.c">
       <Filter>Source Files\Server</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(ServerRoot)account.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)channel.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)cmd-innate.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)control.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)display-ui.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)help-ui.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)history-ui.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)house.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)knowledge-ui.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)main.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)map-ui.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)metaclient.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)mon-list-ui.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)mon-lore-ui.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)netserver.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)obj-inscrip.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)obj-list-ui.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)obj-ui.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)party.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)player-ui.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)prefs-ui.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)s-util.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)sched-unix.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)sched-win.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)score-ui.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)target-ui.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)visuals-ui.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)wilderness.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="src\cmd-spoil.c">
       <Filter>Source Files\SPClientExclusive</Filter>
     </ClCompile>
@@ -1098,6 +1382,29 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="$(CommonRoot)display.c">
+      <Filter>Source Files\TangeriaExCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="$(CommonRoot)md5.c">
+      <Filter>Source Files\TangeriaExCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="$(CommonRoot)net-unix.c">
+      <Filter>Source Files\TangeriaExCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="$(CommonRoot)net-win.c">
+      <Filter>Source Files\TangeriaExCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="$(CommonRoot)obj-gear-common.c">
+      <Filter>Source Files\TangeriaExCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="$(CommonRoot)sockbuf.c">
+      <Filter>Source Files\TangeriaExCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="$(CommonRoot)util.c">
+      <Filter>Source Files\TangeriaExCommon</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="$(ClientRoot)win-layout.c">
       <Filter>Source Files\Client</Filter>
     </ClCompile>
@@ -1199,6 +1506,35 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="$(ClientRoot)ui-message.c">
+      <Filter>Source Files\TangeriaExClient</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)snd-win.c">
+      <Filter>Source Files\TangeriaExClient</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)set_focus.c">
+      <Filter>Source Files\TangeriaExClient</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)netclient.c">
+      <Filter>Source Files\TangeriaExClient</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)c-player.c">
+      <Filter>Source Files\TangeriaExClient</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)c-option.c">
+      <Filter>Source Files\TangeriaExClient</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)conf.c">
+      <Filter>Source Files\TangeriaExClient</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)c-cmd-obj.c">
+      <Filter>Source Files\TangeriaExClient</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)c-cmd.c">
+      <Filter>Source Files\TangeriaExClient</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
     <Image Include="lib\icons\att-128.png">
       <Filter>Resource Files</Filter>
     </Image>
@@ -1214,6 +1550,9 @@
     <Image Include="lib\icons\att-512.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <ClInclude Include="$(WinRoot)resource.h">
+      <Filter>Header Files\SPClientExclusive</Filter>
+    </ClInclude>
     <Image Include="src\win\angband.ico">
       <Filter>Resource Files</Filter>
     </Image>
@@ -1367,15 +1706,6 @@
     </None>
     <None Include="lib\tiles\nomad\xtra-nmd.prf">
       <Filter>Resource Files\tiles\nomad</Filter>
-    </None>
-    <None Include="lib\tiles\old\flvr-xxx.prf">
-      <Filter>Resource Files\tiles\old</Filter>
-    </None>
-    <None Include="lib\tiles\old\graf-xxx.prf">
-      <Filter>Resource Files\tiles\old</Filter>
-    </None>
-    <None Include="lib\tiles\old\xtra-xxx.prf">
-      <Filter>Resource Files\tiles\old</Filter>
     </None>
     <None Include="lib\tiles\shockbolt\flvr-shb.prf">
       <Filter>Resource Files\tiles\shockbolt</Filter>
