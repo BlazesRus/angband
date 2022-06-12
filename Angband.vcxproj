@@ -531,7 +531,9 @@ Alternative Optional main.c varients:
     <ClInclude Include="$(ClientRoot)game-input.h" />
     <ClInclude Include="$(ClientRoot)grafmode.h" />
     <ClInclude Include="$(ClientRoot)player-properties.h" />
-    <ClInclude Include="$(ClientRoot)snd-sdl.h" />
+    <ClInclude Include="$(ClientRoot)snd-sdl.h">
+      <ExcludedFromBuild Condition="'$(SDLLibraryType)'!='SDL' And '$(SDLLibraryType)'!='SDL2'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="$(ClientRoot)snd-win.h" />
     <ClInclude Include="$(ClientRoot)sound.h" />
     <ClInclude Include="$(ClientRoot)ui-birth.h" />
