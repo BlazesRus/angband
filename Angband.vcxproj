@@ -194,38 +194,100 @@
       <Message>Syncing Lib Data, and LibPng Dlls</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
-  <ItemGroup Label="SDLHeaders" Condition="'$(SDLLibraryType)'=='SDL' Or '$(SDLLibraryType)'=='SDL2'">
-    <ClInclude Include="$(SDLDir)\begin_code.h" />
-    <ClInclude Include="$(SDLDir)\close_code.h" />
-    <ClInclude Include="$(SDLDir)\SDL.h" />
-    <ClInclude Include="$(SDLDir)\SDL_active.h" />
-    <ClInclude Include="$(SDLDir)\SDL_audio.h" />
-    <ClInclude Include="$(SDLDir)\SDL_cdrom.h" />
-    <ClInclude Include="$(SDLDir)\SDL_config.h" />
-    <ClInclude Include="$(SDLDir)\SDL_config_win32.h" />
-    <ClInclude Include="$(SDLDir)\SDL_cpuinfo.h" />
-    <ClInclude Include="$(SDLDir)\SDL_endian.h" />
-    <ClInclude Include="$(SDLDir)\SDL_error.h" />
-    <ClInclude Include="$(SDLDir)\SDL_events.h" />
-    <ClInclude Include="$(SDLDir)\SDL_image.h" />
-    <ClInclude Include="$(SDLDir)\SDL_joystick.h" />
-    <ClInclude Include="$(SDLDir)\SDL_keyboard.h" />
-    <ClInclude Include="$(SDLDir)\SDL_keysym.h" />
-    <ClInclude Include="$(SDLDir)\SDL_loadso.h" />
-    <ClInclude Include="$(SDLDir)\SDL_main.h" />
-    <ClInclude Include="$(SDLDir)\SDL_mixer.h" />
-    <ClInclude Include="$(SDLDir)\SDL_mouse.h" />
-    <ClInclude Include="$(SDLDir)\SDL_mutex.h" />
-    <ClInclude Include="$(SDLDir)\SDL_platform.h" />
-    <ClInclude Include="$(SDLDir)\SDL_quit.h" />
-    <ClInclude Include="$(SDLDir)\SDL_rwops.h" />
-    <ClInclude Include="$(SDLDir)\SDL_stdinc.h" />
-    <ClInclude Include="$(SDLDir)\SDL_thread.h" />
-    <ClInclude Include="$(SDLDir)\SDL_timer.h" />
-    <ClInclude Include="$(SDLDir)\SDL_ttf.h" />
-    <ClInclude Include="$(SDLDir)\SDL_types.h" />
-    <ClInclude Include="$(SDLDir)\SDL_version.h" />
-    <ClInclude Include="$(SDLDir)\SDL_video.h" />
+  <ItemGroup Label="SDLHeaders">
+    <ClInclude Include="$(SDLDir)\begin_code.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\close_code.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_active.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_audio.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_cdrom.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_config.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_config_win32.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_cpuinfo.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_endian.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_error.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_events.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_image.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_joystick.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_keyboard.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_keysym.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_loadso.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_main.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_mixer.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_mouse.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_mutex.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_platform.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_quit.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_rwops.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_stdinc.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_thread.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_timer.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_ttf.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_types.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_version.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_video.h">
+      <ExcludedFromBuild>true</ExcludedFromBuild>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup Label="ZLibPng">
     <ClInclude Include="src\win\include\png.h" />
@@ -565,7 +627,9 @@ Alternative Optional main.c varients:
     <ClCompile Include="$(ClientRoot)game-input.c" />
     <ClCompile Include="$(ClientRoot)grafmode.c" />
     <ClCompile Include="$(ClientRoot)player-properties.c" />
-    <ClCompile Include="$(ClientRoot)snd-sdl.c" />
+    <ClCompile Include="$(ClientRoot)snd-sdl.c">
+      <ExcludedFromBuild Condition="'$(SDLLibraryType)'!='SDL' And '$(SDLLibraryType)'!='SDL2'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="$(ClientRoot)sound-core.c" />
     <ClCompile Include="$(ClientRoot)ui-birth.c" />
     <ClCompile Include="$(ClientRoot)ui-command.c" />
