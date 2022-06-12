@@ -95,17 +95,17 @@
   <Choose>
     <When Condition="'$(SDLLibraryType)'=='Minimal'">
       <PropertyGroup>
-        <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SourceRoot);$(WinRoot);$(WinIncludeRoot);$(CommonRoot);$(ServerRoot);$(ClientRoot);$(IncludePath)</IncludePath>
+        <IncludePath>;$(SourceRoot);$(WinRoot);$(WinIncludeRoot);$(CommonRoot);$(ServerRoot);$(ClientRoot);$(VC_IncludePath);$(WindowsSDK_IncludePath);$(IncludePath)</IncludePath>
       </PropertyGroup>
     </When>
     <When Condition="'$(SDLLibraryType)'=='SDL' Or '$(SDLLibraryType)'=='SDL2' or '$(SDLLibraryType)'=='AlternativeSDL2'">
       <PropertyGroup>
-        <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SourceRoot);$(WinRoot);$(WinIncludeRoot);$(CommonRoot);$(ServerRoot);$(ClientRoot);$(SDLDir);$(IncludePath)</IncludePath>
+        <IncludePath>$(SDLDir);$(SourceRoot);$(WinRoot);$(WinIncludeRoot);$(CommonRoot);$(ServerRoot);$(ClientRoot);$(VC_IncludePath);$(WindowsSDK_IncludePath);$(IncludePath)</IncludePath>
       </PropertyGroup>
     </When>
     <Otherwise>
       <PropertyGroup>
-        <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SourceRoot);$(WinRoot);$(WinIncludeRoot);$(CommonRoot);$(ServerRoot);$(ClientRoot);$(IncludePath)</IncludePath>
+        <IncludePath>$(SourceRoot);$(WinRoot);$(WinIncludeRoot);$(CommonRoot);$(ServerRoot);$(ClientRoot);$(VC_IncludePath);$(WindowsSDK_IncludePath);$(IncludePath)</IncludePath>
       </PropertyGroup>
     </Otherwise>
   </Choose>
