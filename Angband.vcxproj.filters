@@ -82,23 +82,26 @@
     <Filter Include="Source Files\SPClientExclusive">
       <UniqueIdentifier>{fbb1134c-51b1-407e-87bf-319763d5c57e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\TangeriaExServer">
+    <Filter Include="Header Files\TangariaExServer">
       <UniqueIdentifier>{d185f26b-fa93-4718-8e0f-a122a1318455}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\TangeriaExServer">
+    <Filter Include="Source Files\TangariaExServer">
       <UniqueIdentifier>{e13bc4c4-31e6-4d1a-b8f6-7643057565be}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\TangeriaExCommon">
+    <Filter Include="Source Files\TangariaExCommon">
       <UniqueIdentifier>{f010b325-5fa6-4095-a377-915bb8c8a0d9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\TangeriaExClient">
+    <Filter Include="Source Files\TangariaExClient">
       <UniqueIdentifier>{a92c48c1-0be0-4fbd-84d8-0ebae1314121}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\TangeriaExCommon">
+    <Filter Include="Header Files\TangariaExCommon">
       <UniqueIdentifier>{1f674a76-c445-4168-aef9-0ad638226e59}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\TangeriaExClient">
+    <Filter Include="Header Files\TangariaExClient">
       <UniqueIdentifier>{07a6a9ca-8d80-481b-9bf4-ed705f0e2021}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ImageAndScreenshotStuff">
+      <UniqueIdentifier>{7db14429-c0c6-4560-a26a-74486b4e99e4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -195,25 +198,32 @@
     <ClInclude Include="$(SDLDir)\SDL_video.h">
       <Filter>SDL</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="$(WinIncludeRoot)pngconf.h">
+    <ClInclude Include="$(ServerRoot)mon-list-ui.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\win\include\png.h">
       <Filter>Header Files\ZLibPng</Filter>
     </ClInclude>
-    <ClInclude Include="$(WinIncludeRoot)png.h">
+    <ClInclude Include="src\win\include\zlib.h">
       <Filter>Header Files\ZLibPng</Filter>
     </ClInclude>
-    <ClInclude Include="$(WinIncludeRoot)pnglibconf.h">
+    <ClInclude Include="src\win\include\zconf.h">
       <Filter>Header Files\ZLibPng</Filter>
     </ClInclude>
-    <ClInclude Include="$(WinIncludeRoot)zlib.h">
+    <ClInclude Include="src\win\win-term.h">
       <Filter>Header Files\ZLibPng</Filter>
     </ClInclude>
-    <ClInclude Include="$(WinIncludeRoot)zconf.h">
+    <ClInclude Include="src\win\win-menu.h">
       <Filter>Header Files\ZLibPng</Filter>
     </ClInclude>
-    <ClInclude Include="$(WinRoot)readdib.h">
+    <ClInclude Include="src\win\include\pngconf.h">
       <Filter>Header Files\ZLibPng</Filter>
+    </ClInclude>
+    <ClInclude Include="src\win\readdib.h">
+      <Filter>Header Files\ZLibPng</Filter>
+    </ClInclude>
+    <ClInclude Include="src\win\resource.h">
+      <Filter>Resource Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -281,12 +291,6 @@
       <Filter>Header Files\SPClientExclusive</Filter>
     </ClInclude>
     <ClInclude Include="src\ui-wizard.h">
-      <Filter>Header Files\SPClientExclusive</Filter>
-    </ClInclude>
-    <ClInclude Include="$(WinRoot)win-menu.h">
-      <Filter>Header Files\SPClientExclusive</Filter>
-    </ClInclude>
-    <ClInclude Include="$(WinRoot)win-term.h">
       <Filter>Header Files\SPClientExclusive</Filter>
     </ClInclude>
     <ClInclude Include="src\wizard.h">
@@ -432,73 +436,73 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(CommonRoot)bit.h">
-      <Filter>Header Files\TangeriaExCommon</Filter>
+      <Filter>Header Files\TangariaExCommon</Filter>
     </ClInclude>
     <ClInclude Include="$(CommonRoot)display.h">
-      <Filter>Header Files\TangeriaExCommon</Filter>
+      <Filter>Header Files\TangariaExCommon</Filter>
     </ClInclude>
     <ClInclude Include="$(CommonRoot)h-net.h">
-      <Filter>Header Files\TangeriaExCommon</Filter>
+      <Filter>Header Files\TangariaExCommon</Filter>
     </ClInclude>
     <ClInclude Include="$(CommonRoot)h-quark.h">
-      <Filter>Header Files\TangeriaExCommon</Filter>
+      <Filter>Header Files\TangariaExCommon</Filter>
     </ClInclude>
     <ClInclude Include="$(CommonRoot)list-packets.h">
-      <Filter>Header Files\TangeriaExCommon</Filter>
+      <Filter>Header Files\TangariaExCommon</Filter>
     </ClInclude>
     <ClInclude Include="$(CommonRoot)md5.h">
-      <Filter>Header Files\TangeriaExCommon</Filter>
+      <Filter>Header Files\TangariaExCommon</Filter>
     </ClInclude>
     <ClInclude Include="$(CommonRoot)mon-common.h">
-      <Filter>Header Files\TangeriaExCommon</Filter>
+      <Filter>Header Files\TangariaExCommon</Filter>
     </ClInclude>
     <ClInclude Include="$(CommonRoot)net-unix.h">
-      <Filter>Header Files\TangeriaExCommon</Filter>
+      <Filter>Header Files\TangariaExCommon</Filter>
     </ClInclude>
     <ClInclude Include="$(CommonRoot)net-win.h">
-      <Filter>Header Files\TangeriaExCommon</Filter>
+      <Filter>Header Files\TangariaExCommon</Filter>
     </ClInclude>
     <ClInclude Include="$(CommonRoot)obj-common.h">
-      <Filter>Header Files\TangeriaExCommon</Filter>
+      <Filter>Header Files\TangariaExCommon</Filter>
     </ClInclude>
     <ClInclude Include="$(CommonRoot)obj-gear-common.h">
-      <Filter>Header Files\TangeriaExCommon</Filter>
+      <Filter>Header Files\TangariaExCommon</Filter>
     </ClInclude>
     <ClInclude Include="$(CommonRoot)pack.h">
-      <Filter>Header Files\TangeriaExCommon</Filter>
+      <Filter>Header Files\TangariaExCommon</Filter>
     </ClInclude>
     <ClInclude Include="$(CommonRoot)player-common-calcs.h">
-      <Filter>Header Files\TangeriaExCommon</Filter>
+      <Filter>Header Files\TangariaExCommon</Filter>
     </ClInclude>
     <ClInclude Include="$(CommonRoot)player-common.h">
-      <Filter>Header Files\TangeriaExCommon</Filter>
+      <Filter>Header Files\TangariaExCommon</Filter>
     </ClInclude>
     <ClInclude Include="$(CommonRoot)player-state.h">
-      <Filter>Header Files\TangeriaExCommon</Filter>
+      <Filter>Header Files\TangariaExCommon</Filter>
     </ClInclude>
     <ClInclude Include="$(CommonRoot)sockbuf.h">
-      <Filter>Header Files\TangeriaExCommon</Filter>
+      <Filter>Header Files\TangariaExCommon</Filter>
     </ClInclude>
     <ClInclude Include="$(CommonRoot)store-types.h">
-      <Filter>Header Files\TangeriaExCommon</Filter>
+      <Filter>Header Files\TangariaExCommon</Filter>
     </ClInclude>
     <ClInclude Include="$(CommonRoot)trap-common.h">
-      <Filter>Header Files\TangeriaExCommon</Filter>
+      <Filter>Header Files\TangariaExCommon</Filter>
     </ClInclude>
     <ClInclude Include="$(CommonRoot)util.h">
-      <Filter>Header Files\TangeriaExCommon</Filter>
+      <Filter>Header Files\TangariaExCommon</Filter>
     </ClInclude>
     <ClInclude Include="$(CommonRoot)version.h">
-      <Filter>Header Files\TangeriaExCommon</Filter>
+      <Filter>Header Files\TangariaExCommon</Filter>
     </ClInclude>
     <ClInclude Include="$(CommonRoot)z-defines.h">
-      <Filter>Header Files\TangeriaExCommon</Filter>
+      <Filter>Header Files\TangariaExCommon</Filter>
     </ClInclude>
     <ClInclude Include="$(CommonRoot)z-msg.h">
-      <Filter>Header Files\TangeriaExCommon</Filter>
+      <Filter>Header Files\TangariaExCommon</Filter>
     </ClInclude>
     <ClInclude Include="$(CommonRoot)z-spells.h">
-      <Filter>Header Files\TangeriaExCommon</Filter>
+      <Filter>Header Files\TangariaExCommon</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -595,28 +599,28 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(ClientRoot)ui-message.h">
-      <Filter>Header Files\TangeriaExClient</Filter>
+      <Filter>Header Files\TangariaExClient</Filter>
     </ClInclude>
     <ClInclude Include="$(ClientRoot)netclient.h">
-      <Filter>Header Files\TangeriaExClient</Filter>
+      <Filter>Header Files\TangariaExClient</Filter>
     </ClInclude>
     <ClInclude Include="$(ClientRoot)mangclient_sdlPCH1.h">
-      <Filter>Header Files\TangeriaExClient</Filter>
+      <Filter>Header Files\TangariaExClient</Filter>
     </ClInclude>
     <ClInclude Include="$(ClientRoot)c-player.h">
-      <Filter>Header Files\TangeriaExClient</Filter>
+      <Filter>Header Files\TangariaExClient</Filter>
     </ClInclude>
     <ClInclude Include="$(ClientRoot)c-option.h">
-      <Filter>Header Files\TangeriaExClient</Filter>
+      <Filter>Header Files\TangariaExClient</Filter>
     </ClInclude>
     <ClInclude Include="$(ClientRoot)conf.h">
-      <Filter>Header Files\TangeriaExClient</Filter>
+      <Filter>Header Files\TangariaExClient</Filter>
     </ClInclude>
     <ClInclude Include="$(ClientRoot)c-cmds.h">
-      <Filter>Header Files\TangeriaExClient</Filter>
+      <Filter>Header Files\TangariaExClient</Filter>
     </ClInclude>
     <ClInclude Include="$(ClientRoot)c-angband.h">
-      <Filter>Header Files\TangeriaExClient</Filter>
+      <Filter>Header Files\TangariaExClient</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1143,6 +1147,18 @@
     <ClCompile Include="$(ServerRoot)z-textblock.c">
       <Filter>Source Files\Server</Filter>
     </ClCompile>
+    <ClCompile Include="$(ClientRoot)main-gcu.c">
+      <Filter>Source Files\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="src\win\readdib.c">
+      <Filter>Source Files\ImageAndScreenshotStuff</Filter>
+    </ClCompile>
+    <ClCompile Include="src\win\readpng.c">
+      <Filter>Source Files\ImageAndScreenshotStuff</Filter>
+    </ClCompile>
+    <ClCompile Include="src\win\scrnshot.c">
+      <Filter>Source Files\ImageAndScreenshotStuff</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(ServerRoot)account.c">
@@ -1246,16 +1262,7 @@
     <ClCompile Include="src\player-race.c">
       <Filter>Source Files\SPClientExclusive</Filter>
     </ClCompile>
-    <ClCompile Include="$(WinRoot)readdib.c">
-      <Filter>Source Files\SPClientExclusive</Filter>
-    </ClCompile>
-    <ClCompile Include="$(WinRoot)readpng.c">
-      <Filter>Source Files\SPClientExclusive</Filter>
-    </ClCompile>
     <ClCompile Include="src\save-charoutput.c">
-      <Filter>Source Files\SPClientExclusive</Filter>
-    </ClCompile>
-    <ClCompile Include="$(WinRoot)scrnshot.c">
       <Filter>Source Files\SPClientExclusive</Filter>
     </ClCompile>
     <ClCompile Include="src\ui-effect.c">
@@ -1383,25 +1390,25 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(CommonRoot)display.c">
-      <Filter>Source Files\TangeriaExCommon</Filter>
+      <Filter>Source Files\TangariaExCommon</Filter>
     </ClCompile>
     <ClCompile Include="$(CommonRoot)md5.c">
-      <Filter>Source Files\TangeriaExCommon</Filter>
+      <Filter>Source Files\TangariaExCommon</Filter>
     </ClCompile>
     <ClCompile Include="$(CommonRoot)net-unix.c">
-      <Filter>Source Files\TangeriaExCommon</Filter>
+      <Filter>Source Files\TangariaExCommon</Filter>
     </ClCompile>
     <ClCompile Include="$(CommonRoot)net-win.c">
-      <Filter>Source Files\TangeriaExCommon</Filter>
+      <Filter>Source Files\TangariaExCommon</Filter>
     </ClCompile>
     <ClCompile Include="$(CommonRoot)obj-gear-common.c">
-      <Filter>Source Files\TangeriaExCommon</Filter>
+      <Filter>Source Files\TangariaExCommon</Filter>
     </ClCompile>
     <ClCompile Include="$(CommonRoot)sockbuf.c">
-      <Filter>Source Files\TangeriaExCommon</Filter>
+      <Filter>Source Files\TangariaExCommon</Filter>
     </ClCompile>
     <ClCompile Include="$(CommonRoot)util.c">
-      <Filter>Source Files\TangeriaExCommon</Filter>
+      <Filter>Source Files\TangariaExCommon</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1507,218 +1514,37 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(ClientRoot)ui-message.c">
-      <Filter>Source Files\TangeriaExClient</Filter>
+      <Filter>Source Files\TangariaExClient</Filter>
     </ClCompile>
     <ClCompile Include="$(ClientRoot)snd-win.c">
-      <Filter>Source Files\TangeriaExClient</Filter>
+      <Filter>Source Files\TangariaExClient</Filter>
     </ClCompile>
     <ClCompile Include="$(ClientRoot)set_focus.c">
-      <Filter>Source Files\TangeriaExClient</Filter>
+      <Filter>Source Files\TangariaExClient</Filter>
     </ClCompile>
     <ClCompile Include="$(ClientRoot)netclient.c">
-      <Filter>Source Files\TangeriaExClient</Filter>
+      <Filter>Source Files\TangariaExClient</Filter>
     </ClCompile>
     <ClCompile Include="$(ClientRoot)c-player.c">
-      <Filter>Source Files\TangeriaExClient</Filter>
+      <Filter>Source Files\TangariaExClient</Filter>
     </ClCompile>
     <ClCompile Include="$(ClientRoot)c-option.c">
-      <Filter>Source Files\TangeriaExClient</Filter>
+      <Filter>Source Files\TangariaExClient</Filter>
     </ClCompile>
     <ClCompile Include="$(ClientRoot)conf.c">
-      <Filter>Source Files\TangeriaExClient</Filter>
+      <Filter>Source Files\TangariaExClient</Filter>
     </ClCompile>
     <ClCompile Include="$(ClientRoot)c-cmd-obj.c">
-      <Filter>Source Files\TangeriaExClient</Filter>
+      <Filter>Source Files\TangariaExClient</Filter>
     </ClCompile>
     <ClCompile Include="$(ClientRoot)c-cmd.c">
-      <Filter>Source Files\TangeriaExClient</Filter>
+      <Filter>Source Files\TangariaExClient</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="lib\icons\att-128.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="lib\icons\att-16.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="lib\icons\att-256.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="lib\icons\att-32.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="lib\icons\att-512.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <ClInclude Include="$(WinRoot)resource.h">
-      <Filter>Header Files\SPClientExclusive</Filter>
-    </ClInclude>
     <Image Include="src\win\angband.ico">
       <Filter>Resource Files</Filter>
     </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="lib\tiles\adam-bolt\16x16.png">
-      <Filter>Resource Files\tiles\adam-bolt</Filter>
-    </Image>
-    <Image Include="lib\tiles\gervais\32x32.png">
-      <Filter>Resource Files\tiles\gervais</Filter>
-    </Image>
-    <Image Include="lib\tiles\nomad\8x16.png">
-      <Filter>Resource Files\tiles\nomad</Filter>
-    </Image>
-    <Image Include="lib\tiles\old\8x8.png">
-      <Filter>Resource Files\tiles\old</Filter>
-    </Image>
-    <Image Include="lib\tiles\shockbolt\64x64.png">
-      <Filter>Resource Files\tiles\shockbolt</Filter>
-    </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="lib\customize\font.prf">
-      <Filter>Resource Files\customize</Filter>
-    </None>
-    <None Include="lib\customize\font-gcu.prf">
-      <Filter>Resource Files\customize</Filter>
-    </None>
-    <None Include="lib\customize\font-sdl.prf">
-      <Filter>Resource Files\customize</Filter>
-    </None>
-    <None Include="lib\customize\font-sdl2.prf">
-      <Filter>Resource Files\customize</Filter>
-    </None>
-    <None Include="lib\customize\font-win.prf">
-      <Filter>Resource Files\customize</Filter>
-    </None>
-    <None Include="lib\customize\font-x11.prf">
-      <Filter>Resource Files\customize</Filter>
-    </None>
-    <None Include="lib\customize\keys-gcu.prf">
-      <Filter>Resource Files\customize</Filter>
-    </None>
-    <None Include="lib\customize\message.prf">
-      <Filter>Resource Files\customize</Filter>
-    </None>
-    <None Include="lib\customize\pref.prf">
-      <Filter>Resource Files\customize</Filter>
-    </None>
-    <None Include="lib\customize\sound.prf">
-      <Filter>Resource Files\customize</Filter>
-    </None>
-    <None Include="lib\customize\user.prf">
-      <Filter>Resource Files\customize</Filter>
-    </None>
-    <None Include="lib\fonts\5x8x.fon">
-      <Filter>Resource Files\fonts</Filter>
-    </None>
-    <None Include="lib\fonts\6x10x.fon">
-      <Filter>Resource Files\fonts</Filter>
-    </None>
-    <None Include="lib\fonts\6x12x.fon">
-      <Filter>Resource Files\fonts</Filter>
-    </None>
-    <None Include="lib\fonts\6x13x.fon">
-      <Filter>Resource Files\fonts</Filter>
-    </None>
-    <None Include="lib\fonts\6x13xb.fon">
-      <Filter>Resource Files\fonts</Filter>
-    </None>
-    <None Include="lib\fonts\7x13x.fon">
-      <Filter>Resource Files\fonts</Filter>
-    </None>
-    <None Include="lib\fonts\7x13xb.fon">
-      <Filter>Resource Files\fonts</Filter>
-    </None>
-    <None Include="lib\fonts\8x8x.fon">
-      <Filter>Resource Files\fonts</Filter>
-    </None>
-    <None Include="lib\fonts\8x8xb.fon">
-      <Filter>Resource Files\fonts</Filter>
-    </None>
-    <None Include="lib\fonts\8x12x.fon">
-      <Filter>Resource Files\fonts</Filter>
-    </None>
-    <None Include="lib\fonts\8x12xb.fon">
-      <Filter>Resource Files\fonts</Filter>
-    </None>
-    <None Include="lib\fonts\8x13x.fon">
-      <Filter>Resource Files\fonts</Filter>
-    </None>
-    <None Include="lib\fonts\8x16x.fon">
-      <Filter>Resource Files\fonts</Filter>
-    </None>
-    <None Include="lib\fonts\9x15x.fon">
-      <Filter>Resource Files\fonts</Filter>
-    </None>
-    <None Include="lib\fonts\9x15xb.fon">
-      <Filter>Resource Files\fonts</Filter>
-    </None>
-    <None Include="lib\fonts\10x14x.fon">
-      <Filter>Resource Files\fonts</Filter>
-    </None>
-    <None Include="lib\fonts\10x14xb.fon">
-      <Filter>Resource Files\fonts</Filter>
-    </None>
-    <None Include="lib\fonts\10x20x.fon">
-      <Filter>Resource Files\fonts</Filter>
-    </None>
-    <None Include="lib\fonts\12x18x.fon">
-      <Filter>Resource Files\fonts</Filter>
-    </None>
-    <None Include="lib\fonts\12x24x.fon">
-      <Filter>Resource Files\fonts</Filter>
-    </None>
-    <None Include="lib\fonts\16x16x.fon">
-      <Filter>Resource Files\fonts</Filter>
-    </None>
-    <None Include="lib\fonts\16x16xw.fon">
-      <Filter>Resource Files\fonts</Filter>
-    </None>
-    <None Include="lib\fonts\16x24x.fon">
-      <Filter>Resource Files\fonts</Filter>
-    </None>
-    <None Include="lib\sounds\sound.cfg">
-      <Filter>Resource Files\sounds</Filter>
-    </None>
-    <None Include="lib\tiles\adam-bolt\flvr-new.prf">
-      <Filter>Resource Files\tiles\adam-bolt</Filter>
-    </None>
-    <None Include="lib\tiles\adam-bolt\graf-new.prf">
-      <Filter>Resource Files\tiles\adam-bolt</Filter>
-    </None>
-    <None Include="lib\tiles\adam-bolt\xtra-new.prf">
-      <Filter>Resource Files\tiles\adam-bolt</Filter>
-    </None>
-    <None Include="lib\tiles\gervais\flvr-dvg.prf">
-      <Filter>Resource Files\tiles\gervais</Filter>
-    </None>
-    <None Include="lib\tiles\gervais\graf-dvg.prf">
-      <Filter>Resource Files\tiles\gervais</Filter>
-    </None>
-    <None Include="lib\tiles\gervais\xtra-dvg.prf">
-      <Filter>Resource Files\tiles\gervais</Filter>
-    </None>
-    <None Include="lib\tiles\nomad\flvr-nmd.prf">
-      <Filter>Resource Files\tiles\nomad</Filter>
-    </None>
-    <None Include="lib\tiles\nomad\graf-nmd.prf">
-      <Filter>Resource Files\tiles\nomad</Filter>
-    </None>
-    <None Include="lib\tiles\nomad\xtra-nmd.prf">
-      <Filter>Resource Files\tiles\nomad</Filter>
-    </None>
-    <None Include="lib\tiles\shockbolt\flvr-shb.prf">
-      <Filter>Resource Files\tiles\shockbolt</Filter>
-    </None>
-    <None Include="lib\tiles\shockbolt\graf-shb-dark.prf">
-      <Filter>Resource Files\tiles\shockbolt</Filter>
-    </None>
-    <None Include="lib\tiles\shockbolt\graf-shb-light.prf">
-      <Filter>Resource Files\tiles\shockbolt</Filter>
-    </None>
-    <None Include="lib\tiles\shockbolt\xtra-shb.prf">
-      <Filter>Resource Files\tiles\shockbolt</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="lib\gamedata\activation.txt">
@@ -1853,674 +1679,6 @@
     <Text Include="lib\gamedata\world.txt">
       <Filter>Resource Files\gamedata</Filter>
     </Text>
-    <Text Include="lib\help\commands.txt">
-      <Filter>Resource Files\help</Filter>
-    </Text>
-    <Text Include="lib\help\index.txt">
-      <Filter>Resource Files\help</Filter>
-    </Text>
-    <Text Include="lib\help\r_comm.txt">
-      <Filter>Resource Files\help</Filter>
-    </Text>
-    <Text Include="lib\help\r_index.txt">
-      <Filter>Resource Files\help</Filter>
-    </Text>
-    <Text Include="lib\help\symbols.txt">
-      <Filter>Resource Files\help</Filter>
-    </Text>
-    <Text Include="lib\tiles\list.txt">
-      <Filter>Resource Files\tiles</Filter>
-    </Text>
-    <Text Include="lib\screens\crown.txt">
-      <Filter>Resource Files\screens</Filter>
-    </Text>
-    <Text Include="lib\screens\dead.txt">
-      <Filter>Resource Files\screens</Filter>
-    </Text>
-    <Text Include="lib\screens\news.txt">
-      <Filter>Resource Files\screens</Filter>
-    </Text>
-  </ItemGroup>
-  <ItemGroup>
-    <Media Include="lib\sounds\amb_bell_metal1.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\amb_bell_metal2.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\amb_bell_tibet1.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\amb_bell_tibet2.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\amb_bell_tibet3.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\amb_door_doom.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\amb_door_iron.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\amb_dungeon_echo.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\amb_dungeon_echowet.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\amb_gong_chinese.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\amb_gong_low.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\amb_gong_strike.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\amb_gong_undertone.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\amb_guitar_chord.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\amb_pulse_low.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\amb_thunder_rain.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\amb_thunder_roll.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\id_bad_aww.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\id_bad_dang.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\id_bad_hmm.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\id_bad_hmph.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\id_bad_ohh.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\id_ego_whoa.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\id_ego_woohoo.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\id_ego_yeah.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\id_ego_yeah2.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\id_ego_yes.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\id_good_hey.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\id_good_hey2.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\id_good_hmm.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\id_good_huh.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\id_good_ooh.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\id_good_ooo.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\id_good_wow.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_attack_breath.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_attack_spray.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_bite_chew.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_bite_chomp.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_bite_dainty.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_bite_gnash.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_bite_hard.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_bite_long.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_bite_munch.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_bite_regular.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_bite_short.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_bite_small.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_bite_soft.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_card_shuffle.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_castanet_trill.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_ceramic_trill.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_click_vibra.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_creature_choking.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_creature_groan.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_creature_yelp.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_cuica_rubbing.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_dino_low.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_dino_slur.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_dino_talk.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_dino_yawn.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_dub_wobble.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_frog_trill.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_hit_whip.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_howl_croak.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_howl_deep.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_howl_distressed.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_howl_high.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_howl_long.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_liquid_squirt.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_man_mumble.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_mouse_squeaks.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_rubber_thud.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_scurry_dry.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_shake_roll.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_snarl_short.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_spray_long.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_squish_hit.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_squish_snap.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_strange_music.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_strange_thwoink.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_thoing_backwards.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_thoing_deep.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_thud_crash.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\mco_tube_hit.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plc_bell_warn.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plc_die_laugh.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plc_hit_anvil.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plc_hit_anvil2.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plc_hit_arrow.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plc_hit_body.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plc_hit_groan.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plc_hit_grunt.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plc_hit_grunt2.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plc_hit_hay.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plc_miss_arrow.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plc_miss_arrow2.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plc_miss_swish.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_aim_wand.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_bang_ceramic.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_bang_dumpster.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_bang_metal.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_book_pageturn.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_bottle_clinks.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_break_canister.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_break_glass.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_break_glass2.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_break_plates.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_break_shatter.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_break_smash.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_break_wood.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_cabinet_open.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_cabinet_shut.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_chain_light.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_chest_latch.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_chest_unlatch.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_chimes_jangle.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_click_dry.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_click_switch.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_click_switch2.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_click_switch3.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_click_wood.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_close_hatch.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_coins_dump.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_coins_light.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_coins_pour.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_coins_shake.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_cork_pop.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_cork_squeak.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_door_bolt.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_door_creak.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_door_creakshut.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_door_dungeon.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_door_echolock.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_door_entrance.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_door_knob.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_door_latch.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_door_open.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_door_opening.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_door_rusty.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_door_shut.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_door_slam.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_door_squeaky.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_door_wooden.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_drop_boot.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_eat_bite.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_floor_creak.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_floor_creak2.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_glass_break.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_glass_breaking.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_glass_smashing.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_jar_ding.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_levelup.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_lock_case.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_lock_distant.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_metal_clank.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_metal_sharpen.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_open_case.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_spell1.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_spell2.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_spell3.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_use_staff.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_wood_thud.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\plm_zap_rod.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\pls_bell_bowl.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\pls_bell_chime_new.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\pls_bell_glass.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\pls_bell_hibell_soft.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\pls_bell_mute.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\pls_bell_sustain.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\pls_breathe_in.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\pls_man_argoh.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\pls_man_gulp_new.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\pls_man_oooh.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\pls_man_scream2.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\pls_man_sigh.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\pls_man_sniff.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\pls_man_sob.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\pls_man_spit.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\pls_man_ugh.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\pls_man_yell.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\pls_tone_blurk.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\pls_tone_clave6.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\pls_tone_clavelo8.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\pls_tone_conk.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\pls_tone_elec.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\pls_tone_goblet.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\pls_tone_guiro.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\pls_tone_headstock.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\pls_tone_scrape.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\pls_tone_stick.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\sto_bell_desk.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\sto_bell_ding.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\sto_bell_dingaling.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\sto_bell_jingles.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\sto_bell_register1.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\sto_bell_register2.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\sto_bell_ringing.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\sto_bell_shop.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\sto_coins_countertop.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\sto_man_haha.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\sto_man_hey.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\sto_man_whoohaha.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\sum_angel_song.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\sum_bell_crystal.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\sum_bell_hand.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\sum_bell_tone.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\sum_chime_jangle.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\sum_ghost_moan.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\sum_ghost_oooo.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\sum_ghost_wail.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\sum_gong_temple.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\sum_laugh_evil2.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\sum_lion_growl.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
-    <Media Include="lib\sounds\sum_piano_scrape.mp3">
-      <Filter>Resource Files\sounds</Filter>
-    </Media>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="src\win\angband.rc">
