@@ -1,19 +1,6 @@
-/**
- * \file game-world.h
- * \brief Game core management of the game world
- *
- * Copyright (c) 1997 Ben Harrison, James E. Wilson, Robert A. Koeneke
- *
- * This work is free software; you can redistribute it and/or modify it
- * under the terms of either:
- *
- * a) the GNU General Public License as published by the Free Software
- *    Foundation, version 2, or
- *
- * b) the "Angband licence":
- *    This software may be copied and distributed for educational, research,
- *    and not for profit purposes provided that this copyright and statement
- *    are included in all such copies.  Other copyrights may also apply.
+/*
+ * File: game-world.h
+ * Purpose: Game core management of the game world
  */
 
 #ifndef GAME_WORLD_H
@@ -21,31 +8,43 @@
 
 #include "cave.h"
 
-struct level {
-	int depth;
-	char *name;
-	char *up;
-	char *down;
-	struct level *next;
-};
+#define SERVER_SAVE     10      /* Minutes between server saves */
+#define SERVER_PURGE    24      /* Hours between server purges */
+#define GROW_CROPS      5000    /* How often to grow a bunch of new vegetables in wilderness */
+#define GROW_TREE       5000    /* How often to grow a new tree in towns */
 
-extern uint16_t daycount;
-extern uint32_t seed_randart;
+/*
+ * Time bubble scale factors in percentage terms
+ */
+#define MAX_TIME_SCALE  1000
+#define MIN_TIME_SCALE  10
+#define RUNNING_FACTOR  500 /* Increase time by this percentage when running */
+#define NORMAL_TIME     100 /* 100% */
+
+#define INHIBIT_DEPTH   -100
+
+#define TURN_BASED (cfg_turn_based && (NumPlayers == 1))
+
+extern bool server_generated;
+extern bool server_state_loaded;
 extern uint32_t seed_flavor;
-extern int32_t turn;
-extern bool character_generated;
-extern bool character_dungeon;
-extern const uint8_t extract_energy[200];
-extern struct level *world;
+extern hturn turn;
 
-struct level *level_by_name(const char *name);
-struct level *level_by_depth(int depth);
-bool is_daytime(void);
-int turn_energy(int speed);
-void play_ambient_sound(void);
-void process_world(struct chunk *c);
-void on_new_level(void);
-void process_player(void);
-void run_game_loop(void);
+extern bool is_daytime_turn(hturn *ht_ptr);
+extern bool is_daytime(void);
+extern void dusk_or_dawn(struct player *p, struct chunk *c, bool dawn);
+extern int turn_energy(int speed);
+extern int frame_energy(int speed);
+extern void run_game_loop(void);
+extern void kingly(struct player *p);
+extern bool level_keep_allocated(struct chunk *c);
+extern void play_game(void);
+extern void shutdown_server(void);
+extern void exit_game_panic(void);
+#ifdef WINDOWS
+extern void setup_exit_handler(void);
+#else
+extern void signals_init(void);
+#endif
 
-#endif /* !GAME_WORLD_H */
+#endif /* GAME_WORLD_H */
