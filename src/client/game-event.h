@@ -1,31 +1,60 @@
-/**
- * \file game-event.h
- * \brief Allows the registering of handlers to be told about game events.
- *
- * Copyright (c) 2007 Antony Sidwell
- *
- * This work is free software; you can redistribute it and/or modify it
- * under the terms of either:
- *
- * a) the GNU General Public License as published by the Free Software
- *    Foundation, version 2, or
- *
- * b) the "Angband licence":
- *    This software may be copied and distributed for educational, research,
- *    and not for profit purposes provided that this copyright and statement
- *    are included in all such copies.  Other copyrights may also apply.
+/*
+ * File: game-event.h
+ * Purpose: Allows the registering of handlers to be told about game events.
  */
 
 #ifndef INCLUDED_GAME_EVENT_H
 #define INCLUDED_GAME_EVENT_H
 
+
 #include "z-type.h"
 
-/**
+/*
  * The various events we can send signals about.
  */
-typedef enum game_event_type
+typedef enum
 {
+#ifndef SPClient
+    EVENT_MAP = 0,          /* Some part of the map has changed. */
+
+    EVENT_STATS,            /* One or more of the stats. */
+    EVENT_HP,               /* HP or Max HP. */
+    EVENT_MANA,             /* Mana or Max Mana. */
+    EVENT_AC,               /* Armour Class. */
+    EVENT_EXPERIENCE,       /* Experience or Max Experience. */
+    EVENT_PLAYERLEVEL,      /* Player's level has changed */
+    EVENT_PLAYERTITLE,      /* Player's title has changed */
+    EVENT_GOLD,             /* Player's gold amount. */
+    EVENT_MONSTERHEALTH,    /* Observed monster's health level. */
+    EVENT_DUNGEONLEVEL,     /* Dungeon depth */
+    EVENT_PLAYERSPEED,      /* Player's speed */
+    EVENT_RACE_CLASS,       /* Race or Class */
+    EVENT_STUDYSTATUS,      /* "Study" availability */
+    EVENT_STATUS,           /* Status */
+    EVENT_DETECTIONSTATUS,  /* Trap detection status */
+    EVENT_STATE,            /* Resting and Stealth Mode (+ Light level) */
+    EVENT_PLUSSES,          /* Plusses to hit/dam */
+    EVENT_OTHER,            /* Other info (skills, history, ...) */
+    EVENT_LAG,              /* Lag meter */
+
+    EVENT_INVENTORY,
+    EVENT_EQUIPMENT,
+    EVENT_ITEMLIST,
+    EVENT_MONSTERLIST,
+    EVENT_MONSTERTARGET,
+    EVENT_OBJECTTARGET,
+    EVENT_MESSAGE,
+    EVENT_MESSAGE_CHAT,
+    EVENT_SPELL,
+    EVENT_SPECIAL_INFO,
+
+    EVENT_SOUND,
+    EVENT_BELL,
+
+    EVENT_INPUT_FLUSH,
+
+    EVENT_END             /* It's the end of a "set" of events, so safe to update */
+#else
 	EVENT_MAP = 0,		/* Some part of the map has changed. */
 
 	EVENT_STATS,  		/* One or more of the stats. */
@@ -101,12 +130,17 @@ typedef enum game_event_type
 	EVENT_GEN_TUNNEL_FINISHED, /* has tunnel in event data with results */
 
 	EVENT_END  /* Can be sent at the end of a series of events */
+#endif
 } game_event_type;
 
-#define  N_GAME_EVENTS EVENT_END + 1
+#define N_GAME_EVENTS (EVENT_END + 1)
 
 typedef union
 {
+#ifndef SPClient
+    struct loc point;
+    int type;
+#else
 	struct loc point;
 
 	const char *string;
@@ -196,10 +230,10 @@ typedef union
 		 */
 		bool early;
 	} tunnel;
+#endif
 } game_event_data;
 
-
-/**
+/*
  * A function called when a game event occurs - these are registered to be
  * called by event_add_handler or event_add_handler_set, and deregistered
  * when they should no longer be called through event_remove_handler or
@@ -207,21 +241,29 @@ typedef union
  */
 typedef void game_event_handler(game_event_type type, game_event_data *data, void *user);
 
-void event_add_handler(game_event_type type, game_event_handler *fn, void *user);
-void event_remove_handler(game_event_type type, game_event_handler *fn, void *user);
+extern void event_add_handler(game_event_type type, game_event_handler *fn, void *user);
+extern void event_remove_handler(game_event_type type, game_event_handler *fn, void *user);
+extern void event_remove_all_handlers(void);
+extern void event_add_handler_set(game_event_type *type, size_t n_types,
+    game_event_handler *fn, void *user);
+extern void event_remove_handler_set(game_event_type *type, size_t n_types,
+    game_event_handler *fn, void *user);
+
+extern void event_signal(game_event_type type);
+extern void event_signal_point(game_event_type type, int x, int y);
+extern void event_signal_type(game_event_type type, int t);
+
+#ifdef SPClient
+
 void event_remove_handler_type(game_event_type type);
-void event_remove_all_handlers(void);
-void event_add_handler_set(game_event_type *type, size_t n_types, game_event_handler *fn, void *user);
-void event_remove_handler_set(game_event_type *type, size_t n_types, game_event_handler *fn, void *user);
 
 void event_signal_birthpoints(const int *points, const int *inc_points,
 	int remaining);
 
-void event_signal_point(game_event_type, int x, int y);
 void event_signal_string(game_event_type, const char *s);
 void event_signal_message(game_event_type type, int t, const char *s);
 void event_signal_flag(game_event_type type, bool flag);
-void event_signal(game_event_type);
+
 void event_signal_blast(game_event_type type,
 						int proj_type,
 						int num_grids,
@@ -247,5 +289,6 @@ void event_signal_missile(game_event_type type,
 void event_signal_size(game_event_type type, int h, int w);
 void event_signal_tunnel(game_event_type type, int nstep, int npierce, int ndug,
 	int dstart, int dend, bool early);
+#endif
 
 #endif /* INCLUDED_GAME_EVENT_H */
