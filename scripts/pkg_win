@@ -44,10 +44,9 @@ mkdir lib/help
 mkdir lib/screens
 mkdir lib/fonts
 mkdir lib/tiles
+mkdir lib/tiles/tangaria
 mkdir lib/tiles/adam-bolt
 mkdir lib/tiles/gervais
-mkdir lib/tiles/nomad
-mkdir lib/tiles/old
 mkdir lib/tiles/shockbolt
 mkdir lib/sounds
 mkdir lib/icons
@@ -60,72 +59,44 @@ mkdir lib/user/panic
 
 touch lib/user/delete.me lib/user/save/delete.me lib/user/scores/delete.me \
       lib/user/info/delete.me lib/user/archive/delete.me \
-	  lib/user/panic/delete.me
+      lib/user/panic/delete.me
 
 cp ../*.exe .
 cp ../*.dll .
 
 # Copy the readmes and suchlike, converting to DOS line endings on the way
+cp_unix2dos ../changes.txt ./Changes.txt
+cp_unix2dos ../thanks.txt ./Thanks.txt
+cp_unix2dos ../copying.txt ./Copying.txt
+cp_unix2dos ../faq.txt ./FAQ.txt
+cp ../doc/manual.pdf ./Manual.pdf
+cp ../doc/manual.html ./Manual.html
+cp ../doc/mr-att.png ./mr-att.png
 
-cp_unix2dos ../changes.txt changes.txt
+cp ../lib/readme.txt lib/
 
-# Assumes that all the converted files in docs have names that don't contain
-# spaces or other characters that the shell uses as field separators.
-# First copy the ones that will benefit from newline conversion; then
-# do the rest.
-for f in `find ../docs/_build/html \( -name '*.css' -o -name '*.html' \
-		-o -name '*.js' -o -name '*.svg' -o -name '*.txt' \) \
-		\! -type d -print` ; do
-	cp_unix2dos "$f" \
-		`echo "$f" | sed -E -e 's%^\.\./docs/_build/html%docs%'`
-done
-for f in `find ../docs/_build/html \! -name '*.css' \! -name '*.html' \
-		\! -name '*.js' \! -name '*.svg' \! -name '*.txt' \
-		\! -type d -print` ; do
-	cp "$f" `echo "$f" | sed -E -e 's%^\.\./docs/_build/html%docs%'`
-done
+cp ../lib/gamedata/*.txt lib/gamedata
+cp ../lib/screens/*.txt lib/screens
 
-cp_unix2dos ../lib/readme.txt lib/readme.txt
+cp ../lib/help/*.txt lib/help
+cp ../lib/help/*.hlp lib/help
 
-# Ditto the comment above for the way find is used here.
-for f in `find ../lib/gamedata -name '*.txt' -print` ; do
-	cp_unix2dos "$f" `echo "$f" | sed -E -e 's%^\.\./%%'`
-done
-for f in `find ../lib/screens -name '*.txt' -print` ; do
-	cp_unix2dos "$f" `echo "$f" | sed -E -e 's%^\.\./%%'`
-done
-for f in `find ../lib/help -name '*.txt' -print` ; do
-	cp_unix2dos "$f" `echo "$f" | sed -E -e 's%^\.\./%%'`
-done
+cp ../lib/customize/*.prf lib/customize
 
-for f in `find ../lib/customize -name '*.prf' -print` ; do
-	cp_unix2dos "$f" `echo "$f" | sed -E -e 's%^\.\./%%'`
-done
+cp ../lib/fonts/*.fon lib/fonts
 
-cp ../lib/fonts/*.fon ../lib/fonts/*.woff lib/fonts
+cp ../lib/tiles/*.txt lib/tiles
+cp ../lib/tiles/tangaria/* lib/tiles/tangaria
+cp ../lib/tiles/adam-bolt/* lib/tiles/adam-bolt
+cp ../lib/tiles/gervais/* lib/tiles/gervais
+cp ../lib/tiles/shockbolt/* lib/tiles/shockbolt
+rm lib/tiles/*/Makefile
 
-for f in `find ../lib/icons \( -name '*.desktop' -o -name '*.svg' \) \
-		-print` ; do
-	cp_unix2dos "$f" `echo "$f" | sed -E -e 's%^\.\./%%'`
-done
-cp ../lib/icons/*.png lib/icons
-
-for f in `find ../lib/tiles \( -name '*.txt' -o -name '*.prf' \) -print` ; do
-	cp_unix2dos "$f" `echo "$f" | sed -E -e 's%^\.\./%%'`
-done
-cp ../lib/tiles/adam-bolt/*.png lib/tiles/adam-bolt
-cp ../lib/tiles/gervais/*.png lib/tiles/gervais
-cp ../lib/tiles/nomad/*.png lib/tiles/nomad
-cp ../lib/tiles/old/*.png lib/tiles/old
-cp ../lib/tiles/shockbolt/*.png lib/tiles/shockbolt
-
-cp_unix2dos ../lib/sounds/sound.cfg lib/sounds/sound.cfg
+cp ../lib/sounds/sound.cfg lib/sounds
 cp ../lib/sounds/*.mp3 lib/sounds
 
-for f in `find ../lib/user/info \( -name '*.txt' -o -name '*.hlp' \) \
-		-print` ; do
-	cp_unix2dos "$f" `echo "$f" | sed -E -e 's%^\.\./%%'`
-done
+cp ../lib/user/info/*.txt lib/user/info
+cp ../lib/user/info/*.hlp lib/user/info
 
 cd ..
 zip -9 -r $OUT $DIR
