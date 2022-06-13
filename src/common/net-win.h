@@ -1,4 +1,4 @@
-#ifdef WINDOWS
+#if !defined(SPClient) && defined(WINDOWS)
 /*
  * File: net-win.h
  * Purpose: Network module

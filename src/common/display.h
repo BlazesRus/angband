@@ -2,8 +2,7 @@
  * File: display.h
  * Purpose: Display the character on the screen or in a file
  */
-
-#ifndef INCLUDED_DISPLAY_H
+#if !defined(SPClient) && !defined(INCLUDED_DISPLAY_H)
 #define INCLUDED_DISPLAY_H
 
 extern int16_t cfg_fps;

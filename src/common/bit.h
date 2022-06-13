@@ -2,8 +2,7 @@
  * File: bit.h
  * Purpose: Bit handling
  */
-
-#ifndef BIT_H
+#if !defined(SPClient) && !defined(BIT_H)
 #define BIT_H
 
 #define SET_BIT(w, bit)     ( (w) |= (bit) )

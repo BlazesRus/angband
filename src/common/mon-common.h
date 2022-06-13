@@ -2,8 +2,7 @@
  * File: mon-common.h
  * Purpose: Flags, structures and variables for monsters
  */
-
-#ifndef INCLUDED_MONSTER_COMMON_H
+#if !defined(SPClient) && !defined(INCLUDED_MONSTER_COMMON_H)
 #define INCLUDED_MONSTER_COMMON_H
 
 /** Monster flags **/

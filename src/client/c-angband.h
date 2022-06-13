@@ -2,8 +2,7 @@
  * File: c-angband.h
  * Purpose: Main Angband header file (client)
  */
-#ifndef SPClient
-#ifndef INCLUDED_C_ANGBAND_H
+#if defined(MBandClient) && !defined(INCLUDED_C_ANGBAND_H)
 #define INCLUDED_C_ANGBAND_H
 
 /*
@@ -55,5 +54,4 @@
 #include "ui-spell.h"
 #include "ui-store.h"
 
-#endif
 #endif

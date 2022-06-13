@@ -2,7 +2,8 @@
  * File: netclient.h
  * Purpose: The client side of the networking stuff
  */
-#ifndef SPClient
+#if defined(MBandClient) && !defined(INCLUDED_C_NETCLIENT_H)
+#define INCLUDED_C_NETCLIENT_H 
 extern bool send_quit;
 extern struct angband_constants z_info_struct;
 extern uint16_t flavor_max;
