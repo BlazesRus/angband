@@ -53,19 +53,19 @@
         <When Condition="$(Configuration.Contains('Server'))">
             <PropertyGroup>
                 <SDLLibraryType>Minimal</SDLLibraryType>
-                <ProjAppType>Server</SDLLibraryType>
+                <ProjAppType>Server</ProjAppType>
             </PropertyGroup>
         </When>
         <When Condition="$(Configuration.Contains('Client'))">
             <PropertyGroup>
                 <SDLLibraryType>Minimal</SDLLibraryType>
-                <ProjAppType>Client</SDLLibraryType>
+                <ProjAppType>Client</ProjAppType>
             </PropertyGroup>
         </When>
         <Otherwise>
             <PropertyGroup>
                 <SDLLibraryType>Minimal</SDLLibraryType>
-                <ProjAppType>SPClient</SDLLibraryType>
+                <ProjAppType>SPClient</ProjAppType>
             </PropertyGroup>
         </Otherwise>
     </Choose>
