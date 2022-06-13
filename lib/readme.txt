@@ -1,4 +1,4 @@
-The "lib" directory contains all of Angband's special sub-directories.
+The "lib" directory contains all of PWMAngband's special sub-directories.
 
 
 === Directory "lib/gamedata" ===
@@ -14,11 +14,11 @@ The utf8 template files are easier to edit than hard-coded arrays, prevent
 compilation errors on some machines, and also shrink the size of the binary
 executable, and also provide a user-readable spoiler file of sorts.
 
-These files are modifiable.  It is recommended that if you do modify any of
+These files are modifiable. It is recommended that if you do modify any of
 these files, you put the modified version in your user directory (lib\user
 on Windows, ~/Documents/Angband on macOS, ~/.angband/Angband on Linux/Unix),
-where it will be read preferentially.  Look at the help file
-lib/help/modify.txt for more details.
+where it will be read preferentially. Look at the help file
+lib/help/modifying.txt for more details.
 
 
 === Directory "lib/customize" ===
@@ -41,21 +41,21 @@ This directory is used to search for normal "online help" files.
 
 The "lib/screens" directory contains various special text data files.
 
-The 'news.txt' file is displayed to the user when the game starts up.  It
+The 'news.txt' file is displayed to the user when the game starts up. It
 contains basic information such as my name and email address, and the names
 of some of the people who have been responsible for previous versions of
-Angband.  You may edit this file (slightly) to include local "site specific"
-information such as who compiled the local executable.  You should refer the
+PWMAngband. You may edit this file (slightly) to include local "site specific"
+information such as who compiled the local executable. You should refer the
 user to a special "online help" file, if necessary, that describes any local
-modifications in detail.  The first line of this file should be blank, and
+modifications in detail. The first line of this file should be blank, and
 only the next 21 lines should contain information.
 
-The 'dead.txt' file is displayed to the user when the player dies.  It
+The 'dead.txt' file is displayed to the user when the player dies. It
 contains a picture of a tombstone which is filled in with interesting
-information about the dead player.  You should not edit this file.
+information about the dead player. You should not edit this file.
 
-The 'crown.txt' file is displayed to the user when the player wins.  It
-contains a picture of a crown.  You should not edit this file.
+The 'crown.txt' file is displayed to the user when the player wins. It
+contains a picture of a crown. You should not edit this file.
 
 These files should not be modified unless you know exactly what you are doing.
 
@@ -63,13 +63,13 @@ These files should not be modified unless you know exactly what you are doing.
 === Directory "lib/fonts" ===
 
 The "lib/fonts" directory contains the font files for use in the Windows and
-SDL front ends.  More .fon files can be added and used if you wish.
+SDL front ends. More .fon files can be added and used if you wish.
 
 
 === Directory "lib/tiles" ===
 
 The "lib/tiles" directory contains the .png images for the various tilesets,
-as well as the file graphics.txt which the game uses to display the tiles
+as well as the file list.txt which the game uses to display the tiles
 correctly.
 
 
@@ -81,16 +81,16 @@ sound.cfg which tells the game which sound files to use for which game events.
 
 === Directory "lib/icons" ===
 
-The "lib/icons" directory contains the Angband icon files.
+The "lib/icons" directory contains the PWMAngband icon files.
 
 
 === Directory "lib/user" ===
 
 The "lib/user" directory is used to put various game-written configuration
 files (such as the monster memory file, lore.txt, and a .prf file with the
-subwindow configuration for the current character).  It is the destination
+subwindow configuration for the current character). It is the destination
 for character dumps, output from the death screen spoilers, and results
-from the statistics front end or statistics debugging commands.  It also
+from the statistics front end or statistics debugging commands. It also
 contains the directories for scores, savefiles, and randart sets (all of
 those may be held systemwide, as in some Linux/Unix installations), and
 for user-created help files.
@@ -121,15 +121,7 @@ The "scores.raw" file contains the "high score" table, in a "semi-binary" form,
 that is, all the bytes in the file are normal ascii values, but this includes
 the special "nul" or "zero" byte, which is used to separate and pad records.
 You should probably not attempt to modify this file with a normal text editor.
-This file should be (more or less) portable between different platforms.  It
+This file should be (more or less) portable between different platforms. It
 must be present (or creatable) for the game to run correctly.
 
 On some multiuser systems there is a separate systemwide score file.
-
-
-=== Direcctory "lib/user/archive" ===
-
-Holds the randart set files when they are not in use by a character loaded
-into the game.
-
-

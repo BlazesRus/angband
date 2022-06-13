@@ -5,8 +5,7 @@
 #
 # This file includes, if appropriate, various "sub-files"
 #
-# See "lib/help/command.txt" and "src/files.c" for more information.
-#
+
 
 ##### Race Specific Subfiles #####
 
@@ -46,6 +45,22 @@
 ?:[EQU $RACE Kobold]
 %:Kobold.prf
 
+?:[EQU $RACE Yeek]
+%:Yeek.prf
+
+?:[EQU $RACE Ent]
+%:Ent.prf
+
+?:[EQU $RACE Thunderlord]
+%:Thunderlord.prf
+%:Tlord.prf
+
+?:[EQU $RACE Dragon]
+%:Dragon.prf
+
+?:[EQU $RACE Hydra]
+%:Hydra.prf
+
 
 ##### Class Specific Subfiles #####
 
@@ -55,8 +70,17 @@
 ?:[EQU $CLASS Mage]
 %:Mage.prf
 
+?:[EQU $CLASS Shaman]
+%:Shaman.prf
+
 ?:[EQU $CLASS Priest]
 %:Priest.prf
+
+?:[EQU $CLASS Warlock]
+%:Warlock.prf
+
+?:[EQU $CLASS Paladin]
+%:Paladin.prf
 
 ?:[EQU $CLASS Rogue]
 %:Rogue.prf
@@ -64,20 +88,38 @@
 ?:[EQU $CLASS Ranger]
 %:Ranger.prf
 
-?:[EQU $CLASS Paladin]
-%:Paladin.prf
-
-?:[EQU $CLASS Druid]
-%:Druid.prf
-
-?:[EQU $CLASS Necromancer]
-%:Necromancer.prf
-%:Necro.prf
-
 ?:[EQU $CLASS Blackguard]
 %:Blackguard.prf
 %:BG.prf
 
+?:[EQU $CLASS Sorceror]
+%:Sorceror.prf
+
+?:[EQU $CLASS Unbeliever]
+%:Unbeliever.prf
+%:Unbe.prf
+
+?:[EQU $CLASS Archer]
+%:Archer.prf
+
+?:[EQU $CLASS Monk]
+%:Monk.prf
+
+?:[EQU $CLASS Telepath]
+%:Telepath.prf
+
+?:[EQU $CLASS Elementalist]
+%:Elementalist.prf
+%:Element.prf
+
+?:[EQU $CLASS Summoner]
+%:Summoner.prf
+
+?:[EQU $CLASS Shapechanger]
+%:Shapechanger.prf
+%:Changer.prf
+
+?:[EQU $CLASS Tamer]
+%:Tamer.prf
 
 ?:1
-

@@ -1,8 +1,5 @@
-# File: summon.txt
-
-# Summon type details
-
-# Fields:
+# === Understanding summon.txt (Summon type details) ===
+ 
 # name      - summon type name
 # msgt      - message type
 # uniques   - whether uniques are allowed
@@ -10,49 +7,49 @@
 # race-flag - allowed racial flag if any
 # fallback  - summon type to substitute on failure
 # desc      - description
-
+#
 # 'name' is the code used to refer to the summon type, and should begin every
 # entry
-
+#
 # 'msgt' is the message type used to display the message, which may affect any
 # sound played on the summon happening
-
+#
 # 'uniques' is 1 if the summon type allows uniques to be summoned, 0 otherwise.
 # Traditionally UNIQUE and WRAITH will summon uniques, ANY, HI_UNDEAD, HI_DEMON
 # and HI_DRAGON may summon uniques, and none of the other summon codes will ever
 # summon uniques.
-
-# 'base' indicates a possible monster base for the summon.  If a summon type
+#
+# 'base' indicates a possible monster base for the summon. If a summon type
 # has no base: line, any monster base can be chosen, otherwise only the given
 # monster bases can be chosen.
-
-# 'race-flag' indicates a possible race flag for the summon.  If a summon type
+#
+# 'race-flag' indicates a possible race flag for the summon. If a summon type
 # has no race-flag: line, there are no flag-based restrictions, otherwise
 # only monsters with the given flag can be chosen.
-
+#
 # 'fallback' gives the name of another summon type to try if the given type
-# fails to summon any monsters.  Traditionally the only summon types with a
+# fails to summon any monsters. Traditionally the only summon types with a
 # fallback are WRAITH and UNIQUE, which both fall back to HI_UNDEAD.
-
+#
 # 'desc' is the description of the summon type used in messages.
-
+#
 # Note that the KIN summon is a special case which has special code in
 # effect_handler_SUMMON() to handle it, and UNIQUE and WRAITH have code in
 # summon_specific() that exclude them from being used for the "call" type of
 # summon (where summoned monsters are chosen from those already on the level
 # rather than newly created).
-
+#
 # Note also that the ANY summon should always be the first in this file.
+
 
 name:ANY
 msgt:SUM_MONSTER
 uniques:1
-desc:a monster
+desc:monsters
 
 name:KIN
 msgt:SUM_MONSTER
 uniques:0
-desc:similar monsters
 
 name:MONSTER
 msgt:SUM_MONSTER
@@ -95,6 +92,12 @@ uniques:0
 base:ainu
 desc:ainur
 
+name:ANGEL
+msgt:SUM_ANGEL
+uniques:0
+base:angel
+desc:angels
+
 name:DEMON
 msgt:SUM_DEMON
 uniques:0
@@ -105,7 +108,7 @@ name:UNDEAD
 msgt:SUM_UNDEAD
 uniques:0
 race-flag:UNDEAD
-desc:undead
+desc:non-unique undead monsters
 
 name:DRAGON
 msgt:SUM_DRAGON
@@ -117,7 +120,7 @@ name:HI_DEMON
 msgt:SUM_HI_DEMON
 uniques:1
 base:major demon
-desc:greater demons
+desc:major demons
 
 name:HI_UNDEAD
 msgt:SUM_HI_UNDEAD
@@ -125,7 +128,7 @@ uniques:1
 base:vampire
 base:wraith
 base:lich
-desc:greater undead
+desc:major undead monsters
 
 name:HI_DRAGON
 msgt:SUM_HI_DRAGON
@@ -147,3 +150,52 @@ uniques:1
 race-flag:UNIQUE
 fallback:HI_UNDEAD
 desc:unique monsters
+
+name:BALL
+msgt:SUM_MONSTER
+uniques:0
+base:ball
+desc:balls
+
+name:ELEMENTAL
+msgt:SUM_MONSTER
+uniques:0
+base:elemental
+desc:elementals
+
+### PWMAngband ###
+
+name:JELLY
+msgt:SUM_MONSTER
+uniques:0
+base:jelly
+base:mold
+desc:a jelly
+
+name:GOLEM
+msgt:SUM_MONSTER
+uniques:0
+base:golem
+desc:a golem
+
+name:VORTEX
+msgt:SUM_MONSTER
+uniques:0
+base:vortex
+desc:a vortex
+
+name:TRAP
+msgt:SUM_MONSTER
+uniques:1
+
+name:ABOMINATION
+msgt:SUM_MONSTER
+uniques:0
+race-flag:ABOMINATION
+desc:abominations
+
+name:SPIRIT
+msgt:SUM_MONSTER
+uniques:0
+base:ghost
+desc:spirits

@@ -1,8 +1,4 @@
-# File: flavor.txt
-
-# This file is used to initialize the "flavor" information for the Angband game.
-# Do not modify this file unless you know exactly what you are doing,
-# unless you wish to risk possible system crashes and broken savefiles.
+# === Understanding flavor.txt ===
 
 # kind:<tval>:<char>
 # flavor:<index>:<attr>:<text>
@@ -10,24 +6,11 @@
 
 
 ##### Rings #####
-# These are precious or semi-precious stones
 
 kind:ring:=
 
-# Fixed: the One Ring
+# Fixed: The One Ring
 fixed:1:Ring of Power:Yellow:Plain Gold
-
-# The Ring of Barahir 50
-# The Ring of Tulkas 51
-
-# The Ring of Fire 'Narya'
-fixed:28:Ring of Fire:Red:Ruby
-
-# The Ring of Adamant 'Nenya'
-fixed:40:Ring of Adamant:Light Blue:Mithril
-
-# The Ring of Firmament 'Vilya'
-fixed:29:Ring of Firmament:Blue:Sapphire
 
 flavor:2:Green:Alexandrite
 flavor:3:Violet:Amethyst
@@ -55,8 +38,13 @@ flavor:24:White:Pearl
 flavor:25:Light Slate:Quartz
 flavor:26:Light Slate:Quartzite
 flavor:27:Light Red:Rhodonite
-#flavor:28:Red:Ruby
-#flavor:29:Blue:Sapphire
+
+# Fixed: The Ring of Fire 'Narya'
+fixed:28:Ring of Fire:Red:Ruby
+
+# Fixed: The Ring of Firmament 'Vilya'
+fixed:29:Ring of Firmament:Blue:Sapphire
+
 flavor:30:Yellow:Tiger Eye
 flavor:31:Yellow:Topaz
 flavor:32:Light Blue:Turquoise
@@ -67,51 +55,37 @@ flavor:36:Yellow:Gold
 flavor:37:Light Dark:Obsidian
 flavor:38:Light Slate:Silver
 flavor:39:Umber:Amber
-#flavor:40:Light Blue:Mithril
+
+# Fixed: The Ring of Adamant 'Nenya'
+fixed:40:Ring of Adamant:Light Blue:Mithril
+
 flavor:41:Light Dark:Jet
 flavor:42:Yellow:Jewelled
 flavor:43:Light Green:Adamantite
 
-# Agate
-# Black Diamond
-# Blue Diamond
-# Flawed Diamond
-# Nephrite
-# Rose Quartz
-# Tanzanite
-# Jacinth
-# Platinum
 
 ##### Amulets #####
 
 kind:amulet:"
 
-# The Amulet of Carlammas
-fixed:52:Amulet:Light Umber:Bronze
-
-# The Amulet of Ingwe 51
-
-# The Necklace of the Dwarves
-fixed:55:Necklace:Yellow:Golden
-
-# New Artifact (14): The Elfstone 'Elessar'
-fixed:44:Elfstone:Green:Green
-
-# New Artifact (15): The Jewel 'Evenstar'
-fixed:46:Jewel:White:White
-
-#flavor:44:Yellow:Amber
+flavor:44:Yellow:Amber
 flavor:45:Light Umber:Driftwood
-#flavor:46:White:Coral
+flavor:46:White:Coral
 flavor:47:Light Slate:Agate
 flavor:48:White:Ivory
 flavor:49:Light Dark:Obsidian
 flavor:50:White:Bone
 flavor:51:Light Umber:Brass
-#flavor:52:Light Umber:Bronze
+
+# Fixed: The Amulet of Carlammas
+fixed:52:Amulet:Light Umber:Bronze
+
 flavor:53:Slate:Pewter
 flavor:54:Umber:Tortoise Shell
-#flavor:55:Yellow:Golden
+
+# Fixed: The Necklace of the Dwarves
+fixed:55:Necklace:Yellow:Golden
+
 flavor:56:Light Blue:Azure
 flavor:57:White:Crystal
 flavor:58:Light Slate:Silver
@@ -125,30 +99,8 @@ flavor:65:Slate:Flint Stone
 flavor:66:Light Blue:Sea Shell
 flavor:67:Light Slate:Mother-of-Pearl
 
-# Azure
-# Bead
-# Dragon's Claw
-# Enameled
-# Horn
-# Shark's Tooth
-# Stained Glass
-# Fingerbone
-# Cog
-# Alabaster
-# Bone
-# Crystal
-# Enamel
-# Flint
-# Glass
-# Granite
-# Haematite
-# Marble
-# Obsidian
-# Serpentine
-# Porcelain
 
 ##### Staves #####
-# These are wooden
 
 kind:staff:_
 
@@ -188,25 +140,8 @@ flavor:100:Light Umber:Gnarled
 flavor:101:White:Ivory
 flavor:102:Light Umber:Willow
 
-# Alder
-# Applewood
-# Ash
-# Cherry
-# Driftwood
-# Elder
-# Fir
-# Olive
-# Mallorn
-# Poplar
-# Rowan
-# Mirkwood
-# Chestnut
-# Ebony
-# Yew
-# Metal Shod
 
 ##### Wands #####
-# These are allsorts
 
 kind:wand:-
 
@@ -246,18 +181,8 @@ flavor:135:Slate:Lead-Plated
 flavor:136:White:Ivory
 flavor:137:Slate:Pewter
 
-# Adamantium
-# Antimony
-# Blackened
-# Cobalt
-# Corroded
-# Damascened Steel
-# Electrum
-# Jeweled
-# Stubby
 
 ##### Rods #####
-# These are metals
 
 kind:rod:-
 
@@ -297,10 +222,8 @@ flavor:170:Slate:Lead-Plated
 flavor:171:White:Ivory
 flavor:172:Slate:Pewter
 
-# Wrought Iron
 
 ##### Mushrooms #####
-# These are 'textures'
 
 kind:mushroom:,
 
@@ -325,15 +248,8 @@ flavor:190:White:Withered
 flavor:191:White:Waxy
 flavor:192:Umber:Smelly
 
-# Fleshy
-# Fuzzy
-# Luminescent
-# Blotchy
-# Leathery
-# Rotting
 
 ##### Potions #####
-# These are colours or -ing verbs
 
 kind:potion:!
 
@@ -397,18 +313,6 @@ flavor:249:Red:Coagulated Crimson
 flavor:250:Light Pink:Light Pink
 flavor:251:Yellow:Gold
 
-# Swirling
-# Caramel
-# Curdled
-# Briny
-# Sweet
-# Sour
-# Fizzing
-# Syrupy
-# Frothing
-# Peach
-# Rosy
-# Sea-blue
 
 ##### Scrolls #####
 
@@ -467,3 +371,77 @@ flavor:299:White
 flavor:300:White
 flavor:301:White
 flavor:302:White
+
+
+##### PWMAngband #####
+
+kind:amulet:"
+
+# Fixed: The Elfstone 'Elessar'
+fixed:303:Elfstone:Green:Green
+
+# Fixed: The Jewel 'Evenstar'
+fixed:304:Jewel:White:White
+
+# Fixed: The Blue Stone 'Toris Mejistos'
+fixed:305:Blue Stone:Blue:Blue
+
+# Fixed: The Lost Silmaril of Maglor
+fixed:306:Lost Silmaril:Red:Red
+
+kind:ring:=
+
+# Fixed: Black Ring of Power
+fixed:307:Black Ring of Power:Light Dark:Black
+
+##### Tangaria #####
+
+kind:amulet:"
+
+flavor:308:Light Dark:Chrysoberyl
+
+
+##### Scrolls #####
+# Scroll names are generated from randomly combined syllables
+
+kind:scroll:?
+
+flavor:309:White
+flavor:310:White
+flavor:311:White
+flavor:312:White
+flavor:313:White
+flavor:314:White
+flavor:315:White
+flavor:316:White
+flavor:317:White
+#scrolls are near the end or already ended.. add more?
+
+##### Mushrooms #####
+
+kind:mushroom:,
+
+flavor:318:Orange:Soft
+flavor:319:Red:Pimpled
+flavor:320:Pink:Beautiful
+flavor:321:Beige:Ordinary
+
+##### Potions #####
+
+kind:potion:!
+
+flavor:322:Red:Bloody
+flavor:323:Green:Acidulous
+flavor:324:Blue:Skyey
+flavor:325:White:Transparent
+flavor:326:Light Dark:Earthy
+flavor:327:Umber:Turbid
+flavor:328:Mud:Mucky
+flavor:329:Slate:Dusty
+flavor:330:Orange:Faded
+flavor:331:Purple:Luminous
+flavor:332:Teal:Bright
+flavor:333:Mustard:Sooty
+flavor:334:Yellow:Canary
+
+# when adding - check flvr-tan.prf

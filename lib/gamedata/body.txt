@@ -1,12 +1,8 @@
-# File: body.txt
+# === Understanding body.txt ===
 
-# Shamelessly stolen from PosChengband
+# body : body name
+# slot : slot type : slot name
 
-# Body types  - currently only the standard body is used, and there
-# is no facility for different bodies in p_race.txt.
-
-# Note that each body record must take the form of a body-name line,
-# followed by a sequence of alternating slot-type and slot-name lines.
 
 body:Humanoid
 slot:WEAPON:weapon
@@ -21,4 +17,4 @@ slot:SHIELD:arm
 slot:HAT:head
 slot:GLOVES:hands
 slot:BOOTS:feet
-
+slot:TOOL:tool

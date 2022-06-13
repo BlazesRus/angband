@@ -1,4 +1,4 @@
-# File: realm.txt
+# === Understanding realm.txt ===
 
 # name: realm name
 # stat: primary spellcasting stat
@@ -30,3 +30,35 @@ stat:INT
 verb:perform
 spell-noun:ritual
 book-noun:shadow book
+
+name:psi
+stat:WIS
+verb:use
+spell-noun:psi power
+book-noun:psi book
+
+name:elemental
+stat:INT
+verb:cast
+spell-noun:spell
+book-noun:elemental book
+
+name:common
+stat:CON
+verb:perform
+spell-noun:task
+book-noun:travel guide
+
+name:ghost
+verb:use
+spell-noun:power
+
+name:mimic
+verb:cast
+spell-noun:spell
+
+#name:hypnosis
+#stat:CHR
+#verb:impress
+#spell-noun:infusion
+#book-noun:hypnosis book

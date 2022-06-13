@@ -35,7 +35,7 @@ name:gas trap
 code:POISON
 level:1
 effect:TIMED_INC:POISONED
-dice:10+d20
+dice:10+1d20
 msg:A puff of green gas surrounds you!
 
 name:poison needle
@@ -59,7 +59,7 @@ msg-death:a poison needle
 name:summoning runes
 code:SUMMON
 level:15
-effect:SUMMON:ANY
+effect:SUMMON:MONSTER:0:-2
 dice:2+1d3
 magic:1
 msg:You are enveloped in a cloud of smoke!
@@ -68,7 +68,7 @@ name:gas trap
 code:PARALYZE
 level:19
 effect:TIMED_INC:PARALYZED
-dice:10+d20
+dice:10+1d20
 msg:A puff of yellow gas surrounds you!
 
 name:explosion device

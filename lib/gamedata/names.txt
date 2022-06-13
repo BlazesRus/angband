@@ -1,9 +1,4 @@
-# File: names.txt
-
 # This file is used to initialize the random name fragments for the game.
-
-# Do not modify this file unless you know exactly what you are doing
-# unless you wish to risk possible system crashes and broken savefiles.
 
 # The code *doesn't* pick a name randomly from this list. What it does 
 # is build up a set of probabilities based on the list. For example, if 
@@ -54,9 +49,12 @@
 # put in Latin words, it would come up with words that sound Latin (as 
 # it does when choosing the text for scrolls).
 
-# Format:
+
+# === Understanding names.txt ===
+
 # section: section type (1 for Tolkienish names, 2 for scroll names)
 # word: data
+
 
 # Tolkien names
 section:1

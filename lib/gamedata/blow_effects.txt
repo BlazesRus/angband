@@ -1,7 +1,5 @@
-# File blow_effects.txt
-# Monster race blow effects
-#
-# Fields:
+# === Understanding blow_effects.txt (monster race blow effects) ===
+
 # name - blow effect name as in monster.txt
 # power - used in monster to-hit chance calculation
 # eval - used for power evaluation in eval_blow_effect()
@@ -12,6 +10,7 @@
 # effect-type - indicator of what type of property will protect from the effect
 # resist - which precise flag or resist will protect from the effect
 # lash-type - what projection type this translates to in the lash effect
+
 
 name:NONE
 power:0
@@ -216,11 +215,21 @@ effect-type:flag
 resist:SUST_CON
 lash-type:TIME
 
+name:LOSE_CHR
+power:0
+eval:20
+desc:reduce charisma
+lore-color-base:Orange
+lore-color-resist:Light Green
+effect-type:flag
+resist:SUST_CHR
+lash-type:TIME
+
 name:LOSE_ALL
 power:0
 eval:40
 desc:reduce all stats
-lore-color-base:Light Red
+lore-color-base:Orange
 lore-color-resist:Light Green
 effect-type:all_sustains
 lash-type:TIME
@@ -288,3 +297,53 @@ eval:10
 desc:inflict Black Breath
 lore-color-base:Light Red
 lash-type:TIME
+
+name:FORGET
+power:60
+eval:10
+desc:cause amnesia
+lore-color-base:Yellow
+lore-color-resist:Light Green
+effect-type:flag
+resist:PROT_AMNESIA
+lash-type:TIME
+
+name:DISEASE
+power:5
+eval:30
+desc:cause disease
+lore-color-base:Orange
+lore-color-resist:Light Green
+effect-type:disease
+lash-type:TIME
+
+name:TIME
+power:5
+eval:20
+desc:produce time effects
+lore-color-base:Orange
+lore-color-resist:Yellow
+effect-type:element
+resist:TIME
+lash-type:TIME
+
+name:DISARM
+power:60
+eval:30
+desc:disarm
+lore-color-base:Yellow
+lash-type:MISSILE
+
+name:FAMINE
+power:20
+eval:5
+desc:cause hunger
+lore-color-base:Yellow
+lash-type:MISSILE
+
+name:SEDUCE
+power:5
+eval:5
+desc:seduce
+lore-color-base:Light Green
+lash-type:MISSILE

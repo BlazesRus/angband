@@ -5,15 +5,13 @@
 #
 # This file includes, if appropriate, various "sub-files".
 #
-# See "lib/help/command.txt" for more information.
-#
 # Format:
 # message:<message-type>:<color>
 
 # d - 0  - Black         w - 1  - White         s - 2  - Slate
 # o - 3  - Orange        r - 4  - Red           g - 5  - Green
 # b - 6  - Blue          u - 7  - Umber         D - 8  - Light Dark
-# W - 9  - Light Slate   P - 10 - Light Purple  y - 11 - yellow
+# W - 9  - Light Slate   P - 10 - Light Purple  y - 11 - Yellow
 # R - 12 - Light Red     G - 13 - Light Green   B - 14 - Light Blue
 # U - 15 - Light Umber   p - 16 - Purple        v - 17 - Violet
 # t - 18 - Teal          m - 19 - Mud           Y - 20 - Light Yellow
@@ -21,9 +19,9 @@
 # I - 24 - Light Pink    M - 25 - Mustard       z - 26 - Blue Slate
 # Z - 27 - Deep Light Blue
 
-# I included all possible message types here for future-proofing, 
-# although some of them are only used as sound-effects at the moment. 
-# sound.cfg can be found in /lib/sounds (Twilight).
+#### ! no need to add there entry if we add only sound effect
+#### ! for sound effect just add line to list-message.h
+
 
 # MSG_GENERIC
 message:GENERIC:w
@@ -44,7 +42,7 @@ message:DROP:w
 message:KILL:w
 
 # MSG_LEVEL
-message:LEVEL:w
+message:LEVEL:G
 
 # MSG_DEATH
 message:DEATH:w
@@ -57,6 +55,30 @@ message:TELEPORT:w
 
 # MSG_SHOOT (sound only)
 message:SHOOT:w
+
+# MSG_SHOOT_GOOD (sound only)
+message:SHOOT_GOOD:w
+
+# MSG_SHOOT_GREAT (sound only)
+message:SHOOT_GREAT:w
+
+# MSG_SHOOT_SUPERB (sound only)
+message:SHOOT_SUPERB:w
+
+# MSG_SHOOT_BOW (sound only)
+message:SHOOT_BOW:w
+
+# MSG_SHOOT_CROSSBOW (sound only)
+message:SHOOT_CROSSBOW:w
+
+# MSG_SHOOT_SLING (sound only)
+message:SHOOT_SLING:w
+
+# MSG_SHOOT_BOOMERANG (sound only)
+message:SHOOT_BOOMERANG:w
+
+# MSG_THROWN (sound only)
+message:THROWN:w
 
 # MSG_QUAFF (sound only)
 message:QUAFF:w
@@ -96,6 +118,9 @@ message:OPENDOOR:w
 
 # MSG_SHUTDOOR (sound only)
 message:SHUTDOOR:w
+
+# MSG_DOOR_CLOSED
+message:DOOR_CLOSED:w
 
 # MSG_TPLEVEL
 message:TPLEVEL:w
@@ -145,7 +170,7 @@ message:MON_BITE:w
 # MSG_MON_STING
 message:MON_STING:w
 
-# MSG_MON_BUTT 
+# MSG_MON_BUTT
 message:MON_BUTT:w
 
 # MSG_MON_CRUSH
@@ -181,23 +206,32 @@ message:MON_INSULT:w
 # MSG_MON_MOAN
 message:MON_MOAN:w
 
+# MSG_MON_HYPNOTIZE
+message:MON_HYPNOTIZE:P
+
+# MSG_MON_SWALLOW for food
+message:MON_SWALLOW:Y
+
+# MSG_MON_DEVOUR for light
+message:MON_DEVOUR:o
+
 # MSG_RECOVER
 message:RECOVER:w
 
 # MSG_BLIND
-message:BLIND:w
+message:BLIND:y
 
 # MSG_CONFUSED
-message:CONFUSED:w
+message:CONFUSED:G
 
 # MSG_POISONED
-message:POISONED:w
+message:POISONED:g
 
 # MSG_AFRAID
 message:AFRAID:o
 
 # MSG_PARALYZED
-message:PARALYZED:w
+message:PARALYZED:R
 
 # MSG_DRUGGED
 message:DRUGGED:w
@@ -206,7 +240,7 @@ message:DRUGGED:w
 message:SPEED:w
 
 # MSG_SLOW
-message:SLOW:w
+message:SLOW:V
 
 # MSG_SHIELD
 message:SHIELD:w
@@ -256,13 +290,13 @@ message:CUT:w
 # MSG_STAIRS_UP
 message:STAIRS_UP:w
 
-# MSG_STORE_ENTER (unused)
+# MSG_STORE_ENTER (sound only)
 message:STORE_ENTER:w
 
-# MSG_STORE_LEAVE (unused)
+# MSG_STORE_LEAVE (sound only)
 message:STORE_LEAVE:w
 
-# MSG_STORE_HOME (unused)
+# MSG_STORE_HOME (sound only)
 message:STORE_HOME:w
 
 # MSG_MONEY1
@@ -296,7 +330,7 @@ message:IDENT_EGO:w
 message:IDENT_ART:w
 
 # MSG_BR_ELEMENTS
-# This is used as a generic breath.Another message type should be defined.
+# This is used as a generic breath. Another message type should be defined.
 message:BR_ELEMENTS:w
 
 # MSG_BR_FROST
@@ -313,6 +347,9 @@ message:BR_GAS:w
 
 # MSG_BR_FIRE
 message:BR_FIRE:w
+
+# MSG_BR_WATE
+message:BR_WATE:w
 
 # MSG_BR_DISEN
 message:BR_DISEN:w
@@ -356,8 +393,11 @@ message:BR_FORCE:w
 # MSG_SUM_MONSTER
 message:SUM_MONSTER:w
 
-# MSG_SUM_ANGEL
+# MSG_SUM_AINU
 message:SUM_AINU:w
+
+# MSG_SUM_ANGEL
+message:SUM_ANGEL:w
 
 # MSG_SUM_UNDEAD
 message:SUM_UNDEAD:w
@@ -397,6 +437,9 @@ message:SUM_UNIQUE:w
 
 # MSG_WIELD
 message:WIELD:w
+
+# MSG_QUIVER
+message:QUIVER:w
 
 # MSG_CURSED
 message:CURSED:w
@@ -458,14 +501,14 @@ message:HIT_HI_SUPERB:w
 # MSG_SPELL (sound only)
 message:SPELL:w
 
-# MSG_PRAYER (unused)
+# MSG_PRAYER (sound only)
 message:PRAYER:w
 
 # MSG_KILL_UNIQUE
-message:KILL_UNIQUE:w
+message:KILL_UNIQUE:y
 
 # MSG_KILL_KING
-message:KILL_KING:w
+message:KILL_KING:v
 
 # MSG_DRAIN_STAT
 message:DRAIN_STAT:w
@@ -473,6 +516,209 @@ message:DRAIN_STAT:w
 # MSG_MULTIPLY (sound only)
 message:MULTIPLY:w
 
+# MSG_BOLD
 message:BOLD:w
+
+# MSG_RAIN
+message:WILD_RAIN:w
+
+# MSG_WILD_WAVES
+message:WILD_WAVES:w
+
+# MSG_WILD_RIVER
+message:WILD_RIVER:w
+
+# MSG_WILD_WASTE
+message:WILD_WASTE:w
+
+# MSG_WILD_VOLCANO
+message:WILD_VOLCANO:w
+
+# MSG_WILD_GRASS
+message:WILD_GRASS:w
+
+# MSG_WILD_WOOD
+message:WILD_WOOD:w
+
+# MSG_WILD_MOUNTAIN
+message:WILD_MOUNTAIN:w
+
+# MSG_WILD_DESERT
+message:WILD_DESERT:w
+
+# MSG_WILD_GLACIER
+message:WILD_GLACIER:w
+
+# MSG_WILD_SWAMP
+message:WILD_SWAMP:w
+
+# MSG_WILD_DEEPWATER
+message:WILD_DEEPWATER:w
+
+# MSG_WILD_DEEPWATER
+message:WILD_DEEPWATER:w
+
+# MSG_WILD_HILL
+message:WILD_HILL:w
+
+# MSG_AMBIENT_SAURON
+message:AMBIENT_SAURON:w
+
+# MSG_AMBIENT_MORGOTH
+message:AMBIENT_MORGOTH:w
+
+# MSG_AMBIENT_DNG6
+message:AMBIENT_DNG6:w
+
+# MSG_AMBIENT_SENYA
+message:AMBIENT_SENYA:w
+
+# MSG_AMBIENT_XAKAZE
+message:AMBIENT_XAKAZE:w
+
+# MSG_AMBIENT_MELKOR
+message:AMBIENT_MELKOR:w
+
+# MSG_HIT_HI_CRITICAL
+message:HIT_HI_CRITICAL:w
+
+# MSG_ENTER_PIT
+message:ENTER_PIT:r
+
+# PWMAngband-specific: internal messages broadcast to all players
+
+# MSG_BROADCAST_ENTER_LEAVE
+message:BROADCAST_ENTER_LEAVE:D
+
+# MSG_BROADCAST_DIED
+message:BROADCAST_DIED:r
+
+# MSG_BROADCAST_WON
+message:BROADCAST_WON:v
+
+# MSG_BROADCAST_ARENA
+message:BROADCAST_ARENA:y
+
+# MSG_BROADCAST_QUEST
+message:BROADCAST_QUEST:y
+
+# MSG_BROADCAST_LEVEL
+message:BROADCAST_LEVEL:G
+
+# MSG_BROADCAST_FRUITBAT
+message:BROADCAST_FRUITBAT:o
+
+# MSG_BROADCAST_KILL_UNIQUE
+message:BROADCAST_KILL_UNIQUE:y
+
+# MSG_BROADCAST_KILL_KING
+message:BROADCAST_KILL_KING:v
+
+# MSG_BROADCAST_STORE
+message:BROADCAST_STORE:s
+
+# PWMAngband-specific
+
+# MSG_HOSTILE
+message:HOSTILE:r
+
+# MSG_DIED
+message:DIED:r
+
+# MSG_VERSION
+message:VERSION:v
+
+# MAngband-specific
+
+# MSG_TALK
+message:TALK:w
+
+# MSG_YELL
+message:YELL:w
+
+# MSG_SOCIAL
+message:SOCIAL:w
+
+# MSG_PY_SPELL
+message:PY_SPELL:w
+
+# MSG_PY_PRAYER
+message:PY_PRAYER:w
+
+# MSG_PY_MISC
+message:PY_MISC:w
+
+# MSG_MON_OTHER
+message:MON_OTHER:w
+
+# Client-side and system messages
+
+# MSG_LOCAL
+message:LOCAL:w
+
+# MSG_WHISPER
+message:WHISPER:w
+
+# MSG_CHAT
+message:CHAT:w
+
+############################ Tangaria
+
+# MSG_UNAFFECTED
+message:UNAFFECTED:P
+
+# MSG_IMMUNE
+message:IMMUNE:i
+
+# MSG_RESIST_A_LOT
+message:RESIST_A_LOT:I
+
+# MSG_RESIST
+message:RESIST:V
+
+# MSG_RESIST_SOMEWHAT
+message:RESIST_SOMEWHAT:V
+
+# MSG_SPELL_FAIL
+message:SPELL_FAIL:Y
+
+# MSG_HOWL
+message:HOWL:Z
+
+# MSG_IMP
+message:IMP:p
+
+# MSG_TERRAIN_SLIP
+message:TERRAIN_SLIP:z
+
+# MSG_TUNNEL_WALL
+message:TUNNEL_WALL:w
+
+# MSG_CHOP_TREE
+message:CHOP_TREE:w
+
+# MSG_CHOP_TREE_FALL
+message:CHOP_TREE_FALL:w
+
+# MSG_SENTRY
+message:SENTRY:w
+
+# MSG_DOOR_BROKEN
+message:DOOR_BROKEN:w
+
+# MSG_DISRUPT
+message:DISRUPT:r
+
+# MSG_DISARM_WEAPON
+message:DISARM_WEAPON:r
+
+# MSG_PUNCH
+message:PUNCH:w
+
+# MSG_RED_INK (no sound)
+message:RED_INK:R
+
+# MSG_FANFARE
+message:FANFARE:T
 
 ?:1

@@ -1,15 +1,6 @@
-# File: room_template.txt
-
-
-# This file is used to initialize the "room template" information
-# for the Angband game.
-
-# Do not modify this file unless you know exactly what you are doing,
-# unless you wish to risk possible system crashes and broken savefiles.
-
 # Note that the "spacing" in the "description" lines is very important!
 
-# === Understanding room_template.txt ===
+# === Understanding room_template.txt ("room template") ===
 
 # name:room name
 # type:room type
@@ -21,10 +12,10 @@
 # flags:flag | ...
 # D:lines giving full layout of room using symbols below
 
-# The value set on 'type' lines should be one.  You could use another
+# The value set on 'type' lines should be one. You could use another
 # value as a way of disabling a template without commenting it out or
-# deleting it.  Making the 'type' lines more useful than that will
-# require changes to the source code:  the hard-coding of one is in
+# deleting it. Making the 'type' lines more useful than that will
+# require changes to the source code: the hard-coding of one is in
 # src/gen-room.c's build_template() and other changes, presumably in
 # src/generate.c to allow passing of the desired type through the
 # dungeon profiles, would be needed.
@@ -35,11 +26,11 @@
 #
 # Where doors is set to n, the generator will pick a number between
 # 1 and n and place secret doors at squares marked with that number.
-# Squares marked with other numbers will be generated as walls.  If
+# Squares marked with other numbers will be generated as walls. If
 # n is greater than 6 or the 1 to n range encompasses numbers not
 # included in the D lines, there is a chance that no doors will be
 # generated.
-
+#
 # tval is used to make sure that the items in the room corresponding
 # to '[' are only of the given type.
 
@@ -63,8 +54,8 @@
 #    [ - a treasure of the specified tval
 
 # 'flags' lines are optional and list the flags, from src/list-room-flags.h,
-# that should be applied to the room.  As many flags: lines may be used as
-# are needed to specify all the flags, and flags are separated by the '|'
+# that should be applied to the room. As many flags: lines may be used as
+# needed to specify all the flags, and flags are separated by the '|'
 # symbol.
 
 # Use this to measure columns      
@@ -1408,8 +1399,6 @@ D:%.#...#...#...#...#...#...#...#.%
 D:%(##+###+###+###+###+###+###+##(#
 D:%...............................%
 D:%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
 
 # Rectangular rooms with unusual interiors
 
@@ -3240,8 +3229,6 @@ D:%..#....#....#....#....#....#...%
 D:%.#....#....#....#....#....#....#
 D:###%%%##%%%##%%%##%%%##%%%##%%%##
 
-
-
 # Oval and round rooms
 
 name:Thin oval
@@ -4680,8 +4667,6 @@ D:   #%%#.........x.........#%%#
 D:      #%%##.....x.....##%%#      
 D:          #%%%%%#%%%%%#          
 
-
-
 # Triangular and diamond rooms
 
 name:Mini pyramid
@@ -5753,8 +5738,6 @@ D:  #%#.........#%#%#.........#%#
 D:    #%#.....#%#   #%#.....#%#    
 D:      #%#.#%#       #%#.#%#      
 D:        #%#           #%#        
-
-
 
 # Other basic shapes
 
@@ -6978,8 +6961,6 @@ D:          ##.......##
 D:           ###...###           
 D:             #%%%#             
 
-
-
 # Irregular outlines
 
 name:Meander left
@@ -7954,8 +7935,6 @@ D:    ##.###.##....##..(.....(..##
 D:     ##.#.####################.#%
 D:      ##.##                  ##.%
 D:       %%%                    #%%
-
-
 
 # Rooms with treasures
 
@@ -9176,8 +9155,6 @@ D: ##....#+#...^#3#3#^...#+#....##
 D:##....##.##...^###^...##.##....##
 D:%....##...##...^+^...##...##....%
 D:#%%%###%%%###%%%#%%%###%%%###%%%#
-
-
 
 # Rooms with specified treasures
 

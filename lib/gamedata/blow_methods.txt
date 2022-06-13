@@ -1,6 +1,4 @@
-# File blow_methods.txt
-
-# Methods for monster blows
+# === Understanding blow_methods.txt (methods for monster blows) ===
 
 # name: blow method code
 # cut: 1 if the method can cut, 0 if not
@@ -10,6 +8,8 @@
 # msg: message type to display
 # act: action string to append
 # desc: monster lore description
+# flavor: death message to display
+
 
 name:HIT
 cut:1
@@ -17,7 +17,7 @@ stun:1
 miss:1
 phys:1
 msg:MON_HIT
-act:hits {target}
+act:hits %s
 desc:hit
 
 name:TOUCH
@@ -26,7 +26,7 @@ stun:0
 miss:1
 phys:0
 msg:MON_TOUCH
-act:touches {target}
+act:touches %s
 desc:touch
 
 name:PUNCH
@@ -35,8 +35,9 @@ stun:1
 miss:1
 phys:1
 msg:MON_PUNCH
-act:punches {target}
+act:punches %s
 desc:punch
+flavor:punched to death
 
 name:KICK
 cut:0
@@ -44,8 +45,9 @@ stun:1
 miss:1
 phys:1
 msg:MON_KICK
-act:kicks {target}
+act:kicks %s
 desc:kick
+flavor:kicked to death
 
 name:CLAW
 cut:1
@@ -53,8 +55,9 @@ stun:0
 miss:1
 phys:1
 msg:MON_CLAW
-act:claws {target}
+act:claws %s
 desc:claw
+flavor:eviscerated
 
 name:BITE
 cut:1
@@ -62,8 +65,9 @@ stun:0
 miss:1
 phys:1
 msg:MON_BITE
-act:bites {target}
+act:bites %s
 desc:bite
+flavor:shred to pieces
 
 name:STING
 cut:0
@@ -71,7 +75,7 @@ stun:0
 miss:1
 phys:1
 msg:MON_STING
-act:stings {target}
+act:stings %s
 desc:sting
 
 name:BUTT
@@ -80,7 +84,7 @@ stun:1
 miss:1
 phys:1
 msg:MON_BUTT
-act:butts {target}
+act:butts %s
 desc:butt
 
 name:CRUSH
@@ -89,8 +93,9 @@ stun:1
 miss:1
 phys:1
 msg:MON_CRUSH
-act:crushes {target}
+act:crushes %s
 desc:crush
+flavor:crushed to pulp
 
 name:ENGULF
 cut:0
@@ -98,7 +103,7 @@ stun:0
 miss:1
 phys:0
 msg:MON_ENGULF
-act:engulfs {target}
+act:engulfs %s
 desc:engulf
 
 name:CRAWL
@@ -107,7 +112,7 @@ stun:0
 miss:0
 phys:0
 msg:MON_CRAWL
-act:crawls on {target}
+act:crawls on %s
 desc:crawl on you
 
 name:DROOL
@@ -116,7 +121,7 @@ stun:0
 miss:0
 phys:0
 msg:MON_DROOL
-act:drools on {target}
+act:drools on %s
 desc:drool on you
 
 name:SPIT
@@ -125,7 +130,7 @@ stun:0
 miss:0
 phys:0
 msg:MON_SPIT
-act:spits on {target}
+act:spits on %s
 desc:spit
 
 name:GAZE
@@ -134,7 +139,7 @@ stun:0
 miss:0
 phys:0
 msg:MON_GAZE
-act:gazes at {target}
+act:gazes at %s
 desc:gaze
 
 name:WAIL
@@ -143,7 +148,7 @@ stun:0
 miss:0
 phys:0
 msg:MON_WAIL
-act:wails at {target}
+act:wails at %s
 desc:wail
 
 name:SPORE
@@ -152,7 +157,7 @@ stun:0
 miss:0
 phys:0
 msg:MON_SPORE
-act:releases spores at {target}
+act:releases spores at %s
 desc:release spores
 
 name:BEG
@@ -161,7 +166,7 @@ stun:0
 miss:0
 phys:0
 msg:MON_BEG
-act:begs {target} for money
+act:begs %s for money
 desc:beg
 
 name:INSULT
@@ -170,14 +175,6 @@ stun:0
 miss:0
 phys:0
 msg:MON_INSULT
-act:insults {target}!
-act:insults {oftarget} mother!
-act:gives {target} the finger!
-act:humiliates {target}!
-act:defiles {target}!
-act:dances around {target}!
-act:makes obscene gestures!
-act:moons {target}!!!
 desc:insult
 
 name:MOAN
@@ -186,13 +183,34 @@ stun:0
 miss:0
 phys:0
 msg:MON_MOAN
-act:wants his mushrooms back
-act:tells {target} to get off his land
-act:looks for his dogs
-act:says 'Did you kill my Fang?'
-act:asks 'Do you want to buy any mushrooms?'
-act:seems sad about something
-act:asks if {target} {has} seen his dogs
-act:mumbles something about mushrooms
 desc:moan
 
+name:HYPNOTIZE
+cut:0
+stun:0
+miss:0
+phys:0
+msg:MON_HYPNOTIZE
+act:mesmerizes %s
+desc:hypnotize
+flavor:pleasured to death
+
+name:SWALLOW
+cut:0
+stun:0
+miss:1
+phys:0
+msg:MON_SWALLOW
+act:swallows %s
+desc:swallow
+flavor:swallowed
+
+name:DEVOUR
+cut:0
+stun:0
+miss:1
+phys:0
+msg:MON_DEVOUR
+act:devours %s
+desc:devour
+flavor:devoured

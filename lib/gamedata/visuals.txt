@@ -109,11 +109,11 @@ flicker-color:D
 flicker-color:s
 flicker-color:V
 
-# COLOUR_WHITE, COLOUR_SLATE, COLOUR_L_WHITE
-flicker:W:(light slate/light white) white slate light-white
+# COLOUR_L_WHITE, COLOUR_WHITE, COLOUR_SLATE
+flicker:W:light-white white slate
+flicker-color:W
 flicker-color:w
 flicker-color:s
-flicker-color:W
 
 # COLOUR_L_PURPLE, COLOUR_PURPLE, COLOUR_L_VIOLET
 flicker:P:light-purple purple light-violet
@@ -295,11 +295,11 @@ cycle-color:D
 cycle-color:s
 cycle-color:V
 
-# COLOUR_WHITE, COLOUR_SLATE, COLOUR_L_WHITE
+# COLOUR_L_WHITE, COLOUR_WHITE, COLOUR_SLATE
 cycle:flicker:W
+cycle-color:W
 cycle-color:w
 cycle-color:s
-cycle-color:W
 
 # COLOUR_L_PURPLE, COLOUR_PURPLE, COLOUR_L_VIOLET
 cycle:flicker:P
