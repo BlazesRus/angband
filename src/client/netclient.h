@@ -2,7 +2,7 @@
  * File: netclient.h
  * Purpose: The client side of the networking stuff
  */
-
+#ifndef SPClient
 extern bool send_quit;
 extern struct angband_constants z_info_struct;
 extern uint16_t flavor_max;
@@ -128,3 +128,4 @@ extern bool Net_WaitReply(int Socket, sockbuf_t* ibuf, int retries);
 
 /* Server setup information. */
 extern server_setup_t Setup;
+#endif

@@ -6,7 +6,6 @@
 #ifndef INCLUDED_GAME_EVENT_H
 #define INCLUDED_GAME_EVENT_H
 
-
 #include "z-type.h"
 
 /*
@@ -251,7 +250,9 @@ extern void event_remove_handler_set(game_event_type *type, size_t n_types,
 
 extern void event_signal(game_event_type type);
 extern void event_signal_point(game_event_type type, int x, int y);
+#ifndef SPClient
 extern void event_signal_type(game_event_type type, int t);
+#endif
 
 #ifdef SPClient
 
