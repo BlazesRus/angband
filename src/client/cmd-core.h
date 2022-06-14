@@ -1,10 +1,15 @@
 /*
  * File: cmd-core.h
  * Purpose: Handles the queueing of game commands
+ * Copyright (c) 2008-9 Antony Sidwell
+ * Copyright (c) 2014 Andi Sidwell
  */
 
 #ifndef INCLUDED_CMD_CORE_H
 #define INCLUDED_CMD_CORE_H
+
+#include "object.h"
+#include "z-type.h"
 
 /*
  * All valid game commands.

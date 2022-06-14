@@ -18,8 +18,23 @@
  *    are included in all such copies.  Other copyrights may also apply.
  */
 
-
-#include "s-angband.h"
+#include "effect-handler.h"
+#include "..\client\game-input.h"
+#include "init.h"
+#include "mon-desc.h"
+#include "mon-make.h"
+#include "mon-spell.h"
+#include "mon-util.h"
+#include "obj-desc.h"
+#include "obj-knowledge.h"
+#include "obj-util.h"
+#include "player-calcs.h"
+#include "player-history.h"
+#include "player-timed.h"
+#include "player-util.h"
+#include "project.h"
+#include "trap.h"
+//#include "s-angband.h"
 
 
 static void get_target(struct chunk *c, struct source *origin, int dir, struct loc *grid)

@@ -6,6 +6,8 @@
 #ifndef INCLUDED_GAME_EVENT_H
 #define INCLUDED_GAME_EVENT_H
 
+#include "z-type.h"
+
 /*
  * The various events we can send signals about.
  */

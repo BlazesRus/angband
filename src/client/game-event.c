@@ -111,7 +111,8 @@ void event_add_handler_set(game_event_type *type, size_t n_types,
 {
     size_t i;
 
-    for (i = 0; i < n_types; i++) event_add_handler(type[i], fn, user);
+    for (i = 0; i < n_types; i++)
+        event_add_handler(type[i], fn, user);
 }
 
 
@@ -120,7 +121,8 @@ void event_remove_handler_set(game_event_type *type, size_t n_types,
 {
     size_t i;
 
-    for (i = 0; i < n_types; i++) event_remove_handler(type[i], fn, user);
+    for (i = 0; i < n_types; i++)
+        event_remove_handler(type[i], fn, user);
 }
 
 

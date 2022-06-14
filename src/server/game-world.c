@@ -17,8 +17,29 @@
  *    are included in all such copies.  Other copyrights may also apply.
  */
 
-
-#include "s-angband.h"
+#include "angband.h"
+#include "cmds.h"
+#include "effects.h"
+#include "game-world.h"
+#include "generate.h"
+#include "init.h"
+#include "mon-make.h"
+#include "mon-move.h"
+#include "mon-util.h"
+#include "obj-curse.h"
+#include "obj-desc.h"
+#include "obj-gear.h"
+#include "obj-knowledge.h"
+#include "obj-tval.h"
+#include "obj-util.h"
+#include "player-calcs.h"
+#include "player-timed.h"
+#include "player-util.h"
+#include "source.h"
+#include "target.h"
+#include "trap.h"
+#include "z-queue.h"
+//#include "s-angband.h"
 
 
 bool server_generated;      /* The server exists */
