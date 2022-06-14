@@ -1,4 +1,4 @@
-/**
+/*
  * File: cmd-core.c
  * Purpose: Handles the queueing of game commands.
  *
@@ -426,3 +426,4 @@ int cmd_get_target(struct command *cmd, const char *arg, int *target)
 
     return CMD_ARG_ABORTED;
 }
+
