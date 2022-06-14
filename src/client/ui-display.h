@@ -1,27 +1,10 @@
-/**
- * \file ui-display.h
- * \brief Handles the setting up updating, and cleaning up of the game display.
- *
- * Copyright (c) 1997 Ben Harrison, James E. Wilson, Robert A. Koeneke
- * Copyright (c) 2007 Antony Sidwell
- *
- * This work is free software; you can redistribute it and/or modify it
- * under the terms of either:
- *
- * a) the GNU General Public License as published by the Free Software
- *    Foundation, version 2, or
- *
- * b) the "Angband licence":
- *    This software may be copied and distributed for educational, research,
- *    and not for profit purposes provided that this copyright and statement
- *    are included in all such copies.  Other copyrights may also apply.
+/*
+ * File: ui-display.h
+ * Purpose: Handles the setting up updating, and cleaning up of the game display.
  */
 
 #ifndef INCLUDED_UI_DISPLAY_H
 #define INCLUDED_UI_DISPLAY_H
-
-#include "angband.h"
-#include "cmd-core.h"
 
 extern int16_t max_line;
 extern int16_t cur_line;

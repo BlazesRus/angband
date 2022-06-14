@@ -1,64 +1,57 @@
-/**
- * \file ui-keymap.h
- * \brief Keymap handling
- *
- * Copyright (c) 2011 Andi Sidwell
- *
- * This work is free software; you can redistribute it and/or modify it
- * under the terms of either:
- *
- * a) the GNU General Public License as published by the Free Software
- *    Foundation, version 2, or
- *
- * b) the "Angband licence":
- *    This software may be copied and distributed for educational, research,
- *    and not for profit purposes provided that this copyright and statement
- *    are included in all such copies.  Other copyrights may also apply.
+/*
+ * File: keymap.h
+ * Purpose: Keymap handling
  */
 
 #ifndef UI_KEYMAP_H
 #define UI_KEYMAP_H
 
-#include "z-file.h"
-
-/**
+/*
  * Maximum number of keypresses a trigger can map to.
-*/
-#define KEYMAP_ACTION_MAX	20
+ */
+#define KEYMAP_ACTION_MAX 35
 
-/**
+/*
  * Keymap modes.
  */
-enum {
-	KEYMAP_MODE_ORIG = 0,
-	KEYMAP_MODE_ROGUE,
+enum
+{
+    KEYMAP_MODE_ORIG = 0,
+    KEYMAP_MODE_ROGUE,
 
-	KEYMAP_MODE_MAX
+    KEYMAP_MODE_MAX
 };
 
-/**
+/*
  * Given a keymap mode and a keypress, return any attached action.
  */
-const struct keypress *keymap_find(int keymap, struct keypress kc);
+extern const struct keypress *keymap_find(int keymap, struct keypress kc);
 
-/**
+/*
  * Given a keymap mode, a trigger, and an action, store it in the keymap list.
  */
-void keymap_add(int keymap, struct keypress trigger, struct keypress *actions, bool user);
+extern void keymap_add(int keymap, struct keypress trigger, struct keypress *actions, bool user);
 
-/**
+/*
  * Given a keypress, remove any keymap that would trigger on that key.
  */
-bool keymap_remove(int keymap, struct keypress trigger);
+extern bool keymap_remove(int keymap, struct keypress trigger);
 
-/**
+/*
  * Free all keymaps.
  */
-void keymap_free(void);
+extern void keymap_free(void);
 
-/**
+/*
  * Save keymaps to the specified file.
  */
-void keymap_dump(ang_file *fff);
+extern void keymap_dump(ang_file *fff);
+
+extern int keymap_browse(int o, int *j);
+extern void command_as_keystroke(unsigned char cmd, struct keypress *kp, size_t *n);
+extern unsigned char command_by_item(struct object *obj, int mode);
+extern void item_as_keystroke(struct object *obj, unsigned char cmd, struct keypress *kp, size_t *n);
+extern void spell_as_keystroke(int book, int spell, bool project, unsigned char cmd,
+    struct keypress *kp, size_t *n);
 
 #endif /* UI_KEYMAP_H */

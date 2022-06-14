@@ -1,116 +1,89 @@
-/**
- * \file z-util.h
- * \brief Low-level string handling and other utilities.
- *
- * Copyright (c) 1997-2005 Ben Harrison, Robert Ruehlmann.
- *
- * This work is free software; you can redistribute it and/or modify it
- * under the terms of either:
- *
- * a) the GNU General Public License as published by the Free Software
- *    Foundation, version 2, or
- *
- * b) the "Angband licence":
- *    This software may be copied and distributed for educational, research,
- *    and not for profit purposes provided that this copyright and statement
- *    are included in all such copies.  Other copyrights may also apply.
+/*
+ * File: z-util.h
+ * Purpose: Low-level string handling and other utilities.
  */
 
 #ifndef INCLUDED_Z_UTIL_H
 #define INCLUDED_Z_UTIL_H
 
 #include "h-basic.h"
-
-
-/**
- * ------------------------------------------------------------------------
+/*
  * Available variables
- * ------------------------------------------------------------------------ */
-
-
-/**
- * The name of the program.
  */
+
+/* Temporary Vars */
+extern char char_tmp;
+extern uint8_t byte_tmp;
+extern sint sint_tmp;
+extern uint uint_tmp;
+extern long long_tmp;
+extern errr errr_tmp;
+
+/* Temporary Pointers */
+extern const char *cptr_tmp;
+extern void *vptr_tmp;
+
+/* Constant pointers (NULL) */
+extern const char *cptr_null;
+extern void *vptr_null;
+
+/* A bizarre void * that always points at itself */
+extern void *vptr_self;
+
+/* The name of the program */
 extern char *argv0;
 
-
-/**
+/*
  * Aux functions
  */
-extern size_t (*text_mbcs_hook)(wchar_t *dest, const char *src, int n);
-extern int (*text_wctomb_hook)(char *s, wchar_t wchar);
-extern int (*text_wcsz_hook)(void);
-extern int (*text_iswprint_hook)(wint_t wc);
 extern void (*plog_aux)(const char *);
 extern void (*quit_aux)(const char *);
+extern void (*assert_aux)(void);
 
 
-/**
- * ------------------------------------------------------------------------
+/*
  * Available Functions
- * ------------------------------------------------------------------------ */
+ */
 
-
-/**
+/*
  * Return "s" (or not) depending on whether n is singular.
  */
-#define PLURAL(n)		((n) == 1 ? "" : "s")
+#define PLURAL(n) (((n) == 1)? "": "s")
+#define SINGULAR(n) (((n) == 1)? "s": "")
 
-/**
+/*
  * Return the verb form matching the given count
  */
-#define VERB_AGREEMENT(count, singular, plural)    (((count) == 1) ? (singular) : (plural))
+#define VERB_AGREEMENT(count, singular, plural) (((count) == 1)? (singular): (plural))
 
+/* Function that does nothing */
+extern void func_nothing(void);
 
-/**
- * Count the number of characters in a UTF-8 encoded string
- */
-size_t utf8_strlen(const char *s);
+/* Functions that return basic "errr" codes */
+extern errr func_success(void);
+extern errr func_problem(void);
+extern errr func_failure(void);
 
-/**
- * Clip a null-terminated UTF-8 string 's' to 'n' unicode characters.
- * e.g. utf8_clipto("example", 4) will clip after 'm', resulting in 'exam'.
- */
-void utf8_clipto(char *s, size_t n);
+/* Functions that return bools */
+extern bool func_true(void);
+extern bool func_false(void);
 
-/**
- * Advance a pointer to a UTF-8 buffer by a given number of Unicode code points.
- */
-char *utf8_fskip(char *s, size_t n, char *lim);
+/* Count the number of characters in a UTF-8 encoded string */
+extern size_t utf8_strlen(const char *s);
 
-/**
- * Decrement a pointer to a UTF-8 buffer by a given number of Unicode code
- * points.
- */
-char *utf8_rskip(char *s, size_t n, char *lim);
+/* Clip a null-terminated UTF-8 string 's' to 'n' unicode characters. */
+extern void utf8_clipto(char *s, size_t n);
 
-/**
- * Convert a sequence of UTF-32 values, in the native byte order, to UTF-8.
- */
-size_t utf32_to_utf8(char *out, size_t n_out, const uint32_t *in, size_t n_in,
-	size_t *pn_cnvt);
-
-/**
- * Return whether a given UTF-32 value corresponds to a printable character.
- */
-bool utf32_isprint(uint32_t v);
-
-/**
- * Case insensitive comparison between two strings
- */
+/* Case insensitive comparison between two strings */  
 extern int my_stricmp(const char *s1, const char *s2);
 
-/**
- * Case insensitive comparison between two strings, up to n characters long.
- */
+/* Case insensitive comparison between two strings, up to n characters long. */
 extern int my_strnicmp(const char *a, const char *b, int n);
 
-/**
- * Case-insensitive strstr
- */
-extern char *my_stristr(const char *string, const char *pattern);
+/* Case-insensitive strstr */
+extern char *my_stristr(const char *haystack, const char *needle);
 
-/**
+/*
  * Copy up to 'bufsize'-1 characters from 'src' to 'buf' and NULL-terminate
  * the result.  The 'buf' and 'src' strings may not overlap.
  *
@@ -122,7 +95,7 @@ extern char *my_stristr(const char *string, const char *pattern);
  */
 extern size_t my_strcpy(char *buf, const char *src, size_t bufsize);
 
-/**
+/*
  * Try to append a string to an existing NULL-terminated string, never writing
  * more characters into the buffer than indicated by 'bufsize', and
  * NULL-terminating the buffer.  The 'buf' and 'src' strings may not overlap.
@@ -135,89 +108,74 @@ extern size_t my_strcpy(char *buf, const char *src, size_t bufsize);
  */
 extern size_t my_strcat(char *buf, const char *src, size_t bufsize);
 
-/**
+/*
  * Capitalise string 'buf'
  */
-void my_strcap(char *buf);
+extern void my_strcap(char *buf);
 
-/**
+/*
  * Test equality, prefix, suffix
  */
 extern bool streq(const char *s, const char *t);
 extern bool prefix(const char *s, const char *t);
-extern bool prefix_i(const char *s, const char *t);
 extern bool suffix(const char *s, const char *t);
 
-#define streq(s, t)		(!strcmp(s, t))
-
-/**
- * Skip occurrences of a characters
+/*
+ * Skip occurrences of a character
  */
 extern void strskip(char *s, const char c, const char e);
 extern void strescape(char *s, const char c);
 
-/**
- * Change escaped characters into their literal representation
- */
-extern void strunescape(char *s);
-
-/**
+/*
  * Determines if a string is "empty"
  */
-bool contains_only_spaces(const char* s);
+extern bool contains_only_spaces(const char *s);
 
-/**
- * Check if a char is a vowel
- */
-bool is_a_vowel(int ch);
-
-
-/**
- * Allow override of the multi-byte to wide char conversion
- */
-size_t text_mbstowcs(wchar_t *dest, const char *src, int n);
-
-/**
- * Convert a wide character to multibyte representation.
- */
-int text_wctomb(char *s, wchar_t wchar);
-
-/**
- * Get the maximum size to store a wide character converted to multibyte.
- */
-int text_wcsz(void);
-
-/**
- * Return whether the given wide character is printable.
- */
-int text_iswprint(wint_t wc);
-
-/**
+/*
  * Print an error message
  */
 extern void plog(const char *str);
 
-/**
+/*
  * Exit, with optional message
  */
 extern void quit(const char *str);
 
+/*
+ * Check if a char is a vowel
+ */
+extern bool is_a_vowel(int ch);
 
-/**
+/* hturn manipulations */
+extern uint32_t ht_diff(hturn *ht_ptr1, hturn *ht_ptr2);
+extern char *ht_show(hturn *ht_ptr);
+extern void ht_copy(hturn *ht_ptr1, hturn *ht_ptr2);
+extern void ht_add(hturn *ht_ptr, uint32_t value);
+extern void ht_reset(hturn *ht_ptr);
+extern bool ht_zero(hturn *ht_ptr);
+extern int ht_cmp(hturn *ht_ptr1, hturn *ht_ptr2);
+extern uint32_t ht_div(hturn *ht_ptr, int16_t value);
+
+/*
  * Sorting functions
  */
 extern void sort(void *array, size_t nmemb, size_t smemb,
-		 int (*comp)(const void *a, const void *b));
+    int (*comp)(const void *a, const void *b));
 
-/**
+/*
  * Create a hash for a string
  */
-uint32_t djb2_hash(const char *str);
+extern uint32_t djb2_hash(const char *str);
 
-/**
+/*
  * Mathematical functions
  */
-int mean(const int *nums, int size);
-int variance(const int *nums, int size);
+extern int mean(const int *nums, int size);
+extern int variance(const int *nums, int size);
 
-#endif /* INCLUDED_Z_UTIL_H */
+/* Tests a condition and possibly aborts, using the "assert" macro */
+#define my_assert(p) \
+    if (assert_aux && !(p)) (*assert_aux)(); \
+    assert(p)
+
+#endif

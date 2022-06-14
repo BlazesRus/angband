@@ -1,54 +1,27 @@
-/**
- * \file message.h
- * \brief Message handling
- *
- * Copyright (c) 2007 Elly, Andi Sidwell
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- *  * Redistributions of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimer.
- *
- *  * Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
+/*
+ * File: message.h
+ * Purpose: Message handling
  */
 
-#ifndef INCLUDED_Z_MSG_H
-#define INCLUDED_Z_MSG_H
+#ifndef INCLUDED_MESSAGE_H
+#define INCLUDED_MESSAGE_H
 
-#include "h-basic.h"
+#define msg_misc(P, A) msg_print_near((P), MSG_PY_MISC, (A))
 
-/**
- * Message constants
- */
-enum {
-	#define MSG(x, s) MSG_##x,
-	#include "list-message.h"
-	#undef MSG
-	SOUND_MAX = MSG_MAX,
-};
+extern void sound(struct player *p, int num);
+extern void msg_broadcast(struct player *p, const char *msg, uint16_t type);
+extern void msg_all(struct player *p, const char *msg, uint16_t type);
+extern void msg(struct player *p, const char *fmt, ...);
+extern void msg_print_complex_near(struct player *p, struct player *q, uint16_t type,
+    const char *msg);
+extern void msg_format_complex_near(struct player *p, uint16_t type, const char *fmt, ...);
+extern void msg_format_complex_far(struct player *p, uint16_t type, const char *fmt,
+    const char *sender, ...);
+extern void msg_print_near(struct player *p, uint16_t type, const char *msg);
+extern void msg_format_near(struct player *p, uint16_t type, const char *fmt, ...);
+extern void msgt(struct player *p, unsigned int type, const char *fmt, ...);
+extern void msg_print(struct player *p, const char *msg, uint16_t type);
+extern void message_flush(struct player *p);
+extern void msg_channel(int chan, const char *msg);
 
-
-/* Functions */
-void messages_init(void);
-void messages_free(void);
-uint16_t messages_num(void);
-void message_add(const char *str, uint16_t type);
-const char *message_str(uint16_t age);
-uint16_t message_count(uint16_t age);
-uint16_t message_type(uint16_t age);
-uint8_t message_color(uint16_t age);
-uint8_t message_type_color(uint16_t type);
-void message_color_define(uint16_t type, uint8_t color);
-int message_lookup_by_name(const char *name);
-int message_lookup_by_sound_name(const char *name);
-const char *message_sound_name(int message);
-void sound(int type);
-void bell(void);
-void msg(const char *fmt, ...);
-void msgt(unsigned int type, const char *fmt, ...);
-
-
-#endif /* !INCLUDED_Z_MSG_H */
+#endif /* INCLUDED_MESSAGE_H */

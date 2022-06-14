@@ -3,7 +3,7 @@
  * Purpose: Message handling
  */
 
-#ifndef INCLUDED_Z_MSG_H
+#if !defined(SPClient) && !defined(INCLUDED_Z_MSG_H)
 #define INCLUDED_Z_MSG_H
 
 /*** Message constants ***/

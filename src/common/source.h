@@ -1,36 +1,38 @@
+/*
+ * File: source.h
+ * Purpose: Type that allows various different origins for an effect
+ */
+
 #ifndef EFFECT_SOURCE_H
 #define EFFECT_SOURCE_H
+
+#include "h-basic.h"
 
 /*
  * Structure that tells you where an effect came from
  */
-struct source {
-	enum {
-		SRC_NONE,
-		SRC_TRAP,
-		SRC_PLAYER,
-		SRC_MONSTER,
-		SRC_OBJECT,
-		SRC_CHEST_TRAP
-	} what;
-
-	union {
-		struct trap *trap;
-		int monster;
-		struct object *object;
-		struct chest_trap *chest_trap;
-	} which;
+struct source
+{
+    int idx;
+    struct player *player;
+    struct monster *monster;
+    struct trap *trap;
+    struct object *obj;
+    struct chest_trap *chest_trap;
+    struct player *target;  /* Hack -- wraithed player as target */
 };
 
 /*
- * Generate different forms of the source for projection and effect
- * functions
+ * Generate different forms of the source for projection and effect functions
  */
-struct source source_none(void);
-struct source source_trap(struct trap *);
-struct source source_monster(int who);
-struct source source_player(void);
-struct source source_object(struct object *);
-struct source source_chest_trap(struct chest_trap *chest_trap);
+extern void source_obj(struct source *source, struct object *obj);
+extern void source_trap(struct source *source, struct trap *trap);
+extern void source_monster(struct source *source, struct monster *monster);
+extern void source_player(struct source *source, int idx, struct player *player);
+extern void source_both(struct source *source, struct player *player, struct monster *monster);
+
+extern bool source_null(struct source *source);
+extern bool source_equal(struct source *source1, struct source *source2);
+extern bool source_equal_player_or_monster(struct source *source1, struct source *source2);
 
 #endif /* EFFECT_SOURCE_H */

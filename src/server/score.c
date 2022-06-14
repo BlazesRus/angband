@@ -1,8 +1,9 @@
-/**
- * \file score.c
- * \brief Highscore handling for Angband
+/*
+ * File: score.c
+ * Purpose: Highscore handling
  *
  * Copyright (c) 1997 Ben Harrison, James E. Wilson, Robert A. Koeneke
+ * Copyright (c) 2022 MAngband and PWMAngband Developers
  *
  * This work is free software; you can redistribute it and/or modify it
  * under the terms of either:
@@ -15,301 +16,278 @@
  *    and not for profit purposes provided that this copyright and statement
  *    are included in all such copies.  Other copyrights may also apply.
  */
-#include "angband.h"
-#include "buildid.h"
-#include "game-world.h"
-#include "init.h"
-#include "score.h"
 
 
-/**
- * Calculates the total number of points earned (wow - NRM)
- */
-static long total_points(const struct player *p)
-{
-	return p->max_exp + 100 * p->max_depth;
-}
+#include "s-angband.h"
 
 
-/**
- * Read in a highscore file.
+/*
+ * Read in a highscore file
  */
 size_t highscore_read(struct high_score scores[], size_t sz)
 {
-	char fname[1024];
-	ang_file *scorefile;
-	size_t i;
+    char fname[MSG_LEN];
+    ang_file *scorefile;
+    size_t i;
 
-	/* Wipe current scores */
-	memset(scores, 0, sz * sizeof(struct high_score));
+    /* Wipe current scores */
+    memset(scores, 0, sz * sizeof(struct high_score));
 
-	path_build(fname, sizeof(fname), ANGBAND_DIR_SCORES, "scores.raw");
-	safe_setuid_grab();
-	scorefile = file_open(fname, MODE_READ, FTYPE_TEXT);
-	safe_setuid_drop();
+    path_build(fname, sizeof(fname), ANGBAND_DIR_SCORES, "scores.raw");
+    scorefile = file_open(fname, MODE_READ, FTYPE_RAW);
 
-	if (!scorefile) return 0;
+    if (!scorefile) return 0;
 
-	for (i = 0; i < sz; i++)
-		if (file_read(scorefile, (char *)&scores[i],
-					  sizeof(struct high_score)) <= 0)
-			break;
+    for (i = 0; i < sz; i++)
+    {
+        if (file_read(scorefile, (char *)&scores[i], sizeof(struct high_score)) <= 0) break;
+    }
 
-	file_close(scorefile);
+    file_close(scorefile);
 
-	return i;
+    return i;
 }
 
 
-/**
+/*
  * Just determine where a new score *would* be placed
  * Return the location (0 is best) or -1 on failure
  */
-size_t highscore_where(const struct high_score *entry,
-					   const struct high_score scores[], size_t sz)
+size_t highscore_where(const struct high_score *entry, const struct high_score scores[], size_t sz)
 {
-	size_t i;
+    size_t i;
 
-	/* Read until we get to a higher score */
-	for (i = 0; i < sz; ++i) {
-		long entry_pts = strtoul(entry->pts, NULL, 0);
-		long score_pts = strtoul(scores[i].pts, NULL, 0);
-		bool entry_winner = streq(entry->how, "Ripe Old Age");
-		bool score_winner = streq(scores[i].how, "Ripe Old Age");
+    /* Read until we get to a higher score */
+    for (i = 0; i < sz; i++)
+    {
+        long entry_pts = strtoul(entry->pts, NULL, 0);
+        long score_pts = strtoul(scores[i].pts, NULL, 0);
+        bool entry_winner = streq(entry->how, "winner");
+        bool score_winner = streq(scores[i].how, "winner");
 
-		if (entry_winner && !score_winner)
-			return i;
+        if (entry_winner && !score_winner) return i;
+        if (!entry_winner && score_winner) continue;
 
-		if (!entry_winner && score_winner)
-			continue;
+        if (entry_pts >= score_pts) return i;
+        if (scores[i].what[0] == '\0') return i;
+    }
 
-		if (entry_pts >= score_pts)
-			return i;
-
-		if (scores[i].what[0] == '\0')
-			return i;
-	}
-
-	/* The last entry is always usable */
-	return sz - 1;
+    /* The last entry is always usable */
+    return sz - 1;
 }
 
-/**
+
+/*
  * Place an entry into a high score array
  */
-size_t highscore_add(const struct high_score *entry, struct high_score scores[],
-					 size_t sz)
+size_t highscore_add(const struct high_score *entry, struct high_score scores[], size_t sz)
 {
-	size_t slot = highscore_where(entry, scores, sz);
+    size_t slot = highscore_where(entry, scores, sz);
 
-	memmove(&scores[slot + 1], &scores[slot],
-			sizeof(struct high_score) * (sz - 1 - slot));
-	memcpy(&scores[slot], entry, sizeof(struct high_score));
+    memmove(&scores[slot + 1], &scores[slot], sizeof(struct high_score) * (sz - 1 - slot));
+    memcpy(&scores[slot], entry, sizeof(struct high_score));
 
-	return slot;
+    return slot;
 }
+
 
 static size_t highscore_count(const struct high_score scores[], size_t sz)
 {
-	size_t i;
-	for (i = 0; i < sz; i++)
-		if (scores[i].what[0] == '\0')
-			break;
+    size_t i;
 
-	return i;
+    for (i = 0; i < sz; i++)
+    {
+        if (scores[i].what[0] == '\0') break;
+    }
+
+    return i;
 }
 
 
-/**
+/*
  * Actually place an entry into the high score file
  */
 static void highscore_write(const struct high_score scores[], size_t sz)
 {
-	size_t n;
+    size_t n;
+    ang_file *lok;
+    ang_file *scorefile;
+    char old_name[MSG_LEN];
+    char cur_name[MSG_LEN];
+    char new_name[MSG_LEN];
+    char lok_name[MSG_LEN];
 
-	ang_file *lok;
-	ang_file *scorefile;
+    path_build(old_name, sizeof(old_name), ANGBAND_DIR_SCORES, "scores.old");
+    path_build(cur_name, sizeof(cur_name), ANGBAND_DIR_SCORES, "scores.raw");
+    path_build(new_name, sizeof(new_name), ANGBAND_DIR_SCORES, "scores.new");
+    path_build(lok_name, sizeof(lok_name), ANGBAND_DIR_SCORES, "scores.lok");
 
-	char old_name[1024];
-	char cur_name[1024];
-	char new_name[1024];
-	char lok_name[1024];
-	bool exists;
+    /* Read in and add new score */
+    n = highscore_count(scores, sz);
 
-	path_build(old_name, sizeof(old_name), ANGBAND_DIR_SCORES, "scores.old");
-	path_build(cur_name, sizeof(cur_name), ANGBAND_DIR_SCORES, "scores.raw");
-	path_build(new_name, sizeof(new_name), ANGBAND_DIR_SCORES, "scores.new");
-	path_build(lok_name, sizeof(lok_name), ANGBAND_DIR_SCORES, "scores.lok");
+    /* Lock scores */
+    if (file_exists(lok_name))
+    {
+        plog("Lock file in place for scorefile; not writing.");
+        return;
+    }
 
+    lok = file_open(lok_name, MODE_WRITE, FTYPE_RAW);
+    file_lock(lok);
 
-	/* Read in and add new score */
-	n = highscore_count(scores, sz);
+    if (!lok)
+    {
+        plog("Failed to create lock for scorefile; not writing.");
+        return;
+    }
 
+    /* Open the new file for writing */
+    scorefile = file_open(new_name, MODE_WRITE, FTYPE_RAW);
 
-	/* Lock scores */
-	safe_setuid_grab();
-	exists = file_exists(lok_name);
-	safe_setuid_drop();
-	if (exists) {
-		msg("Lock file in place for scorefile; not writing.");
-		return;
-	}
+    if (!scorefile)
+    {
+        plog("Failed to open new scorefile for writing.");
 
-	safe_setuid_grab();
-	lok = file_open(lok_name, MODE_WRITE, FTYPE_RAW);
-	file_lock(lok);
-	safe_setuid_drop();
+        file_close(lok);
+        file_delete(lok_name);
+        return;
+    }
 
-	if (!lok) {
-		msg("Failed to create lock for scorefile; not writing.");
-		return;
-	}
+    file_write(scorefile, (const char *)scores, sizeof(struct high_score) * n);
+    file_close(scorefile);
 
+    /* Now move things around */
+    if (file_exists(old_name) && !file_delete(old_name))
+        plog("Couldn't delete old scorefile");
 
-	/* Open the new file for writing */
-	safe_setuid_grab();
-	scorefile = file_open(new_name, MODE_WRITE, FTYPE_RAW);
-	safe_setuid_drop();
+    if (file_exists(cur_name) && !file_move(cur_name, old_name))
+        plog("Couldn't move old scores.raw out of the way");
 
-	if (!scorefile) {
-		msg("Failed to open new scorefile for writing.");
+    if (!file_move(new_name, cur_name))
+        plog("Couldn't rename new scorefile to scores.raw");
 
-		file_close(lok);
-		safe_setuid_grab();
-		file_delete(lok_name);
-		safe_setuid_drop();
-		return;
-	}
-
-	file_write(scorefile, (const char *)scores, sizeof(struct high_score)*n);
-	file_close(scorefile);
-
-	/* Now move things around */
-	safe_setuid_grab();
-
-	if (file_exists(old_name) && !file_delete(old_name))
-		msg("Couldn't delete old scorefile");
-
-	if (file_exists(cur_name) && !file_move(cur_name, old_name))
-		msg("Couldn't move old scores.raw out of the way");
-
-	if (!file_move(new_name, cur_name))
-		msg("Couldn't rename new scorefile to scores.raw");
-
-	/* Remove the lock */
-	file_close(lok);
-	file_delete(lok_name);
-
-	safe_setuid_drop();
+    /* Remove the lock */
+    file_close(lok);
+    file_delete(lok_name);
 }
 
 
-
-/**
+/*
  * Fill in a score record for the given player.
  *
- * \param entry points to the record to fill in.
- * \param p is the player whose score should be recorded.
- * \param died_from is the reason for death.  In typical use, that will be
+ * entry points to the record to fill in.
+ * p is the player whose score should be recorded.
+ * died_from is the reason for death. In typical use, that will be
  * p->died_from, but when the player isn't dead yet, the caller may want to
- * use something else:  "nobody (yet!)" is traditional.
- * \param death_time points to the time at which the player died.  May be NULL
+ * use something else: "nobody (yet!)" is traditional.
+ * death_time points to the time at which the player died. May be NULL
  * when the player isn't dead.
- *
- * Bug:  takes a player argument, but still accesses a bit of global state,
- * player_uid, referring to the player
  */
-void build_score(struct high_score *entry, const struct player *p,
-		const char *died_from, const time_t *death_time)
+void build_score(struct player *p, struct high_score *entry, const char *died_from,
+    time_t *death_time)
 {
-	memset(entry, 0, sizeof(struct high_score));
+    char psex;
+    struct player_death_info score_info;
 
-	/* Save the version */
-	strnfmt(entry->what, sizeof(entry->what), "%s", buildid);
+    memset(entry, 0, sizeof(struct high_score));
 
-	/* Calculate and save the points */
-	strnfmt(entry->pts, sizeof(entry->pts), "%9u", total_points(p));
+    switch (p->psex)
+    {
+        case SEX_MALE: psex = 'm'; break;
+        case SEX_FEMALE: psex = 'f'; break;
+        default: psex = 'n'; break;
+    }
 
-	/* Save the current gold */
-	strnfmt(entry->gold, sizeof(entry->gold), "%9u", p->au);
+    /* Score info */
+    memset(&score_info, 0, sizeof(score_info));
+    if (death_time)
+    {
+        /* Hack -- take the saved cause of death of the character, not the ghost */
+        memcpy(&score_info, &p->death_info, sizeof(struct player_death_info));
+    }
+    else
+    {
+        /* Take the current info */
+        score_info.max_lev = p->max_lev;
+        score_info.lev = p->lev;
+        score_info.max_exp = p->max_exp;
+        score_info.au = p->au;
+        score_info.max_depth = p->max_depth;
+        memcpy(&score_info.wpos, &p->wpos, sizeof(struct worldpos));
+    }
 
-	/* Save the current turn */
-	strnfmt(entry->turns, sizeof(entry->turns), "%9u", turn);
+    /* Save the version */
+    strnfmt(entry->what, sizeof(entry->what), "%s", version_build(NULL, false));
 
-	/* Time of death */
-	if (death_time)
-		strftime(entry->day, sizeof(entry->day), "@%Y%m%d",
-				 localtime(death_time));
-	else
-		my_strcpy(entry->day, "TODAY", sizeof(entry->day));
+    /* Calculate and save the points */
+    strnfmt(entry->pts, sizeof(entry->pts), "%9u",
+        total_points(p, score_info.max_exp, score_info.max_depth));
 
-	/* Save the player name (15 chars) */
-	strnfmt(entry->who, sizeof(entry->who), "%-.15s", p->full_name);
+    /* Save the current gold */
+    strnfmt(entry->gold, sizeof(entry->gold), "%9u", score_info.au);
 
-	/* Save the player info XXX XXX XXX */
-	strnfmt(entry->uid, sizeof(entry->uid), "%7u", player_uid);
-	strnfmt(entry->p_r, sizeof(entry->p_r), "%2d", p->race->ridx);
-	strnfmt(entry->p_c, sizeof(entry->p_c), "%2d", p->class->cidx);
+    /* Save the current turn */
+    my_strcpy(entry->turns, ht_show(&turn), sizeof(entry->turns));
 
-	/* Save the level and such */
-	strnfmt(entry->cur_lev, sizeof(entry->cur_lev), "%3d", p->lev);
-	strnfmt(entry->cur_dun, sizeof(entry->cur_dun), "%3d", p->depth);
-	strnfmt(entry->max_lev, sizeof(entry->max_lev), "%3d", p->max_lev);
-	strnfmt(entry->max_dun, sizeof(entry->max_dun), "%3d", p->max_depth);
+    /* Time of death */
+    if (death_time)
+        strftime(entry->day, sizeof(entry->day), "@%Y%m%d", localtime(death_time));
+    else
+        my_strcpy(entry->day, "TODAY", sizeof(entry->day));
 
-	/* No cause of death */
-	my_strcpy(entry->how, died_from, sizeof(entry->how));
+    /* Save the player name (15 chars) */
+    strnfmt(entry->who, sizeof(entry->who), "%-.15s", p->name);
+
+    /* Save the player info */
+    strnfmt(entry->uid, sizeof(entry->uid), "%7u", 0);
+    strnfmt(entry->sex, sizeof(entry->sex), "%c", psex);
+    strnfmt(entry->p_r, sizeof(entry->p_r), "%2d", p->race->ridx);
+    strnfmt(entry->p_c, sizeof(entry->p_c), "%2d", p->clazz->cidx);
+
+    /* Save the level and such */
+    strnfmt(entry->cur_lev, sizeof(entry->cur_lev), "%3d", score_info.lev);
+    strnfmt(entry->cur_dun, sizeof(entry->cur_dun), "%3d", score_info.wpos.depth);
+    strnfmt(entry->max_lev, sizeof(entry->max_lev), "%3d", score_info.max_lev);
+    strnfmt(entry->max_dun, sizeof(entry->max_dun), "%3d", score_info.max_depth);
+
+    /* Save the cause of death (31 chars) */
+    strnfmt(entry->how, sizeof(entry->how), "%-.31s", died_from);
 }
 
 
-
-/**
+/*
  * Enter a player's name on a hi-score table, if "legal".
  *
- * \param p is the player to enter
- * \param death_time points to the time at which the player died; may be NULL
+ * p is the player to enter
+ * death_time points to the time at which the player died; may be NULL
  * for a player that's not dead yet
- * Assumes "signals_ignore_tstp()" has been called.
  */
-void enter_score(const struct player *p, const time_t *death_time)
+void enter_score(struct player *p, time_t *death_time)
 {
-	int j;
+    struct high_score entry;
+    struct high_score scores[MAX_HISCORES];
 
-	/* Cheaters are not scored */
-	for (j = 0; j < OPT_MAX; ++j) {
-		if (option_type(j) != OP_SCORE)
-			continue;
-		if (!p->opts.opt[j])
-			continue;
+    /* Add a new entry, if allowed */
+    if (p->noscore)
+    {
+        msg(p, "Score not registered for wizards, quitters and cheaters.");
+        return;
+    }
 
-		msg("Score not registered for cheaters.");
-		event_signal(EVENT_MESSAGE_FLUSH);
-		return;
-	}
+    /* Add a new entry to the score list, see where it went */
+    build_score(p, &entry, p->death_info.died_from, death_time);
 
-	/* Add a new entry, if allowed */
-	if (p->noscore & (NOSCORE_WIZARD | NOSCORE_DEBUG)) {
-		msg("Score not registered for wizards.");
-		event_signal(EVENT_MESSAGE_FLUSH);
-	} else if (!p->total_winner && streq(p->died_from, "Interrupting")) {
-		msg("Score not registered due to interruption.");
-		event_signal(EVENT_MESSAGE_FLUSH);
-	} else if (!p->total_winner && streq(p->died_from, "Quitting")) {
-		msg("Score not registered due to quitting.");
-		event_signal(EVENT_MESSAGE_FLUSH);
-	} else {
-		struct high_score entry;
-		struct high_score scores[MAX_HISCORES];
-
-		build_score(&entry, p, p->died_from, death_time);
-
-		highscore_read(scores, N_ELEMENTS(scores));
-		highscore_add(&entry, scores, N_ELEMENTS(scores));
-		highscore_write(scores, N_ELEMENTS(scores));
-	}
-
-	/* Success */
-	return;
+    highscore_read(scores, N_ELEMENTS(scores));
+    highscore_add(&entry, scores, N_ELEMENTS(scores));
+    highscore_write(scores, N_ELEMENTS(scores));
 }
 
 
+/*
+ * Calculates the total number of points earned
+ */
+long total_points(struct player *p, int32_t max_exp, int16_t max_depth)
+{
+    /* Standard scoring */
+    return max_exp + (100 * max_depth);
+}

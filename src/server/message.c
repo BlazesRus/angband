@@ -1,439 +1,340 @@
-/**
- * \file message.c
- * \brief Message handling
+/*
+ * File: message.c
+ * Purpose: Message handling
  *
  * Copyright (c) 2007 Elly, Andi Sidwell
+ * Copyright (c) 2022 MAngband and PWMAngband Developers
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
+ * This work is free software; you can redistribute it and/or modify it
+ * under the terms of either:
  *
- *  * Redistributions of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimer.
+ * a) the GNU General Public License as published by the Free Software
+ *    Foundation, version 2, or
  *
- *  * Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
+ * b) the "Angband licence":
+ *    This software may be copied and distributed for educational, research,
+ *    and not for profit purposes provided that this copyright and statement
+ *    are included in all such copies.  Other copyrights may also apply.
  */
 
-#include "z-virt.h"
-#include "z-color.h"
-#include "z-util.h"
-#include "message.h"
-#include "..\client\game-event.h"
-#include "option.h"
-#include "init.h"
-#include "player.h"
 
-typedef struct _message_t
-{
-	char *str;
-	struct _message_t *newer;
-	struct _message_t *older;
-	uint16_t type;
-	uint16_t count;
-} message_t;
+#include "s-angband.h"
 
-typedef struct _msgcolor_t
-{
-	uint16_t type;
-	uint8_t color;
-	struct _msgcolor_t *next;
-} msgcolor_t;
 
-typedef struct _msgqueue_t
-{
-	message_t *head;
-	message_t *tail;
-	msgcolor_t *colors;
-	uint32_t count;
-	uint32_t max;
-} msgqueue_t;
-
-static msgqueue_t *messages = NULL;
-
-/**
- * ------------------------------------------------------------------------
- * Functions operating on the entire list
- * ------------------------------------------------------------------------ */
-/**
- * Initialise the messages package.  Should be called before using any other
- * functions in the package.
+/*
+ * Hack -- make a (relevant?) sound
  */
-void messages_init(void)
+void sound(struct player *p, int val)
 {
-	messages = mem_zalloc(sizeof(msgqueue_t));
-	messages->max = 2048;
-}
+    /* Don't repeat current sound */
+    if (val == p->current_sound) return;
 
-/**
- * Free the message package.
- */
-void messages_free(void)
-{
-	msgcolor_t *c = messages->colors;
-	msgcolor_t *nextc;
-	message_t *m = messages->head;
-	message_t *nextm;
+    /* Don't play too many sounds */
+    if (p->current_sound == -3) return;
 
-	while (m) {
-		nextm = m->older;
-		mem_free(m->str);
-		mem_free(m);
-		m = nextm;
-	}
+    /* When too many sounds, only play the first one */
+    if (p->current_sound == -2) p->current_sound = -3;
+    else p->current_sound = val;
 
-	while (c) {
-		nextc = c->next;
-		mem_free(c);
-		c = nextc;
-	}
-
-	mem_free(messages);
-}
-
-/**
- * Return the current number of messages stored.
- */
-uint16_t messages_num(void)
-{
-	return messages->count;
-}
-
-/**
- * ------------------------------------------------------------------------
- * Functions for individual messages
- * ------------------------------------------------------------------------ */
-/**
- * Save a new message into the memory buffer, with text `str` and type `type`.
- * The type should be one of the MSG_ constants defined in message.h.
- *
- * The new message may not be saved if it is identical to the one saved before
- * it, in which case the "count" of the message will be increased instead.
- * This count can be fetched using the message_count() function.
- */
-void message_add(const char *str, uint16_t type)
-{
-	message_t *m;
-
-	if (messages->head &&
-	    messages->head->type == type &&
-	    streq(messages->head->str, str) &&
-	    messages->head->count != (uint16_t)-1) {
-		messages->head->count++;
-		return;
-	}
-
-	m = mem_zalloc(sizeof(message_t));
-	m->str = string_make(str);
-	m->type = type;
-	m->count = 1;
-	m->older = messages->head;
-
-	if (messages->head)
-		messages->head->newer = m;
-
-	messages->head = m;
-	messages->count++;
-
-	if (!messages->tail)
-		messages->tail = m;
-
-	if (messages->count > messages->max) {
-		message_t *old_tail = messages->tail;
-
-		messages->tail = old_tail->newer;
-		messages->tail->older = NULL;
-		mem_free(old_tail->str);
-		mem_free(old_tail);
-		messages->count--;
-	}
-}
-
-/**
- * Returns the message of age `age`.
- */
-static message_t *message_get(uint16_t age)
-{
-	message_t *m = messages->head;
-
-	while (m && age) {
-		age--;
-		m = m->older;
-	}
-
-	return m;
+    /* Make a sound */
+    Send_sound(p, val);
 }
 
 
-/**
- * Returns the text of the message of age `age`.  The age of the most recently
- * saved message is 0, the one before that is of age 1, etc.
- *
- * Returns the empty string if the no messages of the age specified are
- * available.
- */
-const char *message_str(uint16_t age)
+void msg_broadcast(struct player *p, const char *msg, uint16_t type)
 {
-	message_t *m = message_get(age);
-	return (m ? m->str : "");
-}
+    int i;
 
-/**
- * Returns the number of times the message of age `age` was saved. The age of
- * the most recently saved message is 0, the one before that is of age 1, etc.
- *
- * In other words, if message_add() was called five times, one after the other,
- * with the message "The orc sets your hair on fire.", then the text will only
- * have one age (age = 0), but will have a count of 5.
- */
-uint16_t message_count(uint16_t age)
-{
-	message_t *m = message_get(age);
-	return (m ? m->count : 0);
-}
+    /* Tell every player */
+    for (i = 1; i <= NumPlayers; i++)
+    {
+        struct player *player = player_get(i);
 
-/**
- * Returns the type of the message of age `age`.  The age of the most recently
- * saved message is 0, the one before that is of age 1, etc.
- *
- * The type is one of the MSG_ constants, defined in message.h.
- */
-uint16_t message_type(uint16_t age)
-{
-	message_t *m = message_get(age);
-	return (m ? m->type : 0);
-}
+        /* Skip the specified player */
+        if (player == p) continue;
 
-/**
- * Returns the display colour of the message memorised `age` messages ago.
- * (i.e. age = 0 represents the last memorised message, age = 1 is the one
- * before that, etc).
- */
-uint8_t message_color(uint16_t age)
-{
-	message_t *m = message_get(age);
-	return (m ? message_type_color(m->type) : COLOUR_WHITE);
+        /* Tell this one */
+        msg_print(player, msg, type);
+    }
+
+    /* Send to console */
+    console_print((char*)msg, 0);
 }
 
 
-/**
- * ------------------------------------------------------------------------
- * Message-color functions
- * ------------------------------------------------------------------------ */
-/**
- * Defines the color `color` for the message type `type`.
- */
-void message_color_define(uint16_t type, uint8_t color)
+void msg_all(struct player *p, const char *msg, uint16_t type)
 {
-	msgcolor_t *mc;
+    int i;
 
-	if (!messages->colors)
-	{
-		messages->colors = mem_zalloc(sizeof(msgcolor_t));
-		messages->colors->type = type;
-		messages->colors->color = color;
-		return;
-	}
+    /* Tell every player */
+    for (i = 1; i <= NumPlayers; i++)
+    {
+        struct player *player = player_get(i);
 
-	mc = messages->colors;
-	while (1)
-	{
-		if (mc->type == type)
-		{
-			mc->color = color;
-			break;
-		}
-		if (! mc->next) {
-			mc->next = mem_zalloc(sizeof(msgcolor_t));
-			mc->next->type = type;
-			mc->next->color = color;
-			break;
-		}
-		mc = mc->next;
-	}
+        /* Tell this one */
+        msg_print(player, msg, type);
+    }
 }
 
-/**
- * Returns the colour for the message type `type`.
- */
-uint8_t message_type_color(uint16_t type)
-{
-	msgcolor_t *mc;
-	uint8_t color = COLOUR_WHITE;
 
-	if (messages)
-	{
-		mc = messages->colors;
-
-		while (mc && mc->type != type)
-			mc = mc->next;
-
-		if (mc && (mc->color != COLOUR_DARK))
-			color = mc->color;
-	}
-
-	return color;
-}
-
-/**
- * Return the MSG_ flag that matches the given string. This does not handle
- * SOUND_MAX.
- *
- * \param name is a string that contains the name of a flag or a number.
- * \return The MSG_ flag that matches the given name.
- */
-int message_lookup_by_name(const char *name)
-{
-	static const char *message_names[] = {
-		#define MSG(x, s) #x,
-		#include "list-message.h"
-		#undef MSG
-	};
-	size_t i;
-	unsigned int number;
-
-	if (sscanf(name, "%u", &number) == 1)
-		return (number < MSG_MAX) ? (int)number : -1;
-
-	for (i = 0; i < N_ELEMENTS(message_names); ++i) {
-		if (my_stricmp(name, message_names[i]) == 0)
-			return (int)i;
-	}
-
-	return -1;
-}
-
-/**
- * Return the MSG_ flag that matches the given sound event name.
- *
- * \param name is the sound name from sound.cfg.
- * \return The MSG_ flag for the corresponding sound.
- */
-int message_lookup_by_sound_name(const char *name)
-{
-	static const char *sound_names[] = {
-		#define MSG(x, s) s,
-		#include "list-message.h"
-		#undef MSG
-	};
-	size_t i;
-
-	/* Exclude MSG_MAX since it has NULL for the sound's name. */
-	for (i = 0; i < N_ELEMENTS(sound_names) - 1; ++i) {
-		if (my_stricmp(name, sound_names[i]) == 0)
-			return (int)i;
-	}
-
-	return MSG_GENERIC;
-}
-
-/**
- * Return the sound name for the given message.
- *
- * \param message is the MSG_ flag to find.
- * \return The sound.cfg sound name.
- */
-const char *message_sound_name(int message)
-{
-	static const char *sound_names[] = {
-		#define MSG(x, s) s,
-		#include "list-message.h"
-		#undef MSG
-	};
-
-	if (message < MSG_GENERIC || message >= MSG_MAX)
-		return NULL;
-
-	return sound_names[message];
-}
-
-/**
- * Make a noise, without a message.  Sound modules hook into this event.
- * 
- * \param type MSG_* constant for the sound type
- */
-void sound(int type)
-{
-	/* No sound */
-	if (!OPT(player, use_sound)) return;
-
-	/* Dispatch */
-	event_signal_message(EVENT_SOUND, type, NULL);
-}
-
-/**
- * Ring the system bell.
- */
-void bell(void)
-{
-	/* Send bell event */
-	event_signal_message(EVENT_BELL, MSG_BELL, NULL);
-}
-
-/**
+/*
  * Display a formatted message.
- *
- * NB: Never call this function directly with a string read in from a
- * file, because it may contain format characters and crash the game.
- * Always use msg("%s", string) in those situations.
- *
- * \param fmt Format string
  */
-void msg(const char *fmt, ...)
+void msg(struct player *p, const char *fmt, ...)
 {
-	va_list vp;
+    va_list vp;
+    char buf[MSG_LEN];
 
-	char buf[1024];
+    /* Begin the Varargs Stuff */
+    va_start(vp, fmt);
 
-	/* Begin the Varargs Stuff */
-	va_start(vp, fmt);
+    /* Format the args, save the length */
+    vstrnfmt(buf, MSG_LEN, fmt, vp);
 
-	/* Format the args, save the length */
-	(void)vstrnfmt(buf, sizeof(buf), fmt, vp);
+    /* End the Varargs Stuff */
+    va_end(vp);
 
-	/* End the Varargs Stuff */
-	va_end(vp);
-
-	/* Fail if messages not loaded */
-	if (!messages) return;
-
-	/* Add to message log */
-	message_add(buf, MSG_GENERIC);
-
-	/* Send refresh event */
-	event_signal_message(EVENT_MESSAGE, MSG_GENERIC, buf);
-
+    /* Display */
+    msg_print(p, buf, MSG_GENERIC);
 }
 
-/**
+
+/*
+ * Display a message to everyone who is in sight of another player.
+ *
+ * This is mainly used to keep other players advised of actions done
+ * by a player. The message is not sent to the player who performed
+ * the action.
+ */
+void msg_print_complex_near(struct player *p, struct player *q, uint16_t type, const char *msg)
+{
+    int i;
+
+    /* Check each player */
+    for (i = 1; i <= NumPlayers; i++)
+    {
+        /* Check this player */
+        struct player *player = player_get(i);
+
+        /* Don't send the message to the player who caused it */
+        if (p == player) continue;
+
+        /* Don't send the message to the second ignoree */
+        if (q == player) continue;
+
+        /* Make sure this player is on this level */
+        if (!wpos_eq(&player->wpos, &p->wpos)) continue;
+
+        /* Can he see this player? */
+        if (square_isview(player, &p->grid))
+        {
+            /* Send the message */
+            msg_print(player, msg, type);
+        }
+    }
+}
+
+
+/*
+ * Same as above, except send a formatted message.
+ */
+void msg_format_complex_near(struct player *p, uint16_t type, const char *fmt, ...)
+{
+    va_list vp;
+    char buf[MSG_LEN];
+
+    /* Begin the Varargs Stuff */
+    va_start(vp, fmt);
+
+    /* Format the args, save the length */
+    vstrnfmt(buf, MSG_LEN, fmt, vp);
+
+    /* End the Varargs Stuff */
+    va_end(vp);
+
+    /* Display */
+    msg_print_complex_near(p, p, type, buf);
+}
+
+
+/*
+ * Display a message to everyone who is on the same dungeon level.
+ *
+ * This serves two functions: a dungeon level-wide chat, and a way
+ * to attract attention of other nearby players.
+ */
+void msg_format_complex_far(struct player *p, uint16_t type, const char *fmt, const char *sender, ...)
+{
+    va_list vp;
+    int i;
+    char buf[MSG_LEN];
+    char buf_vis[MSG_LEN];
+    char buf_invis[MSG_LEN];
+
+    /* Begin the Varargs Stuff */
+    va_start(vp, sender);
+
+    /* Format the args, save the length */
+    vstrnfmt(buf, MSG_LEN, fmt, vp);
+    strnfmt(buf_vis, MSG_LEN, "%s %s", sender, buf);
+    strnfmt(buf_invis, MSG_LEN, "%s %s", "Someone", buf);
+
+    /* End the Varargs Stuff */
+    va_end(vp);
+
+    /* Check each player */
+    for (i = 1; i <= NumPlayers; i++)
+    {
+        /* Check this player */
+        struct player *player = player_get(i);
+
+        /* Don't send the message to the player who caused it */
+        if (p == player) continue;
+
+        /* Don't send the message to the second ignoree */
+        /*if (q == player) continue;*/
+
+        /* Make sure this player is on this level */
+        if (!wpos_eq(&player->wpos, &p->wpos)) continue;
+
+        /* Can he see this player? */
+        if (square_isview(player, &p->grid))
+        {
+            /* Send the message */
+            msg_print(player, buf_vis, type);
+
+            /* Disturb player */
+            disturb(player, 0);
+        }
+        else
+        {
+            /* Send "invisible" message (e.g. "Someone yells") */
+            msg_print(player, buf_invis, type);
+        }
+    }
+}
+
+
+/*
+ * Display a message to everyone who is in sight of another player.
+ *
+ * The content of the message will depend on whether or not the player is visible.
+ * The function supposes that the message is in the form "(foo) does something..."
+ */
+void msg_print_near(struct player *p, uint16_t type, const char *msg)
+{
+    char p_name[NORMAL_WID], buf[NORMAL_WID];
+    int i;
+
+    /* Check each player */
+    for (i = 1; i <= NumPlayers; i++)
+    {
+        /* Check this player */
+        struct player *q = player_get(i);
+
+        /* Don't send the message to the player who caused it */
+        if (p == q) continue;
+
+        /* Make sure this player is at this depth */
+        if (!wpos_eq(&q->wpos, &p->wpos)) continue;
+
+        /* Can he see this player? */
+        if (square_isview(q, &p->grid))
+        {
+            player_desc(q, p_name, sizeof(p_name), p, true);
+            strnfmt(buf, sizeof(buf), "%s%s", p_name, msg);
+
+            /* Send the message */
+            msg_print(q, buf, type);
+        }
+    }
+}
+
+
+/*
+ * Same as above, except send a formatted message.
+ */
+void msg_format_near(struct player *p, uint16_t type, const char *fmt, ...)
+{
+    va_list vp;
+    char buf[MSG_LEN];
+
+    /* Begin the Varargs Stuff */
+    va_start(vp, fmt);
+
+    /* Format the args, save the length */
+    vstrnfmt(buf, MSG_LEN, fmt, vp);
+
+    /* End the Varargs Stuff */
+    va_end(vp);
+
+    /* Display */
+    msg_print_near(p, type, buf);
+}
+
+
+/*
  * Display a formatted message with a given type, making a sound
- * relevant to the message tyoe.
- *
- * \param type MSG_ constant
- * \param fmt Format string
+ * relevant to the message type.
  */
-void msgt(unsigned int type, const char *fmt, ...)
+void msgt(struct player *p, unsigned int type, const char *fmt, ...)
 {
-	va_list vp;
-	char buf[1024];
-	va_start(vp, fmt);
-	vstrnfmt(buf, sizeof(buf), fmt, vp);
-	va_end(vp);
+    va_list vp;
+    char buf[MSG_LEN];
 
-	/* Fail if messages not loaded */
-	if (!messages) return;
+    /* Begin the Varargs Stuff */
+    va_start(vp, fmt);
 
-	/* Add to message log */
-	message_add(buf, type);
+    /* Format the args, save the length */
+    vstrnfmt(buf, MSG_LEN, fmt, vp);
 
-	/* Send refresh event */
-	sound(type);
-	event_signal_message(EVENT_MESSAGE, type, buf);
+    /* End the Varargs Stuff */
+    va_end(vp);
+
+    /* Display */
+    sound(p, type);
+    msg_print(p, buf, type);
 }
 
 
-struct init_module messages_module = {
-	.name = "messages",
-	.init = messages_init,
-	.cleanup = messages_free
-};
+/*
+ * Print a simple message
+ */
+void msg_print(struct player *p, const char *msg, uint16_t type)
+{
+    struct message data;
+
+    data.msg = msg;
+    data.type = type;
+    display_message(p, &data);
+}
+
+
+/*
+ * Print the queued messages.
+ */
+void message_flush(struct player *p)
+{
+    msg_print(p, NULL, MSG_GENERIC);
+}
+
+
+void msg_channel(int chan, const char *msg)
+{
+    int i;
+
+    /* Log to file */
+    if (channels[chan].mode & CM_PLOG) plog(msg);
+
+    /* Tell every player */
+    for (i = 1; i <= NumPlayers; i++)
+    {
+        struct player *p = player_get(i);
+
+        if (p->on_channel[chan] & UCM_EAR)
+            msg_print(p, msg, MSG_CHAT + chan);
+    }
+
+    /* And every console */
+    console_print((char*)msg, chan);
+}

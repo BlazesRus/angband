@@ -17,40 +17,8 @@
  *    are included in all such copies.  Other copyrights may also apply.
  */
 
-#include "angband.h"
-#include "cave.h"
-#include "..\client\cmd-core.h"
-#include "cmds.h"
-#include "..\client\game-event.h"
-#include "..\client\game-input.h"
-#include "game-world.h"
-#include "generate.h"
-#include "init.h"
-#include "mon-attack.h"
-#include "mon-desc.h"
-#include "mon-lore.h"
-#include "mon-predicate.h"
-#include "mon-spell.h"
-#include "mon-timed.h"
-#include "mon-util.h"
-#include "monster.h"
-#include "obj-chest.h"
-#include "obj-desc.h"
-#include "obj-gear.h"
-#include "obj-ignore.h"
-#include "obj-knowledge.h"
-#include "obj-pile.h"
-#include "obj-util.h"
-#include "player-attack.h"
-#include "player-calcs.h"
-#include "player-path.h"
-#include "player-quest.h"
-#include "player-timed.h"
-#include "player-util.h"
-#include "project.h"
-#include "store.h"
-#include "trap.h"
-//#include "s-angband.h"
+
+#include "s-angband.h"
 
 
 /*
@@ -4652,4 +4620,3 @@ void display_time(struct player *p)
 
     msg(p, "It is the %d%s hour of the %s.", hour, suffix, (is_daytime()? "day": "night"));
 }
->>>>>>> CoopBranch

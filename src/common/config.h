@@ -1,25 +1,18 @@
-/**
- * \file config.h
- * \brief Configuration options
- *
- * Copyright (c) 1997 Ben Harrison, James E. Wilson, Robert A. Koeneke
- * Copyright (c) 2013 Chris Carr, Andi Sidwell
- *
- * This software may be copied and distributed for educational, research,
- * and not for profit purposes provided that this copyright and statement
- * are included in all such copies.  Other copyrights may also apply.
+//#define TEST_MODE // Add DM equipment to all characters and DM can build houses
+
+/*
+ * File: config.h
+ * Purpose: Angband specific configuration stuff
  */
 
 #ifndef INCLUDED_CONFIG_H
 #define INCLUDED_CONFIG_H
 
-/**
- * ------------------------------------------------------------------------
+/*
  * Some really important things you ought to change
- * ------------------------------------------------------------------------ */
+ */
 
-
-/**
+/*
  * Defines the default paths to the Angband directories, for ports that use
  * the main.c file.
  *
@@ -32,10 +25,6 @@
  * user systems, this also includes user preferences and dumps (on multi-
  * user systems these go under the user's home directory).
  *
- * The configure script overrides these values. Check the "--prefix=<dir>"
- * option of the configure script.  The final "slash" is required if the
- * value supplied is in fact a directory.
- *
  * Using the value "./lib/" below tells Angband that, by default,
  * the user will run "angband" from the same directory that contains
  * the "lib" directory.  This is a reasonable (but imperfect) default.
@@ -44,31 +33,68 @@
  * actual location of the folders, for example, "/etc/angband/"
  * or "/usr/share/angband/", or "/var/games/angband/". In fact, if at all
  * possible you should use a packaging system which does this for you.
- *
- * N.B. The data path is only used if USE_PRIVATE_PATHS is not defined.
- * The other two are always used. 
  */
 #ifndef DEFAULT_CONFIG_PATH
-# define DEFAULT_CONFIG_PATH "." PATH_SEP "lib" PATH_SEP
-#endif 
+    #ifndef BUILDINGWithVS
+        # define DEFAULT_CONFIG_PATH "." PATH_SEP "lib" PATH_SEP
+    #else//Get Absolute path instead
+        # define DEFAULT_CONFIG_PATH "lib" PATH_SEP
+    #endif
+#endif
 
 #ifndef DEFAULT_LIB_PATH
-# define DEFAULT_LIB_PATH "." PATH_SEP "lib" PATH_SEP
-#endif 
+    #ifndef BUILDINGWithVS
+        # define DEFAULT_LIB_PATH "." PATH_SEP "lib" PATH_SEP
+    #else
+        # define DEFAULT_LIB_PATH "lib" PATH_SEP
+    #endif
+#endif
 
 #ifndef DEFAULT_DATA_PATH
-# define DEFAULT_DATA_PATH "." PATH_SEP "lib" PATH_SEP
-#endif 
+    #ifndef BUILDINGWithVS
+        # define DEFAULT_DATA_PATH "." PATH_SEP "lib" PATH_SEP
+    #else
+        # define DEFAULT_DATA_PATH "lib" PATH_SEP
+    #endif
+#endif
 
+/*
+ * Other defines
+ */
+
+/* Compile in support for debug commands
+#define DEBUG_MODE */
+
+/*
+ * OPTION: Do not switch to manual targeting if there are no
+ * targets in the vicinity of player (un-Angband), display a prompt instead
+ */
+#define NOTARGET_PROMPT
+
+/* Use private paths: /save and /scores subdirectories are put in /user if defined */
+/* PWMAngband: since we only work under Windows, we define this here -- do not modify! */
+#ifdef WINDOWS
+#if !defined(USE_PRIVATE_PATHS)//Prevent macro redefinition
+# define USE_PRIVATE_PATHS
+#endif
+#endif
+
+#if defined(ON_ANDROID)
+
+#if !defined(USE_PRIVATE_PATHS)
+# define USE_PRIVATE_PATHS 1
+#endif
+
+#else
 
 /**
  * OPTION: Create and use a hidden directory in the users home directory
  * for storing pref files and character dumps.
  */
 #if defined(UNIX) && !defined(MACH_O_CARBON) && !defined(PRIVATE_USER_PATH)
-# define PRIVATE_USER_PATH "~/.angband"
+# define PRIVATE_USER_PATH "~/.pwmangband"
 #endif
 
+#endif /* ON_ANDROID */
 
-
-#endif /* !INCLUDED_CONFIG_H */
+#endif /* INCLUDED_CONFIG_H */

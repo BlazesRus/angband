@@ -1,14 +1,10 @@
 /*
  * File: effect-handler.h
  * Purpose: Internal header for effect handler functions
- * Copyright (c) 2007 Andi Sidwell
- * Copyright (c) 2016 Ben Semmler, Nick McConnell
  */
 
 #ifndef INCLUDED_EFFECT_HANDLER_H
 #define INCLUDED_EFFECT_HANDLER_H
-
-#include "effects.h"
 
 /*
  * Bit flags for the "enchant()" function
@@ -68,4 +64,3 @@ extern int effect_calculate_value(effect_handler_context_t *context, bool use_bo
 extern const char *desc_stat(int stat, bool positive);
 
 #endif /* INCLUDED_EFFECT_HANDLER_H */
-

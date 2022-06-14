@@ -3,7 +3,7 @@
  * Purpose: Global store type declarations
  */
 
-#ifndef INCLUDED_STORE_TYPES_H
+#if !defined(SPClient) && !defined(INCLUDED_STORE_TYPES_H)
 #define INCLUDED_STORE_TYPES_H
 
 /*** Constants ***/

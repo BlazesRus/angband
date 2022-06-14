@@ -1,93 +1,93 @@
-/**
- * \file mon-blows.h
- * \brief Functions for managing monster melee.
- *
- * Copyright (c) 1997 Ben Harrison, David Reeve Sward, Keldon Jones.
- *               2013 Ben Semmler
- *
- * This work is free software; you can redistribute it and/or modify it
- * under the terms of either:
- *
- * a) the GNU General Public License as published by the Free Software
- *    Foundation, version 2, or
- *
- * b) the "Angband licence":
- *    This software may be copied and distributed for educational, research,
- *    and not for profit purposes provided that this copyright and statement
- *    are included in all such copies.  Other copyrights may also apply.
+/*
+ * File: mon-blows.h
+ * Purpose: Monster melee module.
  */
 
 #ifndef MON_BLOWS_H
 #define MON_BLOWS_H
 
-#include "player.h"
-#include "monster.h"
-
-struct blow_message {
-	char *act_msg;
-	struct blow_message *next;
+enum
+{
+    TYPE_MVP,   /* make_attack_normal (MvP) */
+    TYPE_PVX,   /* py_attack_real */
+    TYPE_MVM    /* make_attack_normal (MvM) */
 };
 
-struct blow_method {
-	char *name;
-	bool cut;
-	bool stun;
-	bool miss;
-	bool phys;
-	int msgt;
-	struct blow_message *messages;
-	int num_messages;
-	char *desc;
-	struct blow_method *next;
+struct blow_method
+{
+    char *name;
+    bool cut;
+    bool stun;
+    bool miss;
+    bool phys;
+    int msgt;
+    char *act_msg;
+    char *desc;
+    char *flavor;
+    struct blow_method *next;
 };
 
 extern struct blow_method *blow_methods;
 
-/**
- * Storage for context information for effect handlers called in
- * make_attack_normal().
+/*
+ * Storage for context information for effect handlers called in make_attack_normal().
  *
- * The members of this struct are initialized in an order-dependent way
- * (to be more cross-platform). If the members change, make sure to change
- * any initializers. Ideally, this should eventually used named initializers.
+ * The members of this struct are initialized in an order-dependent way (to be more cross-
+ * platform). If the members change, make sure to change any initializers. Ideally, this
+ * should eventually used named initializers.
  */
-typedef struct melee_effect_handler_context_s {
-	struct player * const p;	/* Target (if player) */
-	struct monster * const mon;	/* Attacker */
-	struct monster * const t_mon;	/* Target (if other monster) */
-	const int rlev;
-	const struct blow_method *method;
-	const int ac;
-	const char *ddesc;
+typedef struct melee_effect_handler_context_s
+{
+	struct player *p;
+	struct monster *mon;
+    struct source *target;
+	struct monster_lore *target_l_ptr;
+	int rlev;
+	struct blow_method *method;
+	int ac;
+	char *ddesc;
 	bool obvious;
-	bool blinked;
+    char flav[160];
+    bool visible;
+    bool dead;
+    bool do_blind;
+    bool do_conf;
+    bool do_fear;
+    bool do_quake;
+    bool do_para;
+    int do_stun;
+	int blinked;
 	int damage;
+    uint8_t note_dies;
+    uint8_t style;
 } melee_effect_handler_context_t;
 
-/**
+/*
  * Melee blow effect handler.
  */
 typedef void (*melee_effect_handler_f)(melee_effect_handler_context_t *);
 
-struct blow_effect {
-	char *name;
-	int power;
-	int eval;
-	char *desc;
-	uint8_t lore_attr;		/* Color of the attack used in lore text */
-	uint8_t lore_attr_resist;	/* Color used in lore text when resisted */
-	uint8_t lore_attr_immune;	/* Color used in lore text when resisted strongly */
-	char *effect_type;
-	int resist;
-	int lash_type;
-	struct blow_effect *next;
+struct blow_effect
+{
+    char *name;
+    int power;
+    int eval;
+    char *desc;
+    uint8_t lore_attr;         /* Color of the attack used in lore text */
+    uint8_t lore_attr_resist;  /* Color used in lore text when resisted */
+    uint8_t lore_attr_immune;  /* Color used in lore text when resisted strongly */
+    char *effect_type;
+    int resist;
+    int lash_type;
+    struct blow_effect *next;
 };
 
 extern struct blow_effect *blow_effects;
 
 /* Functions */
-int blow_index(const char *name);
-char *monster_blow_method_action(struct blow_method *method, int midx);
+extern const char *monster_blow_method_action(struct blow_method *method);
 extern melee_effect_handler_f melee_handler_for_blow_effect(const char *name);
+extern uint8_t blow_method_index(const char *name);
+extern uint8_t blow_effect_index(const char *name);
 
-#endif /* MON_BLOWS_H */
+#endif /* MON_BLOWS */

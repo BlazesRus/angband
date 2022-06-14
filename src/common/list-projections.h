@@ -1,11 +1,9 @@
-/**
- * \file list-projections.h
- * \brief Spell types used by project() and related functions.
+/*
+ * File: list-projections.h
+ * Purpose: Spell types used by project() and related functions.
  *
  * ===== NOTICE =====
- * If you add new entries to this file, you must
- * also update lib/gamedata/projection.txt!
- * ===== NOTICE =====
+ * If you add new entries to this file, you must also update lib/gamedata/projection.txt!
  */
 PROJ(LIGHT_WEAK)
 PROJ(DARK_WEAK)
@@ -14,12 +12,12 @@ PROJ(KILL_DOOR)
 PROJ(KILL_TRAP)
 PROJ(MAKE_DOOR)
 PROJ(MAKE_TRAP)
-PROJ(AWAY_UNDEAD)
-PROJ(AWAY_SPIRIT)
+PROJ(STONE_WALL)
+PROJ(RAISE)
 PROJ(AWAY_EVIL)
+PROJ(AWAY_SPIRIT)
 PROJ(AWAY_ALL)
 PROJ(TURN_UNDEAD)
-PROJ(TURN_EVIL)
 PROJ(TURN_LIVING)
 PROJ(TURN_ALL)
 PROJ(DISP_UNDEAD)
@@ -38,3 +36,19 @@ PROJ(MON_HOLD)
 PROJ(MON_STUN)
 PROJ(MON_DRAIN)
 PROJ(MON_CRUSH)
+PROJ(PSI)
+PROJ(PSI_DRAIN)
+PROJ(CURSE)
+PROJ(DRAIN)
+PROJ(COMMAND)
+PROJ(TELE_TO)
+PROJ(TELE_LEVEL)
+PROJ(MON_BLIND)
+PROJ(DRAIN_MANA)
+PROJ(FORGET)
+PROJ(BLAST)
+PROJ(SMASH)
+PROJ(CONTROL)
+PROJ(PROJECT)
+PROJ(TREES)
+PROJ(AWAY_ANIMAL)

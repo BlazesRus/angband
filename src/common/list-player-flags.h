@@ -1,18 +1,15 @@
-/**
- * \file list-player-flags.h
- * \brief player race and class flags
- *
- * Adjusting these flags does not break savefiles. Flags below start from 1
- * on line 14, so a flag's sequence number is its line number minus 13.
+/*
+ * File: list-player-flags.h
+ * Purpose: Player race and class flags
  *
  * Fields:
  * symbol - the flag name
  * additional details in player_property.txt
  */
 
+/* symbol */
 PF(NONE)
 PF(FAST_SHOT)
-PF(BRAVERY_30)
 PF(BLESS_WEAPON)
 PF(ZERO_FAIL)
 PF(BEAM)
@@ -23,8 +20,30 @@ PF(SEE_ORE)
 PF(NO_MANA)
 PF(CHARM)
 PF(UNLIGHT)
-PF(ROCK)
 PF(STEAL)
 PF(SHIELD_BASH)
-PF(EVIL)
 PF(COMBAT_REGEN)
+PF(ELEMENTAL_SPELLS)
+PF(UNDEAD_POWERS)
+PF(STEALTH_MODE)
+PF(STEALING_IMPROV)
+PF(MONSTER_SPELLS)
+PF(MARTIAL_ARTS)
+PF(FAST_THROW)
+PF(BACK_STAB)
+PF(ORC)
+PF(TROLL)
+PF(ANIMAL)
+PF(GIANT)
+PF(THUNDERLORD)
+PF(DRAGON)
+PF(HYDRA)
+PF(SUMMON_SPELLS)
+PF(SHAPECHANGE)
+PF(CAN_SWIM)
+PF(PERM_SHAPE)
+PF(SUMMON_PERMA)
+PF(CAN_FARM)
+PF(NO_RECALL)
+PF(RACE_REGEN)
+PF(NO_BOOTS)

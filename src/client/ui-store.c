@@ -1,9 +1,10 @@
-/**
- * \file ui-store.c
- * \brief Store UI
+/*
+ * File: ui-store.c
+ * Purpose: Store UI
  *
  * Copyright (c) 1997 Robert A. Koeneke, James E. Wilson, Ben Harrison
  * Copyright (c) 1998-2014 Angband developers
+ * Copyright (c) 2022 MAngband and PWMAngband Developers
  *
  * This work is free software; you can redistribute it and/or modify it
  * under the terms of either:
@@ -16,171 +17,54 @@
  *    and not for profit purposes provided that this copyright and statement
  *    are included in all such copies.  Other copyrights may also apply.
  */
-#include "angband.h"
-#include "cave.h"
-#include "cmds.h"
-#include "game-event.h"
-#include "game-input.h"
-#include "hint.h"
-#include "init.h"
-#include "monster.h"
-#include "obj-desc.h"
-#include "obj-gear.h"
-#include "obj-ignore.h"
-#include "obj-info.h"
-#include "obj-knowledge.h"
-#include "obj-make.h"
-#include "obj-pile.h"
-#include "obj-tval.h"
-#include "obj-util.h"
-#include "player-calcs.h"
-#include "player-history.h"
-#include "player-util.h"
-#include "store.h"
-#include "target.h"
-#include "ui-display.h"
-#include "ui-input.h"
-#include "ui-menu.h"
-#include "ui-object.h"
-#include "ui-options.h"
-#include "ui-knowledge.h"
-#include "ui-object.h"
-#include "ui-player.h"
-#include "ui-spell.h"
-#include "ui-command.h"
-#include "ui-store.h"
-#include "z-debug.h"
 
 
-/**
- * Shopkeeper welcome messages.
- *
- * The shopkeeper's name must come first, then the character's name.
- */
-static const char *comment_welcome[] =
-{
-	"",
-	"%s nods to you.",
-	"%s says hello.",
-	"%s: \"See anything you like, adventurer?\"",
-	"%s: \"How may I help you, %s?\"",
-	"%s: \"Welcome back, %s.\"",
-	"%s: \"A pleasure to see you again, %s.\"",
-	"%s: \"How may I be of assistance, good %s?\"",
-	"%s: \"You do honour to my humble store, noble %s.\"",
-	"%s: \"I and my family are entirely at your service, %s.\""
-};
+#include "c-angband.h"
 
-static const char *comment_hint[] =
-{
-/*	"%s tells you soberly: \"%s\".",
-	"(%s) There's a saying round here, \"%s\".",
-	"%s offers to tell you a secret next time you're about."*/
-	"\"%s\""
-};
-
-
-/**
- * Easy names for the elements of the 'scr_places' arrays.
- */
-enum
-{
-	LOC_PRICE = 0,
-	LOC_OWNER,
-	LOC_HEADER,
-	LOC_MORE,
-	LOC_HELP_CLEAR,
-	LOC_HELP_PROMPT,
-	LOC_AU,
-	LOC_WEIGHT,
-
-	LOC_MAX
-};
 
 /* State flags */
 #define STORE_GOLD_CHANGE      0x01
 #define STORE_FRAME_CHANGE     0x02
 #define STORE_SHOW_HELP        0x04
 
+
 /* Compound flag for the initial display of a store */
-#define STORE_INIT_CHANGE		(STORE_FRAME_CHANGE | STORE_GOLD_CHANGE)
+#define STORE_INIT_CHANGE (STORE_FRAME_CHANGE | STORE_GOLD_CHANGE)
 
-struct store_context {
-	struct menu menu;			/* Menu instance */
-	struct store *store;	/* Pointer to store */
-	struct object **list;	/* List of objects (unused) */
-	int flags;				/* Display flags */
-	bool inspect_only;		/* Only allow looking */
 
-	/* Places for the various things displayed onscreen */
-	unsigned int scr_places_x[LOC_MAX];
-	unsigned int scr_places_y[LOC_MAX];
-};
+/*** Variables to maintain state ***/
 
-/* Return a random hint from the global hints list */
-static const char *random_hint(void)
-{
-	struct hint *v, *r = NULL;
-	int n;
-	for (v = hints, n = 1; v; v = v->next, n++)
-		if (one_in_(n))
-			r = v;
-	return r->hint;
-}
 
-/**
- * The greeting a shopkeeper gives the character says a lot about his
- * general attitude.
- *
- * Taken and modified from Sangband 1.0.
- *
- * Note that each comment_hint should have exactly one %s
+/*
+ * Store UI data
  */
-static void prt_welcome(const struct owner *proprietor)
-{
-	char short_name[20];
-	const char *owner_name = proprietor->name;
+struct store_context *store_ctx = NULL;
 
-	int j;
 
-	if (one_in_(2))
-		return;
+/* Wait for command to be processed by the server */
+static bool store_command_wait = false;
 
-	/* Get the first name of the store owner (stop before the first space) */
-	for (j = 0; owner_name[j] && owner_name[j] != ' '; j++)
-		short_name[j] = owner_name[j];
 
-	/* Truncate the name */
-	short_name[j] = '\0';
+/* Hack -- eject player from store */
+static bool leave_store;
 
-	if (one_in_(3)) {
-		size_t i = randint0(N_ELEMENTS(comment_hint));
-		msg(comment_hint[i], random_hint());
-	} else if (player->lev > 5) {
-		const char *player_name;
 
-		/* We go from level 1 - 50  */
-		size_t i = ((unsigned)player->lev - 1) / 5;
-		i = MIN(i, N_ELEMENTS(comment_welcome) - 1);
+/* The general info about the current store */
+struct store current_store;
 
-		/* Get a title for the character */
-		if ((i % 2) && randint0(2))
-			player_name = player->class->title[(player->lev - 1) / 5];
-		else if (randint0(2))
-			player_name = player->full_name;
-		else
-			player_name = "valued customer";
 
-		/* Balthazar says "Welcome" */
-		prt(format(comment_welcome[i], short_name, player_name), 0, 0);
-	}
-}
+/* The names of the stuff in the store */
+store_name *store_names;
+
+
+/* Welcome message */
+char welcome[NORMAL_WID];
 
 
 /*** Display code ***/
 
 
-/**
+/*
  * This function sets up screen locations based on the current term size.
  *
  * Current screen layout:
@@ -202,608 +86,478 @@ static void prt_welcome(const struct owner *proprietor)
  *
  *  line (height - 7): end of items
  *  line (height - 6): "more" prompt
+ *  line (height - 5): empty
  *  line (height - 4): gold remaining
- *  line (height - 3): command help 
+ *  line (height - 3): command help
  */
 static void store_display_recalc(struct store_context *ctx)
 {
-	int wid, hgt;
-	region loc;
+    int wid, hgt;
+    region loc;
+    struct menu *m = &ctx->menu;
+    struct store *store = ctx->store;
 
-	struct menu *m = &ctx->menu;
-	struct store *store = ctx->store;
+    Term_get_size(&wid, &hgt);
 
-	Term_get_size(&wid, &hgt);
+    /* Clip the width at a maximum of 104 (enough room for an 80-char item name) */
+    if (wid > 104) wid = 104;
 
-	/* Clip the width at a max of 104 (enough room for an 80-char item name) */
-	if (wid > 104) wid = 104;
+    /* X co-ords first */
+    ctx->scr_places_x[LOC_PRICE] = wid - 14;
+    ctx->scr_places_x[LOC_AU] = wid - 26;
+    ctx->scr_places_x[LOC_OWNER] = wid - 2;
+    ctx->scr_places_x[LOC_WEIGHT] = wid - 14;
 
-	/* Clip the text_out function at two smaller than the screen width */
-	text_out_wrap = wid - 2;
+    /* Add space for prices */
+    if (store->type != STORE_HOME) ctx->scr_places_x[LOC_WEIGHT] -= 10;
 
+    /* Then Y */
+    ctx->scr_places_y[LOC_OWNER] = 1;
+    ctx->scr_places_y[LOC_HEADER] = 3;
 
-	/* X co-ords first */
-	ctx->scr_places_x[LOC_PRICE] = wid - 14;
-	ctx->scr_places_x[LOC_AU] = wid - 26;
-	ctx->scr_places_x[LOC_OWNER] = wid - 2;
-	ctx->scr_places_x[LOC_WEIGHT] = wid - 14;
+    /* If we are displaying help, make the height smaller */
+    if (ctx->flags & (STORE_SHOW_HELP)) hgt -= 3;
 
-	/* Add space for for prices */
-	if (store->sidx != STORE_HOME)
-		ctx->scr_places_x[LOC_WEIGHT] -= 10;
+    ctx->scr_places_y[LOC_MORE] = hgt - 3;
+    ctx->scr_places_y[LOC_AU] = hgt - 1;
 
-	/* Then Y */
-	ctx->scr_places_y[LOC_OWNER] = 1;
-	ctx->scr_places_y[LOC_HEADER] = 3;
+    loc = m->boundary;
 
-	/* If we are displaying help, make the height smaller */
-	if (ctx->flags & (STORE_SHOW_HELP))
-		hgt -= 3;
+    /* If we're displaying the help, then put it with a line of padding */
+    if (ctx->flags & (STORE_SHOW_HELP))
+    {
+        ctx->scr_places_y[LOC_HELP_CLEAR] = hgt - 1;
+        ctx->scr_places_y[LOC_HELP_PROMPT] = hgt;
+        loc.page_rows = -5;
+    }
+    else
+    {
+        ctx->scr_places_y[LOC_HELP_CLEAR] = hgt - 2;
+        ctx->scr_places_y[LOC_HELP_PROMPT] = hgt - 1;
+        loc.page_rows = -2;
+    }
 
-	ctx->scr_places_y[LOC_MORE] = hgt - 3;
-	ctx->scr_places_y[LOC_AU] = hgt - 1;
-
-	loc = m->boundary;
-
-	/* If we're displaying the help, then put it with a line of padding */
-	if (ctx->flags & (STORE_SHOW_HELP)) {
-		ctx->scr_places_y[LOC_HELP_CLEAR] = hgt - 1;
-		ctx->scr_places_y[LOC_HELP_PROMPT] = hgt;
-		loc.page_rows = -5;
-	} else {
-		ctx->scr_places_y[LOC_HELP_CLEAR] = hgt - 2;
-		ctx->scr_places_y[LOC_HELP_PROMPT] = hgt - 1;
-		loc.page_rows = -2;
-	}
-
-	menu_layout(m, &loc);
+    menu_layout(m, &loc);
 }
 
 
-/**
+/*
  * Redisplay a single store entry
  */
-static void store_display_entry(struct menu *menu, int oid, bool cursor, int row,
-								int col, int width)
+static void store_display_entry(struct menu *menu, int oid, bool cursor, int row, int col, int width)
 {
-	struct object *obj;
-	int32_t x;
-	uint32_t desc = ODESC_PREFIX;
+    struct object *obj;
+    int32_t x;
+    char o_name[NORMAL_WID];
+    char out_val[160];
+    uint8_t colour;
+    struct store_context *ctx = menu_priv(menu);
+    struct store *store = ctx->store;
 
-	char o_name[80];
-	char out_val[160];
-	uint8_t colour;
+    /* Get the object */
+    obj = &ctx->list[oid];
 
-	struct store_context *ctx = menu_priv(menu);
-	struct store *store = ctx->store;
-	assert(store);
+    /* Describe the object */
+    my_strcpy(o_name, store_names[oid], sizeof(o_name));
 
-	/* Get the object */
-	obj = ctx->list[oid];
+    /* Display the object */
+    c_put_str(obj->info_xtra.attr, o_name, row, col);
 
-	/* Describe the object - preserving insriptions in the home */
-	if (store->sidx == STORE_HOME) {
-		desc |= ODESC_FULL;
-	} else {
-		desc |= ODESC_FULL | ODESC_STORE;
-	}
-	object_desc(o_name, sizeof(o_name), obj, desc, player);
+    /* Show weights */
+    colour = curs_attrs[CURS_KNOWN][(int)cursor];
+    strnfmt(out_val, sizeof(out_val), "%3d.%d lb", obj->weight / 10, obj->weight % 10);
+    c_put_str(colour, out_val, row, ctx->scr_places_x[LOC_WEIGHT]);
 
-	/* Display the object */
-	c_put_str(obj->kind->base->attr, o_name, row, col);
+    /* Describe an object (fully) in a store */
+    if (store->type != STORE_HOME)
+    {
+        /* Extract the "minimum" price */
+        x = obj->askprice;
 
-	/* Show weights */
-	colour = curs_attrs[CURS_KNOWN][(int)cursor];
-	strnfmt(out_val, sizeof out_val, "%3d.%d lb", obj->weight / 10,
-			obj->weight % 10);
-	c_put_str(colour, out_val, row, ctx->scr_places_x[LOC_WEIGHT]);
+        /* Make sure the player can afford it */
+        if (player->au < x)
+            colour = curs_attrs[CURS_UNKNOWN][(int)cursor];
 
-	/* Describe an object (fully) in a store */
-	if (store->sidx != STORE_HOME) {
-		/* Extract the "minimum" price */
-		x = price_item(store, obj, false, 1);
+        /* Actually draw the price */
+        if (tval_can_have_charges(obj) && (obj->number > 1))
+            strnfmt(out_val, sizeof(out_val), "%9d avg", x);
+        else
+            strnfmt(out_val, sizeof(out_val), "%9d    ", x);
 
-		/* Make sure the player can afford it */
-		if ((int) player->au < (int) x)
-			colour = curs_attrs[CURS_UNKNOWN][(int)cursor];
+        /* The price is not available if 0 (the item is not for sale) */
+        if (x == 0)
+            c_put_str(COLOUR_SLATE, "N/A", row, ctx->scr_places_x[LOC_PRICE] + 5);
 
-		/* Actually draw the price */
-		if (tval_can_have_charges(obj) && (obj->number > 1))
-			strnfmt(out_val, sizeof out_val, "%9d avg", x);
-		else
-			strnfmt(out_val, sizeof out_val, "%9d    ", x);
-
-		c_put_str(colour, out_val, row, ctx->scr_places_x[LOC_PRICE]);
-	}
+        /* Hack -- objects in stores not for buying have price of PY_MAX_GOLD */
+        else if (x < PY_MAX_GOLD)
+            c_put_str(colour, out_val, row, ctx->scr_places_x[LOC_PRICE]);
+    }
 }
 
 
-/**
+/*
  * Display store (after clearing screen)
  */
 static void store_display_frame(struct store_context *ctx)
 {
-	char buf[80];
-	struct store *store = ctx->store;
-	struct owner *proprietor = store->owner;
+    char buf[MSG_LEN];
+    struct store *store = ctx->store;
+    struct owner *proprietor = store->owner;
+    unsigned int y;
 
-	/* Clear screen */
-	Term_clear();
+    /* Clear screen (except top line) */
+    for (y = 1; y < ctx->scr_places_y[LOC_HELP_PROMPT]; y++)
+        Term_erase(0, y, 255);
 
-	/* The "Home" is special */
-	if (store->sidx == STORE_HOME) {
-		/* Put the owner name */
-		put_str("Your Home", ctx->scr_places_y[LOC_OWNER], 1);
+    /* The "Home" is special */
+    if (store->type == STORE_HOME)
+    {
+        /* Put the owner name */
+        put_str("Your Home", ctx->scr_places_y[LOC_OWNER], 1);
 
-		/* Label the object descriptions */
-		put_str("Home Inventory", ctx->scr_places_y[LOC_HEADER], 1);
+        /* Label the object descriptions */
+        put_str("Home Inventory", ctx->scr_places_y[LOC_HEADER], 1);
 
-		/* Show weight header */
-		put_str("Weight", ctx->scr_places_y[LOC_HEADER],
-				ctx->scr_places_x[LOC_WEIGHT] + 2);
-	} else {
-		/* Normal stores */
-		const char *store_name = store->name;
-		const char *owner_name = proprietor->name;
+        /* Show weight header */
+        put_str("Weight", ctx->scr_places_y[LOC_HEADER], ctx->scr_places_x[LOC_WEIGHT] + 2);
+    }
+    else
+    {
+        /* A player owned store */
+        if (store->type == STORE_PLAYER)
+        {
+            /* Put the owner name */
+            strnfmt(buf, sizeof(buf), "%s's %s", proprietor->name, store->name);
+            put_str(buf, ctx->scr_places_y[LOC_OWNER], 1);
+        }
 
-		/* Put the owner name */
-		put_str(owner_name, ctx->scr_places_y[LOC_OWNER], 1);
+        /* Normal stores */
+        else
+        {
+            const char *store_name = store->name;
+            const char *owner_name = proprietor->name;
 
-		/* Show the max price in the store (above prices) */
-		strnfmt(buf, sizeof(buf), "%s (%d)", store_name,
-				proprietor->max_cost);
-		prt(buf, ctx->scr_places_y[LOC_OWNER],
-			ctx->scr_places_x[LOC_OWNER] - strlen(buf));
+            /* Put the owner name */
+            put_str(owner_name, ctx->scr_places_y[LOC_OWNER], 1);
 
-		/* Label the object descriptions */
-		put_str("Store Inventory", ctx->scr_places_y[LOC_HEADER], 1);
+            /* Show the max price in the store (above prices) */
+            strnfmt(buf, sizeof(buf), "%s (%d)", store_name, proprietor->max_cost);
+            prt(buf, ctx->scr_places_y[LOC_OWNER], ctx->scr_places_x[LOC_OWNER] - strlen(buf));
+        }
 
-		/* Showing weight label */
-		put_str("Weight", ctx->scr_places_y[LOC_HEADER],
-				ctx->scr_places_x[LOC_WEIGHT] + 2);
+        /* Label the object descriptions */
+        put_str("Store Inventory", ctx->scr_places_y[LOC_HEADER], 1);
 
-		/* Label the asking price (in stores) */
-		put_str("Price", ctx->scr_places_y[LOC_HEADER], ctx->scr_places_x[LOC_PRICE] + 4);
-	}
+        /* Showing weight label */
+        put_str("Weight", ctx->scr_places_y[LOC_HEADER], ctx->scr_places_x[LOC_WEIGHT] + 2);
+
+        /* Label the asking price (in stores) */
+        put_str("Price", ctx->scr_places_y[LOC_HEADER], ctx->scr_places_x[LOC_PRICE] + 4);
+    }
 }
 
 
-/**
+static void text_out_c(uint8_t attr, const char *text, int y, int* px)
+{
+    int x;
+
+    /* Check line break */
+    x = (*px) + strlen(text);
+    if (x > NORMAL_WID - 2) return;
+
+    /* Display text */
+    c_put_str(attr, text, y, *px);
+
+    /* Advance */
+    (*px) += strlen(text);
+}
+
+
+static void text_out(const char *text, int y, int* px)
+{
+    text_out_c(COLOUR_WHITE, text, y, px);
+}
+
+
+static void text_end(int *py, int* px)
+{
+    Term_erase(*px, *py, 255);
+    (*py)++;
+    (*px) = 1;
+}
+
+
+/*
  * Display help.
  */
 static void store_display_help(struct store_context *ctx)
 {
-	struct store *store = ctx->store;
-	int help_loc = ctx->scr_places_y[LOC_HELP_PROMPT];
-	bool is_home = (store->sidx == STORE_HOME) ? true : false;
+    struct store *store = ctx->store;
+    bool is_home = ((store->type == STORE_HOME)? true: false);
+    int help_loc_y = ctx->scr_places_y[LOC_HELP_PROMPT];
+    int help_loc_x = 1;
+    unsigned int y;
 
-	/* Clear */
-	clear_from(ctx->scr_places_y[LOC_HELP_CLEAR]);
+    /* Clear */
+    for (y = ctx->scr_places_y[LOC_HELP_CLEAR]; y < ctx->scr_places_y[LOC_HELP_PROMPT]; y++)
+        Term_erase(0, y, 255);
 
-	/* Prepare help hooks */
-	text_out_hook = text_out_to_screen;
-	text_out_indent = 1;
-	Term_gotoxy(1, help_loc);
-
-	if (OPT(player, rogue_like_commands))
-		text_out_c(COLOUR_L_GREEN, "x");
-	else
-		text_out_c(COLOUR_L_GREEN, "l");
-
-	text_out(" examines");
-	if (!ctx->inspect_only) {
-		text_out(" and ");
-		text_out_c(COLOUR_L_GREEN, "p");
-
-		if (is_home) text_out(" picks up");
-		else text_out(" purchases");
-	}
-	text_out(" the selected item. ");
-
-	if (!ctx->inspect_only) {
-		if (OPT(player, birth_no_selling)) {
-			text_out_c(COLOUR_L_GREEN, "d");
-			text_out(" gives an item to the store in return for its identification. Some wands and staves will also be recharged. ");
-		} else {
-			text_out_c(COLOUR_L_GREEN, "d");
-			if (is_home) text_out(" drops");
-			else text_out(" sells");
-			text_out(" an item from your inventory. ");
-		}
-	} else {
-		text_out_c(COLOUR_L_GREEN, "I");
-		text_out(" inspects an item from your inventory. ");
-	}
-
-	text_out_c(COLOUR_L_GREEN, "ESC");
-	if (!ctx->inspect_only)
-		text_out(" exits the building.");
-	else
-		text_out(" exits this screen.");
-
-	text_out_indent = 0;
+    /* Display help */
+    if (OPT(player, rogue_like_commands))
+        text_out_c(COLOUR_L_GREEN, "x", help_loc_y, &help_loc_x);
+    else
+        text_out_c(COLOUR_L_GREEN, "l", help_loc_y, &help_loc_x);
+    text_out(" examines and ", help_loc_y, &help_loc_x);
+    text_out_c(COLOUR_L_GREEN, "p", help_loc_y, &help_loc_x);
+    if (is_home)
+        text_out(" picks up the selected item.", help_loc_y, &help_loc_x);
+    else
+        text_out(" purchases the selected item.", help_loc_y, &help_loc_x);
+    if (store->type == STORE_XBM)
+    {
+        text_out(" ", help_loc_y, &help_loc_x);
+        text_out_c(COLOUR_L_GREEN, "o", help_loc_y, &help_loc_x);
+        text_out(" orders an item.", help_loc_y, &help_loc_x);
+    }
+    text_end(&help_loc_y, &help_loc_x);
+    text_out_c(COLOUR_L_GREEN, "s", help_loc_y, &help_loc_x);
+    if (OPT(player, birth_no_selling))
+    {
+        text_out(" gives an item to the store in return for its identification. Some wands",
+            help_loc_y, &help_loc_x);
+        text_end(&help_loc_y, &help_loc_x);
+        text_out("and staves will also be recharged. ", help_loc_y, &help_loc_x);
+        text_out_c(COLOUR_L_GREEN, "ESC", help_loc_y, &help_loc_x);
+        text_out(" exits the building.", help_loc_y, &help_loc_x);
+    }
+    else
+    {
+        if (is_home)
+            text_out(" drops an item from your inventory. ", help_loc_y, &help_loc_x);
+        else
+            text_out(" sells an item from your inventory. ", help_loc_y, &help_loc_x);
+        text_out_c(COLOUR_L_GREEN, "ESC", help_loc_y, &help_loc_x);
+        text_out(" exits the building.", help_loc_y, &help_loc_x);
+        text_end(&help_loc_y, &help_loc_x);
+    }
+    text_end(&help_loc_y, &help_loc_x);
 }
 
-/**
+
+/*
  * Decides what parts of the store display to redraw.  Called on terminal
  * resizings and the redraw command.
  */
 static void store_redraw(struct store_context *ctx)
 {
-	if (ctx->flags & (STORE_FRAME_CHANGE)) {
-		store_display_frame(ctx);
+    if (ctx->flags & (STORE_FRAME_CHANGE))
+    {
+        store_display_frame(ctx);
 
-		if (ctx->flags & STORE_SHOW_HELP)
-			store_display_help(ctx);
-		else
-			prt("Press '?' for help.", ctx->scr_places_y[LOC_HELP_PROMPT], 1);
+        if (ctx->flags & STORE_SHOW_HELP)
+            store_display_help(ctx);
+        else
+            prt("Press '?' for help.", ctx->scr_places_y[LOC_HELP_PROMPT], 1);
 
-		ctx->flags &= ~(STORE_FRAME_CHANGE);
-	}
+        ctx->flags &= ~(STORE_FRAME_CHANGE);
+    }
 
-	if (ctx->flags & (STORE_GOLD_CHANGE)) {
-		prt(format("Gold Remaining: %9d", player->au),
-				ctx->scr_places_y[LOC_AU], ctx->scr_places_x[LOC_AU]);
-		ctx->flags &= ~(STORE_GOLD_CHANGE);
-	}
+    if (ctx->flags & (STORE_GOLD_CHANGE))
+    {
+        prt(format("Gold Remaining: %9d", player->au),
+            ctx->scr_places_y[LOC_AU], ctx->scr_places_x[LOC_AU]);
+        ctx->flags &= ~(STORE_GOLD_CHANGE);
+    }
 }
 
-static bool store_get_check(const char *prompt)
-{
-	struct keypress ch;
-
-	/* Prompt for it */
-	prt(prompt, 0, 0);
-
-	/* Get an answer */
-	ch = inkey();
-
-	/* Erase the prompt */
-	prt("", 0, 0);
-
-	if (ch.code == ESCAPE) return (false);
-	if (strchr("Nn", ch.code)) return (false);
-
-	/* Success */
-	return (true);
-}
 
 /*
- * Sell an object, or drop if it we're in the home.
+ * Determine if the current store will purchase the given object
+ */
+static bool store_will_buy_tester(struct player *p, const struct object *obj)
+{
+    return obj->info_xtra.sellable;
+}
+
+
+/*
+ * Sell an item to the store
  */
 static bool store_sell(struct store_context *ctx)
 {
-	int amt;
-	int get_mode = USE_EQUIP | USE_INVEN | USE_FLOOR | USE_QUIVER;
+    int amt = 1;
+    int get_mode = USE_EQUIP | USE_INVEN | USE_QUIVER;
+    struct object *obj;
+    item_tester tester = NULL;
+    const char *reject = "You have nothing that I want.";
+    const char *prompt = (OPT(player, birth_no_selling)? "Give which item? ": "Sell which item? ");
+    ui_event ea = EVENT_ABORT;
+    struct store *store = ctx->store;
 
-	struct store *store = ctx->store;
+    if (store->type == STORE_HOME)
+        prompt = "Drop which item? ";
+    else
+    {
+        tester = store_will_buy_tester;
+        get_mode |= SHOW_PRICES;
+    }
 
-	struct object *obj;
-	struct object object_type_body = OBJECT_NULL;
-	struct object *temp_obj = &object_type_body;
+    /* Get an item */
+    if (!get_item(&obj, prompt, reject, CMD_DROP, tester, get_mode)) return false;
+    if (check_store_leave(false)) return false;
 
-	char o_name[120];
+    /* Get a quantity (if number of sellable items is greater than 1) */
+    /* Note: sale can always be aborted at the "Accept xxx gold?" prompt */
+    if (obj->number > 1)
+    {
+        amt = get_quantity_ex(NULL, obj->number);
 
-	item_tester tester = NULL;
+        /* Allow user abort */
+        if (amt <= 0)
+        {
+            if (amt == -1) Term_event_push(&ea);
+            return false;
+        }
+    }
 
-	const char *reject = "You have nothing that I want. ";
-	const char *prompt = OPT(player, birth_no_selling) ? "Give which item? " : "Sell which item? ";
+    /* Wait for command to be processed by the server */
+    store_command_wait = true;
 
-	assert(store);
+    /* Tell the server */
+    Send_store_sell(obj->oidx, amt);
 
-	/* Clear all current messages */
-	msg_flag = false;
-	prt("", 0, 0);
-
-	if (store->sidx == STORE_HOME) {
-		prompt = "Drop which item? ";
-	} else {
-		tester = store_will_buy_tester;
-		get_mode |= SHOW_PRICES;
-	}
-
-	/* Get an item */
-	player->upkeep->command_wrk = USE_INVEN;
-
-	if (!get_item(&obj, prompt, reject, CMD_DROP, tester, get_mode))
-		return false;
-
-	/* Cannot remove stickied objects */
-	if (object_is_equipped(player->body, obj) && !obj_can_takeoff(obj)) {
-		/* Oops */
-		msg("Hmmm, it seems to be stuck.");
-
-		/* Nope */
-		return false;
-	}
-
-	/* Get a quantity */
-	amt = get_quantity(NULL, obj->number);
-
-	/* Allow user abort */
-	if (amt <= 0) return false;
-
-	/* Get a copy of the object representing the number being sold */
-	object_copy_amt(temp_obj, obj, amt);
-
-	if (!store_check_num(store, temp_obj)) {
-		object_wipe(temp_obj);
-		if (store->sidx == STORE_HOME)
-			msg("Your home is full.");
-		else
-			msg("I have not the room in my store to keep it.");
-
-		return false;
-	}
-
-	/* Get a full description */
-	object_desc(o_name, sizeof(o_name), temp_obj,
-		ODESC_PREFIX | ODESC_FULL, player);
-
-	/* Real store */
-	if (store->sidx != STORE_HOME) {
-		/* Extract the value of the items */
-		uint32_t price = price_item(store, temp_obj, true, amt);
-
-		object_wipe(temp_obj);
-		screen_save();
-
-		/* Show price */
-		if (!OPT(player, birth_no_selling))
-			prt(format("Price: %d", price), 1, 0);
-
-		/* Confirm sale */
-		if (!store_get_check(format("%s %s? [ESC, any other key to accept]",
-				OPT(player, birth_no_selling) ? "Give" : "Sell", o_name))) {
-			screen_load();
-			return false;
-		}
-
-		screen_load();
-
-		cmdq_push(CMD_SELL);
-		cmd_set_arg_item(cmdq_peek(), "item", obj);
-		cmd_set_arg_number(cmdq_peek(), "quantity", amt);
-	} else { /* Player is at home */
-		object_wipe(temp_obj);
-		cmdq_push(CMD_STASH);
-		cmd_set_arg_item(cmdq_peek(), "item", obj);
-		cmd_set_arg_number(cmdq_peek(), "quantity", amt);
-	}
-
-	/* Update the display */
-	ctx->flags |= STORE_GOLD_CHANGE;
-
-	return true;
+    return true;
 }
 
 
-
-/**
+/*
  * Buy an object from a store
  */
-static bool store_purchase(struct store_context *ctx, int item, bool single)
+static bool store_purchase(struct store_context *ctx, int item)
 {
-	struct store *store = ctx->store;
+    struct object *obj = &ctx->list[item];
+    char o_name[NORMAL_WID];
+    int amt, num;
+    ui_event ea = EVENT_ABORT;
+    struct store *store = ctx->store;
+    bool obj_can_use = true;
+    const char *verb = "Buy", *can_use = "";
 
-	struct object *obj = ctx->list[item];
-	struct object *dummy = NULL;
+    /* Clear all current messages */
+    prt("", 0, 0);
 
-	char o_name[80];
+    if (store->type != STORE_HOME)
+    {
+        bool obj_is_book;
 
-	int amt, num;
+        /* Price of one */
+        int32_t price = obj->askprice;
 
-	int32_t price;
+        /* Check "shown" items */
+        if (price == 0)
+        {
+            c_msg_print("Sorry, this item is not for sale.");
+            return false;
+        }
 
-	/* Clear all current messages */
-	msg_flag = false;
-	prt("", 0, 0);
+        /* Check if the player can afford any at all */
+        if (player->au < price)
+        {
+            /* Tell the user */
+            c_msg_print("You do not have enough gold for this item.");
 
+            /* Abort now */
+            return false;
+        }
 
-	/*** Check the player can get any at all ***/
+        obj_is_book = tval_is_book(obj);
+        obj_can_use = !obj_is_book || obj_can_browse(player, obj);
+    }
 
-	/* Get an amount if we weren't given one */
-	if (single) {
-		amt = 1;
+    /* Work out how many the player can afford */
+    amt = obj->info_xtra.max;
 
-		/* Check if the player can afford any at all */
-		if (store->sidx != STORE_HOME &&
-				(int)player->au < (int)price_item(store, obj, false, 1)) {
-			msg("You do not have enough gold for this item.");
-			return false;
-		}
-	} else {
-		bool flavor_aware;
+    /* Fail if there is no room */
+    if (amt == 0)
+    {
+        c_msg_print("You cannot carry that many items.");
+        return false;
+    }
 
-		if (store->sidx == STORE_HOME) {
-			amt = obj->number;
-		} else {
-			/* Price of one */
-			price = price_item(store, obj, false, 1);
+    /* Find the number of this item in the inventory */
+    num = obj->info_xtra.owned;
+    if (store->type == STORE_HOME) verb = "Take";
+    if (!obj_can_use) can_use = ", can't use!";
+    if (num)
+    {
+        strnfmt(o_name, sizeof(o_name), "%s how many (you have %d)? (max %d%s) ", verb, num, amt,
+            can_use);
+    }
+    else
+        strnfmt(o_name, sizeof(o_name), "%s how many? (max %d%s) ", verb, amt, can_use);
 
-			/* Check if the player can afford any at all */
-			if ((uint32_t)player->au < (uint32_t)price) {
-				msg("You do not have enough gold for this item.");
-				return false;
-			}
+    /* Hack -- get single items directly from home */
+    if ((store->type == STORE_HOME) && (amt == 1)) {}
 
-			/* Work out how many the player can afford */
-			if (price == 0)
-				amt = obj->number; /* Prevent division by zero */
-			else
-				amt = player->au / price;
+    /* Get a quantity */
+    else amt = get_quantity_ex(o_name, amt);
 
-			if (amt > obj->number) amt = obj->number;
+    /* Allow user abort */
+    if (amt <= 0)
+    {
+        if (amt == -1) Term_event_push(&ea);
+        return false;
+    }
 
-			/* Double check for wands/staves */
-			if ((player->au >= price_item(store, obj, false, amt+1)) &&
-				(amt < obj->number))
-				amt++;
-		}
+    /* Wait for command to be processed by the server */
+    store_command_wait = true;
 
-		/* Limit to the number that can be carried */
-		amt = MIN(amt, inven_carry_num(player, obj));
+    /* Tell the server */
+    Send_store_purchase(item, amt);
 
-		/* Fail if there is no room.  Don't leak information about
-		 * unknown flavors for a purchase (getting it from home doesn't
-		 * leak information since it doesn't show the true flavor). */
-		flavor_aware = object_flavor_is_aware(obj);
-		if (amt <= 0 || (!flavor_aware && store->sidx != STORE_HOME &&
-				pack_is_full())) {
-			msg("You cannot carry that many items.");
-			return false;
-		}
-
-		/* Find the number of this item in the inventory.  As above,
-		 * avoid leaking information about unknown flavors. */
-		if (!flavor_aware && store->sidx != STORE_HOME)
-			num = 0;
-		else
-			num = find_inven(obj);
-
-		strnfmt(o_name, sizeof o_name, "%s how many%s? (max %d) ",
-				(store->sidx == STORE_HOME) ? "Take" : "Buy",
-				num ? format(" (you have %d)", num) : "", amt);
-
-		/* Get a quantity */
-		amt = get_quantity(o_name, amt);
-
-		/* Allow user abort */
-		if (amt <= 0) return false;
-	}
-
-	/* Get desired object */
-	dummy = object_new();
-	object_copy_amt(dummy, obj, amt);
-
-	/* Ensure we have room */
-	if (!inven_carry_okay(dummy)) {
-		msg("You cannot carry that many items.");
-		object_delete(NULL, NULL, &dummy);
-		return false;
-	}
-
-	/* Describe the object (fully) */
-	object_desc(o_name, sizeof(o_name), dummy,
-		ODESC_PREFIX | ODESC_FULL | ODESC_STORE, player);
-
-	/* Attempt to buy it */
-	if (store->sidx != STORE_HOME) {
-		bool response;
-
-		bool obj_is_book = tval_is_book_k(obj->kind);
-		bool obj_can_use = !obj_is_book || obj_can_browse(obj);
-
-		/* Extract the price for the entire stack */
-		price = price_item(store, dummy, false, dummy->number);
-
-		screen_save();
-
-		/* Show price */
-		prt(format("Price: %d", price), 1, 0);
-
-		/* Confirm purchase */
-		response = store_get_check(format("Buy %s?%s %s",
-					o_name,
-					obj_can_use ? "" : " (Can't use!)",
-					"[ESC, any other key to accept]"));
-
-		screen_load();
-
-		/* Negative response, so give up */
-		if (!response) return false;
-
-		cmdq_push(CMD_BUY);
-		cmd_set_arg_item(cmdq_peek(), "item", obj);
-		cmd_set_arg_number(cmdq_peek(), "quantity", amt);
-	} else {
-		/* Home is much easier */
-		cmdq_push(CMD_RETRIEVE);
-		cmd_set_arg_item(cmdq_peek(), "item", obj);
-		cmd_set_arg_number(cmdq_peek(), "quantity", amt);
-	}
-
-	/* Update the display */
-	ctx->flags |= STORE_GOLD_CHANGE;
-
-	object_delete(NULL, NULL, &dummy);
-
-	/* Not kicked out */
-	return true;
+    return true;
 }
 
 
-/**
+/*
  * Examine an item in a store
  */
-static void store_examine(struct store_context *ctx, int item)
+static void store_examine(int item, bool describe)
 {
-	struct object *obj;
-	char header[120];
-	textblock *tb;
-	region area = { 0, 0, 0, 0 };
-	uint32_t odesc_flags = ODESC_PREFIX | ODESC_FULL;
-
-	if (item < 0) return;
-
-	/* Get the actual object */
-	obj = ctx->list[item];
-
-	/* Items in the home get less description */
-	if (ctx->store->sidx == STORE_HOME) {
-		odesc_flags |= ODESC_CAPITAL;
-	} else {
-		odesc_flags |= ODESC_STORE;
-	}
-
-	/* Hack -- no flush needed */
-	msg_flag = false;
-
-	/* Show full info in most stores, but normal info in player home */
-	tb = object_info(obj, OINFO_NONE);
-	object_desc(header, sizeof(header), obj, odesc_flags, player);
-
-	textui_textblock_show(tb, area, header);
-	textblock_free(tb);
-
-	/* Hack -- Browse book, then prompt for a command */
-	if (obj_can_browse(obj))
-		textui_book_browse(obj);
+    /* Tell the server */
+    Send_store_examine(item, describe);
 }
 
 
-static void store_menu_set_selections(struct menu *menu, bool knowledge_menu)
+static void store_menu_set_selections(struct menu *menu)
 {
-	if (knowledge_menu) {
-		if (OPT(player, rogue_like_commands)) {
-			/* These two can't intersect! */
-			menu->cmd_keys = "?|Ieilx";
-			menu->selections = "abcdfghmnopqrstuvwyzABCDEFGHJKLMNOPQRSTUVWXYZ";
-		} else {
-			/* These two can't intersect! */
-			menu->cmd_keys = "?|Ieil";
-			menu->selections = "abcdfghjkmnopqrstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ";
-		}
-	} else {
-		if (OPT(player, rogue_like_commands)) {
-			/* These two can't intersect! */
-			menu->cmd_keys = "\x04\x05\x10?={|}~CEIPTdegilpswx"; /* \x10 = ^p , \x04 = ^D, \x05 = ^E */
-			menu->selections = "abcfmnoqrtuvyzABDFGHJKLMNOQRSUVWXYZ";
-		} else {
-			/* These two can't intersect! */
-			menu->cmd_keys = "\x05\x010?={|}~CEIbdegiklpstwx"; /* \x05 = ^E, \x10 = ^p */
-			menu->selections = "acfhjmnoqruvyzABDFGHJKLMNOPQRSTUVWXYZ";
-		}
-	}
+    /* Roguelike */
+    if (OPT(player, rogue_like_commands))
+    {
+        /* These two can't intersect! */
+        menu->cmd_keys = "degiopsxDP?|&";
+        menu->selections = "abcfhjklmnqrtuvwyzABCEFG";
+    }
+
+    /* Original */
+    else
+    {
+        /* These two can't intersect! */
+        menu->cmd_keys = "bdegilopsD?|&";
+        menu->selections = "acfhjkmnqrtuvwxyzABCEFGH";
+    }
 }
+
 
 static void store_menu_recalc(struct menu *m)
 {
-	struct store_context *ctx = menu_priv(m);
-	menu_setpriv(m, ctx->store->stock_num, ctx);
+    struct store_context *ctx = menu_priv(m);
+
+    menu_setpriv(m, ctx->store->stock_num, ctx);
 }
 
-/**
+
+/*
  * Process a command in a store
  *
  * Note that we must allow the use of a few "special" commands in the stores
@@ -812,471 +566,430 @@ static void store_menu_recalc(struct menu *m)
  */
 static bool store_process_command_key(struct keypress kp)
 {
-	int cmd = 0;
+    /* Hack -- no flush needed */
+    prt("", 0, 0);
 
-	/* Hack -- no flush needed */
-	prt("", 0, 0);
-	msg_flag = false;
+    /* Process the keycode */
+    switch (kp.code)
+    {
+        case 'e':
+        {
+            do_cmd_equip();
+            if (store_ctx) prt("Press '?' for help.", store_ctx->scr_places_y[LOC_HELP_PROMPT], 1);
+            break;
+        }
 
-	/* Process the keycode */
-	switch (kp.code) {
-		case 'T': /* roguelike */
-		case 't': cmd = CMD_TAKEOFF; break;
+        case 'i': do_cmd_inven(); break;
+        case '|': do_cmd_quiver(); break;
+        case KTRL('E'): toggle_inven_equip(); break;
 
-		case KTRL('D'): /* roguelike */
-		case 'k': textui_cmd_ignore(); break;
+        default:
+        {
+            c_msg_print("That command does not work in stores.");
+            return false;
+        }
+    }
 
-		case 'P': /* roguelike */
-		case 'b': textui_spell_browse(); break;
-
-		case '~': textui_browse_knowledge(); break;
-		case 'I': textui_obj_examine(); break;
-		case 'w': cmd = CMD_WIELD; break;
-		case '{': cmd = CMD_INSCRIBE; break;
-		case '}': cmd = CMD_UNINSCRIBE; break;
-
-		case 'e': do_cmd_equip(); break;
-		case 'i': do_cmd_inven(); break;
-		case '|': do_cmd_quiver(); break;
-		case KTRL('E'): toggle_inven_equip(); break;
-		case 'C': do_cmd_change_name(); break;
-		case KTRL('P'): do_cmd_messages(); break;
-		case ')': do_cmd_save_screen(); break;
-
-		default: return false;
-	}
-
-	if (cmd)
-		cmdq_push_repeat(cmd, 0);
-
-	return true;
+    check_store_leave(true);
+    return true;
 }
 
-/**
+
+/*
  * Select an item from the store's stock, and return the stock index
  */
 static int store_get_stock(struct menu *m, int oid)
 {
-	ui_event e;
-	int no_act = m->flags & MN_NO_ACTION;
+    ui_event e;
+    int no_act = (m->flags & MN_NO_ACTION);
 
-	/* Set a flag to make sure that we get the selection or escape
-	 * without running the menu handler */
-	m->flags |= MN_NO_ACTION;
-	e = menu_select(m, 0, true);
-	if (!no_act) {
-		m->flags &= ~MN_NO_ACTION;
-	}
+    /* Set a flag to make sure that we get the selection or escape without running the menu handler */
+    m->flags |= MN_NO_ACTION;
+    e = menu_select(m, 0, true);
+    if (!no_act) m->flags &= ~MN_NO_ACTION;
 
-	if (e.type == EVT_SELECT) {
-		return m->cursor;
-	} else if (e.type == EVT_ESCAPE) {
-		return -1;
-	}
+    if (e.type == EVT_SELECT) return m->cursor;
+    if (e.type == EVT_ESCAPE) return -1;
 
-	/* if we do not have a new selection, just return the original item */
-	return oid;
+    /* If we do not have a new selection, just return the original item */
+    return oid;
 }
 
-/** Enum for context menu entries */
-enum {
-	ACT_INSPECT_INVEN,
-	ACT_SELL,
-	ACT_EXAMINE,
-	ACT_BUY,
-	ACT_BUY_ONE,
-	ACT_EXIT
-};
 
-/* pick the context menu options appropiate for a store */
-static int context_menu_store(struct store_context *ctx, const int oid, int mx, int my)
+/*
+ * Order an item
+ */
+static void store_order(void)
 {
-	struct store *store = ctx->store;
-	bool home = (store->sidx == STORE_HOME) ? true : false;
+    char buf[NORMAL_WID];
 
-	struct menu *m = menu_dynamic_new();
+    /* Get a name or abort */
+    buf[0] = '\0';
+    if (!get_string("Enter (partial) object name: ", buf, sizeof(buf))) return;
 
-	int selected;
-	char *labels = string_make(lower_case);
-	m->selections = labels;
-
-	menu_dynamic_add_label(m, "Inspect inventory", 'I', ACT_INSPECT_INVEN, labels);
-	if (!ctx->inspect_only) {
-		menu_dynamic_add_label(m, home ? "Stash" : "Sell", 'd',
-			ACT_SELL, labels);
-	}
-	menu_dynamic_add_label(m, "Exit", '`', ACT_EXIT, labels);
-
-	/* Hack -- no flush needed */
-	msg_flag = false;
-	screen_save();
-
-	menu_dynamic_calc_location(m, mx, my);
-	region_erase_bordered(&m->boundary);
-
-	prt("(Enter to select, ESC) Command:", 0, 0);
-	selected = menu_dynamic_select(m);
-
-	menu_dynamic_free(m);
-	string_free(labels);
-
-	screen_load();
-
-	switch (selected) {
-		case ACT_SELL:
-			store_sell(ctx);
-			break;
-		case ACT_INSPECT_INVEN:
-			textui_obj_examine();
-			break;
-		case ACT_EXIT:
-			return false;
-	}
-
-	return true;
+    /* Tell the server */
+    Send_store_order(buf);
 }
 
-/* pick the context menu options appropiate for an item available in a store */
-static void context_menu_store_item(struct store_context *ctx, const int oid, int mx, int my)
+
+/*
+ * Loop callback
+ */
+static void store_callback_begin(ui_event *cp)
 {
-	struct store *store = ctx->store;
-	bool home = (store->sidx == STORE_HOME) ? true : false;
+    /* If we got a ^R key, cancel the wait (in case the server didn't respond...) */
+    if ((cp->type == EVT_KBRD) && (cp->key.code == KTRL('R'))) store_command_wait = false;
 
-	struct menu *m = menu_dynamic_new();
-	struct object *obj = ctx->list[oid];
-
-	int selected;
-	char *labels;
-	char header[120];
-
-	object_desc(header, sizeof(header), obj,
-		ODESC_PREFIX | ODESC_FULL | ODESC_STORE, player);
-
-	labels = string_make(lower_case);
-	m->selections = labels;
-
-	menu_dynamic_add_label(m, "Examine", 'x', ACT_EXAMINE, labels);
-	if (!ctx->inspect_only) {
-		menu_dynamic_add_label(m, home ? "Take" : "Buy", 'd',
-			ACT_SELL, labels);
-		if (obj->number > 1) {
-			menu_dynamic_add_label(m, home ? "Take one" : "Buy one",
-				'o', ACT_BUY_ONE, labels);
-		}
-	}
-
-	/* Hack -- no flush needed */
-	msg_flag = false;
-	screen_save();
-
-	menu_dynamic_calc_location(m, mx, my);
-	region_erase_bordered(&m->boundary);
-
-	prt(format("(Enter to select, ESC) Command for %s:", header), 0, 0);
-	selected = menu_dynamic_select(m);
-
-	menu_dynamic_free(m);
-	string_free(labels);
-
-	screen_load();
-
-	switch (selected) {
-		case ACT_EXAMINE:
-			store_examine(ctx, oid);
-			break;
-		case ACT_BUY:
-			store_purchase(ctx, oid, false);
-			break;
-		case ACT_BUY_ONE:
-			store_purchase(ctx, oid, true);
-			break;
-	}
+    /* Wait for command to be processed by the server */
+    cp->type = EVT_NONE;
+    if (!store_command_wait) cp->type = EVT_DONE;
 }
 
-/**
+
+/*
  * Handle store menu input
  */
 static bool store_menu_handle(struct menu *m, const ui_event *event, int oid)
 {
-	bool processed = true;
-	struct store_context *ctx = menu_priv(m);
-	struct store *store = ctx->store;
-	
-	if (event->type == EVT_SELECT) {
-		/* Nothing for now, except "handle" the event */
-		return true;
-		/* In future, maybe we want a display a list of what you can do. */
-	} else if (event->type == EVT_MOUSE) {
-		if (event->mouse.button == 2) {
-			/* exit the store? what already does this? menu_handle_mouse
-			 * so exit this so that menu_handle_mouse will be called */
-			return false;
-		} else if (event->mouse.button == 1) {
-			bool action = false;
-			if ((event->mouse.y == 0) || (event->mouse.y == 1)) {
-				/* show the store context menu */
-				if (context_menu_store(ctx, oid, event->mouse.x, event->mouse.y) == false)
-					return false;
+    bool processed = true;
+    struct store_context *ctx = menu_priv(m);
+    struct store *store = ctx->store;
 
-				action = true;
-			} else if ((oid >= 0) && (event->mouse.y == m->active.row + oid)) {
-				/* if press is on a list item, so store item context */
-				context_menu_store_item(ctx, oid, event->mouse.x,
-										event->mouse.y);
-				action = true;
-			}
+    /* Leave store */
+    if (leave_store) return true;
 
-			if (action) {
-				ctx->flags |= (STORE_FRAME_CHANGE | STORE_GOLD_CHANGE);
+    if (event->type == EVT_SELECT)
+    {
+        /* Nothing for now. */
+        /* In future, maybe we want a display a list of what you can do. */
+        return true;
+    }
+    else if (event->type == EVT_KBRD)
+    {
+        bool storechange = false;
 
-				/* Let the game handle any core commands (equipping, etc) */
-				cmdq_pop(CTX_STORE);
+        switch (event->key.code)
+        {
+            case 's':
+            case 'd':
+            {
+                /* Paranoia: nothing to sell */
+                if (store->type == STORE_PLAYER)
+                    c_msg_print("That command does not work in this store.");
+                else
+                    storechange = store_sell(ctx);
+                break;
+            }
 
-				/* Notice and handle stuff */
-				notice_stuff(player);
-				handle_stuff(player);
+            case 'p':
+            case 'g':
+            {
+                /* Paranoia: nothing to purchase */
+                if (store->stock_num <= 0)
+                {
+                    switch (store->type)
+                    {
+                        case STORE_HOME: c_msg_print("Your home is empty."); break;
+                        case STORE_PLAYER: c_msg_print("This player shop is empty."); break;
+                        default: c_msg_print("I am currently out of stock."); break;
+                    }
+                }
+                else
+                {
+                    /* Use the old way of purchasing items */
+                    if (store->type != STORE_HOME)
+                        prt("Purchase which item? (ESC to cancel, Enter to select)", 0, 0);
+                    else
+                        prt("Get which item? (ESC to cancel, Enter to select)", 0, 0);
+                    oid = store_get_stock(m, oid);
+                    prt("", 0, 0);
+                    if (oid >= 0) storechange = store_purchase(ctx, oid);
+                }
+                break;
+            }
 
-				/* Display the store */
-				store_display_recalc(ctx);
-				store_menu_recalc(m);
-				store_redraw(ctx);
+            case 'l':
+            case 'x':
+            {
+                /* Paranoia: nothing to examine */
+                if (store->stock_num > 0)
+                {
+                    /* Use the old way of examining items */
+                    prt("Examine which item? (ESC to cancel, Enter to select)", 0, 0);
+                    oid = store_get_stock(m, oid);
+                    prt("", 0, 0);
+                    if (oid >= 0) store_examine(oid, false);
+                }
+                break;
+            }
 
-				return true;
-			}
-		}
-	} else if (event->type == EVT_KBRD) {
-		switch (event->key.code) {
-			case 's':
-			case 'd': store_sell(ctx); break;
+            case 'D':
+            {
+                /* Paranoia: nothing to describe */
+                if (store->stock_num > 0)
+                {
+                    /* Use the old way of examining items */
+                    prt("Describe which item? (ESC to cancel, Enter to select)", 0, 0);
+                    oid = store_get_stock(m, oid);
+                    prt("", 0, 0);
+                    if (oid >= 0) store_examine(oid, true);
+                }
+                break;
+            }
 
-			case 'p':
-			case 'g':
-				/* use the old way of purchasing items */
-				msg_flag = false;
-				if (store->sidx != STORE_HOME) {
-					prt("Purchase which item? (ESC to cancel, Enter to select)",
-						0, 0);
-				} else {
-					prt("Get which item? (Esc to cancel, Enter to select)",
-						0, 0);
-				}
-				oid = store_get_stock(m, oid);
-				prt("", 0, 0);
-				if (oid >= 0) {
-					store_purchase(ctx, oid, false);
-				}
-				break;
-			case 'l':
-			case 'x':
-				/* use the old way of examining items */
-				msg_flag = false;
-				prt("Examine which item? (ESC to cancel, Enter to select)",
-					0, 0);
-				oid = store_get_stock(m, oid);
-				prt("", 0, 0);
-				if (oid >= 0) {
-					store_examine(ctx, oid);
-				}
-				break;
+            case '?':
+            {
+                /* Toggle help */
+                if (ctx->flags & STORE_SHOW_HELP)
+                    ctx->flags &= ~(STORE_SHOW_HELP);
+                else
+                    ctx->flags |= STORE_SHOW_HELP;
 
-			case '?': {
-				/* Toggle help */
-				if (ctx->flags & STORE_SHOW_HELP)
-					ctx->flags &= ~(STORE_SHOW_HELP);
-				else
-					ctx->flags |= STORE_SHOW_HELP;
+                /* Redisplay */
+                ctx->flags |= STORE_INIT_CHANGE;
+                break;
+            }
 
-				/* Redisplay */
-				ctx->flags |= STORE_INIT_CHANGE;
+            case '&':
+            {
+                /* Hack -- redisplay */
+                ctx->flags |= STORE_INIT_CHANGE;
+                break;
+            }
 
-				store_display_recalc(ctx);
-				store_redraw(ctx);
+            case 'o':
+            {
+                /* Order an item */
+                if (store->type == STORE_XBM)
+                    store_order();
+                else
+                    c_msg_print("You cannot order from this store.");
+                break;
+            }
 
-				break;
-			}
+            case 'P':
+            case 'b':
+            {
+                /* Paranoia: nothing to describe */
+                if (store->stock_num > 0)
+                {
+                    /* Use the old way of examining items */
+                    prt("Browse which item? (ESC to cancel, Enter to select)", 0, 0);
+                    oid = store_get_stock(m, oid);
+                    prt("", 0, 0);
+                    if (oid >= 0)
+                    {
+                        struct object *obj = &ctx->list[oid];
 
-			case '=': {
-				do_cmd_options();
-				store_menu_set_selections(m, false);
-				break;
-			}
+                        if (obj_can_browse(player, obj))
+                        {
+                            Send_track_object(obj->oidx);
+                            textui_book_browse(obj->info_xtra.bidx);
+                        }
+                    }
+                }
+                break;
+            }
 
-			default:
-				processed = store_process_command_key(event->key);
-		}
+            default:
+                processed = store_process_command_key(event->key);
+        }
 
-		/* Let the game handle any core commands (equipping, etc) */
-		cmdq_pop(CTX_STORE);
+        /* Leave store */
+        if (leave_store) return true;
 
-		if (processed) {
-			event_signal(EVENT_INVENTORY);
-			event_signal(EVENT_EQUIPMENT);
-		}
+        /* Loop, looking for net input and responding to keypresses */
+        Net_loop(Term_inkey, store_callback_begin, NULL, SCAN_OFF, false);
 
-		/* Notice and handle stuff */
-		notice_stuff(player);
-		handle_stuff(player);
+        if (storechange) store_menu_recalc(m);
 
-		return processed;
-	}
+        if (processed)
+        {
+            event_signal(EVENT_INVENTORY);
+            event_signal(EVENT_EQUIPMENT);
+        }
 
-	return false;
+        /* Notice and handle stuff */
+        redraw_stuff();
+
+        /* Display the store */
+        store_display_recalc(ctx);
+        store_menu_recalc(m);
+        store_redraw(ctx);
+
+        return processed;
+    }
+
+    return false;
 }
+
 
 static region store_menu_region = { 1, 4, -1, -2 };
+
+
 static const menu_iter store_menu =
 {
-	NULL,
-	NULL,
-	store_display_entry,
-	store_menu_handle,
-	NULL
+    NULL,
+    NULL,
+    store_display_entry,
+    store_menu_handle,
+    NULL
 };
 
-/**
- * Init the store menu
- */
-static void store_menu_init(struct store_context *ctx, struct store *store, bool inspect_only)
+
+/* Init the store menu */
+static void store_menu_init(struct store_context *ctx, struct store *store)
 {
-	struct menu *menu = &ctx->menu;
+    struct menu *menu = &ctx->menu;
 
-	ctx->store = store;
-	ctx->flags = STORE_INIT_CHANGE;
-	ctx->inspect_only = inspect_only;
-	ctx->list = mem_zalloc(sizeof(struct object *) * z_info->store_inven_max);
+    ctx->store = store;
+    ctx->flags = STORE_INIT_CHANGE;
+    ctx->list = ctx->store->stock;
 
-	store_stock_list(ctx->store, ctx->list, z_info->store_inven_max);
+    /* Init the menu structure */
+    menu_init(menu, MN_SKIN_SCROLL, &store_menu);
+    menu_setpriv(menu, 0, ctx);
 
-	/* Init the menu structure */
-	menu_init(menu, MN_SKIN_SCROLL, &store_menu);
-	menu_setpriv(menu, 0, ctx);
-
-	/* Calculate the positions of things and draw */
-	menu_layout(menu, &store_menu_region);
-	store_menu_set_selections(menu, inspect_only);
-	store_display_recalc(ctx);
-	store_menu_recalc(menu);
-	store_redraw(ctx);
-}
-
-/**
- * Display contents of a store from knowledge menu
- *
- * The only allowed actions are 'I' to inspect an item
- */
-void textui_store_knowledge(int n)
-{
-	struct store_context ctx;
-
-	screen_save();
-	clear_from(0);
-
-	store_menu_init(&ctx, &stores[n], true);
-	menu_select(&ctx.menu, 0, false);
-
-	/* Flush messages XXX XXX XXX */
-	event_signal(EVENT_MESSAGE_FLUSH);
-
-	screen_load();
-
-	mem_free(ctx.list);
+    /* Calculate the positions of things and draw */
+    menu_layout(menu, &store_menu_region);
+    store_menu_set_selections(menu);
+    store_display_recalc(ctx);
+    store_menu_recalc(menu);
+    store_redraw(ctx);
 }
 
 
-/**
- * Handle stock change.
+/*
+ * Enter a store, and interact with it.
  */
-static void refresh_stock(game_event_type type, game_event_data *unused, void *user)
+void store_enter(void)
 {
-	struct store_context *ctx = user;
-	struct menu *menu = &ctx->menu;
+    struct store *store = &current_store;
+    struct store_context ctx;
 
-	store_stock_list(ctx->store, ctx->list, z_info->store_inven_max);
+    /* Save the screen */
+    screen_save();
 
-	/* Display the store */
-	store_display_recalc(ctx);
-	store_menu_recalc(menu);
-	store_redraw(ctx);
+    /* We are "shopping" */
+    store_ctx = &ctx;
+    leave_store = false;
+
+    /* Clear the top line */
+    Term_erase(0, 0, 255);
+    Term_fresh();
+
+    store_menu_init(&ctx, store);
+
+    /* Say a friendly hello. */
+    if (!STRZERO(welcome)) prt(welcome, 0, 0);
+
+    menu_select(&ctx.menu, 0, false);
+
+    /* We are no longer "shopping" */
+    store_ctx = false;
+    leave_store = false;
+
+    /* Restore the screen */
+    screen_load(true);
+
+    /* Redraw */
+    player->upkeep->redraw |= (PR_EQUIP);
+
+    /* Tell the server that we're outta here */
+    Send_store_leave();
 }
 
-/**
- * Enter a store.
+
+/*
+ * Display player's gold
  */
-void enter_store(game_event_type type, game_event_data *data, void *user)
+void store_prt_gold(void)
 {
-	struct store *store = store_at(cave, player->grid);
-
-	/* Check that we're on a store */
-	if (!store) {
-		msg("You see no store here.");
-		return;
-	}
-
-	sound((store->sidx == STORE_HOME) ? MSG_STORE_HOME : MSG_STORE_ENTER);
-
-	/* Shut down the normal game view */
-	event_signal(EVENT_LEAVE_WORLD);
+    store_ctx->flags |= STORE_GOLD_CHANGE;
+    store_redraw(store_ctx);
 }
 
-/**
- * Interact with a store.
+
+/*
+ * Display store frame
  */
-void use_store(game_event_type type, game_event_data *data, void *user)
+void store_prt_frame(void)
 {
-	struct store *store = store_at(cave, player->grid);
-	struct store_context ctx;
-
-	/* Check that we're on a store */
-	if (!store) return;
-
-	/*** Display ***/
-
-	/* Save current screen (ie. dungeon) */
-	screen_save();
-	msg_flag = false;
-
-	/* Get a array version of the store stock, register handler for changes */
-	event_add_handler(EVENT_STORECHANGED, refresh_stock, &ctx);
-	store_menu_init(&ctx, store, false);
-
-	/* Say a friendly hello. */
-	if (store->sidx != STORE_HOME)
-		prt_welcome(store->owner);
-
-	/* Shopping */
-	menu_select(&ctx.menu, 0, false);
-
-	/* Shopping's done */
-	event_remove_handler(EVENT_STORECHANGED, refresh_stock, &ctx);
-	msg_flag = false;
-	mem_free(ctx.list);
-
-	/* Take a turn */
-	player->upkeep->energy_use = z_info->move_energy;
-
-	/* Flush messages */
-	event_signal(EVENT_MESSAGE_FLUSH);
-
-	/* Load the screen */
-	screen_load();
+    store_ctx->flags |= STORE_FRAME_CHANGE;
+    store_redraw(store_ctx);
 }
 
-void leave_store(game_event_type type, game_event_data *data, void *user)
+
+void store_sell_accept(int32_t price, int16_t reset)
 {
-	/* Disable repeats */
-	cmd_disable_repeat();
+    char buf[NORMAL_WID];
+    int res;
+    ui_event ea = EVENT_ABORT;
 
-	sound(MSG_STORE_LEAVE);
+    /* If the item was rejected, cancel the wait */
+    if (price < 0)
+    {
+        store_command_wait = false;
+        return;
+    }
 
-	/* Switch back to the normal game view. */
-	event_signal(EVENT_ENTER_WORLD);
+    /* Hack -- redisplay (unless selling a house) */
+    if (store_ctx)
+    {
+        store_ctx->flags |= STORE_INIT_CHANGE;
+        store_redraw(store_ctx);
+        menu_refresh(&store_ctx->menu, false);
+    }
 
-	/* Update the visuals */
-	player->upkeep->update |= (PU_UPDATE_VIEW | PU_MONSTERS);
+    /* Tell the user about the price */
+    if (reset)
+        my_strcpy(buf, "Do you really want to reset this house? ", sizeof(buf));
+    else
+        strnfmt(buf, sizeof(buf), "Price is %ld gold. Proceed? ", price);
 
-	/* Redraw entire screen */
-	player->upkeep->redraw |= (PR_BASIC | PR_EXTRA);
+    /* Accept the price, or cancel the wait */
+    res = get_check_ex(buf);
+    if (!res) Send_store_confirm();
+    else if (res == 1) Term_event_push(&ea);
+    else store_command_wait = false;
+}
 
-	/* Redraw map */
-	player->upkeep->redraw |= (PR_MAP);
+
+void store_purchase_end(void)
+{
+    /* Cancel wait */
+    store_command_wait = false;
+}    
+
+
+void store_sell_end(void)
+{
+    /* Cancel wait */
+    store_command_wait = false;
+}        
+
+
+void store_leave(void)
+{
+    ui_event ea = EVENT_ABORT;
+
+    /* Leave store */
+    store_command_wait = false;
+    Term_event_push(&ea);
+    leave_store = true;
+}
+
+
+bool check_store_leave(bool refresh)
+{
+    ui_event ea = EVENT_ABORT;
+
+    if (leave_store) Term_event_push(&ea);
+    else if (store_ctx)
+    {
+        /* Hack -- redisplay */
+        store_ctx->flags |= STORE_INIT_CHANGE;
+        if (refresh) Term_key_push('&');
+    }
+    return leave_store;
 }

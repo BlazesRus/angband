@@ -2,6 +2,8 @@
  * File: pack.h
  * Purpose: Network packets
  */
+#if !defined(SPClient) && !defined(TANG_PACK_H)
+#define TANG_PACK_H
 
 /*
  * Packet types
@@ -85,3 +87,4 @@ enum
 #define NTERM_WIN_MONSTER   5
 #define NTERM_WIN_MONLIST   6
 #define NTERM_WIN_SPECIAL   7
+#endif

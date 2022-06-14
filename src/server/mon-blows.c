@@ -1,10 +1,11 @@
-/**
- * \file mon-blows.c
- * \brief Monster melee module.
+/*
+ * File: mon-blows.c
+ * Purpose: Monster melee module.
  *
  * Copyright (c) 1997 Ben Harrison, David Reeve Sward, Keldon Jones.
- *               2013 Ben Semmler
- *               2016 Nick McConnell
+ * Copyright (c) 2013 Ben Semmler
+ * Copyright (c) 2016 Nick McConnell
+ * Copyright (c) 2022 MAngband and PWMAngband Developers
  *
  * This work is free software; you can redistribute it and/or modify it
  * under the terms of either:
@@ -18,1036 +19,1283 @@
  *    are included in all such copies.  Other copyrights may also apply.
  */
 
-#include "angband.h"
-#include "effects.h"
-#include "init.h"
-#include "monster.h"
-#include "mon-attack.h"
-#include "mon-blows.h"
-#include "mon-desc.h"
-#include "mon-lore.h"
-#include "mon-make.h"
-#include "mon-msg.h"
-#include "mon-util.h"
-#include "obj-desc.h"
-#include "obj-gear.h"
-#include "obj-make.h"
-#include "obj-pile.h"
-#include "obj-slays.h"
-#include "obj-tval.h"
-#include "obj-util.h"
-#include "player-calcs.h"
-#include "player-timed.h"
-#include "player-util.h"
-#include "project.h"
 
-/**
- * ------------------------------------------------------------------------
+#include "s-angband.h"
+
+
+/*
  * Monster blow methods
- * ------------------------------------------------------------------------ */
-
-typedef enum {
-	BLOW_TAG_NONE,
-	BLOW_TAG_TARGET,
-	BLOW_TAG_OF_TARGET,
-	BLOW_TAG_HAS
-} blow_tag_t;
-
-static blow_tag_t blow_tag_lookup(const char *tag)
-{
-	if (strncmp(tag, "target", 6) == 0)
-		return BLOW_TAG_TARGET;
-	else if (strncmp(tag, "oftarget", 8) == 0)
-		return BLOW_TAG_OF_TARGET;
-	else if (strncmp(tag, "has", 3) == 0)
-		return BLOW_TAG_HAS;
-	else
-		return BLOW_TAG_NONE;
-}
-
-/**
- * Print a monster blow message.
- *
- * We fill in the monster name and/or pronoun where necessary in
- * the message to replace instances of {name} or {pronoun}.
  */
-char *monster_blow_method_action(struct blow_method *method, int midx)
+
+
+/*
+ * Return a randomly chosen string to append to an INSULT message.
+ */
+static const char *monster_blow_random_insult(void)
 {
-	const char punct[] = ".!?;:,'";
-	char buf[1024] = "\0";
-	const char *next;
-	const char *s;
-	const char *tag;
-	const char *in_cursor;
-	size_t end = 0;
-	struct monster *t_mon = NULL;
+    #define MAX_DESC_INSULT 8
+    static const char *desc_insult[MAX_DESC_INSULT] =
+    {
+        "insults %s!",
+        "insults your mother!",
+        "gives %s the finger!",
+        "humiliates %s!",
+        "defiles %s!",
+        "dances around %s!",
+        "makes obscene gestures!",
+        "moons %s!!!"
+    };
 
-	int choice = randint0(method->num_messages);
-	struct blow_message *msg = method->messages;
-
-	/* Get the target monster, if any */
-	if (midx > 0) {
-		t_mon = cave_monster(cave, midx);
-	}
-
-	/* Pick a message */
-	while (choice--) {
-		msg = msg->next;
-	}
-	in_cursor = msg->act_msg;
-
-	/* Add info to the message */
-	next = strchr(in_cursor, '{');
-	while (next) {
-		/* Copy the text leading up to this { */
-		strnfcat(buf, 1024, &end, "%.*s", next - in_cursor, in_cursor);
-
-		s = next + 1;
-		while (*s && isalpha((unsigned char) *s)) s++;
-
-		/* Valid tag */
-		if (*s == '}') {
-			/* Start the tag after the { */
-			tag = next + 1;
-			in_cursor = s + 1;
-
-			switch (blow_tag_lookup(tag)) {
-				case BLOW_TAG_TARGET: {
-					char m_name[80];
-					if (midx > 0) {
-						int mdesc_mode = MDESC_TARG;
-
-						if (!strchr(punct, *in_cursor)) {
-							mdesc_mode |= MDESC_COMMA;
-						}
-						monster_desc(m_name,
-							sizeof(m_name), t_mon,
-							mdesc_mode);
-						strnfcat(buf, sizeof(buf), &end, m_name);
-					} else {
-						strnfcat(buf, sizeof(buf), &end, "you");
-					}
-					break;
-				}
-				case BLOW_TAG_OF_TARGET: {
-					char m_name[80];
-					if (midx > 0) {
-						monster_desc(m_name,
-							sizeof(m_name), t_mon,
-							MDESC_TARG | MDESC_POSS);
-						strnfcat(buf, sizeof(buf), &end, m_name);
-					} else {
-						strnfcat(buf, sizeof(buf), &end, "your");
-					}
-					break;
-				}
-				case BLOW_TAG_HAS: {
-					if (midx > 0) {
-						strnfcat(buf, sizeof(buf), &end, "has");
-					} else {
-						strnfcat(buf, sizeof(buf), &end, "have");
-					}
-					break;
-				}
-
-				default: {
-					break;
-				}
-			}
-		} else {
-			/* An invalid tag, skip it */
-			in_cursor = next + 1;
-		}
-
-		next = strchr(in_cursor, '{');
-	}
-	strnfcat(buf, 1024, &end, in_cursor);
-	return string_make(buf);
+    return desc_insult[randint0(MAX_DESC_INSULT)];
+    #undef MAX_DESC_INSULT
 }
 
-/**
- * ------------------------------------------------------------------------
+
+/*
+ * Return a randomly chosen string to append to a MOAN message.
+ */
+static const char *monster_blow_random_moan(void)
+{
+    #define MAX_DESC_MOAN 8
+    static const char *desc_moan[MAX_DESC_MOAN] =
+    {
+        "wants his mushrooms back",
+        "tells you to get off his land",
+        "looks for his dogs",
+        "says 'Did you kill my Fang?'",
+        "asks 'Do you want to buy any mushrooms?'",
+        "seems sad about something",
+        "asks if you have seen his dogs",
+        "mumbles something about mushrooms"
+    };
+
+    return desc_moan[randint0(MAX_DESC_MOAN)];
+    #undef MAX_DESC_MOAN
+}
+
+
+/*
+ * Return an action string to be appended on the attack message.
+ *
+ * method is the blow method.
+ */
+const char *monster_blow_method_action(struct blow_method *method)
+{
+	const char *action = NULL;
+
+	if (method->act_msg)
+        action = method->act_msg;
+	else if (streq(method->name, "INSULT"))
+		action = monster_blow_random_insult();
+	else if (streq(method->name, "MOAN"))
+		action = monster_blow_random_moan();
+
+	return action;
+}
+
+
+/*
  * Monster blow effect helper functions
- * ------------------------------------------------------------------------ */
-int blow_index(const char *name)
-{
-	int i;
+ */
 
-	for (i = 1; i < z_info->blow_effects_max; ++i) {
-		struct blow_effect *effect = &blow_effects[i];
-		if (my_stricmp(name, effect->name) == 0)
-			return i;
-	}
-	return 0;
+
+static void eat_gold(struct player *p, struct source *who)
+{
+    int32_t gold = (p->au / 10) + randint1(25);
+
+    if (gold < 2) gold = 2;
+    if (gold > 5000) gold = (p->au / 20) + randint1(3000);
+    if (gold > p->au) gold = p->au;
+    if (gold <= 0)
+    {
+        msg(p, "Nothing was stolen.");
+        return;
+    }
+    
+    /* Very rare CHR save. !We use CON table! */
+    if (adj_con_fix[p->known_state.stat_ind[STAT_CHR]] >=  randint0(100))
+        {
+            msg(p, "Thief thought to steal %d, but at the last moment changed mind..", gold);
+            return;
+        }
+
+    p->au -= gold;
+
+    /* Let the player know they were robbed */
+    msg(p, "Your purse feels lighter.");
+    if (p->au)
+        msg(p, "%d coins were stolen!", gold);
+    else
+        msg(p, "All of your coins were stolen!");
+
+    /* Redraw gold */
+    p->upkeep->redraw |= (PR_GOLD);
+
+    /* Give the gold to the monster */
+    if (who->monster)
+    {
+        struct object *obj = object_new();
+
+        /* Create a new temporary object */
+        object_prep(p, chunk_get(&p->wpos), obj, money_kind("gold", gold), 0, MINIMISE);
+
+        /* Amount of gold to put in this object */
+        obj->pval = gold;
+
+        /* Set origin to stolen, so it is not confused with dropped treasure in monster_death */
+        obj->origin = ORIGIN_STOLEN;
+
+        /* Give the gold to the monster */
+        if (!monster_carry(who->monster, obj, false))
+            object_delete(&obj);
+    }
+
+    /* PWMAngband: give the gold to the offending player in PvP! */
+    else if (who->player)
+    {
+        who->player->au += gold;
+        msg(who->player, "Your purse feels heavier.");
+        who->player->upkeep->redraw |= (PR_GOLD);
+    }
 }
 
-/**
+
+/*
  * Monster steals an item from the player
  */
-static void steal_player_item(melee_effect_handler_context_t *context)
+static void steal_player_item(struct player *p, struct source *who, bool* obvious, int* blinked)
 {
-	int tries;
+    int tries;
+    
+    /* Very rare CHR save. !We use CON table! */
+    if (adj_con_fix[p->known_state.stat_ind[STAT_CHR]] >=  randint0(150))
+        {
+            msg(p, "There was an atteamp to steal, but at the last moment opponent changed mind");
+            return;
+        }
 
     /* Find an item */
-    for (tries = 0; tries < 10; tries++) {
-		struct object *obj, *stolen;
-		char o_name[80];
-		bool split = false;
-		bool none_left = false;
+    for (tries = 0; tries < 10; tries++)
+    {
+        struct object *obj, *stolen;
+        char o_name[NORMAL_WID];
+        bool split = false;
+        bool none_left = false;
 
         /* Pick an item */
-		int index = randint0(z_info->pack_size);
+        int index = randint0(z_info->pack_size);
 
         /* Obtain the item */
-        obj = context->p->upkeep->inven[index];
+        obj = p->upkeep->inven[index];
 
-		/* Skip non-objects */
-		if (obj == NULL) continue;
+        /* Skip non-objects */
+        if (obj == NULL) continue;
 
         /* Skip artifacts */
         if (obj->artifact) continue;
 
+        /* Skip deeds of property */
+        if (tval_is_deed(obj)) continue;
+
+        /* PvP: can only steal items if they can be carried */
+        if (who->player)
+        {
+            struct object *test = object_new();
+            bool ok = true;
+
+            /* Get a copy with the right "amt" */
+            object_copy_amt(test, obj, 1);
+
+            /* Note that the pack is too full */
+            if (!inven_carry_okay(who->player, test)) ok = false;
+
+            /* Note that the pack is too heavy */
+            else if (!weight_okay(who->player, test)) ok = false;
+
+            /* Must meet level requirement */
+            else if (!has_level_req(who->player, test)) ok = false;
+
+            object_delete(&test);
+            if (!ok) continue;
+        }
+
         /* Get a description */
-        object_desc(o_name, sizeof(o_name), obj, ODESC_FULL, context->p);
+        object_desc(p, o_name, sizeof(o_name), obj, ODESC_FULL);
 
-		/* Is it one of a stack being stolen? */
-		if (obj->number > 1)
-			split = true;
+        /* Is it one of a stack being stolen? */
+        if (obj->number > 1) split = true;
 
-		/* Try to steal */
-		if (react_to_slay(obj, context->mon)) {
-			/* React to objects that hurt the monster */
-			char m_name[80];
+        /* Message */
+        msg(p, "%s %s (%c) was stolen!", (split? "One of your": "Your"), o_name,
+            gear_to_label(p, obj));
 
-			/* Get the monster names (or "it") */
-			monster_desc(m_name, sizeof(m_name), context->mon, MDESC_STANDARD);
-
-			/* Fail to steal */
-			msg("%s tries to steal %s %s, but fails.", m_name,
-				(split ? "one of your" : "your"), o_name);
-		} else {
-			/* Message */
-			msg("%s %s (%c) was stolen!",
-				(split ? "One of your" : "Your"), o_name,
-				gear_to_label(context->p, obj));
-
-			/* Steal and carry */
-			stolen = gear_object_for_use(context->p, obj, 1,
-				false, &none_left);
-			(void)monster_carry(cave, context->mon, stolen);
-		}
+        /* Steal and carry */
+        stolen = gear_object_for_use(p, obj, 1, false, &none_left);
+        if (who->monster)
+        {
+            if (!monster_carry(who->monster, stolen, false))
+                object_delete(&stolen);
+        }
+        else if (who->player)
+            inven_carry(who->player, stolen, true, false);
 
         /* Obvious */
-        context->obvious = true;
+        *obvious = true;
 
         /* Blink away */
-        context->blinked = true;
+        *blinked = 2;
 
         /* Done */
         break;
     }
 }
 
-/**
+
+/*
  * Get the elemental damage taken by a monster from another monster's melee
  */
-static int monster_elemental_damage(melee_effect_handler_context_t *context,
-									int type, enum mon_messages *hurt_msg,
-									enum mon_messages *die_msg)
+static void monster_elemental_damage(melee_effect_handler_context_t *context, int imm_flag,
+    int suscept_flag)
 {
-	struct monster_lore *lore = get_lore(context->t_mon->race);
-	int hurt_flag = RF_NONE;
-	int imm_flag = RF_NONE;
-	int damage = 0;
+    int mult = 3;
 
-	/* Deal with elemental types */
-	switch (type) {
-		case PROJ_ACID: {
-			imm_flag = RF_IM_ACID;
-			break;
-		}
-		case PROJ_ELEC: {
-			imm_flag = RF_IM_ELEC;
-			break;
-		}
-		case PROJ_FIRE: {
-			imm_flag = RF_IM_FIRE;
-			hurt_flag = RF_HURT_FIRE;
-			*hurt_msg = MON_MSG_CATCH_FIRE;
-			*die_msg = MON_MSG_DISINTEGRATES;
-			break;
-		}
-		case PROJ_COLD: {
-			imm_flag = RF_IM_COLD;
-			hurt_flag = RF_HURT_COLD;
-			*hurt_msg = MON_MSG_BADLY_FROZEN;
-			*die_msg = MON_MSG_FREEZE_SHATTER;
-			break;
-		}
-		case PROJ_POIS: {
-			imm_flag = RF_IM_POIS;
-			break;
-		}
-		default: return 0;
-	}
+    /* Obvious */
+    context->obvious = true;
 
-	rf_on(lore->flags, imm_flag);
-	if (hurt_flag) {
-		rf_on(lore->flags, hurt_flag);
-	}
+    /* Notice immunity */
+    if (rf_has(context->target->monster->race->flags, imm_flag))
+    {
+        mult = 1;
+        if (context->visible) rf_on(context->target_l_ptr->flags, imm_flag);
+    }
 
-	if (rf_has(context->t_mon->race->flags, imm_flag)) {
-		*hurt_msg = MON_MSG_RESIST_A_LOT;
-		*die_msg = MON_MSG_DIE;
-		damage = context->damage / 9;
-	} else if (rf_has(context->t_mon->race->flags, hurt_flag)) {
-		damage = context->damage * 2;
-	} else {
-		*hurt_msg = MON_MSG_NONE;
-		*die_msg = MON_MSG_DIE;
-	}
+    /* Notice susceptibility */
+    else if (suscept_flag && rf_has(context->target->monster->race->flags, suscept_flag))
+    {
+        mult = 6;
+        if (context->visible) rf_on(context->target_l_ptr->flags, suscept_flag);
+    }
 
-	return damage;
+    /* Take some damage */
+    context->dead = project_m_monster_attack_aux(context->mon, chunk_get(&context->mon->wpos),
+        context->target->monster, context->damage * mult, context->note_dies);
 }
 
-/**
+
+/*
  * Deal the actual melee damage from a monster to a target player or monster
- *
- * This function is used in handlers where there is no further processing of
- * a monster after damage, so we always return true for monster targets
  */
-static bool monster_damage_target(melee_effect_handler_context_t *context,
-								  bool no_further_monster_effect)
+static bool monster_damage_target(melee_effect_handler_context_t *context)
 {
-	/* Take damage */
-	if (context->p) {
-		take_hit(context->p, context->damage, context->ddesc);
-		if (context->p->is_dead) return true;
-	} else {
-		bool dead = false;
-		dead = mon_take_nonplayer_hit(context->damage, context->t_mon,
-									  MON_MSG_NONE,	MON_MSG_DIE);
-		return (dead || no_further_monster_effect);
-	}
-	return false;
+    /* MvM */
+    if (context->style == TYPE_MVM)
+    {
+        /* Take some damage */
+        context->dead = project_m_monster_attack_aux(context->mon,
+            chunk_get(&context->mon->wpos), context->target->monster, context->damage,
+            context->note_dies);
+        return true;
+    }
+
+    /* Take damage */
+	if (take_hit(context->p, context->damage, context->ddesc, false, context->flav)) return true;
+
+    return false;
 }
 
-/**
- * ------------------------------------------------------------------------
+
+/*
  * Monster blow multi-effect handlers
  * These are each called by several individual effect handlers
- * ------------------------------------------------------------------------ */
-/**
+ */
+
+
+/*
  * Do damage as the result of a melee attack that has an elemental aspect.
  *
- * \param context is information for the current attack.
- * \param type is the PROJ_ constant for the element.
- * \param pure_element should be true if no side effects (mostly a hack
- * for poison).
+ * context is information for the current attack.
+ * type is the PROJ_ constant for the element.
+ * pure_element should be true if no side effects (mostly a hack for poison).
  */
-static void melee_effect_elemental(melee_effect_handler_context_t *context,
-								   int type, bool pure_element)
+static bool melee_effect_elemental(melee_effect_handler_context_t *context, int type,
+    bool pure_element, const char *flav_msg)
 {
-	int physical_dam, elemental_dam;
-	enum mon_messages hurt_msg = MON_MSG_NONE;
-	enum mon_messages die_msg = MON_MSG_DIE;
+    int physical_dam, elemental_dam;
+    bool ret = false;
 
-	if (pure_element)
-		/* Obvious */
-		context->obvious = true;
+    /* Obvious */
+    if (pure_element) context->obvious = true;
 
-	if (context->p) {
-		switch (type) {
-			case PROJ_ACID: msg("You are covered in acid!");
-				break;
-			case PROJ_ELEC: msg("You are struck by electricity!");
-				break;
-			case PROJ_FIRE: msg("You are enveloped in flames!");
-				break;
-			case PROJ_COLD: msg("You are covered with frost!");
-				break;
-		}
-	}
+    switch (type)
+    {
+        case PROJ_ACID: msg(context->p, "You are covered in acid!"); break;
+        case PROJ_ELEC: msg(context->p, "You are struck by electricity!"); break;
+        case PROJ_FIRE: msg(context->p, "You are enveloped in flames!"); break;
+        case PROJ_COLD: msg(context->p, "You are covered with frost!"); break;
+    }
 
-	/* Give a small bonus to ac for elemental attacks */
-	physical_dam = adjust_dam_armor(context->damage, context->ac + 50);
+    /* Give the player a small bonus to ac for elemental attacks */
+    physical_dam = adjust_dam_armor(context->damage, context->ac + 50);
 
-	/* Some attacks do no physical damage */
-	if (!context->method->phys)
-		physical_dam = 0;
+    /* Some attacks do no physical damage */
+    if (!context->method->phys)
+        physical_dam = 0;
 
-	if (context->p) {
-		elemental_dam = adjust_dam(context->p, type, context->damage,
-								   RANDOMISE, 0, true);
-	} else {
-		assert(context->t_mon);
-		elemental_dam = monster_elemental_damage(context, type, &hurt_msg,
-												 &die_msg);
-	}
+    elemental_dam = adjust_dam(context->p, type, context->damage, RANDOMISE, 0);
 
-	/* Take the larger of physical or elemental damage */
-	context->damage = (physical_dam > elemental_dam) ?
-		physical_dam : elemental_dam;
+    /* Take the larger of physical or elemental damage */
+    context->damage = MAX(physical_dam, elemental_dam);
 
-	if (context->p && elemental_dam > 0)
-		inven_damage(context->p, type, MIN(elemental_dam * 5, 300));
-	if (context->damage > 0) {
-		if (context->p) {
-			take_hit(context->p, context->damage, context->ddesc);
-		} else {
-			(void) mon_take_nonplayer_hit(context->damage, context->t_mon,
-										  hurt_msg, die_msg);
-		}
-	}
+    if (elemental_dam > 0)
+    {
+        if (pure_element) inven_damage(context->p, type, MIN(elemental_dam * 5, 300));
+        ret = true;
+    }
+    if (context->damage > 0)
+    {
+        char df[160];
 
-	/* Learn about the player */
-	if (pure_element && context->p) {
-		update_smart_learn(context->mon, context->p, 0, 0, type);
-	}
+        my_strcpy(df, context->flav, sizeof(df));
+        if (pure_element) strnfmt(df, sizeof(df), "was %s by %s", flav_msg, context->ddesc);
+        take_hit(context->p, context->damage, context->ddesc, false, df);
+    }
+
+    /* Learn about the player */
+    if (pure_element) update_smart_learn(context->mon, context->p, 0, 0, type);
+
+    return ret;
 }
 
-/**
+
+/*
  * Do damage as the result of a melee attack that has a status effect.
  *
- * \param context is the information for the current attack.
- * \param type is the TMD_ constant for the effect.
- * \param amount is the amount that the timer should be increased by.
- * \param of_flag is the OF_ flag that is passed on to monster learning for
- * this effect.
- * \param attempt_save indicates if a saving throw should be attempted for
- * this effect.
- * \param save_msg is the message that is displayed if the saving throw is
- * successful.
+ * context is the information for the current attack.
+ * type is the TMD_ constant for the effect.
+ * amount is the amount that the timer should be increased by.
+ * of_flag is the OF_ flag that is passed on to monster learning for this effect.
+ * save indicates if a saving throw should be attempted for this effect.
+ * save_msg is the message that is displayed if the saving throw is successful.
  */
-static void melee_effect_timed(melee_effect_handler_context_t *context,
-							   int type, int amount, int of_flag, bool save,
-							   const char *save_msg)
+static void melee_effect_timed(melee_effect_handler_context_t *context, int type, int amount,
+    int of_flag, bool save, const char *save_msg, bool paralyze)
 {
-	/* Take damage */
-	if (monster_damage_target(context, false)) return;
+    /* Take damage */
+	if (take_hit(context->p, context->damage, context->ddesc, false, context->flav)) return;
 
-	/* Handle status */
-	if (context->t_mon) {
-		/* Translate to monster timed effect */
-		int mon_tmd_effect = -1;
+	/* Perform a saving throw if desired. */
+	if ((save && magik(context->p->state.skills[SKILL_SAVE])) ||
+        resist_undead_attacks(context->p, context->mon->race))
+    {
+		if (save_msg != NULL)
+			msg(context->p, "%s", save_msg);
 
-		/* Will do until monster and player timed effects are fused */
-		switch (type) {
-			case TMD_CONFUSED: {
-				mon_tmd_effect = MON_TMD_CONF;
-				break;
-			}
-			case TMD_PARALYZED: {
-				mon_tmd_effect = MON_TMD_HOLD;
-				break;
-			}
-			case TMD_BLIND: {
-				mon_tmd_effect = MON_TMD_STUN;
-				break;
-			}
-			case TMD_AFRAID: {
-				mon_tmd_effect = MON_TMD_FEAR;
-				break;
-			}
-			default: {
-				break;
-			}
-		}
-		if (mon_tmd_effect >= 0) {
-			mon_inc_timed(context->t_mon, mon_tmd_effect, amount, 0);
-			context->obvious = true;
-		}
-	} else if (save && randint0(100) < context->p->state.skills[SKILL_SAVE]) {
-		/* Attempt a saving throw if desired. */
-		if (save_msg != NULL) {
-			msg("%s", save_msg);
-		}
 		context->obvious = true;
-	} else {
-		/* Increase timer for type. */
-		if (player_inc_timed(context->p, type, amount, true, true,
-				true)) {
-			context->obvious = true;
-		}
-
-		/* Learn about the player */
-		update_smart_learn(context->mon, context->p, of_flag, 0, -1);
 	}
+
+    /* Increase timer for type. */
+	else
+    {
+        if (player_inc_timed(context->p, type, amount, true, true))
+        {
+            context->obvious = true;
+
+            /* Hack -- make level 1 monsters who paralyze also blink */
+            if (paralyze && context->mon->race->level == 1 && one_in_(7)) context->blinked = 1;
+        }
+    }
+
+	/* Learn about the player */
+	update_smart_learn(context->mon, context->p, of_flag, 0, -1);
 }
 
-/**
+
+/*
  * Do damage as the result of a melee attack that drains a stat.
  *
- * \param context is the information for the current attack.
- * \param stat is the STAT_ constant for the desired stat.
+ * context is the information for the current attack.
+ * stat is the STAT_ constant for the desired stat.
  */
-static void melee_effect_stat(melee_effect_handler_context_t *context, int stat)
+static void melee_effect_stat(melee_effect_handler_context_t *context, int stat, int of_flag)
 {
-	/* Take damage */
-	if (monster_damage_target(context, true)) return;
+	/* PvX */
+    if (context->style == TYPE_PVX)
+    {
+        /* PvP: lose-stat attack */
+        if (context->target->player)
+        {
+            struct source who_body;
+            struct source *who = &who_body;
+
+            source_player(who, get_player_index(get_connection(context->target->player->conn)),
+                context->target->player);
+            effect_simple(EF_DRAIN_STAT, who, "0", stat, 0, 0, 0, 0, NULL);
+        }
+        return;
+    }
+
+    /* Take damage */
+	if (monster_damage_target(context)) return;
 
 	/* Damage (stat) */
-	effect_simple(EF_DRAIN_STAT,
-			source_monster(context->mon->midx),
-			"0",
-			stat,
-			0,
-			0,
-			0,
-			0,
-			&context->obvious);
+    if (resist_undead_attacks(context->p, context->mon->race))
+    {
+        msg(context->p, "You feel %s for a moment, but the feeling passes.",
+            desc_stat(stat, false));
+        equip_learn_flag(context->p, of_flag);
+        context->obvious = true;
+    }
+    else
+    {
+        struct source who_body;
+        struct source *who = &who_body;
+
+        source_player(who, get_player_index(get_connection(context->p->conn)), context->p);
+        effect_simple(EF_DRAIN_STAT, who, "0", stat, 0, 0, 0, 0, &context->obvious);
+    }
 }
 
-/**
+
+/*
  * Do damage as the result of an experience draining melee attack.
  *
- * \param context is the information for the current attack.
- * \param chance is the player's chance of resisting drain if they have
- * OF_HOLD_LIFE.
- * \param drain_amount is the base amount of experience to drain.
+ * context is the information for the current attack.
+ * drain_amount is the base amount of experience to drain.
  */
-static void melee_effect_experience(melee_effect_handler_context_t *context,
-									int chance, int drain_amount)
+static void melee_effect_experience(melee_effect_handler_context_t *context, int drain_amount)
 {
-	/* Take damage */
-	if (context->p) {
-		take_hit(context->p, context->damage, context->ddesc);
-		context->obvious = true;
-		update_smart_learn(context->mon, context->p, OF_HOLD_LIFE, 0, -1);
-		if (context->p->is_dead) return;
-	} else {
-		(void) mon_take_nonplayer_hit(context->damage, context->t_mon,
-									  MON_MSG_NONE, MON_MSG_DIE);
-		return;
-	}
+    /* PvX */
+    if (context->style == TYPE_PVX)
+    {
+        /* PvM: drain life attack */
+        if (context->target->monster)
+        {
+            if (monster_is_living(context->target->monster))
+            {
+                int drain = ((context->damage > context->target->monster->hp)?
+                    context->target->monster->hp: context->damage) * drain_amount / 100;
 
-	if (player_of_has(context->p, OF_HOLD_LIFE) && (randint0(100) < chance)) {
-		msg("You keep hold of your life force!");
-	} else {
-		int32_t d = drain_amount +
-			(context->p->exp/100) * z_info->life_drain_percent;
-		if (player_of_has(context->p, OF_HOLD_LIFE)) {
-			msg("You feel your life slipping away!");
-			player_exp_lose(context->p, d / 10, false);
-		} else {
-			msg("You feel your life draining away!");
-			player_exp_lose(context->p, d, false);
-		}
-	}
+                hp_player_safe(context->p, 1 + drain / 2);
+            }
+            return;
+        }
+
+        /* PvP: lose-exp attack */
+        drain_xp(context->target->player, drain_amount);
+        equip_learn_flag(context->target->player, OF_HOLD_LIFE);
+        return;
+    }
+
+	/* Obvious */
+	context->obvious = true;
+
+    /* Take damage */
+	if (monster_damage_target(context)) return;
+	update_smart_learn(context->mon, context->p, OF_HOLD_LIFE, 0, -1);
+
+    if (resist_undead_attacks(context->p, context->mon->race))
+        msg(context->p, "You keep hold of your life force!");
+    else
+        drain_xp(context->p, drain_amount);
 }
 
-/**
- * ------------------------------------------------------------------------
+
+/*
  * Monster blow effect handlers
- * ------------------------------------------------------------------------ */
-/**
+ */
+
+
+/*
  * Melee effect handler: Hit the player, but don't do any damage.
  */
 static void melee_effect_handler_NONE(melee_effect_handler_context_t *context)
 {
+    /* PvX */
+    if (context->style == TYPE_PVX) return;
+
 	context->obvious = true;
 	context->damage = 0;
 }
 
-/**
+
+/*
  * Melee effect handler: Hurt the player with no side effects.
  */
 static void melee_effect_handler_HURT(melee_effect_handler_context_t *context)
 {
+	/* PvX */
+    if (context->style == TYPE_PVX) return;
+
 	/* Obvious */
 	context->obvious = true;
 
 	/* Armor reduces total damage */
 	context->damage = adjust_dam_armor(context->damage, context->ac);
 
-	/* Take damage */
-	(void) monster_damage_target(context, true);
+    /* Take damage */
+    monster_damage_target(context);
 }
 
-/**
+
+/*
  * Melee effect handler: Poison the player.
  *
- * We can't use melee_effect_timed(), because this is both and elemental attack
- * and a status attack. Note the false value for pure_element for
- * melee_effect_elemental().
+ * We can't use melee_effect_timed(), because this is both an elemental attack and a
+ * status attack. Note the false value for pure_element for melee_effect_elemental().
  */
 static void melee_effect_handler_POISON(melee_effect_handler_context_t *context)
 {
-	melee_effect_elemental(context, PROJ_POIS, false);
+    /* PvX */
+    if (context->style == TYPE_PVX) return;
 
-	/* Player is dead or not attacked */
-	if (!context->p || context->p->is_dead)
-		return;
+	/* MvM */
+    if (context->style == TYPE_MVM)
+    {
+        int mult = 3;
+
+        /* Obvious */
+        context->obvious = true;
+
+        /* Notice immunity */
+        if (rf_has(context->target->monster->race->flags, RF_IM_POIS)) mult = 1;
+
+        /* Take some damage */
+        context->dead = project_m_monster_attack_aux(context->mon,
+            chunk_get(&context->mon->wpos), context->target->monster, context->damage * mult,
+            context->note_dies);
+        if (context->dead) return;
+
+        /* Take "poison" effect */
+        mon_inc_timed(context->p, context->target->monster, MON_TMD_POIS, 5 + randint1(5),
+            MON_TMD_FLG_NOTIFY);
+        return;
+    }
 
 	/* Take "poison" effect */
-	if (player_inc_timed(context->p, TMD_POISONED,
-			5 + randint1(context->rlev), true, true, true)) {
-		context->obvious = true;
-	}
+    if (melee_effect_elemental(context, PROJ_POIS, false, "killed"))
+    {
+        context->obvious = player_inc_timed(context->p, TMD_POISONED, 5 + randint1(context->rlev),
+            true, true);
+    }
 
 	/* Learn about the player */
 	update_smart_learn(context->mon, context->p, 0, 0, ELEM_POIS);
 }
 
-/**
+
+/*
  * Melee effect handler: Disenchant the player.
  */
 static void melee_effect_handler_DISENCHANT(melee_effect_handler_context_t *context)
 {
-	/* Take damage */
-	if (monster_damage_target(context, true)) return;
+    /* PvX */
+    if (context->style == TYPE_PVX)
+    {
+        if (context->target->monster) return;
+
+        /* PvP: un-bonus attack */
+        equip_learn_element(context->target->player, ELEM_DISEN);
+        if (player_resists(context->target->player, ELEM_DISEN))
+            msg(context->p, "%s is unaffected.", context->ddesc);
+        else
+        {
+            struct source who_body;
+            struct source *who = &who_body;
+
+            source_player(who, get_player_index(get_connection(context->target->player->conn)),
+                context->target->player);
+            effect_simple(EF_DISENCHANT, who, "0", 0, 0, 0, 0, 0, NULL);
+        }
+        return;
+    }
+
+    /* Take damage */
+	if (monster_damage_target(context)) return;
 
 	/* Apply disenchantment if no resist */
 	if (!player_resists(context->p, ELEM_DISEN))
-		effect_simple(EF_DISENCHANT, source_monster(context->mon->midx), "0", 0, 0, 0, 0, 0, &context->obvious);
+    {
+		struct source who_body;
+        struct source *who = &who_body;
+
+        source_player(who, get_player_index(get_connection(context->p->conn)), context->p);
+        effect_simple(EF_DISENCHANT, who, "0", 0, 0, 0, 0, 0, &context->obvious);
+    }
 
 	/* Learn about the player */
 	update_smart_learn(context->mon, context->p, 0, 0, ELEM_DISEN);
 }
 
-/**
+
+/*
  * Melee effect handler: Drain charges from the player's inventory.
  */
 static void melee_effect_handler_DRAIN_CHARGES(melee_effect_handler_context_t *context)
 {
-	struct object *obj;
-	struct monster *monster = context->mon;
-	struct player *current_player = context->p;
-	int tries;
-	int unpower = 0, newcharge;
+    struct source who_body;
+    struct source *who = &who_body;
 
-	/* Take damage */
-	if (monster_damage_target(context, true)) return;
+    /* PvX */
+    if (context->style == TYPE_PVX)
+    {
+        /* PvP: un-power attack */
+        if (context->target->player)
+        {
+            bool dummy;
 
-	/* Find an item */
-	for (tries = 0; tries < 10; tries++) {
-		/* Pick an item */
-		obj = context->p->upkeep->inven[randint0(z_info->pack_size)];
+            source_player(who, 0, context->p);
+            un_power(context->target->player, who, &dummy);
+        }
+        return;
+    }
 
-		/* Skip non-objects */
-		if (obj == NULL) continue;
+    /* Take damage */
+	if (monster_damage_target(context)) return;
 
-		/* Drain charged wands/staves */
-		if (tval_can_have_charges(obj)) {
-			/* Charged? */
-			if (obj->pval) {
-				/* Get number of charge to drain */
-				unpower = (context->rlev / (obj->kind->level + 2)) + 1;
-
-				/* Get new charge value, don't allow negative */
-				newcharge = MAX((obj->pval - unpower),0);
-
-				/* Remove the charges */
-				obj->pval = newcharge;
-			}
-		}
-
-		if (unpower) {
-			int heal = context->rlev * unpower;
-
-			msg("Energy drains from your pack!");
-
-			context->obvious = true;
-
-			/* Don't heal more than max hp */
-			heal = MIN(heal, monster->maxhp - monster->hp);
-
-			/* Heal */
-			monster->hp += heal;
-
-			/* Redraw (later) if needed */
-			if (current_player->upkeep->health_who == monster)
-				current_player->upkeep->redraw |= (PR_HEALTH);
-
-			/* Combine the pack */
-			current_player->upkeep->notice |= (PN_COMBINE);
-
-			/* Redraw stuff */
-			current_player->upkeep->redraw |= (PR_INVEN);
-
-			/* Affect only a single inventory slot */
-			break;
-		}
-	}
+    source_monster(who, context->mon);
+    un_power(context->p, who, &context->obvious);
 }
 
-/**
+
+/*
  * Melee effect handler: Take the player's gold.
  */
 static void melee_effect_handler_EAT_GOLD(melee_effect_handler_context_t *context)
 {
-	struct player *current_player = context->p;
+    /* PvX */
+    if (context->style == TYPE_PVX)
+    {
+        if (context->target->monster) return;
 
-	/* Take damage */
-	if (monster_damage_target(context, true)) return;
+        /* PvP: eat-gold attack */
+        if (!context->target->player->timed[TMD_PARALYZED] &&
+            magik(adj_dex_safe[context->target->player->state.stat_ind[STAT_DEX]] +
+            context->target->player->lev))
+        {
+            /* Saving throw message */
+            msg(context->target->player, "You quickly protect your money pouch!");
+        }
+        else
+        {
+            struct source who_body;
+            struct source *who = &who_body;
+
+            source_player(who, 0, context->p);
+            eat_gold(context->target->player, who);
+        }
+        return;
+    }
+
+    /* Take damage */
+	if (monster_damage_target(context)) return;
 
     /* Obvious */
     context->obvious = true;
 
     /* Attempt saving throw (unless paralyzed) based on dex and level */
-    if (!current_player->timed[TMD_PARALYZED] &&
-        (randint0(100) < (adj_dex_safe[current_player->state.stat_ind[STAT_DEX]]
-						  + current_player->lev))) {
+    if (!context->p->timed[TMD_PARALYZED] &&
+        magik(adj_dex_safe[context->p->state.stat_ind[STAT_DEX]] + context->p->lev))
+    {
         /* Saving throw message */
-        msg("You quickly protect your money pouch!");
+        msg(context->p, "You quickly protect your money pouch!");
 
         /* Occasional blink anyway */
-        if (randint0(3)) context->blinked = true;
-    } else {
-        int32_t gold = (current_player->au / 10) + randint1(25);
-        if (gold < 2) gold = 2;
-        if (gold > 5000) gold = (current_player->au / 20) + randint1(3000);
-        if (gold > current_player->au) gold = current_player->au;
-        current_player->au -= gold;
-        if (gold <= 0) {
-            msg("Nothing was stolen.");
-            return;
-        }
+        if (randint0(3)) context->blinked = 2;
+    }
+    else
+    {
+        struct source who_body;
+        struct source *who = &who_body;
 
-        /* Let the player know they were robbed */
-        msg("Your purse feels lighter.");
-        if (current_player->au)
-            msg("%d coins were stolen!", gold);
-        else
-            msg("All of your coins were stolen!");
-
-        /* While we have gold, put it in objects */
-        while (gold > 0) {
-            int amt;
-
-            /* Create a new temporary object */
-            struct object *obj = object_new();
-            object_prep(obj, money_kind("gold", gold), 0, MINIMISE);
-
-            /* Amount of gold to put in this object */
-            amt = gold > MAX_PVAL ? MAX_PVAL : gold;
-            obj->pval = amt;
-            gold -= amt;
-
-            /* Set origin to stolen, so it is not confused with
-             * dropped treasure in monster_death */
-            obj->origin = ORIGIN_STOLEN;
-            obj->origin_depth = convert_depth_to_origin(current_player->depth);
-
-            /* Give the gold to the monster */
-            monster_carry(cave, context->mon, obj);
-        }
-
-        /* Redraw gold */
-        current_player->upkeep->redraw |= (PR_GOLD);
+        source_monster(who, context->mon);
+        eat_gold(context->p, who);
 
         /* Blink away */
-        context->blinked = true;
+        context->blinked = 2;
     }
 }
 
-/**
+
+/*
  * Melee effect handler: Take something from the player's inventory.
  */
 static void melee_effect_handler_EAT_ITEM(melee_effect_handler_context_t *context)
 {
+    struct source who_body;
+    struct source *who = &who_body;
+
+    /* PvX */
+    if (context->style == TYPE_PVX)
+    {
+        if (context->target->monster) return;
+
+        /* PvP: eat-item attack */
+        if (!context->target->player->timed[TMD_PARALYZED] &&
+            magik(adj_dex_safe[context->target->player->state.stat_ind[STAT_DEX]] +
+            context->target->player->lev))
+        {
+            /* Saving throw message */
+            msg(context->target->player, "You grab hold of your backpack!");
+        }
+        else
+        {
+            bool dummy;
+            int dummy2;
+
+            source_player(who, 0, context->p);
+            steal_player_item(context->target->player, who, &dummy, &dummy2);
+        }
+        return;
+    }
+
     /* Take damage */
-	if (monster_damage_target(context, false)) return;
+	if (monster_damage_target(context)) return;
 
-	/* Steal from player or monster */
-	if (context->p) {
-		int chance = adj_dex_safe[context->p->state.stat_ind[STAT_DEX]] +
-			context->p->lev;
+    /* Saving throw (unless paralyzed) based on dex and level */
+    if (!context->p->timed[TMD_PARALYZED] &&
+        magik(adj_dex_safe[context->p->state.stat_ind[STAT_DEX]] + context->p->lev))
+    {
+        /* Saving throw message */
+        msg(context->p, "You grab hold of your backpack!");
 
-		/* Saving throw (unless paralyzed) based on dex and level */
-		if (!context->p->timed[TMD_PARALYZED] && (randint0(100) < chance)) {
-			/* Saving throw message */
-			msg("You grab hold of your backpack!");
+        /* Occasional "blink" anyway */
+        context->blinked = 2;
 
-			/* Occasional "blink" anyway */
-			context->blinked = true;
+        /* Obvious */
+        context->obvious = true;
 
-			/* Obvious */
-			context->obvious = true;
+        /* Done */
+        return;
+    }
 
-			/* Done */
-			return;
-		}
-
-		/* Try to steal an item */
-		steal_player_item(context);
-	} else {
-		assert(context->t_mon);
-		steal_monster_item(context->t_mon, context->mon->midx);
-		context->obvious = true;
-	}
+    source_monster(who, context->mon);
+    steal_player_item(context->p, who, &context->obvious, &context->blinked);
 }
 
-/**
+
+/*
  * Melee effect handler: Eat the player's food.
  */
 static void melee_effect_handler_EAT_FOOD(melee_effect_handler_context_t *context)
 {
-	int tries;
+    /* PvX */
+    if (context->style == TYPE_PVX)
+    {
+        /* PvP: eat-food attack */
+        if (context->target->player)
+        {
+            bool dummy;
 
-	/* Take damage */
-	if (monster_damage_target(context, true)) return;
+            eat_fud(context->target->player, context->p, &dummy);
+        }
+        return;
+    }
 
-	/* Steal some food */
-	for (tries = 0; tries < 10; tries++) {
-		/* Pick an item from the pack */
-		int index = randint0(z_info->pack_size);
-		struct object *obj, *eaten;
-		char o_name[80];
-		bool none_left = false;
+    /* Take damage */
+	if (monster_damage_target(context)) return;
 
-		/* Get the item */
-		obj = context->p->upkeep->inven[index];
-
-		/* Skip non-objects */
-		if (obj == NULL) continue;
-
-		/* Skip non-food objects */
-		if (!tval_is_edible(obj)) continue;
-
-		if (obj->number == 1) {
-			object_desc(o_name, sizeof(o_name), obj, ODESC_BASE,
-				context->p);
-			msg("Your %s (%c) was eaten!", o_name,
-				gear_to_label(context->p, obj));
-		} else {
-			object_desc(o_name, sizeof(o_name), obj,
-				ODESC_PREFIX | ODESC_BASE, context->p);
-			msg("One of your %s (%c) was eaten!", o_name,
-				gear_to_label(context->p, obj));
-		}
-
-		/* Steal and eat */
-		eaten = gear_object_for_use(context->p, obj, 1, false,
-			&none_left);
-		if (eaten->known)
-			object_delete(player->cave, NULL, &eaten->known);
-		object_delete(cave, player->cave, &eaten);
-
-		/* Obvious */
-		context->obvious = true;
-
-		/* Done */
-		break;
-	}
+    eat_fud(context->p, NULL, &context->obvious);
+    /* looks like //\(oo)/\\ */
+    msgt(context->p, MSG_MON_SWALLOW, ":E~~~ FOOD eater ATTACK //\\(oo)/\\\\");
 }
 
-/**
+
+/*
  * Melee effect handler: Absorb the player's light.
  */
 static void melee_effect_handler_EAT_LIGHT(melee_effect_handler_context_t *context)
 {
-	/* Take damage */
-	if (monster_damage_target(context, true)) return;
+    struct source who_body;
+    struct source *who = &who_body;
 
-	/* Drain the light source */
-	effect_simple(EF_DRAIN_LIGHT,
-			source_monster(context->mon->midx),
-			"250+1d250",
-			0,
-			0,
-			0,
-			0,
-			0,
-			&context->obvious);
+    /* PvX */
+    if (context->style == TYPE_PVX)
+    {
+        /* PvP: eat-light attack */
+        if (context->target->player)
+        {
+            bool dummy;
+
+            source_player(who, get_player_index(get_connection(context->target->player->conn)),
+                context->target->player);
+            effect_simple(EF_DRAIN_LIGHT, who, "250+1d250", 0, 0, 0, 0, 0, &dummy);
+        }
+        return;
+    }
+
+    /* Take damage */
+	if (monster_damage_target(context)) return;
+
+    /* Drain the light source */
+    source_player(who, get_player_index(get_connection(context->p->conn)), context->p);
+    effect_simple(EF_DRAIN_LIGHT, who, "500+1d50", 0, 0, 0, 0, 0, &context->obvious);
 }
 
-/**
+
+/*
  * Melee effect handler: Attack the player with acid.
  */
 static void melee_effect_handler_ACID(melee_effect_handler_context_t *context)
 {
-	melee_effect_elemental(context, PROJ_ACID, true);
+    /* PvX */
+    if (context->style == TYPE_PVX) return;
+
+	if (context->style == TYPE_MVM)
+        monster_elemental_damage(context, RF_IM_ACID, 0);
+    else
+	    melee_effect_elemental(context, PROJ_ACID, true, "dissolved");
 }
 
-/**
+
+/*
  * Melee effect handler: Attack the player with electricity.
  */
 static void melee_effect_handler_ELEC(melee_effect_handler_context_t *context)
 {
-	melee_effect_elemental(context, PROJ_ELEC, true);
+	/* PvX */
+    if (context->style == TYPE_PVX) return;
+
+	if (context->style == TYPE_MVM)
+        monster_elemental_damage(context, RF_IM_ELEC, 0);
+	else
+        melee_effect_elemental(context, PROJ_ELEC, true, "electrocuted");
 }
 
-/**
+
+/*
  * Melee effect handler: Attack the player with fire.
  */
 static void melee_effect_handler_FIRE(melee_effect_handler_context_t *context)
 {
-	melee_effect_elemental(context, PROJ_FIRE, true);
+	/* PvX */
+    if (context->style == TYPE_PVX) return;
+
+	if (context->style == TYPE_MVM)
+        monster_elemental_damage(context, RF_IM_FIRE, RF_HURT_FIRE);
+    else
+	    melee_effect_elemental(context, PROJ_FIRE, true, "fried");
 }
 
-/**
+
+/*
  * Melee effect handler: Attack the player with cold.
  */
 static void melee_effect_handler_COLD(melee_effect_handler_context_t *context)
 {
-	melee_effect_elemental(context, PROJ_COLD, true);
+	/* PvX */
+    if (context->style == TYPE_PVX) return;
+
+	if (context->style == TYPE_MVM)
+        monster_elemental_damage(context, RF_IM_COLD, RF_HURT_COLD);
+    else
+	    melee_effect_elemental(context, PROJ_COLD, true, "frozen");
 }
 
-/**
+
+/*
  * Melee effect handler: Blind the player.
  */
 static void melee_effect_handler_BLIND(melee_effect_handler_context_t *context)
 {
-	melee_effect_timed(context, TMD_BLIND, 10 + randint1(context->rlev),
-					   OF_PROT_BLIND, false, NULL);
+	/* PvX */
+    if (context->style == TYPE_PVX)
+    {
+        /* Blinding attack */
+        context->do_blind = true;
+        return;
+    }
+
+    /* MvM */
+    if (context->style == TYPE_MVM)
+    {
+        /* Take damage */
+        context->dead = project_m_monster_attack_aux(context->mon,
+            chunk_get(&context->mon->wpos), context->target->monster, context->damage,
+            context->note_dies);
+        if (context->dead) return;
+
+        /* Obvious */
+        context->obvious = true;
+
+        /* Blinding attack */
+        context->do_blind = true;
+        return;
+    }
+
+    melee_effect_timed(context, TMD_BLIND, 10 + randint1(context->rlev), OF_PROT_BLIND, false, NULL,
+        false);
 }
 
-/**
+
+/*
  * Melee effect handler: Confuse the player.
  */
 static void melee_effect_handler_CONFUSE(melee_effect_handler_context_t *context)
 {
-	melee_effect_timed(context, TMD_CONFUSED, 3 + randint1(context->rlev),
-					   OF_PROT_CONF, false, NULL);
+	/* PvX */
+    if (context->style == TYPE_PVX)
+    {
+        /* Confusing attack */
+        context->do_conf = true;
+        return;
+    }
+
+    /* MvM */
+    if (context->style == TYPE_MVM)
+    {
+        /* Take damage */
+        context->dead = project_m_monster_attack_aux(context->mon,
+            chunk_get(&context->mon->wpos), context->target->monster, context->damage,
+            context->note_dies);
+        if (context->dead) return;
+
+        /* Obvious */
+        context->obvious = true;
+
+        /* Confusing attack */
+        context->do_conf = true;
+        return;
+    }
+
+    /* Very rare CHR save !We use CON table! */
+    if (adj_con_fix[context->target->player->state.stat_ind[STAT_CHR]] >=  randint0(200))
+        {
+            msg(context->p, "Your natural magnetism and self confidence helps you to resist confusion.");
+            return;
+        }    
+
+    melee_effect_timed(context, TMD_CONFUSED, 3 + randint1(context->rlev), OF_PROT_CONF, false,
+        NULL, false);
 }
 
-/**
+
+/*
  * Melee effect handler: Terrify the player.
  */
 static void melee_effect_handler_TERRIFY(melee_effect_handler_context_t *context)
 {
-	melee_effect_timed(context, TMD_AFRAID, 3 + randint1(context->rlev),
-					   OF_PROT_FEAR, true, "You stand your ground!");
+	/* PvX */
+    if (context->style == TYPE_PVX)
+    {
+        /* Fear attack */
+        context->do_fear = true;
+        return;
+    }
+
+    /* MvM */
+    if (context->style == TYPE_MVM)
+    {
+        /* Take damage */
+        context->dead = project_m_monster_attack_aux(context->mon,
+            chunk_get(&context->mon->wpos), context->target->monster, context->damage,
+            context->note_dies);
+        if (context->dead) return;
+
+        /* Obvious */
+        context->obvious = true;
+
+        /* Fear attack */
+        context->do_fear = true;
+        return;
+    }
+    
+    /* Very rare CHR save !We use CON table! */
+    if (adj_con_fix[context->target->player->state.stat_ind[STAT_CHR]] >=  randint0(100))
+        {
+            msg(context->p, "You resist frightening this time.");
+            return;
+        }        
+
+    melee_effect_timed(context, TMD_AFRAID, 3 + randint1(context->rlev), OF_PROT_FEAR, true,
+        "You stand your ground!", false);
 }
 
-/**
+
+/*
  * Melee effect handler: Paralyze the player.
  */
 static void melee_effect_handler_PARALYZE(melee_effect_handler_context_t *context)
 {
-	/* Hack -- Prevent perma-paralysis via damage */
-	if (context->p && context->p->timed[TMD_PARALYZED] && (context->damage < 1))
-		context->damage = 1;
+	/* PvX */
+    if (context->style == TYPE_PVX)
+    {
+        if (context->target->monster)
+        {
+            /* Paralyzing attack */
+            context->do_para = true;
+            return;
+        }
 
-	melee_effect_timed(context, TMD_PARALYZED, 3 + randint1(context->rlev),
-					   OF_FREE_ACT, true, "You resist the effects!");
+        /* PvP: paralyzing attack */
+        if (magik(context->target->player->state.skills[SKILL_SAVE]))
+            msg(context->p, "%s resists the effect.", context->ddesc);
+        else
+        {
+            player_inc_timed(context->target->player, TMD_PARALYZED, 3 + randint1(context->p->lev),
+                true, true);
+        }
+        return;
+    }
+
+    /* MvM */
+    if (context->style == TYPE_MVM)
+    {
+        /* Take damage */
+        context->dead = project_m_monster_attack_aux(context->mon,
+            chunk_get(&context->mon->wpos), context->target->monster, context->damage,
+            context->note_dies);
+        if (context->dead) return;
+
+        /* Obvious */
+        context->obvious = true;
+
+        /* Paralyzing attack */
+        context->do_para = true;
+        return;
+    }
+
+    melee_effect_timed(context, TMD_PARALYZED, 3 + randint1(context->rlev), OF_FREE_ACT, true,
+        "You resist the effects!", true);
 }
 
-/**
+
+/*
  * Melee effect handler: Drain the player's strength.
  */
 static void melee_effect_handler_LOSE_STR(melee_effect_handler_context_t *context)
 {
-	melee_effect_stat(context, STAT_STR);
+	melee_effect_stat(context, STAT_STR, OF_SUST_STR);
 }
 
-/**
+
+/*
  * Melee effect handler: Drain the player's intelligence.
  */
 static void melee_effect_handler_LOSE_INT(melee_effect_handler_context_t *context)
 {
-	melee_effect_stat(context, STAT_INT);
+	melee_effect_stat(context, STAT_INT, OF_SUST_INT);
 }
 
-/**
+
+/*
  * Melee effect handler: Drain the player's wisdom.
  */
 static void melee_effect_handler_LOSE_WIS(melee_effect_handler_context_t *context)
 {
-	melee_effect_stat(context, STAT_WIS);
+	melee_effect_stat(context, STAT_WIS, OF_SUST_WIS);
 }
 
-/**
+
+/*
  * Melee effect handler: Drain the player's dexterity.
  */
 static void melee_effect_handler_LOSE_DEX(melee_effect_handler_context_t *context)
 {
-	melee_effect_stat(context, STAT_DEX);
+	melee_effect_stat(context, STAT_DEX, OF_SUST_DEX);
 }
 
-/**
+
+/*
  * Melee effect handler: Drain the player's constitution.
  */
 static void melee_effect_handler_LOSE_CON(melee_effect_handler_context_t *context)
 {
-	melee_effect_stat(context, STAT_CON);
+	melee_effect_stat(context, STAT_CON, OF_SUST_CON);
 }
 
-/**
+/*
+ * Melee effect handler: Drain the player's charisma.
+ */
+static void melee_effect_handler_LOSE_CHR(melee_effect_handler_context_t *context)
+{
+	melee_effect_stat(context, STAT_CHR, OF_SUST_CHR);
+}
+
+
+/*
  * Melee effect handler: Drain all of the player's stats.
  */
 static void melee_effect_handler_LOSE_ALL(melee_effect_handler_context_t *context)
 {
-	/* Take damage */
-	if (monster_damage_target(context, true)) return;
+    /* PvX */
+    if (context->style == TYPE_PVX)
+    {
+        /* PvP: lose-all attack */
+        if (context->target->player)
+        {
+            struct source who_body;
+            struct source *who = &who_body;
+
+            source_player(who, get_player_index(get_connection(context->target->player->conn)),
+                context->target->player);
+            effect_simple(EF_DRAIN_STAT, who, "0", STAT_STR, 0, 0, 0, 0, NULL);
+            effect_simple(EF_DRAIN_STAT, who, "0", STAT_DEX, 0, 0, 0, 0, NULL);
+            effect_simple(EF_DRAIN_STAT, who, "0", STAT_CON, 0, 0, 0, 0, NULL);
+            effect_simple(EF_DRAIN_STAT, who, "0", STAT_INT, 0, 0, 0, 0, NULL);
+            effect_simple(EF_DRAIN_STAT, who, "0", STAT_WIS, 0, 0, 0, 0, NULL);
+            effect_simple(EF_DRAIN_STAT, who, "0", STAT_CHR, 0, 0, 0, 0, NULL);
+        }
+        return;
+    }
+
+    /* Take damage */
+	if (monster_damage_target(context)) return;
 
 	/* Damage (stats) */
-	effect_simple(EF_DRAIN_STAT, source_monster(context->mon->midx), "0", STAT_STR, 0, 0, 0, 0, &context->obvious);
-	effect_simple(EF_DRAIN_STAT, source_monster(context->mon->midx), "0", STAT_DEX, 0, 0, 0, 0, &context->obvious);
-	effect_simple(EF_DRAIN_STAT, source_monster(context->mon->midx), "0", STAT_CON, 0, 0, 0, 0, &context->obvious);
-	effect_simple(EF_DRAIN_STAT, source_monster(context->mon->midx), "0", STAT_INT, 0, 0, 0, 0, &context->obvious);
-	effect_simple(EF_DRAIN_STAT, source_monster(context->mon->midx), "0", STAT_WIS, 0, 0, 0, 0, &context->obvious);
+    if (resist_undead_attacks(context->p, context->mon->race))
+    {
+        msg(context->p, "You feel %s for a moment, but the feeling passes.",
+            desc_stat(STAT_STR, false));
+        msg(context->p, "You feel %s for a moment, but the feeling passes.",
+            desc_stat(STAT_DEX, false));
+        msg(context->p, "You feel %s for a moment, but the feeling passes.",
+            desc_stat(STAT_CON, false));
+        msg(context->p, "You feel %s for a moment, but the feeling passes.",
+            desc_stat(STAT_INT, false));
+        msg(context->p, "You feel %s for a moment, but the feeling passes.",
+            desc_stat(STAT_WIS, false));
+        msg(context->p, "You feel %s for a moment, but the feeling passes.",
+            desc_stat(STAT_CHR, false));
+        equip_learn_flag(context->p, OF_SUST_STR);
+        equip_learn_flag(context->p, OF_SUST_INT);
+        equip_learn_flag(context->p, OF_SUST_WIS);
+        equip_learn_flag(context->p, OF_SUST_DEX);
+        equip_learn_flag(context->p, OF_SUST_CON);
+        equip_learn_flag(context->p, OF_SUST_CHR);
+        context->obvious = true;
+    }
+    else
+    {
+        struct source who_body;
+        struct source *who = &who_body;
+
+        source_player(who, get_player_index(get_connection(context->p->conn)), context->p);
+        effect_simple(EF_DRAIN_STAT, who, "0", STAT_STR, 0, 0, 0, 0, &context->obvious);
+        effect_simple(EF_DRAIN_STAT, who, "0", STAT_DEX, 0, 0, 0, 0, &context->obvious);
+        effect_simple(EF_DRAIN_STAT, who, "0", STAT_CON, 0, 0, 0, 0, &context->obvious);
+        effect_simple(EF_DRAIN_STAT, who, "0", STAT_INT, 0, 0, 0, 0, &context->obvious);
+        effect_simple(EF_DRAIN_STAT, who, "0", STAT_WIS, 0, 0, 0, 0, &context->obvious);
+        effect_simple(EF_DRAIN_STAT, who, "0", STAT_CHR, 0, 0, 0, 0, &context->obvious);
+    }
 }
 
-/**
+
+/*
  * Melee effect handler: Cause an earthquake around the player.
  */
 static void melee_effect_handler_SHATTER(melee_effect_handler_context_t *context)
 {
-	/* Obvious */
+    /* PvX */
+    if (context->style == TYPE_PVX)
+    {
+        /* Quaking attack */
+        if (context->damage > 50) context->do_quake = true;
+        return;
+    }
+
+    /* Obvious */
 	context->obvious = true;
 
-	/* Hack -- Reduce damage based on the player armor class */
-	context->damage = adjust_dam_armor(context->damage, context->ac);
+    /* Hack -- reduce damage based on the player armor class */
+    context->damage = adjust_dam_armor(context->damage, context->ac);
 
-	/* Take damage */
-	if (monster_damage_target(context, false)) return;
+    /* MvM */
+    if (context->style == TYPE_MVM)
+    {
+        /* Take damage */
+        context->dead = project_m_monster_attack_aux(context->mon, chunk_get(&context->mon->wpos),
+            context->target->monster, context->damage, context->note_dies);
+        if (context->dead) return;
+    }
+    else
+    {
+        char df[160];
 
-	/* Earthquake centered at the monster, radius damage-determined */
-	if (context->damage > 23) {
-		int radius = context->damage / 12;
-		effect_simple(EF_EARTHQUAKE, source_monster(context->mon->midx), "0",
-					  0, radius, 0, 0, 0, NULL);
-	}
+        strnfmt(df, sizeof(df), "was splattered by %s", context->ddesc);
 
-	/* Chance of knockback */
-	if ((context->damage > 100)) {
-		int value = context->damage - 100;
-		if (randint1(value) > 40) {
-			int dist = 1 + value / 40;
-			if (context->p) {
-				thrust_away(context->mon->grid, context->p->grid, dist);
-			} else {
-				thrust_away(context->mon->grid, context->t_mon->grid, dist);
-			}
-		}
-	}
+        /* Take damage */
+        if (take_hit(context->p, context->damage, context->ddesc, false, df)) return;
+    }
+
+    /* Earthquake centered at the monster, radius damage-determined */
+    if (context->damage > 23)
+    {
+        int radius = context->damage / 12;
+        struct source who_body;
+        struct source *who = &who_body;
+
+        source_player(who, get_player_index(get_connection(context->p->conn)), context->p);
+        who->monster = context->mon;
+        effect_simple(EF_EARTHQUAKE, who, "0", 0, radius, 0, 0, 0, NULL);
+    }
+
+    /* Chance of knockback */
+    if (context->damage > 100)
+    {
+        int value = context->damage - 100;
+
+        if (randint1(value) > 40)
+        {
+            int dist = 1 + value / 40;
+            struct source who_body;
+            struct source *who = &who_body;
+            struct loc centre;
+
+            if (context->style == TYPE_MVM)
+            {
+                source_monster(who, context->mon);
+                who->player = context->p;
+                loc_copy(&centre, &context->mon->grid);
+            }
+            else
+            {
+                source_player(who, get_player_index(get_connection(context->p->conn)), context->p);
+                loc_copy(&centre, &context->p->grid);
+            }
+
+            thrust_away(chunk_get(&context->mon->wpos), who, &centre, dist);
+        }
+    }
 }
 
-/**
+
+/*
  * Melee effect handler: Drain the player's experience.
  */
 static void melee_effect_handler_EXP_10(melee_effect_handler_context_t *context)
 {
-	melee_effect_experience(context, 95, damroll(10, 6));
+	melee_effect_experience(context, 10);
 }
 
-/**
+
+/*
  * Melee effect handler: Drain the player's experience.
  */
 static void melee_effect_handler_EXP_20(melee_effect_handler_context_t *context)
 {
-	melee_effect_experience(context, 90, damroll(20, 6));
+	melee_effect_experience(context, 20);
 }
 
-/**
+
+/*
  * Melee effect handler: Drain the player's experience.
  */
 static void melee_effect_handler_EXP_40(melee_effect_handler_context_t *context)
 {
-	melee_effect_experience(context, 75, damroll(40, 6));
+	melee_effect_experience(context, 40);
 }
 
-/**
+
+/*
  * Melee effect handler: Drain the player's experience.
  */
 static void melee_effect_handler_EXP_80(melee_effect_handler_context_t *context)
 {
-	melee_effect_experience(context, 50, damroll(80, 6));
+	melee_effect_experience(context, 80);
 }
 
-/**
+
+/*
  * Melee effect handler: Make the player hallucinate.
  *
  * Note that we don't use melee_effect_timed(), due to the different monster
@@ -1055,85 +1303,619 @@ static void melee_effect_handler_EXP_80(melee_effect_handler_context_t *context)
  */
 static void melee_effect_handler_HALLU(melee_effect_handler_context_t *context)
 {
-	/* Take damage */
-	if (monster_damage_target(context, true)) return;
+    /* PvX */
+    if (context->style == TYPE_PVX)
+    {
+        if (context->target->monster)
+        {
+            /* Confusing attack */
+            context->do_conf = true;
 
-	/* Increase "image" */
-	if (player_inc_timed(context->p, TMD_IMAGE,
-			3 + randint1(context->rlev / 2), true, true, true))
-		context->obvious = true;
+            return;
+        }
 
-	/* Learn about the player */
-	update_smart_learn(context->mon, context->p, 0, 0, ELEM_CHAOS);
+        /* PvP: hallucinatory attack */
+        player_inc_timed(context->target->player, TMD_IMAGE, 3 + randint1(context->p->lev / 2), true,
+            true);
+        return;
+    }
+
+    /* MvM */
+    if (context->style == TYPE_MVM)
+    {
+        /* Take damage */
+        context->dead = project_m_monster_attack_aux(context->mon,
+            chunk_get(&context->mon->wpos), context->target->monster, context->damage,
+            context->note_dies);
+        if (context->dead) return;
+
+        /* Obvious */
+        context->obvious = true;
+
+        /* Confusing attack */
+        context->do_conf = true;
+        return;
+    }
+
+    /* Take damage */
+	if (take_hit(context->p, context->damage, context->ddesc, false, context->flav)) return;
+
+    /* Increase "image" */
+    context->obvious = player_inc_timed(context->p, TMD_IMAGE, 3 + randint1(context->rlev / 2),
+        true, true);
+
+    /* Learn about the player */
+    update_smart_learn(context->mon, context->p, 0, 0, ELEM_CHAOS);
 }
 
-/**
+
+/*
  * Melee effect handler: Give the player Black Breath.
  *
  * Note that we don't use melee_effect_timed(), as this is unresistable.
  */
 static void melee_effect_handler_BLACK_BREATH(melee_effect_handler_context_t *context)
 {
-	/* Take damage */
-	if (monster_damage_target(context, true)) return;
+    // later: archers and ranger classes - shooter should be destroyed..
 
-	/* Increase Black Breath counter a *small* amount, maybe */
-	if (one_in_(5) && player_inc_timed(context->p, TMD_BLACKBREATH,
-			context->damage / 10, true, true, false)) {
-		context->obvious = true;
-	}
+    // Nazgul attack may destroy your weapon
+    if (one_in_(3))
+    {
+        struct object *obj;
+        char o_name[NORMAL_WID];
+
+        /* Choose the weapon */
+        obj = equipped_item_by_slot_name(context->p, "weapon");
+
+        if (obj)
+        {
+            // flag - should we redraw or not
+            int weap_change = 0;
+            
+            /* Describe */
+            object_desc(context->p, o_name, sizeof(o_name), obj, ODESC_FULL);
+
+            // Artifacts
+            if (obj->artifact || (obj->kind == lookup_kind_by_name(TV_SWORD, "\'Stormbringer\'")))
+            {
+                // 2H arts additional resistance
+                if (kf_has(obj->kind->kind_flags, KF_TWO_HANDED) && one_in_(5))
+                    ;
+                // Dark Swords arts resist
+                else if (tval_is_dark_sword(obj) && one_in_(4))
+                    ;
+                // ~6.6% total chance (without counting 2H)
+                else if (one_in_(5))
+                {
+                    // Damage the artifact
+                    obj->to_h -= 1;
+                    obj->to_d -= 1;
+                    weap_change = 1;
+                }
+                // ~3.3%
+                else if (one_in_(10))
+                {
+                    // Destroy artifact
+                    preserve_artifact_aux(obj);
+                    history_lose_artifact(context->p, obj);
+                    use_object(context->p, obj, 1, false);
+                    weap_change = 1;
+                }
+            }
+            // Dark Swords
+            else if (tval_is_dark_sword(obj))
+            {
+                // Ego additional resist
+                if (obj->ego && one_in_(5))
+                    ;
+                // regular dark swords
+                else if (one_in_(5))
+                {
+                    // Destroy
+                    use_object(context->p, obj, 1, false);
+                    weap_change = 1;
+                }
+            }
+            // Two-handed weapons
+            else if (kf_has(obj->kind->kind_flags, KF_TWO_HANDED))
+            {
+                if (one_in_(5))
+                {
+                    // Damage
+                    obj->to_h -= randint1(2);
+                    obj->to_d -= randint1(2);
+                    weap_change = 1;
+                }
+                else if (one_in_(5))
+                {
+                    // Destroy
+                    use_object(context->p, obj, 1, false);
+                    weap_change = 1;
+                }
+            }
+            // Regular weapons damage
+            else if (one_in_(4))
+            {
+                obj->to_h -= randint1(3);
+                obj->to_d -= randint1(3);
+                weap_change = 1;
+            }
+            // Regular weapons destroy
+            else if (one_in_(3))
+            {
+                // Destroy
+                use_object(context->p, obj, 1, false);
+                weap_change = 1;
+            }
+
+            // redraw if flag active
+            if (weap_change)
+            {
+                /* Recalculate bonuses */
+                context->p->upkeep->update |= (PU_BONUS);
+
+                // Redraw
+                context->p->upkeep->redraw |= (PR_EQUIP);
+            }
+        }
+    }
+
+    /* Take damage */
+	if (take_hit(context->p, context->damage, context->ddesc, false, context->flav)) return;
+
+    /* Increase Black Breath counter a *small* amount, maybe */
+    if    ((streq(context->p->race->name, "Halfling") ||
+            streq(context->p->race->name, "Demonic") ||
+            streq(context->p->race->name, "Gargoyle")) && one_in_(2))
+                return;
+    else if(streq(context->p->race->name, "Undead") ||
+            streq(context->p->race->name, "Vampire") ||
+            streq(context->p->race->name, "Wraith") ||
+            streq(context->p->race->name, "Golem"))
+                return;
+    else if (one_in_(5))
+    {
+        if (player_inc_timed(context->p, TMD_BLACKBREATH, context->damage / 10, true, false))
+            context->obvious = true;
+    }
 }
 
-/**
- * ------------------------------------------------------------------------
+
+static void melee_effect_handler_FORGET(melee_effect_handler_context_t *context)
+{
+    /* PvX */
+    if (context->style == TYPE_PVX)
+    {
+        if (context->target->monster) return;
+
+        /* PvP: forget attack */
+        if (magik(context->target->player->state.skills[SKILL_SAVE]))
+            msg(context->p, "%s is unaffected.", context->ddesc);
+        else if (!player_of_has(context->target->player, OF_PROT_AMNESIA))
+            player_inc_timed(context->target->player, TMD_AMNESIA, 4, true, true);
+        return;
+    }
+
+    /* Take damage */
+	if (monster_damage_target(context)) return;
+
+    /* Increase "amnesia" */
+    if (magik(context->p->state.skills[SKILL_SAVE]) ||
+        resist_undead_attacks(context->p, context->mon->race))
+    {
+        msg(context->p, "You resist the effects!");
+        context->obvious = true;
+    }
+    else if (!player_of_has(context->p, OF_PROT_AMNESIA))
+    {
+        struct source who_body;
+        struct source *who = &who_body;
+
+        context->obvious = player_inc_timed(context->p, TMD_AMNESIA, 4, true, true);
+        
+        if (one_in_(5))
+        {
+            source_both(who, context->p, who->monster);
+            msg(context->p, "Your mind suddenly become blank... you don't remember this place.");
+            effect_simple(EF_FORGET_LEVEL, who, "0", 0, 0, 0, 0, 0, NULL);
+        }
+    }
+}
+
+
+static void melee_effect_handler_DISEASE(melee_effect_handler_context_t *context)
+{
+    /* PvX */
+    if (context->style == TYPE_PVX)
+    {
+        /* PvP: lose-con attack */
+        if (context->target->player)
+        {
+            struct source who_body;
+            struct source *who = &who_body;
+
+            source_player(who, get_player_index(get_connection(context->target->player->conn)),
+                context->target->player);
+            effect_simple(EF_DRAIN_STAT, who, "0", STAT_CON, 0, 0, 0, 0, NULL);
+        }
+        return;
+    }
+
+    melee_effect_handler_POISON(context);
+
+    /* MvM */
+    if (context->style == TYPE_MVM) return;
+
+    /* Damage (stat) */
+    if (resist_undead_attacks(context->p, context->mon->race))
+    {
+        msg(context->p, "You feel %s for a moment, but the feeling passes.",
+            desc_stat(STAT_CON, false));
+        equip_learn_flag(context->p, OF_SUST_CON);
+        context->obvious = true;
+    }
+    else
+    {
+        struct source who_body;
+        struct source *who = &who_body;
+
+        source_player(who, get_player_index(get_connection(context->p->conn)), context->p);
+        effect_simple(EF_DRAIN_STAT, who, "0", STAT_CON, 0, 0, 0, 0, &context->obvious);
+    }
+}
+
+
+static void melee_effect_handler_TIME(melee_effect_handler_context_t *context)
+{
+    struct source who_body;
+    struct source *who = &who_body;
+
+    /* PvX */
+    if (context->style == TYPE_PVX)
+    {
+        /* PvP: time attack */
+        if (context->target->player)
+        {
+            source_player(who, 0, context->p);
+            project_player_time_effects(context->target->player, who);
+        }
+        return;
+    }
+
+    /* Take damage */
+	if (monster_damage_target(context)) return;
+
+    /* Take "time" effect */
+    source_monster(who, context->mon);
+    project_player_time_effects(context->p, who);
+    context->obvious = true;
+
+    /* Learn about the player */
+    update_smart_learn(context->mon, context->p, 0, 0, ELEM_TIME);
+}
+
+
+static void melee_effect_handler_DISARM(melee_effect_handler_context_t *context)
+{
+    /* PvX */
+    if (context->style == TYPE_PVX)
+    {
+        /* PvP: disarming attack */
+        if (context->target->player) drop_weapon(context->target->player, context->damage);
+        return;
+    }
+
+    /* Take damage */
+	if (monster_damage_target(context)) return;
+
+    drop_weapon(context->p, context->damage);
+    context->obvious = true;
+}
+
+
+static void melee_effect_handler_FAMINE(melee_effect_handler_context_t *context)
+{
+    /* PvX */
+    if (context->style == TYPE_PVX)
+    {
+        /* PvP: hunger attack */
+        if (context->target->player && !context->target->player->ghost)
+        {
+            msg(context->target->player, "You have a sudden attack of hunger!");
+            player_set_timed(context->target->player, TMD_FOOD,
+                context->target->player->timed[TMD_FOOD] / 2, false);
+        }
+        return;
+    }
+
+    /* Take damage */
+	if (monster_damage_target(context)) return;
+
+    /* Take "hunger" effect */
+    if (!context->p->ghost)
+    {
+        msgt(context->p, MSG_MON_SWALLOW, ":E~~~ You have a sudden attack of hunger!");
+        player_set_timed(context->p, TMD_FOOD, context->p->timed[TMD_FOOD] / 2, false);
+        context->obvious = true;
+    }
+}
+
+
+static void undress(struct player *p)
+{
+    int i, count = 0;
+    struct object *obj;
+    char o_name[NORMAL_WID];
+
+    /* Count slots */
+    for (i = 0; i < p->body.count; i++)
+    {
+        /* Ignore non armor parts */
+        if (slot_type_is(p, i, EQUIP_WEAPON)) continue;
+        if (slot_type_is(p, i, EQUIP_BOW)) continue;
+        if (slot_type_is(p, i, EQUIP_RING)) continue;
+        if (slot_type_is(p, i, EQUIP_AMULET)) continue;
+        if (slot_type_is(p, i, EQUIP_LIGHT)) continue;
+        if (slot_type_is(p, i, EQUIP_TOOL)) continue;
+
+        obj = slot_object(p, i);
+
+        /* No item */
+        if (!obj) continue;
+
+        /* Item is stuck */
+        if (!obj_can_takeoff(obj)) continue;
+
+        /* Count usable slots */
+        count++;
+    }
+
+    /* Already naked */
+    if (!count) return;
+
+    /* Pick one at random */
+    for (i = p->body.count - 1; i >= 0; i--)
+    {
+        /* Ignore non armor parts */
+        if (slot_type_is(p, i, EQUIP_WEAPON)) continue;
+        if (slot_type_is(p, i, EQUIP_BOW)) continue;
+        if (slot_type_is(p, i, EQUIP_RING)) continue;
+        if (slot_type_is(p, i, EQUIP_AMULET)) continue;
+        if (slot_type_is(p, i, EQUIP_LIGHT)) continue;
+        if (slot_type_is(p, i, EQUIP_TOOL)) continue;
+
+        obj = slot_object(p, i);
+
+        /* No item */
+        if (!obj) continue;
+
+        /* Item is stuck */
+        if (!obj_can_takeoff(obj)) continue;
+
+        // ignore items with free action (to prevent insta-death by paralyze)
+        if (of_has(obj->flags, OF_FREE_ACT)) continue;
+
+        if (one_in_(count--)) break;
+    }
+
+    /* Describe the object */
+    object_desc(p, o_name, sizeof(o_name), obj, ODESC_BASE);
+
+    /* Message */
+    msgt(p, MSG_MON_HYPNOTIZE, "     ( * ) ( * )     ");
+    msgt(p, MSG_MON_HYPNOTIZE, "You remove your %s...", o_name);
+    msgt(p, MSG_MON_HYPNOTIZE, "     ( o ) ( o )     ");
+
+    /* De-equip the object */
+    p->body.slots[i].obj = NULL;
+    p->upkeep->equip_cnt--;
+
+    p->upkeep->update |= (PU_BONUS | PU_INVEN | PU_UPDATE_VIEW);
+    p->upkeep->redraw |= (PR_PLUSSES);
+    set_redraw_equip(p, NULL);
+    set_redraw_inven(p, NULL);
+    p->upkeep->notice |= (PN_IGNORE);
+    update_stuff(p, chunk_get(&p->wpos));
+
+    combine_pack(p);
+}
+
+
+/*
+ * Melee effect handler: Seduce the player.
+ */
+static void melee_effect_handler_SEDUCE(melee_effect_handler_context_t *context)
+{
+	bool opposite;
+
+    /* PvX */
+    if (context->style == TYPE_PVX)
+    {
+        if (context->target->monster)
+        {
+            opposite = (((context->p->psex == SEX_MALE) &&
+                rf_has(context->target->monster->race->flags, RF_FEMALE)) ||
+                ((context->p->psex == SEX_FEMALE) &&
+                rf_has(context->target->monster->race->flags, RF_MALE)));
+
+            if (context->p->psex == SEX_NEUTER)
+                if (one_in_(2)) opposite = true;
+
+            /* Must be of opposite sex */
+            if (!opposite) return;
+
+            /* Confusing attack */
+            context->do_conf = true;
+
+            return;
+        }
+
+        opposite = (((context->p->psex == SEX_MALE) &&
+            (context->target->player->psex == SEX_FEMALE)) ||
+            ((context->p->psex == SEX_FEMALE) &&
+            (context->target->player->psex == SEX_MALE)));
+
+            if (context->p->psex == SEX_NEUTER)
+                if (one_in_(2)) opposite = true;
+
+        /* Must be of opposite sex */
+        if (!opposite) return;
+
+        /* PvP: seduce attack */
+        undress(context->target->player);
+    }
+
+    /* MvM */
+    if (context->style == TYPE_MVM)
+    {
+        /* Take damage */
+        context->dead = project_m_monster_attack_aux(context->mon,
+            chunk_get(&context->mon->wpos), context->target->monster, context->damage,
+            context->note_dies);
+        if (context->dead) return;
+
+        /* Obvious */
+        context->obvious = true;
+
+        opposite = ((rf_has(context->mon->race->flags, RF_MALE) &&
+                rf_has(context->target->monster->race->flags, RF_FEMALE)) ||
+                (rf_has(context->mon->race->flags, RF_FEMALE) &&
+                rf_has(context->target->monster->race->flags, RF_MALE)));
+
+        if (!(rf_has(context->mon->race->flags, RF_MALE)) &&
+            !(rf_has(context->mon->race->flags, RF_FEMALE)))
+            if (one_in_(2)) opposite = true;
+
+        /* Must be of opposite sex */
+        if (!opposite) return;
+
+        /* Confusing attack */
+        context->do_conf = true;
+        return;
+    }
+
+    // Last case: MVP
+
+    /* Take damage */
+	if (take_hit(context->p, context->damage, context->ddesc, false, context->flav)) return;
+
+    /* Obvious */
+    context->obvious = true;
+
+    opposite = ((rf_has(context->mon->race->flags, RF_MALE) &&
+        (context->p->psex == SEX_FEMALE)) ||
+        (rf_has(context->mon->race->flags, RF_FEMALE) &&
+        (context->p->psex == SEX_MALE)));
+
+    if (context->p->psex == SEX_NEUTER)
+        if (one_in_(2)) opposite = true;
+
+    /* Must be of opposite sex */
+    if (!opposite) return;
+
+    /* Top CHR save from undressing in ~45% cases */
+    if (adj_chr_safe[context->p->known_state.stat_ind[STAT_CHR]] >=  randint0(100))
+        return;
+
+    undress(context->p);
+}
+
+
+/*
  * Monster blow melee handler selection
- * ------------------------------------------------------------------------ */
+ */
+
+
+/*
+ * Return a handler for the given effect.
+ */
 melee_effect_handler_f melee_handler_for_blow_effect(const char *name)
 {
-	static const struct effect_handler_s {
-		const char *name;
-		melee_effect_handler_f function;
-	} effect_handlers[] = {
-		{ "NONE", melee_effect_handler_NONE },
-		{ "HURT", melee_effect_handler_HURT },
-		{ "POISON", melee_effect_handler_POISON },
-		{ "DISENCHANT", melee_effect_handler_DISENCHANT },
-		{ "DRAIN_CHARGES", melee_effect_handler_DRAIN_CHARGES },
-		{ "EAT_GOLD", melee_effect_handler_EAT_GOLD },
-		{ "EAT_ITEM", melee_effect_handler_EAT_ITEM },
-		{ "EAT_FOOD", melee_effect_handler_EAT_FOOD },
-		{ "EAT_LIGHT", melee_effect_handler_EAT_LIGHT },
-		{ "ACID", melee_effect_handler_ACID },
-		{ "ELEC", melee_effect_handler_ELEC },
-		{ "FIRE", melee_effect_handler_FIRE },
-		{ "COLD", melee_effect_handler_COLD },
-		{ "BLIND", melee_effect_handler_BLIND },
-		{ "CONFUSE", melee_effect_handler_CONFUSE },
-		{ "TERRIFY", melee_effect_handler_TERRIFY },
-		{ "PARALYZE", melee_effect_handler_PARALYZE },
-		{ "LOSE_STR", melee_effect_handler_LOSE_STR },
-		{ "LOSE_INT", melee_effect_handler_LOSE_INT },
-		{ "LOSE_WIS", melee_effect_handler_LOSE_WIS },
-		{ "LOSE_DEX", melee_effect_handler_LOSE_DEX },
-		{ "LOSE_CON", melee_effect_handler_LOSE_CON },
-		{ "LOSE_ALL", melee_effect_handler_LOSE_ALL },
-		{ "SHATTER", melee_effect_handler_SHATTER },
-		{ "EXP_10", melee_effect_handler_EXP_10 },
-		{ "EXP_20", melee_effect_handler_EXP_20 },
-		{ "EXP_40", melee_effect_handler_EXP_40 },
-		{ "EXP_80", melee_effect_handler_EXP_80 },
-		{ "HALLU", melee_effect_handler_HALLU },
-		{ "BLACK_BREATH", melee_effect_handler_BLACK_BREATH },
-		{ NULL, NULL },
-	};
-	const struct effect_handler_s *current = effect_handlers;
+	static const struct effect_handler_s
+    {
+        const char *name;
+        melee_effect_handler_f function;
+    } effect_handlers[] =
+    {
+        {"NONE", melee_effect_handler_NONE},
+        {"HURT", melee_effect_handler_HURT},
+        {"POISON", melee_effect_handler_POISON},
+        {"DISENCHANT", melee_effect_handler_DISENCHANT},
+        {"DRAIN_CHARGES", melee_effect_handler_DRAIN_CHARGES},
+        {"EAT_GOLD", melee_effect_handler_EAT_GOLD},
+        {"EAT_ITEM", melee_effect_handler_EAT_ITEM},
+        {"EAT_FOOD", melee_effect_handler_EAT_FOOD},
+        {"EAT_LIGHT", melee_effect_handler_EAT_LIGHT},
+        {"ACID", melee_effect_handler_ACID},
+        {"ELEC", melee_effect_handler_ELEC},
+        {"FIRE", melee_effect_handler_FIRE},
+        {"COLD", melee_effect_handler_COLD},
+        {"BLIND", melee_effect_handler_BLIND},
+        {"CONFUSE", melee_effect_handler_CONFUSE},
+        {"TERRIFY", melee_effect_handler_TERRIFY},
+        {"PARALYZE", melee_effect_handler_PARALYZE},
+        {"LOSE_STR", melee_effect_handler_LOSE_STR},
+        {"LOSE_INT", melee_effect_handler_LOSE_INT},
+        {"LOSE_WIS", melee_effect_handler_LOSE_WIS},
+        {"LOSE_DEX", melee_effect_handler_LOSE_DEX},
+        {"LOSE_CON", melee_effect_handler_LOSE_CON},
+        {"LOSE_CHR", melee_effect_handler_LOSE_CHR},
+        {"LOSE_ALL", melee_effect_handler_LOSE_ALL},
+        {"SHATTER", melee_effect_handler_SHATTER},
+        {"EXP_10", melee_effect_handler_EXP_10},
+        {"EXP_20", melee_effect_handler_EXP_20},
+        {"EXP_40", melee_effect_handler_EXP_40},
+        {"EXP_80", melee_effect_handler_EXP_80},
+        {"HALLU", melee_effect_handler_HALLU},
+        {"BLACK_BREATH", melee_effect_handler_BLACK_BREATH},
+        {"FORGET", melee_effect_handler_FORGET},
+        {"DISEASE", melee_effect_handler_DISEASE},
+        {"TIME", melee_effect_handler_TIME},
+        {"DISARM", melee_effect_handler_DISARM},
+        {"FAMINE", melee_effect_handler_FAMINE},
+        {"SEDUCE", melee_effect_handler_SEDUCE},
+        {NULL, NULL}
+    };
 
-	while (current->name != NULL && current->function != NULL) {
-		if (my_stricmp(name, current->name) == 0)
-			return current->function;
+    int i;
 
-		current++;
-	}
+    for (i = 0; effect_handlers[i].name; i++)
+    {
+        if (streq(name, effect_handlers[i].name))
+            return effect_handlers[i].function;
+    }
 
 	return NULL;
+}
+
+
+uint8_t blow_method_index(const char *name)
+{
+    uint8_t i;
+
+    for (i = 0; i < (uint8_t)z_info->blow_methods_max; i++)
+    {
+        struct blow_method *meth = &blow_methods[i];
+
+        if (streq(name, meth->name)) return i;
+    }
+
+    /* We should never come here... */
+    return (uint8_t)z_info->blow_methods_max;
+}
+
+
+uint8_t blow_effect_index(const char *name)
+{
+    uint8_t i;
+
+    for (i = 0; i < (uint8_t)z_info->blow_effects_max; i++)
+    {
+        struct blow_effect *effect = &blow_effects[i];
+
+        if (streq(name, effect->name)) return i;
+    }
+
+    /* We should never come here... */
+    return (uint8_t)z_info->blow_effects_max;
 }

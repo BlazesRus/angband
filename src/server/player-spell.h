@@ -1,44 +1,39 @@
-/**
- * \file player-spell.h
- * \brief Spell and prayer casting/praying
- *
- * Copyright (c) 1997 Ben Harrison, James E. Wilson, Robert A. Koeneke
- *
- * This work is free software; you can redistribute it and/or modify it
- * under the terms of either:
- *
- * a) the GNU General Public License as published by the Free Software
- *    Foundation, version 2, or
- *
- * b) the "Angband licence":
- *    This software may be copied and distributed for educational, research,
- *    and not for profit purposes provided that this copyright and statement
- *    are included in all such copies.  Other copyrights may also apply.
+/*
+ * File: player-spell.h
+ * Purpose: Spell and prayer casting/praying
  */
 
-void player_spells_init(struct player *p);
-void player_spells_free(struct player *p);
-struct magic_realm *class_magic_realms(const struct player_class *c,
-									   int *count);
-const struct class_book *object_kind_to_book(const struct object_kind *kind);
-const struct class_book *player_object_to_book(const struct player *p,
-	const struct object *obj);
-const struct class_spell *spell_by_index(const struct player *p, int index);
-int spell_collect_from_book(const struct player *p, const struct object *obj,
-	int **spells);
-int spell_book_count_spells(const struct player *p, const struct object *obj,
-	bool (*tester)(const struct player *p, int spell_index));
-bool spell_okay_list(const struct player *p,
-	bool (*spell_test)(const struct player *p, int spell_index),
-	const int spells[], int n_spells);
-bool spell_okay_to_cast(const struct player *p, int spell_index);
-bool spell_okay_to_study(const struct player *p, int spell_index);
-bool spell_okay_to_browse(const struct player *p, int spell_index);
-int16_t spell_chance(int spell_index);
-void spell_learn(int spell_index);
-bool spell_cast(int spell_index, int dir, struct command *cmd);
+#ifndef PLAYER_SPELL_H
+#define PLAYER_SPELL_H
 
-extern void get_spell_info(int index, char *buf, size_t len);
-extern bool cast_spell(int tval, int index, int dir);
-extern bool spell_needs_aim(int spell_index);
+struct beam_info
+{
+    int beam;
+    int spell_power;
+    int elem_power;
+    char inscription[20];
+};
 
+extern void player_spells_init(struct player *p);
+extern void player_spells_free(struct player *p);
+extern const struct class_book *object_kind_to_book(const struct object_kind *kind);
+extern const struct class_book *player_object_to_book(struct player *p, const struct object *obj);
+extern int object_to_book_index(struct player *p, const struct object *obj);
+extern const struct class_spell *spell_by_index(const struct class_magic *magic, int index);
+extern int16_t spell_chance(struct player *p, int spell_index);
+extern bool spell_is_identify(struct player *p, int spell_index);
+extern void get_spell_info(struct player *p, int spell_index, char *buf, size_t len);
+
+extern void cast_spell_end(struct player *p);
+extern void show_ghost_spells(struct player *p);
+extern int antimagic_field(const struct object *obj, bitflag flags[OF_SIZE]);
+extern bool check_antimagic(struct player *p, struct chunk *c, struct monster *who);
+extern bool check_antisummon(struct player *p, struct monster *mon);
+extern void show_mimic_spells(struct player *p);
+extern bool cast_spell_proj(struct player *p, int cidx, int spell_index, bool silent);
+extern void fill_beam_info(struct player *p, int spell_index, struct beam_info *beam);
+
+extern void spell_description(struct player *p, int spell_index, int flag, bool need_know,
+    char *out_desc, int size);
+
+#endif /* PLAYER_SPELL_H */

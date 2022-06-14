@@ -1,8 +1,9 @@
-/**
- * \file obj-util.c
- * \brief Object utilities
+/*
+ * File: obj-util.c
+ * Purpose: Object utilities
  *
  * Copyright (c) 1997 Ben Harrison, James E. Wilson, Robert A. Koeneke
+ * Copyright (c) 2022 MAngband and PWMAngband Developers
  *
  * This work is free software; you can redistribute it and/or modify it
  * under the terms of either:
@@ -16,121 +17,104 @@
  *    are included in all such copies.  Other copyrights may also apply.
  */
 
-#include "angband.h"
-#include "cave.h"
-#include "..\client\cmd-core.h"
-#include "effects.h"
-#include "..\client\game-input.h"
-#include "game-world.h"
-#include "generate.h"
-#include "grafmode.h"
-#include "init.h"
-#include "mon-make.h"
-#include "monster.h"
-#include "obj-curse.h"
-#include "obj-desc.h"
-#include "obj-gear.h"
-#include "obj-ignore.h"
-#include "obj-knowledge.h"
-#include "obj-make.h"
-#include "obj-pile.h"
-#include "obj-slays.h"
-#include "obj-tval.h"
-#include "obj-util.h"
-#include "player-history.h"
-#include "player-spell.h"
-#include "player-util.h"
-#include "randname.h"
-#include "z-queue.h"
+
+#include "s-angband.h"
+
 
 struct object_base *kb_info;
-struct object_kind *k_info;
 struct artifact *a_info;
 struct artifact_upkeep *aup_info;
-struct ego_item *e_info;
 struct flavor *flavors;
 
-/**
- * Hold the titles of scrolls, 6 to 14 characters each, plus quotes.
+
+/*
+ * Hold the titles of scrolls, 6 to 14 characters each, plus quotes
  */
 static char scroll_adj[MAX_TITLES][18];
 
+
 static void flavor_assign_fixed(void)
 {
-	int i;
-	struct flavor *f;
+    int i;
+    struct flavor *f;
 
-	for (f = flavors; f; f = f->next) {
-		if (f->sval == SV_UNKNOWN)
-			continue;
+    for (f = flavors; f; f = f->next)
+    {
+        /* Skip random flavors */
+        if (f->sval == SV_UNKNOWN) continue;
 
-		for (i = 0; i < z_info->k_max; ++i) {
-			struct object_kind *k = &k_info[i];
-			if (k->tval == f->tval && k->sval == f->sval)
-				k->flavor = f;
-		}
-	}
+        for (i = 0; i < z_info->k_max; i++)
+        {
+            struct object_kind *k = &k_info[i];
+
+            /* Skip other objects */
+            if ((k->tval == f->tval) && (k->sval == f->sval))
+            {
+                /* Store the flavor */
+                k->flavor = f;
+            }
+        }
+    }
 }
 
 
-static void flavor_assign_random(uint8_t tval)
+static void flavor_assign_random(uint16_t tval)
 {
-	int i;
-	int flavor_count = 0;
-	int choice;
-	struct flavor *f;
+    int i;
+    int flavor_count = 0;
+    int choice;
+    struct flavor *f;
 
-	/* Count the random flavors for the given tval */
-	for (f = flavors; f; f = f->next)
-		if (f->tval == tval && f->sval == SV_UNKNOWN)
-			flavor_count++;
+    /* Count the random flavors for the given tval */
+    for (f = flavors; f; f = f->next)
+    {
+        if ((f->tval == tval) && (f->sval == SV_UNKNOWN))
+            flavor_count++;
+    }
 
-	for (i = 0; i < z_info->k_max; ++i) {
-		if (k_info[i].tval != tval || k_info[i].flavor)
-			continue;
+    for (i = 0; i < z_info->k_max; i++)
+    {
+        /* Skip other object types */
+        /* Skip objects that already are flavored */
+        if ((k_info[i].tval != tval) || k_info[i].flavor) continue;
 
-		if (!flavor_count)
-			quit_fmt("Not enough flavors for tval %d.", tval);
+        if (!flavor_count) quit_fmt("Not enough flavors for tval %d.", tval);
 
-		choice = randint0(flavor_count);
-	
-		for (f = flavors; f; f = f->next) {
-			if (f->tval != tval || f->sval != SV_UNKNOWN)
-				continue;
+        /* Select a flavor */
+        choice = randint0(flavor_count);
 
-			if (choice == 0) {
-				k_info[i].flavor = f;
-				f->sval = k_info[i].sval;
-				if (tval == TV_SCROLL)
-					f->text = scroll_adj[k_info[i].sval];
-				flavor_count--;
-				break;
-			}
+        /* Find and store the flavor */
+        for (f = flavors; f; f = f->next)
+        {
+            /* Skip other tvals */
+            /* Skip assigned svals */
+            if ((f->tval != tval) || (f->sval != SV_UNKNOWN)) continue;
 
-			choice--;
-		}
-	}
+            if (choice == 0)
+            {
+                /* Store the flavor */
+                k_info[i].flavor = f;
+
+                /* Mark the flavor as used */
+                f->sval = k_info[i].sval;
+
+                /* Hack -- set the scroll name if it's a scroll */
+                if (tval_is_scroll_k(&k_info[i]))
+                    f->text = string_make(scroll_adj[k_info[i].sval]);
+
+                /* One less flavor to choose from */
+                flavor_count--;
+
+                break;
+            }
+
+            choice--;
+        }
+    }
 }
 
-/**
- * Reset svals on flavors, effectively removing any fixed flavors.
- *
- * Mainly useful for randarts so that fixed flavors for standards aren't
- * predictable. The One Ring is kept as fixed, since it lives through randarts.
- */
-static void flavor_reset_fixed(void)
-{
-	struct flavor *f;
 
-	for (f = flavors; f; f = f->next) {
-		if (f->tval == TV_RING && strstr(f->text, "Plain Gold"))
-			continue;
-
-		f->sval = SV_UNKNOWN;
-	}
-}
-
-/**
+/*
  * Prepare the "variable" part of the "k_info" array.
  *
  * The "color"/"metal"/"type" of an item is its "flavor".
@@ -153,398 +137,343 @@ static void flavor_reset_fixed(void)
  */
 void flavor_init(void)
 {
-	int i, j;
+    int i, j;
 
-	/* Hack -- Use the "simple" RNG */
-	Rand_quick = true;
+    /* Hack -- use the "simple" RNG */
+    Rand_quick = true;
 
-	/* Hack -- Induce consistant flavors */
-	Rand_value = seed_flavor;
+    /* Hack -- induce consistant flavors */
+    Rand_value = seed_flavor;
 
-	/* Scrub all flavors and re-parse for new players */
-	if (turn == 1) {
-		struct flavor *f;
+    flavor_assign_fixed();
 
-		for (i = 0; i < z_info->k_max; ++i) {
-			k_info[i].flavor = NULL;
-		}
-		for (f = flavors; f; f = f->next) {
-			f->sval = SV_UNKNOWN;
-		}
-		cleanup_parser(&flavor_parser);
-		run_parser(&flavor_parser);
-	}
+    flavor_assign_random(TV_RING);
+    flavor_assign_random(TV_AMULET);
+    flavor_assign_random(TV_STAFF);
+    flavor_assign_random(TV_WAND);
+    flavor_assign_random(TV_ROD);
+    flavor_assign_random(TV_MUSHROOM);
+    flavor_assign_random(TV_POTION);
 
-	if (OPT(player, birth_randarts))
-		flavor_reset_fixed();
+    /* Scrolls (random titles, always white) */
+    for (i = 0; i < MAX_TITLES; i++)
+    {
+        char buf[26];
+        char *end = buf + 1;
+        int titlelen = 0;
+        int wordlen;
+        bool okay = true;
 
-	flavor_assign_fixed();
+        my_strcpy(buf, "\"", sizeof(buf));
+        wordlen = randname_make(RANDNAME_SCROLL, 2, 8, end, 24, name_sections);
+        while (titlelen + wordlen < (int)(sizeof(scroll_adj[0]) - 3))
+        {
+            end[wordlen] = ' ';
+            titlelen += wordlen + 1;
+            end += wordlen + 1;
+            wordlen = randname_make(RANDNAME_SCROLL, 2, 8, end, 24 - titlelen, name_sections);
+        }
+        buf[titlelen] = '"';
+        buf[titlelen + 1] = '\0';
 
-	flavor_assign_random(TV_RING);
-	flavor_assign_random(TV_AMULET);
-	flavor_assign_random(TV_STAFF);
-	flavor_assign_random(TV_WAND);
-	flavor_assign_random(TV_ROD);
-	flavor_assign_random(TV_MUSHROOM);
-	flavor_assign_random(TV_POTION);
+        /* Check the scroll name hasn't already been generated */
+        for (j = 0; j < i; j++)
+        {
+            if (streq(buf, scroll_adj[j]))
+            {
+                okay = false;
+                break;
+            }
+        }
 
-	/* Scrolls (random titles, always white) */
-	for (i = 0; i < MAX_TITLES; ++i) {
-		char buf[26];
-		char *end = buf + 1;
-		int titlelen = 0;
-		int wordlen;
-		bool okay = true;
+        if (okay)
+            my_strcpy(scroll_adj[i], buf, sizeof(scroll_adj[0]));
 
-		my_strcpy(buf, "\"", 2);
-		wordlen = randname_make(RANDNAME_SCROLL, 2, 8, end, 24, name_sections);
-		while (titlelen + wordlen < (int)(sizeof(scroll_adj[0]) - 3)) {
-			end[wordlen] = ' ';
-			titlelen += wordlen + 1;
-			end += wordlen + 1;
-			wordlen = randname_make(RANDNAME_SCROLL, 2, 8, end, 24 - titlelen,
-									name_sections);
-		}
-		buf[titlelen] = '"';
-		buf[titlelen+1] = '\0';
+        /* Have another go at making a name */
+        else
+            i--;
+    }
 
-		/* Check the scroll name hasn't already been generated */
-		for (j = 0; j < i; j++) {
-			if (streq(buf, scroll_adj[j])) {
-				okay = false;
-				break;
-			}
-		}
+    flavor_assign_random(TV_SCROLL);
 
-		if (okay)
-			my_strcpy(scroll_adj[i], buf, sizeof(scroll_adj[0]));
-		else
-			/* Have another go at making a name */
-			i--;
-	}
-	flavor_assign_random(TV_SCROLL);
-
-	/* Hack -- Use the "complex" RNG */
-	Rand_quick = false;
-
-	/* Analyze every object */
-	for (i = 0; i < z_info->k_max; ++i) {
-		struct object_kind *kind = &k_info[i];
-
-		/* Skip "empty" objects */
-		if (!kind->name) continue;
-
-		/* No flavor yields aware */
-		if (!kind->flavor) kind->aware = true;
-	}
+    /* Hack -- use the "complex" RNG */
+    Rand_quick = false;
 }
 
-/**
- * Set all flavors as aware
+
+/*
+ * Hack -- remove redundant bitflags
  */
-void flavor_set_all_aware(void)
+static void remove_redundant_flags(bitflag flags[OF_SIZE])
 {
-	int i;
+    /*
+     * ESP evil bypasses ESP undead/demon
+     *
+     * Note: although orcs/trolls/giants/dragons are evil, ESP evil cannot
+     * bypass ESP orc/troll/giant/dragon because of the corresponding player
+     * races (a player of the Half-Orc race can be detected by ESP orc, but
+     * not by ESP evil)
+     */
+    if (of_has(flags, OF_ESP_EVIL))
+    {
+        of_off(flags, OF_ESP_UNDEAD);
+        of_off(flags, OF_ESP_DEMON);
+    }
 
-	/* Analyze every object */
-	for (i = 0; i < z_info->k_max; ++i) {
-		struct object_kind *kind = &k_info[i];
+    /* ESP all bypasses all other ESPs */
+    if (of_has(flags, OF_ESP_ALL))
+    {
+        bitflag f2[OF_SIZE];
 
-		/* Skip empty objects */
-		if (!kind->name) continue;
-
-		/* Flavor yields aware */
-		if (kind->flavor) kind->aware = true;
-	}
+        create_obj_flag_mask(f2, 0, OFT_ESP, OFT_MAX);
+        of_diff(flags, f2);
+        of_on(flags, OF_ESP_ALL);
+    }
 }
 
-/**
+
+void object_flags_aux(const struct object *obj, bitflag flags[OF_SIZE])
+{
+    size_t i;
+
+    /* Add object flags */
+    of_copy(flags, obj->flags);
+
+    /* Add curse flags */
+    for (i = 0; obj->curses && (i < (size_t)z_info->curse_max); i++)
+    {
+        if (obj->curses[i].power == 0) continue;
+        of_union(flags, curses[i].obj->flags);
+    }
+}
+
+
+/*
  * Obtain the flags for an item
  */
 void object_flags(const struct object *obj, bitflag flags[OF_SIZE])
 {
-	of_wipe(flags);
-	if (!obj) return;
-	of_copy(flags, obj->flags);
+    of_wipe(flags);
+
+    if (!obj) return;
+
+    object_flags_aux(obj, flags);
+
+    /* Hack -- remove redundant bitflags */
+    remove_redundant_flags(flags);
 }
 
 
-/**
+/*
  * Obtain the flags for an item which are known to the player
  */
-void object_flags_known(const struct object *obj, bitflag flags[OF_SIZE])
+void object_flags_known(const struct object *obj, bitflag flags[OF_SIZE], bool aware)
 {
-	object_flags(obj, flags);
-	of_inter(flags, obj->known->flags);
+    bitflag obj_flags[OF_SIZE], known_flags[OF_SIZE];
 
-	if (!obj->kind) {
-		return;
-	}
+    of_wipe(flags);
 
-	if (object_flavor_is_aware(obj)) {
-		of_union(flags, obj->kind->flags);
-	}
+    if (!obj) return;
 
-	if (obj->ego && easy_know(obj)) {
-		of_union(flags, obj->ego->flags);
-		of_diff(flags, obj->ego->flags_off);
-	}
+    /* Get object flags */
+    of_wipe(obj_flags);
+    object_flags_aux(obj, obj_flags);
+
+    /* Get known flags */
+    of_wipe(known_flags);
+    object_flags_aux(obj->known, known_flags);
+
+    /* Add object flags */
+    of_copy(flags, obj_flags);
+
+    of_inter(flags, known_flags);
+
+    if (aware) of_union(flags, obj->kind->flags);
+
+    if (obj->ego && easy_know(obj, aware))
+        of_union(flags, obj->ego->flags);
+
+    /* Hack -- remove redundant bitflags */
+    remove_redundant_flags(flags);
+
+    /* Make sure all flags are present on the object */
+    of_inter(flags, obj_flags);
 }
 
-/**
- * Apply a tester function, skipping all non-objects and gold
+
+/*
+ * Obtain the modifiers for an item
  */
-bool object_test(item_tester tester, const struct object *obj)
+void object_modifiers(const struct object *obj, int32_t modifiers[OBJ_MOD_MAX])
 {
-	/* Require object */
-	if (!obj) return false;
+    int i, j;
 
-	/* Ignore gold */
-	if (tval_is_money(obj)) return false;
+    memset(modifiers, 0, OBJ_MOD_MAX * sizeof(int32_t));
 
-	/* Pass without a tester, or tail-call the tester if it exists */
-	return !tester || tester(obj);
+    if (!obj) return;
+
+    /* Add object modifiers */
+    for (i = 0; i < OBJ_MOD_MAX; i++)
+        modifiers[i] = obj->modifiers[i];
+
+    /* Add curse modifiers */
+    for (i = 0; obj->curses && (i < z_info->curse_max); i++)
+    {
+        if (obj->curses[i].power == 0) continue;
+        for (j = 0; j < OBJ_MOD_MAX; j++)
+            modifiers[j] += obj->curses[i].modifiers[j];
+    }
 }
 
 
-/**
+/*
+ * Obtain the to-hit for an item
+ */
+void object_to_h(const struct object *obj, int16_t *to_h)
+{
+    size_t i;
+
+    *to_h = 0;
+
+    if (!obj) return;
+
+    /* Add object to-hit */
+    *to_h = obj->to_h;
+
+    /* Add curse to-hit */
+    for (i = 0; obj->curses && (i < (size_t)z_info->curse_max); i++)
+    {
+        if (obj->curses[i].power == 0) continue;
+        *to_h += obj->curses[i].to_h;
+    }
+}
+
+
+/*
+ * Obtain the to-dam for an item
+ */
+void object_to_d(const struct object *obj, int16_t *to_d)
+{
+    size_t i;
+
+    *to_d = 0;
+
+    if (!obj) return;
+
+    /* Add object to-dam */
+    *to_d = obj->to_d;
+
+    /* Add curse to-dam */
+    for (i = 0; obj->curses && (i < (size_t)z_info->curse_max); i++)
+    {
+        if (obj->curses[i].power == 0) continue;
+        *to_d += obj->curses[i].to_d;
+    }
+}
+
+
+/*
+ * Obtain the to-ac for an item
+ */
+void object_to_a(const struct object *obj, int16_t *to_a)
+{
+    size_t i;
+
+    *to_a = 0;
+
+    if (!obj) return;
+
+    /* Add object to-ac */
+    *to_a = obj->to_a;
+
+    /* Add curse to-ac */
+    for (i = 0; obj->curses && (i < (size_t)z_info->curse_max); i++)
+    {
+        if (obj->curses[i].power == 0) continue;
+        *to_a += obj->curses[i].to_a;
+    }
+}
+
+
+/*
+ * Obtain the elements for an item
+ */
+void object_elements(const struct object *obj, struct element_info el_info[ELEM_MAX])
+{
+    int i, j;
+    bool vuln[ELEM_MAX];
+
+    memset(el_info, 0, ELEM_MAX * sizeof(struct element_info));
+
+    if (!obj) return;
+
+    /* Add object elements */
+    memcpy(el_info, obj->el_info, ELEM_MAX * sizeof(struct element_info));
+    for (i = 0; i < ELEM_MAX; i++)
+    {
+        vuln[i] = false;
+        if (el_info[i].res_level == -1)
+        {
+            vuln[i] = true;
+            el_info[i].res_level = 0;
+        }
+    }
+
+    /* Add curse elements */
+    for (i = 0; obj->curses && (i < z_info->curse_max); i++)
+    {
+        if (obj->curses[i].power == 0) continue;
+        for (j = 0; j < ELEM_MAX; j++)
+        {
+            if (curses[i].obj->el_info[j].res_level == -1)
+                vuln[j] = true;
+            if (curses[i].obj->el_info[j].res_level > el_info[j].res_level)
+                el_info[j].res_level = curses[i].obj->el_info[j].res_level;
+        }
+    }
+
+    for (i = 0; i < ELEM_MAX; i++)
+    {
+        if (vuln[i] && (el_info[i].res_level < 3))
+            el_info[i].res_level--;
+    }
+}
+
+
+/*
  * Return true if the item is unknown (has yet to be seen by the player).
  */
 bool is_unknown(const struct object *obj)
 {
-	struct grid_data gd = {
-		.m_idx = 0,
-		.f_idx = 0,
-		.first_kind = NULL,
-		.trap = NULL,
-		.multiple_objects = false,
-		.unseen_object = false,
-		.unseen_money = false,
-		.lighting = LIGHTING_LOS,
-		.in_view = false,
-		.is_player = false,
-		.hallucinate = false,
-	};
-	map_info(obj->grid, &gd);
-	return gd.unseen_object;
-}	
+    if (!obj) return false;
+    return (obj->kind == unknown_item_kind);
+}
 
 
-/**
- * Looks if "inscrip" is present on the given object.
+/*
+ * Return true if the item is unknown money (has yet to be seen by the player).
  */
-unsigned check_for_inscrip(const struct object *obj, const char *inscrip)
+bool is_unknown_money(const struct object *obj)
 {
-	unsigned i = 0;
-	const char *s;
-
-	if (!obj->note) return 0;
-
-	s = quark_str(obj->note);
-
-	/* Needing this implies there are bad instances of obj->note around,
-	 * but I haven't been able to track down their origins - NRM */
-	if (!s) return 0;
-
-	do {
-		s = strstr(s, inscrip);
-		if (!s) break;
-
-		i++;
-		s++;
-	} while (s);
-
-	return i;
-}
-
-/**
- * Looks if "inscrip" immediately followed by a decimal integer without a
- * leading sign character is present on the given object.  Returns the number
- * of times such an inscription occurs and, if that value is at least one,
- * sets *ival to the value of the integer that followed the first such
- * inscription.
- */
-unsigned check_for_inscrip_with_int(const struct object *obj, const char *inscrip, int* ival)
-{
-	unsigned i = 0;
-	size_t inlen = strlen(inscrip);
-	const char *s;
-
-	if (!obj->note) return 0;
-
-	s = quark_str(obj->note);
-
-	/* Needing this implies there are bad instances of obj->note around,
-	 * but I haven't been able to track down their origins - NRM */
-	if (!s) return 0;
-
-	do {
-		s = strstr(s, inscrip);
-		if (!s) break;
-		if (isdigit(s[inlen])) {
-			if (i == 0) {
-				long inarg = strtol(s + inlen, 0, 10);
-
-				*ival = (inarg < INT_MAX) ? (int) inarg : INT_MAX;
-			}
-			i++;
-		}
-		s++;
-	} while (s);
-
-	return i;
-}
-
-/*** Object kind lookup functions ***/
-
-/**
- * Return the object kind with the given `tval` and `sval`, or NULL.
- */
-struct object_kind *lookup_kind(int tval, int sval)
-{
-	int k;
-
-	/* Look for it */
-	for (k = 0; k < z_info->k_max; k++) {
-		struct object_kind *kind = &k_info[k];
-		if (kind->tval == tval && kind->sval == sval)
-			return kind;
-	}
-
-	/* Failure */
-	msg("No object: %d:%d (%s)", tval, sval, tval_find_name(tval));
-	return NULL;
-}
-
-struct object_kind *objkind_byid(int kidx) {
-	if (kidx < 0 || kidx >= z_info->k_max)
-		return NULL;
-	return &k_info[kidx];
+    if (!obj) return false;
+    return (obj->kind == unknown_gold_kind);
 }
 
 
-/*** Textual<->numeric conversion ***/
-
-/**
- * Return the a_idx of the artifact with the given name
- */
-const struct artifact *lookup_artifact_name(const char *name)
-{
-	int i;
-	int a_idx = -1;
-
-	/* Look for it */
-	for (i = 0; i < z_info->a_max; ++i) {
-		const struct artifact *art = &a_info[i];
-
-		/* Test for equality */
-		if (art->name && streq(name, art->name))
-			return art;
-		
-		/* Test for close matches */
-		if (strlen(name) >= 3 && art->name && my_stristr(art->name, name)
-			&& a_idx == -1)
-			a_idx = i;
-	}
-
-	/* Return our best match */
-	return a_idx > 0 ? &a_info[a_idx] : NULL;
-}
-
-/**
- * \param name ego type name
- * \param tval object tval
- * \param sval object sval
- * \return eidx of the ego item type
- */
-struct ego_item *lookup_ego_item(const char *name, int tval, int sval)
-{
-	int i;
-
-	/* Look for it */
-	for (i = 0; i < z_info->e_max; ++i) {
-		struct ego_item *ego = &e_info[i];
-		struct poss_item *poss_item = ego->poss_items;
-
-		/* Reject nameless and wrong names */
-		if (!ego->name) continue;
-		if (!streq(name, ego->name)) continue;
-
-		/* Check tval and sval */
-		while (poss_item) {
-			struct object_kind *kind = lookup_kind(tval, sval);
-			if (kind->kidx == poss_item->kidx) {
-				return ego;
-			}
-			poss_item = poss_item->next;
-		}
-	}
-
-	return NULL;
-}
-
-/**
- * Return the numeric sval of the object kind with the given `tval` and
- * name `name`.
- */
-int lookup_sval(int tval, const char *name)
-{
-	int k;
-	unsigned int r;
-
-	if (sscanf(name, "%u", &r) == 1)
-		return r;
-
-	/* Look for it */
-	for (k = 0; k < z_info->k_max; k++) {
-		struct object_kind *kind = &k_info[k];
-		char cmp_name[1024];
-
-		if (!kind || !kind->name) continue;
-
-		obj_desc_name_format(cmp_name, sizeof cmp_name, 0, kind->name, 0,
-							 false);
-
-		/* Found a match */
-		if (kind->tval == tval && !my_stricmp(cmp_name, name))
-			return kind->sval;
-	}
-
-	return -1;
-}
-
-void object_short_name(char *buf, size_t max, const char *name)
-{
-	size_t j, k;
-	/* Copy across the name, stripping modifiers & and ~) */
-	size_t len = strlen(name);
-	for (j = 0, k = 0; j < len && k < max - 1; j++) {
-		if (j == 0 && name[0] == '&' && name[1] == ' ')
-			j += 2;
-		if (name[j] == '~')
-			continue;
-
-		buf[k++] = name[j];
-	}
-	buf[k] = 0;
-}
-
-/**
- * Sort comparator for objects using only tval and sval.
+/*
+ * Sort comparator for objects using only tval and sval
  * -1 if o1 should be first
  *  1 if o2 should be first
  *  0 if it doesn't matter
  */
 static int compare_types(const struct object *o1, const struct object *o2)
 {
-	if (o1->tval == o2->tval)
-		return CMP(o1->sval, o2->sval);
-	else
-		return CMP(o1->tval, o2->tval);
-}	
+    if (o1->tval == o2->tval) return CMP(o1->sval, o2->sval);
+    return CMP(o1->tval, o2->tval);
+}
 
 
-/**
+/*
  * Sort comparator for objects
  * -1 if o1 should be first
  *  1 if o2 should be first
@@ -552,566 +481,999 @@ static int compare_types(const struct object *o1, const struct object *o2)
  *
  * The sort order is designed with the "list items" command in mind.
  */
-int compare_items(const struct object *o1, const struct object *o2)
+int compare_items(struct player *p, const struct object *o1, const struct object *o2)
 {
-	/* unknown objects go at the end, order doesn't matter */
-	if (is_unknown(o1)) {
-		return (is_unknown(o2)) ? 0 : 1;
-	} else if (is_unknown(o2)) {
-		return -1;
-	}
+    /* Unknown objects go at the end, order doesn't matter */
+    if (is_unknown(o1)) return (is_unknown(o2)? 0: 1);
+    if (is_unknown(o2)) return -1;
 
-	/* known artifacts will sort first */
-	if (object_is_known_artifact(o1) && object_is_known_artifact(o2))
-		return compare_types(o1, o2);
-	if (object_is_known_artifact(o1)) return -1;
-	if (object_is_known_artifact(o2)) return 1;
+    /* Known artifacts will sort first */
+    if (object_is_known_artifact(o1) && object_is_known_artifact(o2))
+        return compare_types(o1, o2);
+    if (object_is_known_artifact(o1)) return -1;
+    if (object_is_known_artifact(o2)) return 1;
 
-	/* unknown objects will sort next */
-	if (!object_flavor_is_aware(o1) && !object_flavor_is_aware(o2))
-		return compare_types(o1, o2);
-	if (!object_flavor_is_aware(o1)) return -1;
-	if (!object_flavor_is_aware(o2)) return 1;
+    /* Unknown objects will sort next */
+    if (!object_flavor_is_aware(p, o1) && !object_flavor_is_aware(p, o2))
+        return compare_types(o1, o2);
+    if (!object_flavor_is_aware(p, o1)) return -1;
+    if (!object_flavor_is_aware(p, o2)) return 1;
 
-	/* if only one of them is worthless, the other comes first */
-	if (o1->kind->cost == 0 && o2->kind->cost != 0) return 1;
-	if (o1->kind->cost != 0 && o2->kind->cost == 0) return -1;
+    /* If only one of them is worthless, the other comes first */
+    if ((o1->kind->cost == 0) && (o2->kind->cost != 0)) return 1;
+    if ((o1->kind->cost != 0) && (o2->kind->cost == 0)) return -1;
 
-	/* otherwise, just compare tvals and svals */
-	/* NOTE: arguably there could be a better order than this */
-	return compare_types(o1, o2);
+    /* Otherwise, just compare tvals and svals */
+    /* NOTE: arguably there could be a better order than this */
+    return compare_types(o1, o2);
 }
 
-
-/**
- * Convert a depth from a chunk or player to a value appropriate for an
- * object's origin.
- *
- * \param depth is the value to convert.
- *
- * Necessary since savefiles use 16-bit type to record the depth of a player
- * or chunk and uint8_t to record the origin depth.
- */
-uint8_t convert_depth_to_origin(int depth)
-{
-	if (depth < 0) return 0;
-	if (depth > 255) return 255;
-	return (uint8_t) depth;
-}
-
-
-/**
- * Determine if an object has charges
- */
-bool obj_has_charges(const struct object *obj)
-{
-	if (!tval_can_have_charges(obj)) return false;
-
-	if (obj->pval <= 0) return false;
-
-	return true;
-}
-
-/**
- * Determine if an object is zappable
- */
-bool obj_can_zap(const struct object *obj)
-{
-	/* Any rods not charging? */
-	if (tval_can_have_timeout(obj) && number_charging(obj) < obj->number)
-		return true;
-
-	return false;
-}
-
-/**
- * Determine if an object is activatable
- */
-bool obj_is_activatable(const struct object *obj)
-{
-	if (!tval_is_wearable(obj)) return false;
-	return object_effect(obj) ? true : false;
-}
-
-/**
- * Determine if an object can be activated now
- */
-bool obj_can_activate(const struct object *obj)
-{
-	if (obj_is_activatable(obj)) {
-		/* Check the recharge */
-		if (!obj->timeout) return true;
-	}
-
-	return false;
-}
-
-/**
- * Check if an object can be used to refuel other objects.
- */
-bool obj_can_refill(const struct object *obj)
-{
-	const struct object *light = equipped_item_by_slot_name(player, "light");
-
-	/* Need fuel? */
-	if (of_has(obj->flags, OF_NO_FUEL)) return false;
-
-	/* A lantern can be refueled from a flask or another lantern */
-	if (light && of_has(light->flags, OF_TAKES_FUEL)) {
-		if (tval_is_fuel(obj))
-			return true;
-		else if (tval_is_light(obj) && of_has(obj->flags, OF_TAKES_FUEL) &&
-				 obj->timeout > 0) 
-			return true;
-	}
-
-	return false;
-}
-
-bool obj_kind_can_browse(const struct object_kind *kind)
-{
-	int i;
-
-	for (i = 0; i < player->class->magic.num_books; ++i) {
-		struct class_book book = player->class->magic.books[i];
-		if (kind->tval == book.tval && kind->sval == book.sval)
-			return true;
-	}
-
-	return false;
-}
-
-bool obj_can_browse(const struct object *obj)
-{
-	return obj_kind_can_browse(obj->kind);
-}
-
-bool obj_can_cast_from(const struct object *obj)
-{
-	return obj_can_browse(obj) &&
-		spell_book_count_spells(player, obj, spell_okay_to_cast) > 0;
-}
-
-bool obj_can_study(const struct object *obj)
-{
-	return obj_can_browse(obj) &&
-		spell_book_count_spells(player, obj, spell_okay_to_study) > 0;
-}
-
-
-/* Can only take off non-cursed items */
-bool obj_can_takeoff(const struct object *obj)
-{
-	return !obj_has_flag(obj, OF_STICKY);
-}
-
-/* Can only put on wieldable items */
-bool obj_can_wear(const struct object *obj)
-{
-	return (wield_slot(obj) >= 0);
-}
-
-/* Can only fire an item with the right tval */
-bool obj_can_fire(const struct object *obj)
-{
-	return obj->tval == player->state.ammo_tval;
-}
-
-/**
- * Determine if an object is designed for throwing
- */
-bool obj_is_throwing(const struct object *obj)
-{
-	return of_has(obj->flags, OF_THROWING);
-}
-
-/**
- * Determine if an object is a known artifact
- */
-bool obj_is_known_artifact(const struct object *obj)
-{
-	if (!obj->artifact) return false;
-	if (!obj->known) return false;
-	if (!obj->known->artifact) return false;
-	return true;
-}
-
-/* Can has inscrip pls */
-bool obj_has_inscrip(const struct object *obj)
-{
-	return (obj->note ? true : false);
-}
-
-bool obj_has_flag(const struct object *obj, int flag)
-{
-	struct curse_data *c = obj->curses;
-
-	/* Check the object's own flags */
-	if (of_has(obj->flags, flag)) {
-		return true;
-	}
-
-	/* Check any curse object flags */
-	if (c) {
-		int i;
-		for (i = 1; i < z_info->curse_max; ++i) {
-			if (c[i].power && of_has(curses[i].obj->flags, flag)) {
-				return true;
-			}
-		}
-	}
-	return false;
-}
-
-bool obj_is_useable(const struct object *obj)
-{
-	if (tval_is_useable(obj))
-		return true;
-
-	if (object_effect(obj))
-		return true;
-
-	if (tval_is_ammo(obj))
-		return obj->tval == player->state.ammo_tval;
-
-	return false;
-}
 
 /*** Generic utility functions ***/
 
-/**
+
+/*
  * Return an object's effect.
  */
 struct effect *object_effect(const struct object *obj)
 {
-	if (obj->activation)
-		return obj->activation->effect;
-	else if (obj->effect)
-		return obj->effect;
-	else
-		return NULL;
+    if (obj->activation) return obj->activation->effect;
+    if (obj->effect) return obj->effect;
+    return NULL;
 }
 
-/**
- * Does the given object need to be aimed?
- */ 
-bool obj_needs_aim(struct object *obj)
-{
-	struct effect *effect = object_effect(obj);
 
-	/* If the effect needs aiming, or if the object type needs
-	   aiming, this object needs aiming. */
-	return effect_aim(effect) || tval_is_ammo(obj) ||
-			tval_is_wand(obj) ||
-			(tval_is_rod(obj) && !object_flavor_is_aware(obj));
-}
-
-/**
+/*
  * Can the object fail if used?
  */
-bool obj_can_fail(const struct object *o)
+bool obj_can_fail(struct player *p, const struct object *o)
 {
-	if (tval_can_have_failure(o))
-		return true;
+    if (tval_can_have_failure(o)) return true;
 
-	return wield_slot(o) == -1 ? false : true;
+    return ((wield_slot(p, o) == -1)? false: true);
 }
 
 
-/**
+/*
  * Failure rate for magic devices.
- * This has been rewritten for 4.2.3 following the discussions in the thread
- * http://angband.oook.cz/forum/showthread.php?t=10594
  * It uses a scaled, shifted version of the sigmoid function x/(1+|x|), namely
  * 380 - 370(x/(10+|x|)), where x is 2 * (device skill - device level) + 1,
  * to give fail rates out of 1000.
  */
-int get_use_device_chance(const struct object *obj)
+int get_use_device_chance(struct player *p, const struct object *obj)
 {
-	int lev, fail, x;
-	int skill = player->state.skills[SKILL_DEVICE];
+    int lev, fail, x;
+    int skill = p->state.skills[SKILL_DEVICE];
 
-	/* Extract the item level, which is the difficulty rating */
-	if (obj->artifact)
-		lev = obj->artifact->level;
-	else
-		lev = obj->kind->level;
+    /* Extract the item level, which is the difficulty rating */
+    if (obj->artifact)
+        lev = get_artifact_level(p, obj);
+    else
+        lev = obj->kind->level;
 
-	/* Calculate x */
-	x = 2 * (skill - lev) + 1;
+    /* Calculate x */
+    x = 2 * (skill - lev) + 1;
 
-	/* Now calculate the failure rate */
-	fail = -370 * x;
-	fail /= (10 + ABS(x));
-	fail += 380;
+    /* Now calculate the failure rate */
+    fail = -370 * x;
+    fail /= (10 + ABS(x));
+    fail += 380;
+    
+    if (streq(p->clazz->name, "Unbeliever"))
+        fail = 999;
 
-	return fail;
+    return fail;
 }
 
 
-/**
+/*
  * Distribute charges of rods, staves, or wands.
  *
- * \param source is the source item
- * \param dest is the target item, must be of the same type as source
- * \param amt is the number of items that are transfered
+ * source = source item
+ * dest = target item, must be of the same type as source
+ * amt   = number of items that are transfered
  */
 void distribute_charges(struct object *source, struct object *dest, int amt)
 {
-	int charge_time = randcalc(source->time, 0, AVERAGE), max_time;
+    int charge_time = randcalc(source->time, 0, AVERAGE), max_time;
 
-	/*
-	 * Hack -- If rods, staves, or wands are dropped, the total maximum
-	 * timeout or charges need to be allocated between the two stacks.
-	 * If all the items are being dropped, it makes for a neater message
-	 * to leave the original stack's pval alone. -LM-
-	 */
-	if (tval_can_have_charges(source)) {
-		dest->pval = source->pval * amt / source->number;
+    /*
+     * Hack -- if staves or wands are dropped, the total maximum
+     * charges need to be allocated between the two stacks.
+     * If all the items are being dropped, it makes for a neater message
+     * to leave the original stack's charges alone.
+     */
+    if (tval_can_have_charges(source))
+    {
+        dest->pval = source->pval * amt / source->number;
 
-		if (amt < source->number)
-			source->pval -= dest->pval;
-	}
+        if (amt < source->number) source->pval -= dest->pval;
+    }
 
-	/*
-	 * Hack -- Rods also need to have their timeouts distributed.
-	 *
-	 * The dropped stack will accept all time remaining to charge up to
-	 * its maximum.
-	 */
-	if (tval_can_have_timeout(source)) {
-		max_time = charge_time * amt;
+    /*
+     * Hack -- rods also need to have their timeouts distributed.
+     *
+     * The dropped stack will accept all time remaining to charge up to
+     * its maximum.
+     */
+    if (tval_can_have_timeout(source))
+    {
+        max_time = charge_time * amt;
 
-		if (source->timeout > max_time)
-			dest->timeout = max_time;
-		else
-			dest->timeout = source->timeout;
+        if (source->timeout > max_time) dest->timeout = max_time;
+        else dest->timeout = source->timeout;
 
-		if (amt < source->number)
-			source->timeout -= dest->timeout;
-	}
+        if (amt < source->number) source->timeout -= dest->timeout;
+    }
 }
 
 
-/**
+/*
  * Number of items (usually rods) charging
  */
 int number_charging(const struct object *obj)
 {
-	int charge_time, num_charging;
+    int charge_time, num_charging;
 
-	charge_time = randcalc(obj->time, 0, AVERAGE);
+    charge_time = randcalc(obj->time, 0, AVERAGE);
 
-	/* Item has no timeout */
-	if (charge_time <= 0) return 0;
+    /* Item has no timeout */
+    if (charge_time <= 0) return 0;
 
-	/* No items are charging */
-	if (obj->timeout <= 0) return 0;
+    /* No items are charging */
+    if (obj->timeout <= 0) return 0;
 
-	/* Calculate number charging based on timeout */
-	num_charging = (obj->timeout + charge_time - 1) / charge_time;
+    /* Calculate number charging based on timeout */
+    num_charging = (obj->timeout + charge_time - 1) / charge_time;
 
-	/* Number charging cannot exceed stack size */
-	if (num_charging > obj->number) num_charging = obj->number;
+    /* Number charging cannot exceed stack size */
+    if (num_charging > obj->number) num_charging = obj->number;
 
-	return num_charging;
+    return num_charging;
 }
 
-/**
- * Allow a stack of charging objects to charge by one unit per charging object
+
+/*
+ * Allow a stack of charging objects to charge by one unit per charging object.
  * Return true if something recharged
  */
 bool recharge_timeout(struct object *obj)
 {
-	int charging_before, charging_after;
+    int charging_before, charging_after;
 
-	/* Find the number of charging items */
-	charging_before = number_charging(obj);
+    /* Find the number of charging items */
+    charging_before = number_charging(obj);
 
-	/* Nothing to charge */	
-	if (charging_before == 0)
-		return false;
+    /* Nothing to charge */
+    if (charging_before == 0) return false;
 
-	/* Decrease the timeout */
-	obj->timeout -= MIN(charging_before, obj->timeout);
+    /* Decrease the timeout */
+    obj->timeout -= MIN(charging_before, obj->timeout);
 
-	/* Find the new number of charging items */
-	charging_after = number_charging(obj);
+    /* Find the new number of charging items */
+    charging_after = number_charging(obj);
 
-	/* Return true if at least 1 item obtained a charge */
-	if (charging_after < charging_before)
-		return true;
-	else
-		return false;
+    /* Return true if at least 1 item obtained a charge */
+    if (charging_after < charging_before) return true;
+
+    return false;
 }
 
-/**
- * Verify the choice of an item.
- *
- * The item can be negative to mean "item on floor".
- */
-bool verify_object(const char *prompt, const struct object *obj,
-		const struct player *p)
+
+/* Can only take off non-stuck items */
+bool obj_can_takeoff(const struct object *obj)
 {
-	char o_name[80];
+    bitflag f[OF_SIZE];
 
-	char out_val[160];
+    object_flags(obj, f);
 
-	/* Describe */
-	object_desc(o_name, sizeof(o_name), obj, ODESC_PREFIX | ODESC_FULL, p);
-
-	/* Prompt */
-	strnfmt(out_val, sizeof(out_val), "%s %s? ", prompt, o_name);
-
-	/* Query */
-	return (get_check(out_val));
+    return !of_has(f, OF_STICKY);
 }
 
 
-typedef enum {
-	MSG_TAG_NONE,
-	MSG_TAG_NAME,
-	MSG_TAG_KIND,
-	MSG_TAG_VERB,
-	MSG_TAG_VERB_IS
+/*
+ * Does the given object need to be aimed?
+ */
+int obj_needs_aim(struct player *p, const struct object *obj)
+{
+    bool aim = effect_aim(object_effect(obj));
+    bool aware = object_flavor_is_aware(p, obj);
+
+    /* Determine whether we know an item needs to be aimed */
+    bool known_aim = (aware || object_effect_is_known(obj, aware));
+
+    /* Wands and ammo */
+    if (tval_is_ammo(obj) || tval_is_wand(obj)) return AIM_NORMAL;
+
+    /* Rods that require aiming or unknown rods */
+    if (tval_can_have_timeout(obj) && (aim || !aware)) return AIM_NORMAL;
+
+    /* Unknown things with no obvious aim get a random direction */
+    if (aim) return (known_aim? AIM_NORMAL: AIM_RANDOM);
+
+    return AIM_NONE;
+}
+
+
+/*** PWMAngband ***/
+
+
+void get_object_info(struct player *p, struct object *obj, uint8_t equipped,
+    struct object_xtra *info_xtra)
+{
+    struct curse_data *c = obj->known->curses;
+    int i;
+    bool activatable, charging;
+
+    /* Get the color */
+    info_xtra->attr = obj->kind->base->attr;
+
+    /* Get the "activation" flag */
+    activatable = ((equipped && object_effect(obj)) || (!equipped && tval_can_have_timeout(obj)));
+    if (activatable)
+    {
+        info_xtra->act = ACT_NORMAL;
+
+        /* Check the recharge */
+        charging = ((equipped && obj->timeout) ||
+            (!equipped && (number_charging(obj) == obj->number)));
+        if (charging) info_xtra->act = ACT_TIMEOUT;
+    }
+
+    /* Get direction choice */
+    if (obj_needs_aim(p, obj) == AIM_NORMAL) info_xtra->aim = 1;
+
+    /* Get the "fuelable" flag */
+    if (tval_is_light(obj) && of_has(obj->flags, OF_TAKES_FUEL))
+    {
+        /* Non-empty, non-everburning lamps are okay */
+        if ((equipped || (obj->timeout > 0)) && !of_has(obj->flags, OF_NO_FUEL))
+            info_xtra->fuel = 1;
+    }
+
+    /* Get the "fail" flag */
+    info_xtra->fail = 255;
+    if (obj_can_fail(p, obj))
+    {
+        info_xtra->fail--;
+        if (object_effect_is_known(obj, object_flavor_is_aware(p, obj)))
+            info_xtra->fail = (9 + get_use_device_chance(p, obj)) / 10;
+    }
+
+    /* Get the "cursed" flag */
+    for (i = 0; c && (i < z_info->curse_max); i++)
+    {
+        if (c[i].power == 0) continue;
+        if (c[i].power >= 100) continue;
+        if (!player_knows_curse(p, i)) continue;
+        if (!STRZERO(info_xtra->name_curse))
+        {
+            my_strcat(info_xtra->name_curse, "|", sizeof(info_xtra->name_curse));
+            my_strcat(info_xtra->name_power, "|", sizeof(info_xtra->name_power));
+        }
+        my_strcat(info_xtra->name_curse, format("%d", i), sizeof(info_xtra->name_curse));
+        my_strcat(info_xtra->name_power, format("%d", c[i].power), sizeof(info_xtra->name_power));
+    }
+
+    /* Get the "stuck" flag */
+    if (equipped) info_xtra->stuck = !obj_can_takeoff(obj);
+
+    /* Get the "known" flag */
+    info_xtra->known = object_runes_known(obj);
+
+    /* Get the "known_effect" flag */
+    info_xtra->known_effect = object_effect_is_known(obj, object_flavor_is_aware(p, obj));
+
+    /* Get the "identified" flag */
+    info_xtra->identified = object_is_known(p, obj);
+
+    /* Get the "slot" flag */
+    if (equipped) info_xtra->slot = equipped_item_slot(p->body, obj);
+    else info_xtra->slot = wield_slot(p, obj);
+}
+
+
+int get_owner_id(const struct object *obj)
+{
+    int ind;
+
+    if (!obj->owner) return 0;
+
+    for (ind = 1; ind <= NumPlayers; ind++)
+    {
+        struct player *p = player_get(ind);
+
+        if (p->id == obj->owner) return ind;
+    }
+
+    return 0;
+}
+
+
+void set_artifact_info(struct player *p, const struct object *obj, uint8_t info)
+{
+    uint8_t *pinfo;
+
+    /* Paranoia */
+    if (!p) return;
+
+    /* Not an artifact */
+    if (!obj->artifact) return;
+
+    /* True artifacts */
+    if (true_artifact_p(obj)) pinfo = p->art_info;
+    else pinfo = p->randart_info;
+
+    /* Add history entry */
+    switch (info)
+    {
+        case ARTS_GENERATED:
+            history_generate_artifact(p, obj);
+            break;
+        case ARTS_FOUND:
+            history_find_artifact(p, obj);
+            break;
+        case ARTS_ABANDONED:
+        case ARTS_SOLD:
+            history_lose_artifact(p, obj);
+            break;
+    }
+
+    /* Only once */
+    if (pinfo[obj->artifact->aidx] >= info) return;
+
+    /* Register info */
+    pinfo[obj->artifact->aidx] = info;
+}
+
+
+/*
+ * Other "kind" values for "good" templates.
+ * Used by the auto-ignore system to avoid ignoring "good" items at
+ * "average" level.
+ */
+bool kind_is_good_other(const struct object_kind *kind)
+{
+    /* Dragon Scale Mails are good */
+    if (kind->tval == TV_DRAG_ARMOR) return true;
+
+    /* Anything with the GOOD flag */
+    if (kf_has(kind->kind_flags, KF_GOOD)) return true;
+
+    /* Assume not good */
+    return false;
+}
+
+
+void set_origin(struct object *obj, uint8_t origin, int16_t origin_depth, struct monster_race *origin_race)
+{
+    obj->origin = origin;
+    obj->origin_depth = origin_depth;
+    obj->origin_race = origin_race;
+}
+
+
+/*
+ * Shimmer multi-hued objects
+ */
+void shimmer_objects(struct player *p, struct chunk *c)
+{
+    struct loc begin, end;
+    struct loc_iterator iter;
+
+    loc_init(&begin, 1, 1);
+    loc_init(&end, c->width, c->height);
+    loc_iterator_first(&iter, &begin, &end);
+
+    /* Shimmer multi-hued objects */
+    do
+    {
+        struct object *obj, *first_obj = NULL;
+
+        /* Need to be the first object on the pile that is not ignored */
+        for (obj = square_known_pile(p, c, &iter.cur); obj; obj = obj->next)
+        {
+            if (!ignore_item_ok(p, obj))
+            {
+                if (!first_obj)
+                    first_obj = obj;
+                else
+                {
+                    first_obj = NULL;
+                    break;
+                }
+            }
+        }
+
+        /* Light that spot */
+        if (first_obj && object_shimmer(first_obj))
+            square_light_spot_aux(p, c, &iter.cur);
+    }
+    while (loc_iterator_next_strict(&iter));
+}
+
+
+/*
+ * Hack -- process the objects
+ */
+void process_objects(struct chunk *c)
+{
+    int i;
+    struct loc begin, end;
+    struct loc_iterator iter;
+
+    /* Every 10 game turns */
+    if ((turn.turn % 10) != 5) return;
+
+    /* Check everyone */
+    for (i = 1; i <= NumPlayers; i++)
+    {
+        struct player *p = player_get(i);
+
+        /* Skip irrelevant players */
+        if (!wpos_eq(&p->wpos, &c->wpos)) continue;
+        if (p->upkeep->new_level_method || p->upkeep->funeral) continue;
+        if (!allow_shimmer(p)) continue;
+
+        /* Shimmer multi-hued objects */
+        shimmer_objects(p, c);
+    }
+
+    loc_init(&begin, 1, 1);
+    loc_init(&end, c->width, c->height);
+    loc_iterator_first(&iter, &begin, &end);
+
+    /* Recharge other level objects */
+    do
+    {
+        struct object *obj, *next;
+        bool redraw = false;
+
+        obj = square_object(c, &iter.cur);
+
+        while (obj)
+        {
+            next = obj->next;
+
+            /* Recharge rods */
+            if (tval_can_have_timeout(obj) && recharge_timeout(obj))
+                redraw = true;
+
+            /* Corpses slowly decompose */
+            if (tval_is_corpse(obj))
+            {
+                obj->decay--;
+
+                /* Notice changes */
+                if (obj->decay == obj->timeout / 5)
+                    redraw = true;
+
+                /* No more corpse... */
+                else if (!obj->decay)
+                    square_delete_object(c, &iter.cur, obj, false, false);
+            }
+
+            obj = next;
+        }
+
+        if (redraw) redraw_floor(&c->wpos, &iter.cur, NULL);
+    }
+    while (loc_iterator_next_strict(&iter));
+}
+
+
+bool is_owner(struct player *p, struct object *obj)
+{
+    /* Free object */
+    if (!obj->owner) return true;
+
+    /* No restriction */
+    if (!((cfg_limited_stores == 3) || OPT(p, birth_no_stores))) return true;
+
+    /* Must be the owner */
+    return (obj->owner == p->id);
+}
+
+
+bool has_level_req(struct player *p, struct object *obj)
+{
+    /* Free or owned object */
+    if (!obj->owner || (obj->owner == p->id)) return true;
+
+    /* No restriction */
+    if (!cfg_level_req) return true;
+
+    /* Must meet level requirement */
+    return (p->lev >= obj->level_req);
+}
+
+
+void object_audit(struct player *p, struct object *obj)
+{
+    obj->askprice = 0;
+
+    /* Check ownership (unless we bought something from a shop) */
+    if (obj->owner && (obj->owner != -1) && (p->id != obj->owner))
+    {
+        char o_name[NORMAL_WID];
+        char buf[512];
+        struct effect *effect = object_effect(obj);
+
+        /* Log transaction */
+        strnfmt(buf, sizeof(buf), "TR %s-%d | %s-%d $ %ld", lookup_player_name(obj->owner),
+            (int)obj->owner, p->name, (int)p->id, (long)object_value(p, obj, 1));
+        audit(buf);
+
+        /* Object name */
+        object_desc(NULL, o_name, sizeof(o_name), obj, ODESC_PREFIX | ODESC_FULL);
+        strnfmt(buf, sizeof(buf), "TR+%s", o_name);
+        audit(buf);
+
+        /* Hack -- potion of experience */
+        if (effect && (effect->index == EF_GAIN_EXP)) obj->askprice = 1;
+    }
+}
+
+
+void object_own(struct player *p, struct object *obj)
+{
+    /* Log ownership change */
+    object_audit(p, obj);
+
+    /* Set level requirement on free objects */
+    if (!obj->owner)
+    {
+        int depth = max(min(p->wpos.depth / 2, 50), 1);
+
+        obj->level_req = min(depth, p->lev);
+
+        // hack to adjust items req. lvl a bit to make pstore trade more viable
+        if (obj->level_req > 15 && obj->level_req < 50)
+            obj->level_req -= 3;
+    }
+
+    /* Set original owner ONCE */
+    if (obj->origin_player == 0) obj->origin_player = quark_add(p->name);
+
+    /* Set ownership */
+    obj->owner = p->id;
+
+    /* Artifact is now owned */
+    if (true_artifact_p(obj)) mark_artifact_owned(obj->artifact, p->id);
+}
+
+
+static struct player *get_creator(const struct object *obj)
+{
+    int i;
+
+    if (!obj->creator) return NULL;
+
+    for (i = 1; i <= NumPlayers; i++)
+    {
+        struct player *p = player_get(i);
+
+        if (p->id == obj->creator) return p;
+    }
+
+    return NULL;
+}
+
+
+void preserve_artifact_aux(const struct object *obj)
+{
+    /* Not an artifact */
+    if (!obj->artifact) return;
+
+    /* True artifacts */
+    if (true_artifact_p(obj))
+    {
+        mark_artifact_created(obj->artifact, false);
+        mark_artifact_owned(obj->artifact, 0);
+    }
+
+    /* Randarts */
+    else
+    {
+        /* Only works when creator is ingame */
+        struct player *p = get_creator(obj);
+
+        if (p) p->randart_created[obj->artifact->aidx] = 0;
+    }
+}
+
+
+void preserve_artifact(const struct object *obj)
+{
+    struct player *p;
+
+    /* Not an artifact */
+    if (!obj->artifact) return;
+
+    /* Only works when owner is ingame */
+    p = player_get(get_owner_id(obj));
+
+    /* Preserve any artifact */
+    preserve_artifact_aux(obj);
+    if (p) history_lose_artifact(p, obj);
+}
+
+
+/*
+ * Destroy an item in the pack or on the floor. Returns true if the item has been completely
+ * used up, false otherwise.
+ */
+bool use_object(struct player *p, struct object *obj, int amount, bool describe)
+{
+    struct object *used_obj;
+    bool none_left = false;
+    struct chunk *c = chunk_get(&p->wpos);
+
+    /* Destroy an item in the pack */
+    if (object_is_carried(p, obj))
+        used_obj = gear_object_for_use(p, obj, amount, describe, &none_left);
+
+    /* Destroy an item on the floor */
+    else
+        used_obj = floor_object_for_use(p, c, obj, amount, describe, &none_left);
+
+    object_delete(&used_obj);
+
+    return none_left;
+}
+
+
+/*
+ * Redraw changes occured on floor items
+ *
+ * Note: this is similar to square_note_spot(), but we don't memorize the grid -- we redraw
+ * the floor instead.
+ */
+void redraw_floor(struct worldpos *wpos, struct loc *grid, struct object *obj)
+{
+    int i;
+
+    /* Redraw changes for all players */
+    for (i = 1; i <= NumPlayers; i++)
+    {
+        struct player *p = player_get(i);
+
+        /* Require "seen" flag and the current level */
+        /* PWMAngband: consider player spot as "seen" */
+        if (!wpos_eq(&p->wpos, wpos)) continue;
+        if (p->upkeep->new_level_method || p->upkeep->funeral) continue;
+        if (!square_isseen(p, grid) && !player_is_at(p, grid)) continue;
+
+        /* Make the player know precisely what is on this grid */
+        square_know_pile(p, chunk_get(wpos), grid);
+
+        /* Redraw */
+        p->upkeep->redraw |= PR_ITEMLIST;
+
+        /* Under a player */
+        if (!player_is_at(p, grid)) continue;
+
+        /* Redraw */
+        p->upkeep->redraw |= PR_FLOOR;
+
+        /* Print a message */
+        if (obj)
+        {
+            char o_name[NORMAL_WID];
+
+            object_desc(p, o_name, sizeof(o_name), obj, ODESC_PREFIX | ODESC_FULL);
+            msg(p, "On the ground: %s.", o_name);
+        }
+    }
+}
+
+
+bool object_marked_aware(struct player *p, const struct object *obj)
+{
+    if (p)
+    {
+        int none = tval_find_idx("none");
+        int item = lookup_sval(none, "<unknown item>");
+        int gold = lookup_sval(none, "<unknown treasure>");
+
+        return ((obj->tval == none) && ((obj->sval == item) || (obj->sval == gold)));
+    }
+
+    return false;
+}
+
+
+/* Hack -- get an item from its index */
+struct object *object_from_index(struct player *p, int item, bool prompt, bool check_ignore)
+{
+    struct object *obj;
+    struct chunk *c = chunk_get(&p->wpos);
+
+    /* Get the item (from pack or equipment) */
+    if (item >= 0)
+    {
+        for (obj = p->gear; obj; obj = obj->next)
+        {
+            /* Check item (from pack or equipment) */
+            if (obj->oidx == item) return obj;
+        }
+
+        return NULL;
+    }
+
+    /* Get the item (on the floor) */
+    for (obj = square_object(c, &p->grid); obj; obj = obj->next)
+    {
+        /* Ignore all non-objects */
+        if (!obj->kind) continue;
+
+        /* Ignore all hidden objects */
+        if (check_ignore && ignore_item_ok(p, obj)) continue;
+
+        /* Check item (on the floor) */
+        if (obj->oidx == item) return obj;
+    }
+
+    /* Nothing */
+    if (prompt) msg(p, "There's nothing on the floor.");
+    return NULL;
+}
+
+
+/*
+ * Find an ego item from its name.
+ *
+ * name ego type name
+ * kind object kind
+ */
+struct ego_item *lookup_ego_item(const char *name, struct object_kind *kind)
+{
+    int i;
+
+    /* Paranoia */
+    if (!kind) return NULL;
+
+    /* Look for it */
+    for (i = 0; i < z_info->e_max; i++)
+    {
+        struct ego_item *ego = &e_info[i];
+        struct poss_item *poss_item = ego->poss_items;
+
+        /* Reject nameless and wrong names */
+        if (!ego->name) continue;
+        if (strcmp(name, ego->name)) continue;
+
+        /* Check kind */
+        while (poss_item)
+        {
+            if (kind->kidx == poss_item->kidx) return ego;
+            poss_item = poss_item->next;
+        }
+    }
+
+    return NULL;
+}
+
+
+/*
+ * Return the artifact with the given name
+ */
+const struct artifact *lookup_artifact_name(const char *name)
+{
+    int i;
+    const struct artifact *match = NULL;
+
+    /* Look for it */
+    for (i = 0; i < z_info->a_max; i++)
+    {
+        const struct artifact *art = &a_info[i];
+
+        /* Test for equality */
+        if (art->name && streq(name, art->name)) return art;
+
+        /* Test for close matches */
+        if ((strlen(name) >= 3) && art->name && my_stristr(art->name, name) && !match)
+            match = art;
+    }
+
+    /* Return our best match */
+    return match;
+}
+
+
+typedef enum
+{
+    MSG_TAG_NONE,
+    MSG_TAG_NAME,
+    MSG_TAG_KIND,
+    MSG_TAG_VERB,
+    MSG_TAG_VERB_IS
 } msg_tag_t;
+
 
 static msg_tag_t msg_tag_lookup(const char *tag)
 {
-	if (strncmp(tag, "name", 4) == 0) {
-		return MSG_TAG_NAME;
-	} else if (strncmp(tag, "kind", 4) == 0) {
-		return MSG_TAG_KIND;
-	} else if (strncmp(tag, "s", 1) == 0) {
-		return MSG_TAG_VERB;
-	} else if (strncmp(tag, "is", 2) == 0) {
-		return MSG_TAG_VERB_IS;
-	} else {
-		return MSG_TAG_NONE;
-	}
+    if (strncmp(tag, "name", 4) == 0) return MSG_TAG_NAME;
+    if (strncmp(tag, "kind", 4) == 0) return MSG_TAG_KIND;
+    if (strncmp(tag, "s", 1) == 0) return MSG_TAG_VERB;
+    if (strncmp(tag, "is", 2) == 0) return MSG_TAG_VERB_IS;
+    return MSG_TAG_NONE;
 }
 
-/**
+
+/*
+ * Puts a very stripped-down version of an object's name into buf.
+ * If aware is true, then the IDed names are used, otherwise
+ * flavours, scroll names, etc will be used.
+ *
+ * Just truncates if the buffer isn't big enough.
+ */
+static void object_kind_name_activation(struct player *p, char *buf, size_t max, struct object *obj)
+{
+    /* Flavored non-artifact items get a base description */
+    if (obj->kind->flavor && !obj->artifact)
+        object_desc(p, buf, max, obj, ODESC_BASE | ODESC_SINGULAR);
+
+    /* If not aware, the plain flavour (e.g. Copper) will do. */
+    else if (!p->kind_aware[obj->kind->kidx] && obj->kind->flavor)
+        my_strcpy(buf, obj->kind->flavor->text, max);
+
+    /* Use proper name (Healing, or whatever) */
+    else
+        obj_desc_name_format(buf, max, 0, obj->kind->name, NULL, false);
+}
+
+
+/*
  * Print a message from a string, customised to include details about an object
  */
-void print_custom_message(struct object *obj, const char *string, int msg_type,
-		const struct player *p)
+void print_custom_message(struct player *p, struct object *obj, const char *string, int msg_type)
 {
-	char buf[1024] = "\0";
-	const char *next;
-	const char *s;
-	const char *tag;
-	size_t end = 0;
+    char buf[MSG_LEN] = "\0";
+    const char *next;
+    const char *s;
+    const char *tag;
+    size_t end = 0;
 
-	/* Not always a string */
-	if (!string) return;
+    /* Not always a string */
+    if (!string) return;
 
-	next = strchr(string, '{');
-	while (next) {
-		/* Copy the text leading up to this { */
-		strnfcat(buf, 1024, &end, "%.*s", next - string, string); 
+    next = strchr(string, '{');
+    while (next)
+    {
+        /* Copy the text leading up to this { */
+        strnfcat(buf, MSG_LEN, &end, "%.*s", next - string, string);
 
-		s = next + 1;
-		while (*s && isalpha((unsigned char) *s)) s++;
+        s = next + 1;
+        while (*s && isalpha((unsigned char)*s)) s++;
 
-		/* Valid tag */
-		if (*s == '}') {
-			/* Start the tag after the { */
-			tag = next + 1;
-			string = s + 1;
+        /* Valid tag */
+        if (*s == '}')
+        {
+            /* Start the tag after the { */
+            tag = next + 1;
+            string = s + 1;
 
-			switch(msg_tag_lookup(tag)) {
-			case MSG_TAG_NAME:
-				if (obj) {
-					end += object_desc(buf, 1024, obj,
-						ODESC_PREFIX | ODESC_BASE, p);
-				} else {
-					strnfcat(buf, 1024, &end, "hands");
-				}
-				break;
-			case MSG_TAG_KIND:
-				if (obj) {
-					object_kind_name(&buf[end], 1024 - end, obj->kind, true);
-					end += strlen(&buf[end]);
-				} else {
-					strnfcat(buf, 1024, &end, "hands");
-				}
-				break;
-			case MSG_TAG_VERB:
-				if (obj && obj->number == 1) {
-					strnfcat(buf, 1024, &end, "s");
-				}
-				break;
-			case MSG_TAG_VERB_IS:
-				if ((!obj) || (obj->number > 1)) {
-					strnfcat(buf, 1024, &end, "are");
-				} else {
-					strnfcat(buf, 1024, &end, "is");
-				}
-			default:
-				break;
-			}
-		} else
-			/* An invalid tag, skip it */
-			string = next + 1;
+            switch (msg_tag_lookup(tag))
+            {
+                case MSG_TAG_NAME:
+                    /* Flavored non-artifact items get a base description */
+                    if (obj)
+                    {
+                      if (obj->kind->flavor && !obj->artifact)
+                      {
+                          strnfcat(buf, MSG_LEN, &end, "Your ");
+                          object_desc(p, &buf[end], MSG_LEN - end, obj, ODESC_BASE);
+                          end += strlen(&buf[end]);
+                      }
+                      else
+                          end += object_desc(p, buf, MSG_LEN, obj, ODESC_PREFIX | ODESC_BASE);
+                    }
+                    else
+                        strnfcat(buf, MSG_LEN, &end, "hands");
+                    break;
+                case MSG_TAG_KIND:
+                    if (obj)
+                    {
+                        object_kind_name_activation(p, &buf[end], MSG_LEN - end, obj);
+                        end += strlen(&buf[end]);
+                    }
+                    else
+                        strnfcat(buf, MSG_LEN, &end, "hands");
+                    break;
+                case MSG_TAG_VERB:
+                    if (obj && (obj->number == 1)) strnfcat(buf, MSG_LEN, &end, "s");
+                    break;
+                case MSG_TAG_VERB_IS:
+                    if (!obj || (obj->number > 1))
+                        strnfcat(buf, MSG_LEN, &end, "are");
+                    else
+                        strnfcat(buf, MSG_LEN, &end, "is");
+                default:
+                    break;
+            }
+        }
 
-		next = strchr(string, '{');
-	}
-	strnfcat(buf, 1024, &end, string);
+        /* An invalid tag, skip it */
+        else
+            string = next + 1;
 
-	msgt(msg_type, "%s", buf);
+        next = strchr(string, '{');
+    }
+    strnfcat(buf, MSG_LEN, &end, string);
+
+    /* Capitalize (in case we start with the {name} tag) */
+    my_strcap(buf);
+
+    msgt(p, msg_type, buf);
 }
 
-/**
+
+/*
+ * Get price from an inscription
+ */
+int32_t get_askprice(const char *inscription)
+{
+    const char *c;
+    int len = 0;
+
+    /* Check if the inscription contains "for sale " */
+    c = my_stristr(inscription, "for sale ");
+    if (c) len = 9;
+
+    /* Check if the inscription contains "~" */
+    else
+    {
+        c = my_stristr(inscription, "~");
+        if (c) len = 1;
+        else return -1;
+    }
+
+    /* Get ask price, skip inscription */
+    c += len;
+    return atoi(c);
+}
+
+
+/*
  * Return if the given artifact has been created.
  */
 bool is_artifact_created(const struct artifact *art)
 {
-	assert(art->aidx == aup_info[art->aidx].aidx);
-	return aup_info[art->aidx].created;
+    my_assert(art->aidx == aup_info[art->aidx].aidx);
+
+    return aup_info[art->aidx].created;
 }
 
-/**
- * Return if the given artifact has been seen.
+
+/*
+ * Return the owner of the given artifact.
  */
-bool is_artifact_seen(const struct artifact *art)
+int32_t get_artifact_owner(const struct artifact *art)
 {
-	assert(art->aidx == aup_info[art->aidx].aidx);
-	return aup_info[art->aidx].seen;
+    my_assert(art->aidx == aup_info[art->aidx].aidx);
+
+    return aup_info[art->aidx].owner;
 }
 
-/**
- * Return if the given artifact has ever been seen.
- */
-bool is_artifact_everseen(const struct artifact *art)
-{
-	assert(art->aidx == aup_info[art->aidx].aidx);
-	return aup_info[art->aidx].everseen;
-}
 
-/**
+/*
  * Set whether the given artifact has been created or not.
  */
 void mark_artifact_created(const struct artifact *art, bool created)
 {
-	assert(art->aidx == aup_info[art->aidx].aidx);
-	aup_info[art->aidx].created = created;
+    my_assert(art->aidx == aup_info[art->aidx].aidx);
+
+    aup_info[art->aidx].created = created;
 }
 
-/**
- * Set whether the given artifact has been created or not.
- */
-void mark_artifact_seen(const struct artifact *art, bool seen)
-{
-	assert(art->aidx == aup_info[art->aidx].aidx);
-	aup_info[art->aidx].seen = seen;
-}
 
-/**
- * Set whether the given artifact has been seen or not.
+/*
+ * Set owner of the given artifact.
  */
-void mark_artifact_everseen(const struct artifact *art, bool seen)
+void mark_artifact_owned(const struct artifact *art, int32_t owner)
 {
-	assert(art->aidx == aup_info[art->aidx].aidx);
-	aup_info[art->aidx].everseen = seen;
+    my_assert(art->aidx == aup_info[art->aidx].aidx);
+
+    aup_info[art->aidx].owner = owner;
 }

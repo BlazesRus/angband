@@ -1,89 +1,85 @@
-/**
- * \file option.h
- * \brief Options table and definitions.
- *
- * Copyright (c) 1997 Ben Harrison
- *
- * This work is free software; you can redistribute it and/or modify it
- * under the terms of either:
- *
- * a) the GNU General Public License as published by the Free Software
- *    Foundation, version 2, or
- *
- * b) the "Angband licence":
- *    This software may be copied and distributed for educational, research,
- *    and not for profit purposes provided that this copyright and statement
- *    are included in all such copies.  Other copyrights may also apply.
+/*
+ * File: option.h
+ * Purpose: Options table and definitions.
  */
+
 #ifndef INCLUDED_OPTIONS_H
 #define INCLUDED_OPTIONS_H
 
-#include "z-file.h"
-
-#define PLAYER_NAME_LEN		32
-
-/**
- * Option types 
+/*
+ * Option types
  */
 enum
 {
-	OP_INTERFACE = 0,
-	OP_BIRTH,
-	OP_CHEAT,
-	OP_SCORE,
-	OP_SPECIAL,
+    OP_INTERFACE = 0,
+    OP_MANGBAND,
+    OP_BIRTH,
+    OP_ADVANCED,
 
-	OP_MAX
+    OP_MAX
 };
 
-/**
- * Option indexes 
- */
-enum
-{
-	#define OP(a, b, c, d) OPT_##a,
-	#include "list-options.h"
-	#undef OP
-	OPT_MAX
-};
-
-#define OPT(p, opt_name)	p->opts.opt[OPT_##opt_name]
-
-/**
+/*
  * Information for "do_cmd_options()".
  */
-#define OPT_PAGE_MAX				OP_SCORE
-#define OPT_PAGE_PER				21
-#define OPT_PAGE_BIRTH				1
+#define OPT_PAGE_PER    20
 
-/**
- * The option data structures
+/*
+ * Option indexes
  */
-struct player_options {
-	bool opt[OPT_MAX];		/**< Options */
-
-	uint8_t hitpoint_warn;		/**< Hitpoint warning (0 to 9) */
-	uint8_t lazymove_delay;		/**< Delay in cs before moving to allow another key */
-	uint8_t delay_factor;		/**< Delay factor (0 to 9) */
-
-	uint8_t name_suffix;		/**< Numeric suffix for player name */
+enum
+{
+    #define OP(a, b, c, d, e) OPT_##a,
+    #include "list-options.h"
+    #undef OP
+    OPT_MAX
 };
 
-extern int option_page[OPT_PAGE_MAX][OPT_PAGE_PER];
+#define OPT(P, opt_name) (P)->opts.opt[OPT_##opt_name]
 
-/**
+/*
+ * List of kinds of item, for pseudo-id and ego ignoring.
+ */
+typedef enum
+{
+    ITYPE_NONE,
+    #define ITYPE(a, b) ITYPE_##a,
+    #include "list-ignore-types.h"
+    #undef ITYPE
+
+    ITYPE_MAX
+} ignore_type_t;
+
+#define ITYPE_SIZE          FLAG_SIZE(ITYPE_MAX)
+
+#define itype_has(f, flag)  flag_has_dbg(f, ITYPE_SIZE, flag, #f, #flag)
+#define itype_on(f, flag)   flag_on_dbg(f, ITYPE_SIZE, flag, #f, #flag)
+#define itype_wipe(f)       flag_wipe(f, ITYPE_SIZE)
+
+/*
+ * The option data structures
+ */
+struct player_options
+{
+    bool opt[OPT_MAX];              /* Options */
+    uint8_t hitpoint_warn;             /* Hitpoint warning (0 to 9) */
+    uint8_t hitpoint_warn_toggle;
+    uint8_t lazymove_delay;            /* Delay in cs before moving to allow another keypress */
+    uint8_t delay_factor;              /* Delay factor (0 to 255) */
+    uint8_t ignore_lvl[ITYPE_MAX];     /* Auto-ignore level (0 to 4) */
+};
+
+extern int option_page[OP_MAX][OPT_PAGE_PER];
+
+/*
  * Functions
  */
-const char *option_type_name(int page);
-const char *option_name(int opt);
-const char *option_desc(int opt);
-int option_type(int opt);
-bool option_set(const char *opt, int val);
-void options_init_cheat(void);
-void options_init_defaults(struct player_options *opts);
-void init_options(void);
-bool options_save_custom(struct player_options *opts, int page);
-bool options_restore_custom(struct player_options *opts, int page);
-void options_restore_maintainer(struct player_options *opts, int page);
+extern const char *option_type_name(int page);
+extern const char *option_name(int opt);
+extern const char *option_desc(int opt);
+extern int option_type(int opt);
+extern bool option_normal(int opt);
+extern bool option_server(int opt);
+extern void option_init(void);
 
-#endif /* !INCLUDED_OPTIONS_H */
+#endif /* INCLUDED_OPTIONS_H */

@@ -1,63 +1,57 @@
-/**
- * \file target.h
- * \brief Targetting code
- *
- * Copyright (c) 1997-2007 Angband contributors
- *
- * This work is free software; you can redistribute it and/or modify it
- * under the terms of either:
- *
- * a) the GNU General Public License as published by the Free Software
- *    Foundation, version 2, or
- *
- * b) the "Angband licence":
- *    This software may be copied and distributed for educational, research,
- *    and not for profit purposes provided that this copyright and statement
- *    are included in all such copies.  Other copyrights may also apply.
+/*
+ * File: target.h
+ * Purpose: Targeting code
  */
 
 #ifndef TARGET_H
 #define TARGET_H
 
-#include "mon-predicate.h"
-
-/**
- * Bit flags for target_set()
- *
- *	KILL: Target monsters
- *	LOOK: Describe grid fully
- *	XTRA: Currently unused flag (NOT USED)
- *	GRID: Select from all grids (NOT USED)
- * QUIET: Prevent targeting messages.
+/*
+ * Keyset mappings for various keys.
  */
-#define TARGET_KILL   0x01
-#define TARGET_LOOK   0x02
-#define TARGET_XTRA   0x04
-#define TARGET_GRID   0x08
-#define TARGET_QUIET  0x10
+#define ARROW_DOWN      0x80
+#define ARROW_LEFT      0x81
+#define ARROW_RIGHT     0x82
+#define ARROW_UP        0x83
+#define KC_ENTER        0x9C
+#define ESCAPE          0xE000
 
-struct target {
-	struct loc grid;
-	int midx;
-};
+/* Analogous to isdigit() etc in ctypes */
+#define isarrow(c)  ((c >= ARROW_DOWN) && (c <= ARROW_UP))
 
-void look_mon_desc(char *buf, size_t max, int m_idx);
-bool target_able(struct monster *m);
-bool target_okay(void);
-bool target_set_monster(struct monster *mon);
-void target_set_location(int y, int x);
-bool target_is_set(void);
-void target_fix(void);
-void target_release(void);
-int cmp_distance(const void *a, const void *b);
-int16_t target_pick(int y1, int x1, int dy, int dx, struct point_set *targets);
-bool target_accept(int y, int x);
-void coords_desc(char *buf, int size, int y, int x);
-void target_get(struct loc *grid);
-struct monster *target_get_monster(void);
-bool target_sighted(void);
-struct point_set *target_get_monsters(int mode, monster_predicate pred,
-	bool restrict_to_panel);
-bool target_set_closest(int mode, monster_predicate pred);
+/*
+ * Steps for the "target_set_interactive" function
+ *
+ *    NONE:  Initial lookup
+ *    MON:   Describe monster (or player)
+ *    TRAP:  Describe trap
+ *    OBJ:   Describe object
+ *    FEAT:  Describe feature
+ */
+#define TARGET_NONE 0
+#define TARGET_MON  1
+#define TARGET_TRAP 2
+#define TARGET_OBJ  3
+#define TARGET_FEAT 4
 
-#endif /* !TARGET_H */
+extern void look_mon_desc(struct monster *mon, char *buf, size_t max);
+extern void look_player_desc(struct player *p, char *buf, size_t max);
+extern bool target_able(struct player *p, struct source *who);
+extern bool target_okay(struct player *p);
+extern bool target_set_monster(struct player *p, struct source *who);
+extern void target_set_location(struct player *p, struct loc *grid);
+extern void target_fix(struct player *p);
+extern void target_release(struct player *p);
+extern int cmp_distance(const void *a, const void *b);
+extern int16_t target_pick(int y1, int x1, int dy, int dx, struct point_set *targets);
+extern bool target_accept(struct player *p, struct loc *grid);
+extern void grid_desc(struct player *p, char *buf, int size, struct loc *grid);
+extern void target_get(struct player *p, struct loc *grid);
+extern bool target_equals(struct player *p, struct source *who);
+extern void draw_path_grid(struct player *p, struct loc *grid, uint8_t a, char c);
+extern void flush_path_grid(struct player *p, struct chunk *cv, struct loc *grid, uint8_t a, char c);
+extern bool panel_contains(struct player *p, struct loc *grid);
+extern struct point_set *target_get_monsters(struct player *p, int mode, bool restrict_to_panel);
+extern bool target_set_closest(struct player *p, int mode);
+
+#endif /* TARGET_H */

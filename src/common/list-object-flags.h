@@ -1,54 +1,76 @@
-/**
- * \file list-object-flags.h
- * \brief object flags for all objects
- *
- * Changing flag order will break savefiles. Flags
- * below start from 1 on line 17, so a flag's sequence number is its line
- * number minus 16.
+/*
+ * File: list-object-flags.h
+ * Purpose: Object flags for all objects
  *
  * Each sustain flag (SUST_*) has a matching stat in src/list-stats.h,
- * which should be at the same index in that file as the sustain in this file.
- *
- * The second argument to OF is the label used in the debugging commands
- * object flag display.  At most the first five characters are used.
+ * which should be at the same index in that file as the sustain in this file (plus one for OF_NONE).
  *
  * Flag properties are defined in lib/gamedata/object_property.txt
+ *
+ * Fields:
+ * symbol - the flag name
+ * birth-descr - description of the flag for use in the birth menus
  */
-OF(SUST_STR, " sStr")
-OF(SUST_INT, " sInt")
-OF(SUST_WIS, " sWis")
-OF(SUST_DEX, " sDex")
-OF(SUST_CON, " sCon")
-OF(PROT_FEAR, "pFear")
-OF(PROT_BLIND, "pBlnd")
-OF(PROT_CONF, "pConf")
-OF(PROT_STUN, "pStun")
-OF(SLOW_DIGEST, "S.Dig")
-OF(FEATHER, "Feath")
-OF(REGEN, "Regen")
-OF(TELEPATHY, "  ESP")
-OF(SEE_INVIS, "S.Inv")
-OF(FREE_ACT, "FrAct")
-OF(HOLD_LIFE, "HLife")
-OF(IMPACT, "Impct")
-OF(BLESSED, " Bless")
-OF(BURNS_OUT, "BuOut")
-OF(TAKES_FUEL, "TFuel")
-OF(NO_FUEL, "NFuel")
-OF(IMPAIR_HP, "ImpHP")
-OF(IMPAIR_MANA, "ImpSP")
-OF(AFRAID, " Fear")
-OF(NO_TELEPORT, "NoTel")
-OF(AGGRAVATE, "Aggrv")
-OF(DRAIN_EXP, "DrExp")
-OF(STICKY, "Stick")
-OF(FRAGILE, "Fragl")
-OF(LIGHT_2, "Lght2")
-OF(LIGHT_3, "Lght3")
-OF(DIG_1, " Dig1")
-OF(DIG_2, " Dig2")
-OF(DIG_3, " Dig3")
-OF(EXPLODE, "Expld")
-OF(TRAP_IMMUNE, "TrpIm")
-OF(THROWING, "Throw")
-OF(MAX, "")
+
+/* symbol  birth-descr */
+OF(NONE, NULL)
+OF(SUST_STR, "Sustains strength")
+OF(SUST_INT, "Sustains intelligence")
+OF(SUST_WIS, "Sustains wisdom")
+OF(SUST_DEX, "Sustains dexterity")
+OF(SUST_CON, "Sustains constitution")
+OF(PROT_FEAR, "Resists fear")
+OF(PROT_BLIND, "Resists blindness")
+OF(PROT_CONF, "Resists confusion")
+OF(PROT_STUN, "Resists stunning")
+OF(SLOW_DIGEST, "Digests food slowly")
+OF(FEATHER, "Floats just above the floor")
+OF(REGEN, "Regenerates quickly")
+OF(SEE_INVIS, "Sees invisible creatures")
+OF(FREE_ACT, "Resists paralysis")
+OF(HOLD_LIFE, "Sustains experience")
+OF(IMPACT, NULL)
+OF(BLESSED, NULL)
+OF(BURNS_OUT, NULL)
+OF(TAKES_FUEL, NULL)
+OF(NO_FUEL, NULL)
+OF(IMPAIR_HP, "Regenerates slowly")
+OF(IMPAIR_MANA, "Regenerates mana slowly")
+OF(AFRAID, NULL)
+OF(NO_TELEPORT, NULL)
+OF(LIMITED_TELE, NULL)
+OF(AGGRAVATE, NULL)
+OF(DRAIN_EXP, NULL)
+OF(STICKY, NULL)
+OF(FRAGILE, NULL)
+OF(LIGHT_2, NULL)
+OF(LIGHT_3, NULL)
+OF(LIGHT_4, NULL)
+OF(DIG_1, NULL)
+OF(DIG_2, NULL)
+OF(DIG_3, NULL)
+OF(EXPLODE, NULL)
+OF(TRAP_IMMUNE, NULL)
+OF(THROWING, NULL)
+OF(KNOWLEDGE, NULL)
+OF(AMMO_MAGIC, NULL)
+OF(NO_ACTIVATION, NULL)
+OF(ESP_ANIMAL, "Can sense animals")
+OF(ESP_EVIL, "Can sense evil")
+OF(ESP_UNDEAD, "Can sense undead")
+OF(ESP_DEMON, "Can sense demons")
+OF(ESP_ORC, "Can sense orcs")
+OF(ESP_TROLL, "Can sense trolls")
+OF(ESP_GIANT, "Can sense giants")
+OF(ESP_DRAGON, "Can sense dragons")
+OF(ESP_ALL, "Has telepathic powers")
+OF(ESP_RADIUS, "Has telepathic awareness")
+OF(HUNGER, "Needs more food")
+OF(HUNGER_2, "Needs more food")
+OF(SLOW_DIGEST_2, "Digests food very slowly")
+OF(SUST_CHR, "Sustains charisma")
+OF(CANT_FLY, "Forbids flying")
+OF(NO_DROP, "Forbids dropping item")
+OF(PROT_AMNESIA, "Resists amnesia")
+OF(FLYING, "You can fly")
+OF(CLUMSY, "You become bad at ranged attacks")

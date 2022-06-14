@@ -3,7 +3,7 @@
  * Purpose: Quark type
  */
 
-#ifndef INCLUDED_H_QUARK_H
+#if !defined(SPClient) && !defined(INCLUDED_H_QUARK_H)
 #define INCLUDED_H_QUARK_H
 
 /*

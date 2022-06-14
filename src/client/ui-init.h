@@ -1,27 +1,47 @@
-/**
- * \file ui-init.h
- * \brief UI initialistion
- *
- * Copyright (c) 2015 Nick McConnell
- *
- * This work is free software; you can redistribute it and/or modify it
- * under the terms of either:
- *
- * a) the GNU General Public License as published by the Free Software
- *    Foundation, version 2, or
- *
- * b) the "Angband licence":
- *    This software may be copied and distributed for educational, research,
- *    and not for profit purposes provided that this copyright and statement
- *    are included in all such copies.  Other copyrights may also apply.
- *
+/*
+ * File: ui-init.h
+ * Purpose: Various game initialisation routines
  */
 
+#ifndef INCLUDED_UI_INIT_H
+#define INCLUDED_UI_INIT_H
 
-#ifndef UI_INIT_H
-#define UI_INIT_H
+/*
+ * Information about terrain features.
+ *
+ * Copied from cave.h and simplified for the client.
+ */
+struct feature
+{
+    char *name; /* Name */
+    int fidx;   /* Index */
+};
 
-void textui_init(void);
-void textui_cleanup(void);
+extern struct feature *f_info;
 
-#endif /* !UI_INIT_H */
+extern char meta_address[NORMAL_WID];
+extern int meta_port;
+extern char account[NORMAL_WID];
+extern char nick[NORMAL_WID];
+extern char pass[NORMAL_WID];
+extern char stored_pass[NORMAL_WID];
+extern char real_name[NORMAL_WID];
+extern char server_name[NORMAL_WID];
+extern int server_port;
+extern bool play_again;
+extern uint16_t max_account_chars;
+extern uint16_t char_num;
+extern char **char_name;
+extern char *char_expiry;
+
+extern void init_file_paths(const char *configpath, const char *libpath, const char *datapath);
+extern void create_needed_dirs(void);
+extern void client_init(bool new_game);
+extern void client_ready(bool newchar);
+extern bool gather_settings(void);
+extern void cleanup_floor(void);
+extern void cleanup_angband(void);
+extern void init_stuff(void);
+extern void textui_cleanup(void);
+
+#endif /* INCLUDED_UI_INIT_H */

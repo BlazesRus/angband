@@ -1,8 +1,9 @@
-/**
- * \file ui-input.c
- * \brief Some high-level UI functions, inkey()
+/*
+ * File: ui-input.c
+ * Purpose: Some high-level UI functions, inkey()
  *
  * Copyright (c) 1997 Ben Harrison, James E. Wilson, Robert A. Koeneke
+ * Copyright (c) 2022 MAngband and PWMAngband Developers
  *
  * This work is free software; you can redistribute it and/or modify it
  * under the terms of either:
@@ -16,108 +17,101 @@
  *    are included in all such copies.  Other copyrights may also apply.
  */
 
-#include "angband.h"
-#include "cmds.h"
-#include "game-event.h"
-#include "game-input.h"
-#include "game-world.h"
-#include "init.h"
-#include "obj-gear.h"
-#include "obj-util.h"
-#include "player-calcs.h"
-#include "player-path.h"
-#include "savefile.h"
-#include "target.h"
-#include "ui-command.h"
-#include "ui-context.h"
-#include "ui-curse.h"
-#include "ui-display.h"
-#include "ui-effect.h"
-#include "ui-help.h"
-#include "ui-keymap.h"
-#include "ui-knowledge.h"
-#include "ui-map.h"
-#include "ui-menu.h"
-#include "ui-object.h"
-#include "ui-output.h"
-#include "ui-player-properties.h"
-#include "ui-player.h"
-#include "ui-prefs.h"
-#include "ui-signals.h"
-#include "ui-spell.h"
-#include "ui-store.h"
-#include "ui-target.h"
 
-static bool inkey_xtra;
-uint32_t inkey_scan;		/* See the "inkey()" function */
-bool inkey_flag;		/* See the "inkey()" function */
+#include "c-angband.h"
 
-/**
+#ifdef BUILDINGWithVS
+    #include "ui-player-properties.h"//unresolved external symbol fix
+#endif
+
+/* See the "inkey()" function */
+static bool inkey_xtra = false;
+char inkey_scan = SCAN_OFF;
+bool inkey_flag = false;
+
+
+/* Trap detection indicator */
+uint8_t trap_indicator;
+
+
+/* Top line is icky */
+bool topline_icky;
+
+
+/* Melee dice */
+int dis_dd;
+int dis_ds;
+
+
+/* Melee to-hit/to-dam */
+int dis_to_mhit;
+int dis_to_mdam;
+
+
+/* Missile to-hit/to-dam */
+int dis_to_shit;
+int dis_to_sdam;
+
+
+/* Allow '"' to be used in place of '\r' */
+bool prompt_quote_hack = false;
+
+
+/* Selecting a magic book */
+bool spellcasting = false;
+
+
+/* Select-by-name spell */
+int spellcasting_spell = -1;
+
+
+/*
  * Flush all pending input.
  *
  * Actually, remember the flush, using the "inkey_xtra" flag, and in the
  * next call to "inkey()", perform the actual flushing, for efficiency,
  * and correctness of the "inkey()" function.
  */
-void flush(game_event_type unused, game_event_data *data, void *user)
+void flush(game_event_type type, game_event_data *data, void *user)
 {
-	/* Do it later */
-	inkey_xtra = true;
+    /* Do it later */
+    inkey_xtra = true;
 }
 
 
-/**
+/*
  * Helper function called only from "inkey()"
  */
-static ui_event inkey_aux(int scan_cutoff)
+static ui_event inkey_aux(char scan_cutoff)
 {
-	int w = 0;	
+    ui_event ke;
 
-	ui_event ke;
-	
-	/* Wait for a keypress */
-	if (scan_cutoff == SCAN_OFF) {
-		(void)(Term_inkey(&ke, true, true));
-	} else {
-		w = 0;
+    /* Loop, looking for net input and responding to keypresses */
+    ke = Net_loop(Term_inkey, NULL, NULL, scan_cutoff, false);
 
-		/* Wait only as long as macro activation would wait */
-		while (Term_inkey(&ke, false, true) != 0) {
-			/* Increase "wait" */
-			w++;
+    /* Excessive delay */
+    if (ke.type == EVT_DELAY)
+    {
+        ui_event empty = EVENT_EMPTY;
 
-			/* Excessive delay */
-			if (w >= scan_cutoff) {
-				ui_event empty = EVENT_EMPTY;
-				return empty;
-			}
-
-			/* Delay */
-			Term_xtra(TERM_XTRA_DELAY, 10);
-		}
-	}
-
-	return (ke);
+        return empty;
+    }
+    
+    return (ke);
 }
 
 
-
-/**
- * Mega-Hack -- special "inkey_next" pointer.  XXX XXX XXX
+/*
+ * Hack -- special "inkey_next" pointer.  XXX XXX XXX
  *
  * This special pointer allows a sequence of keys to be "inserted" into
- * the stream of keys returned by "inkey()".  This key sequence cannot be
- * bypassed by the Borg.  We use it to implement keymaps.
+ * the stream of keys returned by "inkey()".  We use it to implement keymaps.
  */
 struct keypress *inkey_next = NULL;
-
-/**
- * See if more propmts will be skipped while in a keymap.
- */
-static bool keymap_auto_more;
+bool first_escape = false;
 
 
-/**
+/*
  * Get a keypress from the user.
  *
  * This function recognizes a few "global parameters".  These are variables
@@ -139,604 +133,280 @@ static bool keymap_auto_more;
  * If we are waiting for a keypress, and no keypress is ready, then we will
  * refresh (once) the window which was active when this function was called.
  *
- * Note that "back-quote" is automatically converted into "escape" for
- * convenience on machines with no "escape" key.
- *
  * If "angband_term[0]" is not active, we will make it active during this
  * function, so that the various "main-xxx.c" files can assume that input
  * is only requested (via "Term_inkey()") when "angband_term[0]" is active.
- *
- * Mega-Hack -- This function is used as the entry point for clearing the
- * "signal_count" variable, and of the "character_saved" variable.
- *
- * Mega-Hack -- Note the use of "inkey_hack" to allow the "Borg" to steal
- * control of the keyboard from the user.
  */
 ui_event inkey_ex(void)
 {
-	bool cursor_state;
-	ui_event kk;
-	ui_event ke = EVENT_EMPTY;
+    bool cursor_state;
+    ui_event kk;
+    ui_event ke = EVENT_EMPTY;
+    bool done = false;
+    term *old = Term;
 
-	bool done = false;
+    /* Delayed flush */
+    if (inkey_xtra)
+    {
+        Term_flush();
+        inkey_next = NULL;
+        first_escape = false;
+        inkey_xtra = false;
+    }
 
-	term *old = Term;
+    /* Hack -- use the "inkey_next" pointer */
+    if (inkey_next && inkey_next->code)
+    {
+        /* Get next character, and advance */
+        ke.key = *inkey_next++;
 
-	/* Delayed flush */
-	if (inkey_xtra) {
-		Term_flush();
-		inkey_next = NULL;
-		inkey_xtra = false;
-	}
+        /* Cancel the various "global parameters" */
+        inkey_flag = false;
+        inkey_scan = SCAN_OFF;
 
-	/* Hack -- Use the "inkey_next" pointer */
-	while (inkey_next && inkey_next->code) {
-		/* Get next character, and advance */
-		ke.key = *inkey_next++;
+        /* Accept result */
+        return (ke);
+    }
 
-		/* Cancel the various "global parameters" */
-		inkey_flag = false;
-		inkey_scan = 0;
+    if (inkey_next && first_escape)
+        Send_clear(ES_END_MACRO);
 
-		/* Peek at the key, and see if we want to skip more prompts */
-		if (ke.key.code == '(') {
-			keymap_auto_more = true;
-			/* Since we are not returning this char, make sure the
-			 * next key below works well */
-			if (!inkey_next || !inkey_next->code) {
-				ke.type = EVT_NONE;
-				break;
-			}
-			continue;
-		} else if (ke.key.code == ')') {
-			keymap_auto_more = false;
-			/* Since we are not returning this char, make sure the
-			 * next key below works well */
-			if (!inkey_next || !inkey_next->code) {
-				ke.type = EVT_NONE;
-				break;
-			}
-			continue;
-		}
+    /* Forget pointer */
+    inkey_next = NULL;
+    first_escape = false;
 
-		/* Accept result */
-		return (ke);
-	}
+    /* Get the cursor state */
+    Term_get_cursor(&cursor_state);
 
-	/* make sure that the flag to skip more prompts is off */
-	keymap_auto_more = false;
+    /* Show the cursor if waiting, except sometimes in "command" mode */
+    if (!inkey_scan && (!inkey_flag || player->screen_save_depth))
+        Term_set_cursor(true);
 
-	/* Forget pointer */
-	inkey_next = NULL;
+    /* Hack -- activate main screen */
+    Term_activate(term_screen);
 
-	/* Get the cursor state */
-	(void)Term_get_cursor(&cursor_state);
+    /* Get a key */
+    while (ke.type == EVT_NONE)
+    {
+        /* Hack -- handle (inkey_scan == SCAN_INSTANT) */
+        if ((inkey_scan == SCAN_INSTANT) && (0 != Term_inkey(&kk, false, false)))
+            break;
 
-	/* Show the cursor if waiting, except sometimes in "command" mode */
-	if (!inkey_scan && (!inkey_flag || screen_save_depth ||
-						(OPT(player, show_target) && target_sighted())))
-		(void)Term_set_cursor(true);
+        /* Hack -- flush output once when no key ready */
+        if (!done && (0 != Term_inkey(&kk, false, false)))
+        {
+            /* Hack -- activate proper term */
+            Term_activate(old);
 
+            /* Flush output */
+            Term_fresh();
 
-	/* Hack -- Activate main screen */
-	Term_activate(term_screen);
+            /* Hack -- activate main screen */
+            Term_activate(term_screen);
 
+            /* Only once */
+            done = true;
+        }
 
-	/* Get a key */
-	while (ke.type == EVT_NONE) {
-		/* Hack -- Handle "inkey_scan == SCAN_INSTANT */
-		if (inkey_scan == SCAN_INSTANT &&
-			(0 != Term_inkey(&kk, false, false)))
-			break;
+        /* Get a key (see above) */
+        ke = inkey_aux(inkey_scan);
 
+        /* The keypress timed out. We need to stop here. */
+        if (inkey_scan && (ke.type == EVT_NONE)) break;
 
-		/* Hack -- Flush output once when no key ready */
-		if (!done && (0 != Term_inkey(&kk, false, false))) {
-			/* Hack -- activate proper term */
-			Term_activate(old);
+        /* Error */
+        if (ke.type == EVT_ERROR) quit(NULL);
+    }
 
-			/* Flush output */
-			Term_fresh();
+    /* Hack -- restore the term */
+    Term_activate(old);
+    
+    /* Restore the cursor */
+    Term_set_cursor(cursor_state);
 
-			/* Hack -- activate main screen */
-			Term_activate(term_screen);
+    /* Cancel the various "global parameters" */
+    inkey_flag = false;
+    inkey_scan = SCAN_OFF;
 
-			/* Mega-Hack -- reset saved flag */
-			character_saved = false;
-
-			/* Mega-Hack -- reset signal counter */
-			signal_count = 0;
-
-			/* Only once */
-			done = true;
-		}
-
-
-		/* Get a key (see above) */
-		ke = inkey_aux(inkey_scan);
-
-		if (inkey_scan && ke.type == EVT_NONE)
-			/* The keypress timed out. We need to stop here. */
-			break;
-
-		/* Treat back-quote as escape */
-		if (ke.key.code == '`')
-			ke.key.code = ESCAPE;
-	}
-
-	/* Hack -- restore the term */
-	Term_activate(old);
-
-	/* Restore the cursor */
-	Term_set_cursor(cursor_state);
-
-	/* Cancel the various "global parameters" */
-	inkey_flag = false;
-	inkey_scan = 0;
-
-	/* Return the keypress */
-	return (ke);
+    /* Return the keypress */
+    return (ke);
 }
 
 
-/**
- * Get a keypress or mouse click from the user and ignore it.
- */
-void anykey(void)
-{
-	ui_event ke = EVENT_EMPTY;
-  
-	/* Only accept a keypress or mouse click */
-	while (ke.type != EVT_MOUSE && ke.type != EVT_KBRD)
-		ke = inkey_ex();
-}
-
-/**
- * Get a "keypress" from the user.
+/*
+ * Get a keypress from the user.
  */
 struct keypress inkey(void)
 {
-	ui_event ke = EVENT_EMPTY;
+    ui_event ke = EVENT_EMPTY;
 
-	while (ke.type != EVT_ESCAPE && ke.type != EVT_KBRD &&
-		   ke.type != EVT_MOUSE && ke.type != EVT_BUTTON)
-		ke = inkey_ex();
+    /* Only accept a keypress (ignore abort) */
+    while (ke.type != EVT_KBRD)
+    {
+        /* Get a keypress */
+        ke = inkey_ex();
 
-	/* Make the event a keypress */
-	if (ke.type == EVT_ESCAPE) {
-		ke.type = EVT_KBRD;
-		ke.key.code = ESCAPE;
-		ke.key.mods = 0;
-	} else if (ke.type == EVT_MOUSE) {
-		if (ke.mouse.button == 1) {
-			ke.type = EVT_KBRD;
-			ke.key.code = '\n';
-			ke.key.mods = 0;
-		} else {
-			ke.type = EVT_KBRD;
-			ke.key.code = ESCAPE;
-			ke.key.mods = 0;
-		}
-	} else if (ke.type == EVT_BUTTON) {
-		ke.type = EVT_KBRD;
-	}
+        /* Handle escape/error */
+        if ((ke.type == EVT_ESCAPE) || (ke.type == EVT_ERROR))
+        {
+            ke.type = EVT_KBRD;
+            ke.key.code = ESCAPE;
+            ke.key.mods = 0;
+        }
+    }
 
-	return ke.key;
+    return ke.key;
 }
 
-/**
- * Get a "keypress" or a "mousepress" from the user.
- * on return the event must be either a key press or a mouse press
- */
-ui_event inkey_m(void)
+
+void prt_icky(const char *str, int row, int col)
 {
-	ui_event ke = EVENT_EMPTY;
+    /* Clear line, position cursor */
+    Term_erase_icky(col, row, 255);
 
-	/* Only accept a keypress */
-	while (ke.type != EVT_ESCAPE && ke.type != EVT_KBRD	&&
-		   ke.type != EVT_MOUSE  && ke.type != EVT_BUTTON)
-		ke = inkey_ex();
-	if (ke.type == EVT_ESCAPE) {
-		ke.type = EVT_KBRD;
-		ke.key.code = ESCAPE;
-		ke.key.mods = 0;
-	} else if (ke.type == EVT_BUTTON) {
-		ke.type = EVT_KBRD;
-	}
-
-  return ke;
+    /* Dump the attr/text */
+    Term_addstr(-1, COLOUR_WHITE, str);
 }
 
 
-
-/**
- * Hack -- flush
- */
-static void msg_flush(int x)
-{
-	uint8_t a = COLOUR_L_BLUE;
-
-	/* Pause for response */
-	Term_putstr(x, 0, -1, a, "-more-");
-
-	if ((!OPT(player, auto_more)) && !keymap_auto_more)
-		anykey();
-
-	/* Clear the line */
-	Term_erase(0, 0, 255);
-}
-
-static int message_column = 0;
-
-
-/**
- * Player has pending message
- */
-bool msg_flag;
-
-/**
- * Output a message to the top line of the screen.
- *
- * Break long messages into multiple pieces (40-72 chars).
- *
- * Allow multiple short messages to "share" the top line.
- *
- * Prompt the user to make sure he has a chance to read them.
- *
- * These messages are memorized for later reference (see above).
- *
- * We could do a "Term_fresh()" to provide "flicker" if needed.
- *
- * The global "msg_flag" variable can be cleared to tell us to "erase" any
- * "pending" messages still on the screen, instead of using "msg_flush()".
- * This should only be done when the user is known to have read the message.
- *
- * We must be very careful about using the "msg("%s", )" functions without
- * explicitly calling the special "msg("%s", NULL)" function, since this may
- * result in the loss of information if the screen is cleared, or if anything
- * is displayed on the top line.
- *
- * Hack -- Note that "msg("%s", NULL)" will clear the top line even if no
- * messages are pending.
- */
-void display_message(game_event_type unused, game_event_data *data, void *user)
-{
-	int n;
-	char *t;
-	char buf[1024];
-	uint8_t color;
-	int w, h;
-
-	int type;
-	const char *msg;
-
-	if (!data) return;
-
-	type = data->message.type;
-	msg = data->message.msg;
-
-	if (Term && type == MSG_BELL) {
-		Term_xtra(TERM_XTRA_NOISE, 0);
-		return;
-	}
-
-	if (!msg || !Term || !character_generated)
-		return;
-
-	/* Obtain the size */
-	(void)Term_get_size(&w, &h);
-
-	/* Hack -- Reset */
-	if (!msg_flag) message_column = 0;
-
-	/* Message Length */
-	n = (msg ? strlen(msg) : 0);
-
-	/* Hack -- flush when requested or needed */
-	if (message_column && (!msg || ((message_column + n) > (w - 8)))) {
-		/* Flush */
-		msg_flush(message_column);
-
-		/* Forget it */
-		msg_flag = false;
-
-		/* Reset */
-		message_column = 0;
-	}
-
-	/* No message */
-	if (!msg) return;
-
-	/* Paranoia */
-	if (n > 1000) return;
-
-	/* Copy it */
-	my_strcpy(buf, msg, sizeof(buf));
-
-	/* Analyze the buffer */
-	t = buf;
-
-	/* Get the color of the message */
-	color = message_type_color(type);
-
-	/* Split message */
-	while (n > w - 1) {
-		char oops;
-
-		int check, split;
-
-		/* Default split */
-		split = w - 8;
-
-		/* Find the rightmost split point */
-		for (check = (w / 2); check < w - 8; check++)
-			if (t[check] == ' ') split = check;
-
-		/* Save the split character */
-		oops = t[split];
-
-		/* Split the message */
-		t[split] = '\0';
-
-		/* Display part of the message */
-		Term_putstr(0, 0, split, color, t);
-
-		/* Flush it */
-		msg_flush(split + 1);
-
-		/* Restore the split character */
-		t[split] = oops;
-
-		/* Insert a space */
-		t[--split] = ' ';
-
-		/* Prepare to recurse on the rest of "buf" */
-		t += split; n -= split;
-	}
-
-	/* Display the tail of the message */
-	Term_putstr(message_column, 0, n, color, t);
-
-	/* Remember the message */
-	msg_flag = true;
-
-	/* Remember the position */
-	message_column += n + 1;
-}
-
-/**
- * Flush the output before displaying for emphasis
- */
-void bell_message(game_event_type unused, game_event_data *data, void *user)
-{
-	/* Flush the output */
-	Term_fresh();
-
-	display_message(unused, data, user);
-	player->upkeep->redraw |= PR_MESSAGE;
-}
-
-/**
- * Print the queued messages.
- */
-void message_flush(game_event_type unused, game_event_data *data, void *user)
-{
-	/* Hack -- Reset */
-	if (!msg_flag) message_column = 0;
-
-	/* Flush when needed */
-	if (message_column) {
-		/* Print pending messages */
-		if (Term)
-			msg_flush(message_column);
-
-		/* Forget it */
-		msg_flag = false;
-
-		/* Reset */
-		message_column = 0;
-	}
-}
-
-
-/**
+/*
  * Clear the bottom part of the screen
  */
 void clear_from(int row)
 {
-	int y;
+    int y;
 
-	/* Erase requested rows */
-	for (y = row; y < Term->hgt; y++)
-		Term_erase(0, y, 255);
+    /* Erase requested rows */
+    for (y = row; y < Term->hgt; y++)
+        Term_erase(0, y, 255);
 }
 
-/**
- * The default "keypress handling function" for askfor_aux()/askfor_aux_ext(),
- * this takes the given keypress, input buffer, length, etc, and does the
- * appropriate action for that keypress, such as moving the cursor left or
- * inserting a character.
+
+/*
+ * The default "keypress handling function" for askfor_aux, this takes the
+ * given keypress, input buffer, length, etc, and does the appropriate action
+ * for each keypress, such as moving the cursor left or inserting a character.
  *
  * It should return true when editing of the buffer is "complete" (e.g. on
  * the press of RETURN).
  */
 bool askfor_aux_keypress(char *buf, size_t buflen, size_t *curs, size_t *len,
-						 struct keypress keypress, bool firsttime)
+    struct keypress keypress, bool firsttime)
 {
-	size_t ulen = utf8_strlen(buf);
+    switch (keypress.code)
+    {
+        case ESCAPE:
+        {
+            *curs = 0;
+            return true;
+        }
 
-	switch (keypress.code)
-	{
-		case ESCAPE:
-		{
-			*curs = 0;
-			return true;
-		}
-		
-		case KC_ENTER:
-		{
-			*curs = ulen;
-			return true;
-		}
-		
-		case ARROW_LEFT:
-		{
-			if (firsttime) {
-				*curs = 0;
-			} else if (*curs > 0) {
-				(*curs)--;
-			}
-			break;
-		}
-		
-		case ARROW_RIGHT:
-		{
-			if (firsttime) {
-				*curs = ulen;
-			} else if (*curs < ulen) {
-				(*curs)++;
-			}
-			break;
-		}
-		
-		case KC_BACKSPACE:
-		case KC_DELETE:
-		{
-			char *ocurs, *oshift;
+        case KC_ENTER:
+        {
+            *curs = *len;
+            return true;
+        }
 
-			/* If this is the first time round, backspace means "delete all" */
-			if (firsttime) {
-				buf[0] = '\0';
-				*curs = 0;
-				*len = 0;
-				break;
-			}
+        case ARROW_LEFT:
+        {
+            if (firsttime) *curs = 0;
+            if (*curs > 0) (*curs)--;
+            break;
+        }
 
-			/* Refuse to backspace into oblivion */
-			if ((keypress.code == KC_BACKSPACE && *curs == 0) ||
-				(keypress.code == KC_DELETE && *curs >= ulen))
-				break;
+        case ARROW_RIGHT:
+        {
+            if (firsttime) *curs = *len - 1;
+            if (*curs < *len) (*curs)++;
+            break;
+        }
 
-			/*
-			 * Move the string from k to nul along to the left
-			 * by 1.  First, have to get offset corresponding to
-			 * the cursor position.
-			 */
-			ocurs = utf8_fskip(buf, *curs, NULL);
-			assert(ocurs);
-			if (keypress.code == KC_BACKSPACE) {
-				/* Get offset of the previous character. */
-				oshift = utf8_rskip(ocurs, 1, buf);
-				assert(oshift);
-				memmove(oshift, ocurs, *len - (ocurs - buf));
-				/* Decrement. */
-				(*curs)--;
-				*len -= ocurs - oshift;
-			} else {
-				/* Get offset of the next character. */
-				oshift = utf8_fskip(buf + *curs, 1, NULL);
-				assert(oshift);
-				memmove(ocurs, oshift, *len - (oshift - buf));
-				/* Decrement */
-				*len -= oshift - ocurs;
-			}
+        case KC_BACKSPACE:
+        case KC_DELETE:
+        {
+            /* If this is the first time round, backspace means "delete all" */
+            if (firsttime)
+            {
+                buf[0] = '\0';
+                *curs = 0;
+                *len = 0;
 
-			/* Terminate */
-			buf[*len] = '\0';
+                break;
+            }
 
-			break;
-		}
-		
-		default:
-		{
-			bool atnull = (*curs == ulen);
-			char encoded[5];
-			size_t n_enc = 0;
-			char *ocurs;
+            /* Refuse to backspace into oblivion */
+            if (((keypress.code == KC_BACKSPACE) && (*curs == 0)) ||
+                ((keypress.code == KC_DELETE) && (*curs >= *len)))
+            {
+                break;
+            }
 
-			if (keycode_isprint(keypress.code)) {
-				n_enc = utf32_to_utf8(encoded,
-					N_ELEMENTS(encoded), &keypress.code,
-					1, NULL);
-			}
-			if (n_enc == 0) {
-				bell();
-				break;
-			}
+            /* Move the string from k to nul along to the left by 1 */
+            if (keypress.code == KC_BACKSPACE)
+                memmove(&buf[*curs - 1], &buf[*curs], *len - *curs);
+            else
+                memmove(&buf[*curs], &buf[*curs + 1], *len - *curs - 1);
 
-			/* Clear the buffer if this is the first time round */
-			if (firsttime) {
-				buf[0] = '\0';
-				*curs = 0;
-				*len = 0;
-				atnull = 1;
-			}
+            /* Decrement */
+            if (keypress.code == KC_BACKSPACE) (*curs)--;
+            (*len)--;
 
-			/* Make sure we have enough room for the new character */
-			if (*len + n_enc >= buflen) {
-				break;
-			}
+            /* Terminate */
+            buf[*len] = '\0';
 
-			/* Insert the encoded character. */
-			if (atnull) {
-				ocurs = buf + *len;
-			} else {
-				ocurs = utf8_fskip(buf, *curs, NULL);
-				assert(ocurs);
-				/*
-				 * Move the rest of the buffer along to make
-				 * room.
-				 */
-				memmove(ocurs + n_enc, ocurs,
-					*len - (ocurs - buf));
-			}
-			memcpy(ocurs, encoded, n_enc);
+            break;
+        }
 
-			/* Update position and length. */
-			(*curs)++;
-			*len += n_enc;
+        default:
+        {
+            bool atnull = (buf[*curs] == 0);
 
-			/* Terminate */
-			buf[*len] = '\0';
+            if (!isprint(keypress.code))
+            {
+                bell("Illegal edit key!");
+                break;
+            }
 
-			break;
-		}
-	}
+            /* Clear the buffer if this is the first time round */
+            if (firsttime)
+            {
+                buf[0] = '\0';
+                *curs = 0;
+                *len = 0;
+                atnull = 1;
+            }
 
-	/* By default, we aren't done. */
-	return false;
+            if (atnull)
+            {
+                /* Make sure we have enough room for a new character */
+                if ((*curs + 1) >= buflen) break;
+            }
+            else
+            {
+                /* Make sure we have enough room to add a new character */
+                if ((*len + 1) >= buflen) break;
+
+                /* Move the rest of the buffer along to make room */
+                memmove(&buf[*curs+1], &buf[*curs], *len - *curs);
+            }
+
+            /* Insert the character */
+            buf[(*curs)++] = (char)keypress.code;
+            (*len)++;
+
+            /* Terminate */
+            buf[*len] = '\0';
+
+            break;
+        }
+    }
+
+    /* By default, we aren't done. */
+    return false;
 }
 
 
-/**
- * Handle a mouse event during editing of a string.  This is the default mouse
- * event handler for askfor_aux_ext().
- *
- * \param buf is the buffer with the string to be edited.
- * \param buflen is the maximum number of characters that may be stored in buf.
- * \param curs is the pointer to the position of the cursor in the buffer.
- * \param len is the pointer to position of the first null character in the
- * buffer.
- * \param mouse is a description of the mouse event to handle.
- * \param firsttime is whether or not this is the first call to the keypress or
- * mouse handler in this editing session.
- * \return zero if the editing session should continue, one if the editing
- * session should end and the current contents of the buffer be accepted, or
- * two if the editing session should end and the current contents of the buffer
- * be rejected.
- *
- * askfor_aux_mouse() is very simple.  Any mouse click terminates the editing
- * session, and if that click is with the second button, the result of the
- * editing is rejected.
- */
-int askfor_aux_mouse(char *buf, size_t buflen, size_t *curs, size_t *len,
-		struct mouseclick mouse, bool firsttime)
-{
-	return (mouse.button == 2) ? 2 : 1;
-}
-
-
-/**
+/*
  * Get some input at the cursor location.
  *
  * The buffer is assumed to have been initialized to a default string.
@@ -758,413 +428,307 @@ int askfor_aux_mouse(char *buf, size_t buflen, size_t *curs, size_t *len,
  * 'askfor_aux_keypress' (the default handler if you supply NULL for
  * 'keypress_h') for an example.
  */
-bool askfor_aux(char *buf, size_t len, bool (*keypress_h)(char *, size_t, size_t *, size_t *, struct keypress, bool))
+bool askfor_aux(char *buf, int len, keypress_handler keypress_h)
 {
-	int y, x;
+    int y, x;
+    size_t k = 0;   /* Cursor position */
+    size_t nul = 0; /* Position of the null byte in the string */
+    struct keypress ch;
+    bool done = false;
+    bool firsttime = true;
 
-	size_t k = 0;		/* Cursor position */
-	size_t nul = 0;		/* Position of the null byte in the string */
+    memset(&ch, 0, sizeof(ch));
 
-	struct keypress ch = KEYPRESS_NULL;
+    if (keypress_h == NULL) keypress_h = askfor_aux_keypress;
 
-	bool done = false;
-	bool firsttime = true;
+    /* Locate the cursor */
+    Term_locate(&x, &y);
 
-	if (keypress_h == NULL)
-		keypress_h = askfor_aux_keypress;
+    /* The top line is "icky" */
+    topline_icky = true;
 
-	/* Locate the cursor */
-	Term_locate(&x, &y);
+    /* Paranoia -- check len */
+    if (len < 1) len = 1;
 
-	/* Paranoia */
-	if ((x < 0) || (x >= 80)) x = 0;
+    /* Paranoia -- check column */
+    if ((x < 0) || (x >= NORMAL_WID)) x = 0;
 
-	/* Restrict the length */
-	if (x + len > 80) len = 80 - x;
+    /* Restrict the length */
+    if (x + len > NORMAL_WID) len = NORMAL_WID - x;
 
-	/* Truncate the default entry */
-	buf[len-1] = '\0';
+    /* Truncate the default entry */
+    buf[len - 1] = '\0';
 
-	/* Get the position of the null byte */
-	nul = strlen(buf);
+    /* Get the position of the null byte */
+    nul = strlen(buf);
 
-	/* Display the default answer */
-	Term_erase(x, y, (int)len);
-	Term_putstr(x, y, -1, COLOUR_YELLOW, buf);
+    /* Display the default answer */
+    Term_erase(x, y, len);
+    Term_putstr(x, y, -1, COLOUR_YELLOW, buf);
 
-	/* Process input */
-	while (!done) {
-		/* Place cursor */
-		Term_gotoxy(x + k, y);
+    /* Process input */
+    while (!done)
+    {
+        /* Place cursor */
+        Term_gotoxy(x + k, y);
 
-		/* Get a key */
-		ch = inkey();
+        /* Get a key */
+        ch = inkey();
 
-		/* Let the keypress handler deal with the keypress */
-		done = keypress_h(buf, len, &k, &nul, ch, firsttime);
+        /* Evil hack -- pretend quote is Return */
+        if (prompt_quote_hack && (ch.code == '"')) ch.code = KC_ENTER;
 
-		/* Update the entry */
-		Term_erase(x, y, (int)len);
-		Term_putstr(x, y, -1, COLOUR_WHITE, buf);
+        /* Let the keypress handler deal with the keypress */
+        done = keypress_h(buf, len, &k, &nul, ch, firsttime);
 
-		/* Not the first time round anymore */
-		firsttime = false;
-	}
+        /* Update the entry */
+        Term_erase(x, y, len);
+        Term_putstr(x, y, -1, COLOUR_WHITE, buf);
 
-	/* Done */
-	return (ch.code != ESCAPE);
+        /* Not the first time round anymore */
+        firsttime = false;
+    }
+
+    /* The top line is OK now */
+    topline_icky = false;
+    Flush_queue();
+
+    /* Reset global flags */
+    prompt_quote_hack = false;
+
+    /* Done */
+    return (ch.code != ESCAPE);
 }
 
 
-/**
- * Act like askfor_aux() but allow customization of what happens with mouse
- * input.
+/*
+ * Ask the user for a masked string
  *
- * \param buf is the buffer with the string to edit.
- * \param len is the maximum number of characters buf can hold.
- * \param keypress_h is the function to call to handle a keypress.  It may be
- * NULL.  In that case, askfor_aux_keypress() is used.  The function takes
- * six arguments and should return whether or not to end this editing
- * session.  The first argument is the buffer with the string to be edited.  The
- * second argument is the maximum number of characters that can be stored in
- * that buffer.  The third argument is a pointer to the position of the cursor
- * in the buffer.  The fourth argument is a pointer to the position of the
- * first null character in the buffer.  The fifth argument is a description of
- * the keypress to be handled.  The sixth argument is whether or not this is
- * the first call to the keypress handler or mouse handler in this editing
- * session.
- * \param mouse_h is the function to call to handle a mouse click.  It may be
- * NULL.  In that case, askfor_aux_mouse() is used.  The function takes six
- * arguments and should either return zero (this editing should session should
- * continue), one (this editing session should end and the result in the buffer
- * be accepted), or a non-zero value other than one (this editing session should
- * end and the result in the buffer should not be accepted).  The first argument
- * is the buffer with the string to be edited.  The second argument is the
- * maximum number of characters that can be stored in that buffer.  The third
- * argument is a pointer to the position of the cursor in the buffer.  The
- * fourth argument is a pointer to the position of the first null character in
- * the buffer.  The fifth argument is a description of the keypress to be
- * handled.  The sixth argument is whether or not this is the first call to the
- * keypress handler or mouse handler in this editing session.
+ * Return 1 on abort, 2 on escape, 0 otherwise.
  */
-bool askfor_aux_ext(char *buf, size_t len,
-	bool (*keypress_h)(char *, size_t, size_t *, size_t *, struct keypress, bool),
-	int (*mouse_h)(char *, size_t, size_t *, size_t *, struct mouseclick, bool))
+int askfor_ex(char *buf, int len, keypress_handler keypress_h, bool priv)
 {
-	size_t k = 0;		/* Cursor position */
-	size_t nul = 0;		/* Position of the null byte in the string */
-	bool firsttime = true;
-	bool done = false;
-	bool accepted = true;
-	int y, x;
+    int y, x;
+    size_t i, k = 0;   /* Cursor position */
+    size_t nul = 0; /* Position of the null byte in the string */
+    ui_event ke = EVENT_EMPTY;
+    bool done = false;
+    bool firsttime = true;
 
-	if (keypress_h == NULL) {
-		keypress_h = askfor_aux_keypress;
-	}
-	if (mouse_h == NULL) {
-		mouse_h = askfor_aux_mouse;
-	}
+    if (keypress_h == NULL) keypress_h = askfor_aux_keypress;
 
-	/* Locate the cursor */
-	Term_locate(&x, &y);
+    /* Locate the cursor */
+    Term_locate(&x, &y);
 
-	/* Paranoia */
-	if (x < 0 || x >= 80) x = 0;
+    /* The top line is "icky" */
+    topline_icky = true;
 
-	/* Restrict the length */
-	if (x + len > 80) len = 80 - x;
+    /* Paranoia -- check len */
+    if (len < 1) len = 1;
 
-	/* Truncate the default entry */
-	buf[len-1] = '\0';
+    /* Paranoia -- check column */
+    if ((x < 0) || (x >= NORMAL_WID)) x = 0;
 
-	/* Get the position of the null byte */
-	nul = strlen(buf);
+    /* Restrict the length */
+    if (x + len > NORMAL_WID) len = NORMAL_WID - x;
 
-	/* Display the default answer */
-	Term_erase(x, y, (int)len);
-	Term_putstr(x, y, -1, COLOUR_YELLOW, buf);
+    /* Truncate the default entry */
+    buf[len - 1] = '\0';
 
-	/* Process input */
-	while (!done) {
-		ui_event in;
+    /* Get the position of the null byte */
+    nul = strlen(buf);
 
-		/* Place cursor */
-		Term_gotoxy(x + k, y);
+    /* Display the default answer */
+    Term_erase(x, y, len);
+    Term_putstr(x, y, -1, COLOUR_YELLOW, buf);
 
-		/*
-		 * Get input.  Emulate what inkey() does without the coercing
-		 * mouse events to look like keystrokes.
-		 */
-		while (1) {
-			in = inkey_ex();
-			if (in.type == EVT_KBRD || in.type == EVT_MOUSE) {
-				break;
-			}
-			if (in.type == EVT_BUTTON) {
-				in.type = EVT_KBRD;
-				break;
-			}
-			if (in.type == EVT_ESCAPE) {
-				in.type = EVT_KBRD;
-				in.key.code = ESCAPE;
-				in.key.mods = 0;
-				break;
-			}
-		}
+    /* Process input */
+    while (!done)
+    {
+        /* Place cursor */
+        Term_gotoxy(x + k, y);
 
-		/* Pass on to the appropriate handler. */
-		if (in.type == EVT_KBRD) {
-			done = keypress_h(buf, len, &k, &nul, in.key,
-				firsttime);
-			accepted = (in.key.code != ESCAPE);
-		} else if (in.type == EVT_MOUSE) {
-			int result = mouse_h(buf, len, &k, &nul, in.mouse,
-				firsttime);
+        /* Get a key */
+        ke = inkey_ex();
 
-			if (result != 0) {
-				done = true;
-				accepted = (result == 1);
-			}
-		}
+        /* Handle abort */
+        if (is_exit(ke))
+        {
+            k = 0;
+            done = true;
+        }
 
-		/* Update the entry */
-		Term_erase(x, y, (int)len);
-		Term_putstr(x, y, -1, COLOUR_WHITE, buf);
+        /* Let the keypress handler deal with the keypress */
+        else done = keypress_h(buf, len, &k, &nul, ke.key, firsttime);
 
-		/* Not the first time round anymore */
-		firsttime = false;
-	}
+        Term_erase(x, y, len);
 
-	return accepted;
+        /* Update the entry */
+        if (!priv)
+            Term_putstr(x, y, -1, COLOUR_WHITE, buf);
+        else
+        {
+            for (i = 0; i < nul; i++)
+                Term_putch(x + i, y, COLOUR_WHITE, 'x');
+        }
+
+        /* Not the first time round anymore */
+        firsttime = false;
+    }
+
+    /* The top line is OK now */
+    topline_icky = false;
+    Flush_queue();
+
+    /* Done */
+    return_on_abort(ke);
+    return 0;
 }
 
 
-/**
- * A "keypress" handling function for askfor_aux, that handles the special
- * case of '*' for a new random "name" and passes any other "keypress"
- * through to the default "editing" handler.
- */
-static bool get_name_keypress(char *buf, size_t buflen, size_t *curs,
-							  size_t *len, struct keypress keypress,
-							  bool firsttime)
-{
-	bool result;
-
-	switch (keypress.code)
-	{
-		case '*':
-		{
-			*len = player_random_name(buf, buflen);
-			*curs = 0;
-			result = false;
-			break;
-		}
-
-		default:
-		{
-			result = askfor_aux_keypress(buf, buflen, curs, len, keypress,
-										 firsttime);
-			break;
-		}
-	}
-
-	return result;
-}
-
-
-/**
- * Handle a mouse event during editing of a string:  presents a context menu
- * with options appropriate for handling editing a character's name.
+/*
+ * Get a string from the user
  *
- * \param buf is the buffer with the string to be edited.
- * \param buflen is the maximum number of characters that may be stored in buf.
- * \param curs is the pointer to the position of the cursor in the buffer.
- * \param len is the pointer to position of the first null character in the
- * buffer.
- * \param mouse is a description of the mouse event to handle.
- * \param firsttime is whether or not this is the first call to the keypress or
- * mouse handler in this editing session.
- * \return zero if the editing session should continue, one if the editing
- * session should end and the current contents of the buffer be accepted, or
- * two if the editing session should end and the current contents of the buffer
- * be rejected.
+ * The "prompt" should take the form "Prompt: "
+ *
+ * Note that the initial contents of the string is used as
+ * the default response, so be sure to "clear" it if needed.
+ *
+ * We clear the input, and return false, on "ESCAPE".
  */
-static int handle_name_mouse(char *buf, size_t buflen, size_t *curs,
-		size_t *len, struct mouseclick mouse, bool firsttime)
+static bool textui_get_string(const char *prompt, char *buf, int len)
 {
-	enum { ACT_CTX_NAME_ACCEPT, ACT_CTX_NAME_RANDOM, ACT_CTX_NAME_CLEAR };
-	int result = 2;
-	char *labels;
-	struct menu *m;
-	int action;
+    bool res;
 
-	/*
-	 * A mouse click with the second button ends the editing session and
-	 * indicates that the result of editing should be rejected.
-	 */
-	if (mouse.button == 2) {
-		return result;
-	}
+    /* Display prompt */
+    prt(prompt, 0, 0);
 
-	/* By default, don't end the editing session. */
-	result = 0;
+    /* Ask the user for a string */
+    res = askfor_aux(buf, len, NULL);
 
-	/* Present a context menu with the possible actions. */
-	labels = string_make(lower_case);
-	m = menu_dynamic_new();
+    /* Clear prompt */
+    prt("", 0, 0);
 
-	m->selections = labels;
-	menu_dynamic_add_label(m, "Accept", 'a', ACT_CTX_NAME_ACCEPT, labels);
-	menu_dynamic_add_label(m, "Set to random name", 'r',
-		ACT_CTX_NAME_RANDOM, labels);
-	menu_dynamic_add_label(m, "Clear name", 'c', ACT_CTX_NAME_CLEAR,
-		labels);
-
-	screen_save();
-
-	menu_dynamic_calc_location(m, mouse.x, mouse.y);
-	region_erase_bordered(&m->boundary);
-
-	action = menu_dynamic_select(m);
-
-	menu_dynamic_free(m);
-	string_free(labels);
-
-	screen_load();
-
-	/* Do what was requested. */
-	switch (action) {
-	case ACT_CTX_NAME_ACCEPT:
-		/* End the editing session and accept the result. */
-		result = 1;
-		break;
-
-	case ACT_CTX_NAME_RANDOM:
-		*len = player_random_name(buf, buflen);
-		*curs = 0;
-		break;
-
-	case ACT_CTX_NAME_CLEAR:
-		assert(buflen > 0);
-		buf[0] = '\0';
-		*len = 0;
-		*curs = 0;
-		break;
-	}
-
-	return result;
+    /* Result */
+    return (res);
 }
 
 
-/**
- * Gets a name for the character, reacting to name changes.
+/*
+ * Get a string from the user
  *
- * If sf is true, we change the savefile name depending on the character name.
+ * Return 1 on abort, 2 on escape, 0 otherwise.
  */
-bool get_character_name(char *buf, size_t buflen)
+static int textui_get_string_ex(const char *prompt, char *buf, int len, bool priv)
 {
-	bool res;
+    int res;
 
-	/* Paranoia */
-	event_signal(EVENT_MESSAGE_FLUSH);
+    /* Display prompt */
+    prt(prompt, 0, 0);
 
-	/* Display prompt */
-	prt("Enter a name for your character (* for a random name): ", 0, 0);
+    /* Ask the user for a string */
+    res = askfor_ex(buf, len, NULL, priv);
 
-	/* Save the player name */
-	my_strcpy(buf, player->full_name, buflen);
+    /* Clear prompt */
+    prt("", 0, 0);
 
-	/* Ask the user for a string */
-	res = askfor_aux_ext(buf, buflen, get_name_keypress, handle_name_mouse);
-
-	/* Clear prompt */
-	prt("", 0, 0);
-
-	/* Revert to the old name if the player doesn't pick a new one. */
-	if (!res)
-		my_strcpy(buf, player->full_name, buflen);
-
-	return res;
+    /* Result */
+    return (res);
 }
 
 
-
-/**
- * Prompt for a string from the user.
- *
- * The "prompt" should take the form "Prompt: ".
- *
- * See "askfor_aux" for some notes about "buf" and "len", and about
- * the return value of this function.
- */
-static bool textui_get_string(const char *prompt, char *buf, size_t len)
-{
-	bool res;
-
-	/* Paranoia */
-	event_signal(EVENT_MESSAGE_FLUSH);
-
-	/* Display prompt */
-	prt(prompt, 0, 0);
-
-	/* Ask the user for a string */
-	res = askfor_aux(buf, len, NULL);
-
-	/* Clear prompt */
-	prt("", 0, 0);
-
-	/* Result */
-	return (res);
-}
-
-
-
-/**
+/*
  * Request a "quantity" from the user
  */
-static int textui_get_quantity(const char *prompt, int max)
+static int32_t textui_get_quantity(const char *prompt, int32_t max)
 {
-	int amt = 1;
+    int amt = 1;
+    char tmp[NORMAL_WID];
+    char buf[NORMAL_WID];
 
-	/* Prompt if needed */
-	if (max != 1) {
-		char tmp[80];
-		char buf[80];
+    /* Build a prompt if needed */
+    if (!prompt)
+    {
+        /* Build a prompt */
+        strnfmt(tmp, sizeof(tmp), "Quantity (0-%" PRId32 ", *=all): ", max);
 
-		/* Build a prompt if needed */
-		if (!prompt) {
-			/* Build a prompt */
-			strnfmt(tmp, sizeof(tmp), "Quantity (0-%d, *=all): ", max);
+        /* Use that prompt */
+        prompt = tmp;
 
-			/* Use that prompt */
-			prompt = tmp;
-		}
+        /* Default to max */
+        amt = max;
+    }
 
-		/* Build the default */
-		strnfmt(buf, sizeof(buf), "%d", amt);
+    /* Build the default */
+    strnfmt(buf, sizeof(buf), "%d", amt);
 
-		/* Ask for a quantity */
-		if (!get_string(prompt, buf, 7)) return (0);
+    /* Ask for a quantity */
+    if (!get_string(prompt, buf, 10)) return (0);
 
-		/* Extract a number */
-		amt = atoi(buf);
+    /* Extract a number */
+    amt = atoi(buf);
 
-		/* A star or letter means "all" */
-		if ((buf[0] == '*') || isalpha((unsigned char)buf[0])) amt = max;
-	}
+    /* A star or letter means "all" */
+    if ((buf[0] == '*') || isalpha((unsigned char)buf[0])) amt = max;
 
-	/* Enforce the maximum */
-	if (amt > max) amt = max;
+    /* Enforce the maximum */
+    if (amt > max) amt = max;
 
-	/* Enforce the minimum */
-	if (amt < 0) amt = 0;
+    /* Enforce the minimum */
+    if (amt < 0) amt = 0;
 
-	/* Return the result */
-	return (amt);
+    /* Return the result */
+    return (amt);
 }
 
 
-/**
+/*
+ * Request a "quantity" from the user
+ *
+ * Return -1 on abort, 0 on escape
+ */
+static int32_t textui_get_quantity_ex(const char *prompt, int32_t max)
+{
+    int amt = 1, res;
+    char tmp[NORMAL_WID];
+    char buf[NORMAL_WID];
+
+    /* Build a prompt if needed */
+    if (!prompt)
+    {
+        /* Build a prompt */
+        strnfmt(tmp, sizeof(tmp), "Quantity (0-%" PRId32 ", *=all): ", max);
+
+        /* Use that prompt */
+        prompt = tmp;
+    }
+
+    /* Build the default */
+    strnfmt(buf, sizeof(buf), "%d", amt);
+
+    /* Ask for a quantity */
+    res = get_string_ex(prompt, buf, 10, false);
+    if (res == 1) return -1;
+    if (res == 2) return 0;
+
+    /* Extract a number */
+    amt = atoi(buf);
+
+    /* A star or letter means "all" */
+    if ((buf[0] == '*') || isalpha((unsigned char)buf[0])) amt = max;
+
+    /* Enforce the maximum */
+    if (amt > max) amt = max;
+
+    /* Enforce the minimum */
+    if (amt < 0) amt = 0;
+
+    /* Return the result */
+    return (amt);
+}
+
+
+/*
  * Verify something with the user
  *
  * The "prompt" should take the form "Query? "
@@ -1173,332 +737,285 @@ static int textui_get_quantity(const char *prompt, int max)
  */
 static bool textui_get_check(const char *prompt)
 {
-	ui_event ke;
+    struct keypress ke;
+    char buf[NORMAL_WID];
 
-	char buf[80];
+    /* Option -- "auto_accept" */
+    if (OPT(player, auto_accept)) return true;
 
-	/*
-	 * Hack -- Build a "useful" prompt; do this first so prompts built by
-	 * format() won't run afoul of event_signal()'s side effects.
-	 */
-	strnfmt(buf, 78, "%.70s[y/n] ", prompt);
+    /* Hack -- build a "useful" prompt */
+    strnfmt(buf, NORMAL_WID - 2, "%.70s[y/n] ", prompt);
 
-	/* Paranoia */
-	event_signal(EVENT_MESSAGE_FLUSH);
+    /* The top line is "icky" */
+    topline_icky = true;
 
-	/* Prompt for it */
-	prt(buf, 0, 0);
-	ke = inkey_m();
+    /* Prompt for it */
+    prt(buf, 0, 0);
 
-	/* Erase the prompt */
-	prt("", 0, 0);
+    /* Get an acceptable answer */
+    ke = inkey();
 
-	/* Normal negation */
-	if (ke.type == EVT_MOUSE) {
-		if ((ke.mouse.button != 1) && (ke.mouse.y != 0))
-			return (false);
-	} else {
-		if ((ke.key.code != 'Y') && (ke.key.code != 'y'))
-			return (false);
-	}
+    /* Erase the prompt */
+    prt("", 0, 0);
 
-	/* Success */
-	return (true);
+    /* The top line is OK again */
+    topline_icky = false;
+
+    /* Flush any events that came in while we were icky */
+    Flush_queue();
+
+    /* Normal negation */
+    if ((ke.code != 'Y') && (ke.code != 'y')) return false;
+
+    /* Success */
+    return true;
 }
 
-/* TODO: refactor get_check() in terms of get_char() */
-/**
- * Ask the user to respond with a character. Options is a constant string,
- * e.g. "yns"; len is the length of the constant string, and fallback should
- * be the default answer if the user hits escape or an invalid key.
+
+/*
+ * Verify something with the user
  *
- * Example: get_char("Study? ", "yns", 3, 'n')
- *     This prompts "Study? [yns]" and defaults to 'n'.
- *
+ * Return 1 on abort, 2 on escape, 0 otherwise.
  */
-char get_char(const char *prompt, const char *options, size_t len, char fallback)
+static int textui_get_check_ex(const char *prompt)
 {
-	struct keypress key;
-	char buf[80];
+    ui_event ke = EVENT_EMPTY;
+    char buf[NORMAL_WID];
 
-	/* Paranoia */
-	event_signal(EVENT_MESSAGE_FLUSH);
+    /* Option -- "auto_accept" */
+    if (OPT(player, auto_accept)) return 0;
 
-	/* Hack -- Build a "useful" prompt */
-	strnfmt(buf, 78, "%.70s[%s] ", prompt, options);
+    /* Hack -- build a "useful" prompt */
+    strnfmt(buf, NORMAL_WID - 2, "%.70s[y/n] ", prompt);
 
-	/* Prompt for it */
-	prt(buf, 0, 0);
+    /* The top line is "icky" */
+    topline_icky = true;
 
-	/* Get an acceptable answer */
-	key = inkey();
+    /* Prompt for it */
+    prt(buf, 0, 0);
 
-	/* Lowercase answer if necessary */
-	if (key.code >= 'A' && key.code <= 'Z') key.code += 32;
+    /* Get an acceptable answer */
+    ke = inkey_ex();
 
-	/* See if key is in our options string */
-	if (!strchr(options, (char)key.code))
-		key.code = fallback;
+    /* Erase the prompt */
+    prt("", 0, 0);
 
-	/* Erase the prompt */
-	prt("", 0, 0);
+    /* The top line is OK again */
+    topline_icky = false;
 
-	/* Success */
-	return key.code;
+    /* Flush any events that came in while we were icky */
+    Flush_queue();
+
+    /* Handle abort */
+    return_on_abort(ke);
+
+    /* Success */
+    if ((ke.type == EVT_KBRD) && ((ke.key.code == 'Y') || (ke.key.code == 'y'))) return 0;
+
+    return 2;
 }
 
 
-/**
+/*
  * Text-native way of getting a filename.
  */
 static bool get_file_text(const char *suggested_name, char *path, size_t len)
 {
-	char buf[160];
+    char buf[160];
 
-	/* Get filename */
-	my_strcpy(buf, suggested_name, sizeof buf);
-	
-	if (!arg_force_name) {
-			
-			if (!get_string("File name: ", buf, sizeof buf)) return false;
+    /* Get filename */
+    my_strcpy(buf, suggested_name, sizeof(buf));
+    if (!get_string("File name: ", buf, sizeof(buf))) return false;
 
-			/* Make sure it's actually a filename */
-			if (buf[0] == '\0' || buf[0] == ' ') return false;
-	} else {
-		int old_len;
-		time_t ltime;
-		struct tm *today;
+    /* Make sure it's actually a filename */
+    if ((buf[0] == '\0') || (buf[0] == ' ')) return false;
 
-		/* Get the current time */
-		time(&ltime);
-		today = localtime(&ltime);
+    /* Build the path */
+    path_build(path, len, ANGBAND_DIR_USER, buf);
 
-		prt("File name: ", 0,0);
+    /* Check if it already exists */
+    if (file_exists(path))
+    {
+        char buf2[160];
 
-		/* Overwrite the ".txt" that was added */
-		assert(strlen(buf) >= 4);
-		old_len = strlen(buf) - 4;
-		strftime(buf + old_len, sizeof(buf) - len, "-%Y-%m-%d-%H-%M.txt", today);
+        strnfmt(buf2, sizeof(buf2), "Replace existing file %s? ", buf);
 
-		/* Prompt the user to confirm or cancel the file dump */
-		if (!get_check(format("Confirm writing to %s? ", buf))) return false;
+        if (!get_check(buf2)) return false;
+    }
 
+    /* Tell the user where it's saved to. */
+    prt(format("Saving as %s.", path), 0, 0);
+    inkey();
+    prt("", 0, 0);
 
-	}
-
-	/* Build the path */
-	path_build(path, len, ANGBAND_DIR_USER, buf);
-
-	/* Check if it already exists */
-	if (file_exists(path) && !get_check("Replace existing file? "))
-		return false;
-
-	/* Tell the user where it's saved to. */
-	prt(format("Saving as %s.", path), 0, 0);
-	anykey();
-	prt("", 0, 0);
-
-	return true;
+    return true;
 }
 
 
-
-
-/**
- * Get a pathname to save a file to, given the suggested name.  Returns the
- * result in "path".
+/*
+ * Get a pathname to save a file to, given the suggested name. Returns the result in "path".
  */
 bool (*get_file)(const char *suggested_name, char *path, size_t len) = get_file_text;
 
 
-
-
-/**
+/*
  * Prompts for a keypress
  *
  * The "prompt" should take the form "Command: "
- * -------
- * Warning - this function assumes that the entered command is an ASCII
- *           character, and so should be used with great caution - NRM
- * -------
+ *
  * Returns true unless the character is "Escape"
  */
-static bool textui_get_com(const char *prompt, char *command)
+static bool textui_get_com(const char *prompt, struct keypress *command)
 {
-	ui_event ke;
-	bool result;
+    struct keypress ke;
 
-	result = get_com_ex(prompt, &ke);
-	*command = (char)ke.key.code;
+    /* The top line is "icky" */
+    topline_icky = true;
 
-	return result;
+    /* Display a prompt */
+    prt(prompt, 0, 0);
+
+    /* Get a key (important: bypass abort) */
+    ke = inkey();
+
+    /* Clear the prompt */
+    prt("", 0, 0);
+
+    /* Fix the top line */
+    topline_icky = false;
+
+    /* Save the command */
+    *command = ke;
+
+    /* Flush any events */
+    Flush_queue();
+
+    /* Done */
+    if (ke.code == ESCAPE) return false;
+    return true;
 }
 
 
-bool get_com_ex(const char *prompt, ui_event *command)
+static bool textui_get_com_ex(const char *prompt, ui_event *command)
 {
-	ui_event ke;
+    ui_event ke;
 
-	/* Paranoia XXX XXX XXX */
-	event_signal(EVENT_MESSAGE_FLUSH);
+    /* The top line is "icky" */
+    topline_icky = true;
 
-	/* Display a prompt */
-	prt(prompt, 0, 0);
+    /* Display a prompt */
+    prt(prompt, 0, 0);
 
-	/* Get a key */
-	ke = inkey_m();
+    /* Get a key */
+    ke = inkey_ex();
 
-	/* Clear the prompt */
-	prt("", 0, 0);
+    /* Clear the prompt */
+    prt("", 0, 0);
 
-	/* Save the command */
-	*command = ke;
+    /* Fix the top line */
+    topline_icky = false;
 
-	/* Done */
-	if ((ke.type == EVT_KBRD && ke.key.code != ESCAPE) ||
-		(ke.type == EVT_MOUSE))
-		return true;
-	else
-		return false;
+    /* Save the command */
+    *command = ke;
+
+    /* Flush any events */
+    Flush_queue();
+
+    /* Done */
+    if ((ke.type == EVT_KBRD) && (ke.key.code == ESCAPE)) return false;
+    return true;
 }
 
 
-/**
- * Pause for user response
- *
- * This function is stupid.  XXX XXX XXX
+void flush_now(void)
+{
+    /* Clear various flags */
+    inkey_xtra = false;
+
+    /* Forgot old keypresses */
+    Term_flush();
+}
+
+
+void flush_hack(void)
+{
+    /* Clear various flags */
+    inkey_scan = SCAN_OFF;
+
+    /* Forgot old keypresses */
+    Term_flush();
+}
+
+
+/*
+ * Extract a direction (or zero) from a character
  */
-void pause_line(struct term *tm)
+int target_dir(struct keypress ch)
 {
-	prt("", tm->hgt - 1, 0);
-	put_str("[Press any key to continue]", tm->hgt - 1, (tm->wid - 27) / 2);
-	(void)anykey();
-	prt("", tm->hgt - 1, 0);
+    int d = 0;
+
+    /* Already a direction? */
+    if (isdigit((unsigned char)ch.code))
+        d = D2I(ch.code);
+    else if (isarrow(ch.code))
+    {
+        switch (ch.code)
+        {
+            case ARROW_DOWN:  d = 2; break;
+            case ARROW_LEFT:  d = 4; break;
+            case ARROW_RIGHT: d = 6; break;
+            case ARROW_UP:    d = 8; break;
+        }
+    }
+    else
+    {
+        int mode;
+        const struct keypress *act;
+
+        /* Roguelike */
+        if (OPT(player, rogue_like_commands)) mode = KEYMAP_MODE_ROGUE;
+
+        /* Original */
+        else mode = KEYMAP_MODE_ORIG;
+
+        /* XXX See if this key has a digit in the keymap we can use */
+        act = keymap_find(mode, ch);
+        if (act)
+        {
+            const struct keypress *cur;
+
+            /* Convert to a direction */
+            for (cur = act; cur->type == EVT_KBRD; cur++)
+            {
+                if (isdigit((unsigned char)cur->code)) d = D2I(cur->code);
+            }
+        }
+    }
+
+    /* Paranoia */
+    if (d == 5) d = 0;
+
+    /* Return direction */
+    return (d);
 }
+
 
 static int dir_transitions[10][10] =
 {
-	/* 0-> */ { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 },
-	/* 1-> */ { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-	/* 2-> */ { 0, 0, 2, 0, 1, 0, 3, 0, 5, 0 },
-	/* 3-> */ { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-	/* 4-> */ { 0, 0, 1, 0, 4, 0, 5, 0, 7, 0 },
-	/* 5-> */ { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-	/* 6-> */ { 0, 0, 3, 0, 5, 0, 6, 0, 9, 0 },
-	/* 7-> */ { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-	/* 8-> */ { 0, 0, 5, 0, 7, 0, 9, 0, 8, 0 },
-	/* 9-> */ { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    /* 0-> */ { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 },
+    /* 1-> */ { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    /* 2-> */ { 0, 0, 2, 0, 1, 0, 3, 0, 5, 0 },
+    /* 3-> */ { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    /* 4-> */ { 0, 0, 1, 0, 4, 0, 5, 0, 7, 0 },
+    /* 5-> */ { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    /* 6-> */ { 0, 0, 3, 0, 5, 0, 6, 0, 9, 0 },
+    /* 7-> */ { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
+    /* 8-> */ { 0, 0, 5, 0, 7, 0, 9, 0, 8, 0 },
+    /* 9-> */ { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
 };
 
-/**
- * Request a "movement" direction (1,2,3,4,6,7,8,9) from the user.
- *
- * Return true if a direction was chosen, otherwise return false.
- *
- * This function should be used for all "repeatable" commands, such as
- * run, walk, open, close, bash, disarm, spike, tunnel, etc, as well
- * as all commands which must reference a grid adjacent to the player,
- * and which may not reference the grid under the player.
- *
- * Directions "5" and "0" are illegal and will not be accepted.
- *
- * This function tracks and uses the "global direction", and uses
- * that as the "desired direction", if it is set.
- */
-static bool textui_get_rep_dir(int *dp, bool allow_5)
-{
-	int dir = 0;
 
-	ui_event ke;
-
-	/* Initialize */
-	(*dp) = 0;
-
-	/* Get a direction */
-	while (!dir) {
-		/* Paranoia*/
-		event_signal(EVENT_MESSAGE_FLUSH);
-
-		/* Get first keypress - the first test is to avoid displaying the
-		 * prompt for direction if there's already a keypress queued up
-		 * and waiting - this just avoids a flickering prompt if there is
-		 * a "lazy" movement delay. */
-		inkey_scan = SCAN_INSTANT;
-		ke = inkey_ex();
-		inkey_scan = SCAN_OFF;
-
-		if (ke.type == EVT_NONE ||
-			(ke.type == EVT_KBRD && target_dir(ke.key) == 0)) {
-			prt("Direction or <click> (Escape to cancel)? ", 0, 0);
-			ke = inkey_ex();
-		}
-
-		/* Check mouse coordinates, or get keypresses until a dir is chosen */
-		if (ke.type == EVT_MOUSE) {
-			if (ke.mouse.button == 1) {
-				int y = KEY_GRID_Y(ke);
-				int x = KEY_GRID_X(ke);
-				struct loc from = player->grid;
-				struct loc to = loc(x, y);
-
-				dir = pathfind_direction_to(from, to);
-			} else if (ke.mouse.button == 2) {
-				/* Clear the prompt */
-				prt("", 0, 0);
-
-				return (false);
-			}
-		} else if (ke.type == EVT_KBRD) {
-			int keypresses_handled = 0;
-
-			while (ke.type == EVT_KBRD && ke.key.code != 0) {
-				int this_dir;
-
-				if (ke.key.code == ESCAPE) {
-					/* Clear the prompt */
-					prt("", 0, 0);
-
-					return (false);
-				}
-
-				/* XXX Ideally show and move the cursor here to indicate
-				 the currently "Pending" direction. XXX */
-				this_dir = target_dir_allow(ke.key, allow_5);
-
-				if (this_dir)
-					dir = dir_transitions[dir][this_dir];
-
-				if (player->opts.lazymove_delay == 0 || ++keypresses_handled > 1)
-					break;
-
-				inkey_scan = player->opts.lazymove_delay;
-				ke = inkey_ex();
-			}
-
-			/* 5 is equivalent to "escape" */
-			if (dir == 5 && !allow_5) {
-				/* Clear the prompt */
-				prt("", 0, 0);
-
-				return (false);
-			}
-		}
-
-		/* Oops */
-		if (!dir) bell();
-	}
-
-	/* Clear the prompt */
-	prt("", 0, 0);
-
-	/* Save direction */
-	(*dp) = dir;
-
-	/* Success */
-	return (true);
-}
-
-/**
+/*
  * Get an "aiming direction" (1,2,3,4,6,7,8,9 or 5) from the user.
  *
  * Return true if a direction was chosen, otherwise return false.
@@ -1513,168 +1030,443 @@ static bool textui_get_rep_dir(int *dp, bool allow_5)
  */
 static bool textui_get_aim_dir(int *dp)
 {
-	/* Global direction */
-	int dir = 0;
+    /* Global direction */
+    int dir = 0;
 
-	ui_event ke;
+    ui_event ke;
+    const char *p;
 
-	const char *p;
+    /* Initialize */
+    (*dp) = 0;
+    ke.type = EVT_KBRD;
 
-	/* Initialize */
-	(*dp) = 0;
+    /* Ask until satisfied */
+    while (!dir)
+    {
+        bool res;
 
-	/* Hack -- auto-target if requested */
-	if (OPT(player, use_old_target) && target_okay() && !dir) dir = 5;
+        /* Choose a prompt */
+        p = "Direction ('*' to target, \"'\" for closest, '(' for friendly, Escape to cancel)? ";
 
-	/* Ask until satisfied */
-	while (!dir) {
-		/* Choose a prompt */
-		if (!target_okay())
-			p = "Direction ('*' or <click> to target, \"'\" for closest, Escape to cancel)? ";
-		else
-			p = "Direction ('5' for target, '*' or <click> to re-target, Escape to cancel)? ";
+        /* Get a command (or Cancel) */
+        Term->no_cursor = true;
+        res = get_com(p, &ke.key);
+        Term->no_cursor = false;
+        if (!res) break;
 
-		/* Get a command (or Cancel) */
-		if (!get_com_ex(p, &ke)) break;
+        /* Analyze */
+        if (ke.type == EVT_KBRD)
+        {
+            switch (ke.key.code)
+            {
+                /* Set new target, use target if legal */
+                case '*':
+                {
+                    if (cmd_target_interactive(TARGET_KILL | TARGET_AIM)) dir = DIR_TARGET;
+                    break;
+                }
 
-		if (ke.type == EVT_MOUSE) {
-			if (ke.mouse.button == 1) {
-				if (target_set_interactive(TARGET_KILL, KEY_GRID_X(ke),
-										   KEY_GRID_Y(ke)))
-					dir = 5;
-			} else if (ke.mouse.button == 2) {
-				break;
-			}
-		} else if (ke.type == EVT_KBRD) {
-			if (ke.key.code == '*') {
-				/* Set new target, use target if legal */
-				if (target_set_interactive(TARGET_KILL, -1, -1))
-					dir = 5;
-			} else if (ke.key.code == '\'') {
-				/* Set to closest target */
-				if (target_set_closest(TARGET_KILL, NULL))
-					dir = 5;
-			} else if (ke.key.code == 't' || ke.key.code == '5' ||
-					   ke.key.code == '0' || ke.key.code == '.') {
-				if (target_okay())
-					dir = 5;
-			} else {
-				/* Possible direction */
-				int keypresses_handled = 0;
+                /* Set new friendly target, use target if legal */
+                case '(':
+                {
+                    if (cmd_target_interactive(TARGET_HELP)) dir = DIR_TARGET;
+                    break;
+                }
 
-				while (ke.key.code != 0){
-					int this_dir;
+                /* Set to closest target */
+                case '\'':
+                {
+                    Send_target_closest(TARGET_KILL);
+                    dir = DIR_TARGET;
+                    break;
+                }
 
-					/* XXX Ideally show and move the cursor here to indicate
-					 * the currently "Pending" direction. XXX */
-					this_dir = target_dir(ke.key);
+                /* Possible direction */
+                default:
+                {
+                    int keypresses_handled = 0;
 
-					if (this_dir)
-						dir = dir_transitions[dir][this_dir];
-					else
-						break;
+                    while (ke.key.code != 0)
+                    {
+                        int this_dir;
 
-					if (player->opts.lazymove_delay == 0 || ++keypresses_handled > 1)
-						break;
+                        /*
+                         * XXX Ideally show and move the cursor here to indicate
+                         * the currently "Pending" direction. XXX
+                         */
+                        this_dir = target_dir(ke.key);
 
-					/* See if there's a second keypress within the defined
-					 * period of time. */
-					inkey_scan = player->opts.lazymove_delay;
-					ke = inkey_ex();
-				}
-			}
-		}
+                        if (this_dir)
+                            dir = dir_transitions[dir][this_dir];
+                        else
+                            break;
 
-		/* Error */
-		if (!dir) bell();
-	}
+                        if ((player->opts.lazymove_delay == 0) || (++keypresses_handled > 1))
+                            break;
 
-	/* No direction */
-	if (!dir) return (false);
-	
-	/* Save direction */
-	(*dp) = dir;
-	
-	/* A "valid" direction was entered */
-	return (true);
+                        /* See if there's a second keypress within the defined period of time */
+                        inkey_scan = player->opts.lazymove_delay;
+                        ke = inkey_ex();
+                    }
+                }
+            }
+        }
+
+        /* Error */
+        if (!dir) bell("Illegal aim direction!");
+    }
+
+    /* No direction */
+    if (!dir) return false;
+
+    /* Save direction */
+    (*dp) = dir;
+
+    /* A "valid" direction was entered */
+    return true;
 }
 
-/**
- * Initialise the UI hooks to give input asked for by the game
+
+/*
+ * Get an "aiming direction" (1,2,3,4,6,7,8,9 or 5) from the user.
+ *
+ * Return 1 on abort, 2 on escape, 0 otherwise.
+ */
+static int textui_get_aim_dir_ex(int *dp)
+{
+    /* Global direction */
+    int dir = 0;
+
+    ui_event ke;
+
+    /* Initialize */
+    (*dp) = 0;
+
+    /* The top line is "icky" */
+    topline_icky = true;
+
+    /* Display a prompt */
+    prt("Direction (Escape to cancel)? ", 0, 0);
+
+    /* Ask until satisfied */
+    while (!dir)
+    {
+        /* Get a key */
+        ke = inkey_ex();
+
+        /* Handle "cancel" */
+        if (is_exit(ke)) break;
+
+        /* Analyze */
+        dir = target_dir(ke.key);
+
+        /* Error */
+        if (!dir) bell("Illegal aim direction!");
+    }
+
+    /* Clear the prompt */
+    prt("", 0, 0);
+
+    /* Fix the top line */
+    topline_icky = false;
+
+    /* Flush any events */
+    Flush_queue();
+
+    /* Handle "cancel" */
+    return_on_abort(ke);
+
+    /* No direction */
+    if (!dir) return 2;
+
+    /* Save direction */
+    (*dp) = dir;
+
+    /* A "valid" direction was entered */
+    return 0;
+}
+
+
+/*
+ * Initialize the UI hooks to give input asked for by the game
  */
 void textui_input_init(void)
 {
-	get_string_hook = textui_get_string;
-	get_quantity_hook = textui_get_quantity;
-	get_check_hook = textui_get_check;
-	get_com_hook = textui_get_com;
-	get_rep_dir_hook = textui_get_rep_dir;
-	get_aim_dir_hook = textui_get_aim_dir;
-	get_spell_from_book_hook = textui_get_spell_from_book;
-	get_spell_hook = textui_get_spell;
-	get_effect_from_list_hook = textui_get_effect_from_list;
-	get_item_hook = textui_get_item;
-	get_curse_hook = textui_get_curse;
-	get_panel_hook = textui_get_panel;
-	panel_contains_hook = textui_panel_contains;
-	map_is_visible_hook = textui_map_is_visible;
-	view_abilities_hook = textui_view_ability_menu;
+    get_string_hook = textui_get_string;
+    get_string_ex_hook = textui_get_string_ex;
+    get_quantity_hook = textui_get_quantity;
+    get_quantity_ex_hook = textui_get_quantity_ex;
+    get_check_hook = textui_get_check;
+    get_check_ex_hook = textui_get_check_ex;
+    get_com_hook = textui_get_com;
+    get_com_ex_hook = textui_get_com_ex;
+    get_aim_dir_hook = textui_get_aim_dir;
+    get_aim_dir_ex_hook = textui_get_aim_dir_ex;
+    get_spell_hook = textui_get_spell;
+    get_item_hook = textui_get_item;
+    get_curse_hook = textui_get_curse;
+    view_abilities_hook = textui_view_ability_menu;
+}
+
+
+void caveprt(cave_view_type* src, int len, int16_t x, int16_t y)
+{
+    int i;
+
+    /* Draw a character n times */
+    for (i = 0; i < len; i++)
+    {
+        /* Draw the character */
+        Term_draw(i + x, y, src[i].a, src[i].c);
+    }
+}
+
+
+void cavestr(cave_view_type* dest, const char *str, uint8_t attr, int max_col)
+{
+    int i, e;
+
+    e = strlen(str);
+    for (i = 0; i < e; i++)
+    {
+        dest[i].a = attr;
+        dest[i].c = str[i];
+    }
+    for (i = e; i < max_col; i++)
+    {
+        dest[i].a = COLOUR_WHITE;
+        dest[i].c = ' ';
+    }
+}
+
+
+/*
+ * Hack -- given a pathname, point at the filename
+ */
+const char *extract_file_name(const char *s)
+{
+    const char *p;
+
+    /* Start at the end */
+    p = s + strlen(s) - 1;
+
+    /* Back up to divider */
+    while ((p >= s) && (*p != ':') && (*p != '\\')) p--;
+
+    /* Return file name */
+    return (p + 1);
+}
+
+
+/*
+ * Loop, looking for net input and responding to keypresses.
+ */
+ui_event Net_loop(errr (*inkey_handler)(ui_event*, bool, bool),
+    void (*callback_begin)(ui_event*), void (*callback_end)(bool), char scan_cutoff, bool inmap)
+{
+    ui_event ke = EVENT_EMPTY;
+    int net_fd;
+    int w = 0;
+
+    /* Acquire and save maximum file descriptor */
+    net_fd = Net_fd();
+
+    /* If no network yet, just wait for a keypress */
+    if (net_fd == -1)
+    {
+        ke.type = EVT_ERROR;
+
+        /* Look for a keypress */
+        if (inkey_handler) inkey_handler(&ke, true, true);
+
+        /* Report error */
+        else
+        {
+            plog("Bad socket file descriptor");
+            send_quit = false;
+        }
+
+        return ke;
+    }
+
+    /* Wait for keypress, while also checking for net input */
+    while (1)
+    {
+        /* Look for a keypress */
+        if (inkey_handler)
+        {
+            errr res = inkey_handler(&ke, false, true);
+
+            /* Wait only as long as keymap activation would wait */
+            if ((scan_cutoff != SCAN_OFF) && res)
+            {
+                /* Increase "wait" */
+                w++;
+
+                /* Excessive delay */
+                if (w >= scan_cutoff)
+                {
+                    ke.type = EVT_DELAY;
+                    break;
+                }
+
+                /* Delay */
+                Term_xtra(TERM_XTRA_DELAY, 100);
+            }
+        }
+
+        /* Call our callback */
+        if (callback_begin) callback_begin(&ke);
+
+        /* If we got a key, break */
+        if (ke.type != EVT_NONE) break;
+
+        /* Update our timer and if necessary send a keepalive packet */
+        do_keepalive();
+
+        /* Flush the network output buffer */
+        if (Net_flush() == -1)
+        {
+            plog("Bad net flush");
+            ke.type = EVT_ERROR;
+            send_quit = false;
+            break;
+        }
+
+        /* Wait for .001 sec, or until there is net input */
+        SetTimeout(0, 1000);
+
+        /* Update the screen */
+        Term_fresh();
+
+        /* Parse net input if we got any */
+        if (SocketReadable(net_fd) && (Net_input() == -1))
+        {
+            ke.type = EVT_ERROR;
+            send_quit = false;
+            break;
+        }
+
+        /* Call our callback */
+        if (callback_end) callback_end(inmap);
+
+        /* Redraw */
+        if (player && player->upkeep) redraw_stuff();
+    }
+
+    if (!inmap) flush_now();
+
+    return ke;
+}
+
+
+/* Turn off the num-lock key by toggling it if it's currently on. */
+void turn_off_numlock(void)
+{
+#ifdef WINDOWS
+    KEYBDINPUT k;
+    INPUT inp;
+    int r;
+
+    /* Extract the "disable_numlock" flag */
+    bool disable_numlock = conf_get_int("MAngband", "DisableNumlock", true);
+
+    /* Nothing to do if user doesn't want to auto-kill numlock */
+    if (!disable_numlock) return;
+
+    /* Already off? Then nothing to do */
+    if (!(GetKeyState(VK_NUMLOCK) & 0xFFFF)) return;
+
+    /* Numlock key */
+    k.wVk = VK_NUMLOCK;
+    k.wScan = 0;
+    k.time = 0;
+    k.dwFlags = 0;
+    k.dwExtraInfo = 0;
+
+    /* Press it */
+    inp.type = INPUT_KEYBOARD;
+    inp.ki = k;
+    r = SendInput(1, &inp, sizeof(INPUT));
+    if (!r) plog_fmt("SendInput error (down): %lu", GetLastError());
+
+    /* Release it */
+    k.dwFlags = KEYEVENTF_KEYUP;
+    inp.type = INPUT_KEYBOARD;
+    inp.ki = k;
+    r = SendInput(1, &inp, sizeof(INPUT));
+    if (!r) plog_fmt("SendInput error (up): %lu", GetLastError());
+#endif
+}
+
+
+/*** Player access functions ***/
+
+
+const char *get_title(struct player *p)
+{
+    return title;
+}
+
+
+int16_t get_speed(struct player *p)
+{
+    return p->state.speed;
+}
+
+
+void get_plusses(struct player *p, struct player_state *state, int* dd, int* ds, int* mhit,
+    int* mdam, int* shit, int* sdam)
+{
+    *dd = dis_dd;
+    *ds = dis_ds;
+    *mhit = dis_to_mhit;
+    *shit = dis_to_shit;
+    *mdam = dis_to_mdam;
+    *sdam = dis_to_sdam;
+}
+
+
+int16_t get_melee_skill(struct player *p)
+{
+    return p->state.skills[SKILL_TO_HIT_MELEE];
+}
+
+
+int16_t get_ranged_skill(struct player *p)
+{
+    return p->state.skills[SKILL_TO_HIT_BOW];
+}
+
+
+uint8_t get_dtrap(struct player *p)
+{
+    return trap_indicator;
+}
+
+
+int get_diff(struct player *p)
+{
+    return p->upkeep->inven_cnt;
+}
+
+
+struct timed_grade *get_grade(int i)
+{
+    return timed_grades[i];
 }
 
 
 /*** Input processing ***/
 
 
-/**
- * Get a command count, with the '0' key.
- */
-static int textui_get_count(void)
-{
-	int count = 0;
-
-	while (1) {
-		struct keypress ke;
-
-		prt(format("Repeat: %d", count), 0, 0);
-
-		ke = inkey();
-		if (ke.code == ESCAPE)
-			return -1;
-
-		/* Simple editing (delete or backspace) */
-		else if (ke.code == KC_DELETE || ke.code == KC_BACKSPACE)
-			count = count / 10;
-
-		/* Actual numeric data */
-		else if (isdigit((unsigned char) ke.code)) {
-			count = count * 10 + D2I(ke.code);
-
-			if (count >= 9999) {
-				bell();
-				count = 9999;
-			}
-		} else {
-			/* Anything non-numeric passes straight to command input */
-			/* XXX nasty hardcoding of action menu key */
-			if (ke.code != KC_ENTER)
-				Term_keypress(ke.code, ke.mods);
-
-			break;
-		}
-	}
-
-	return count;
-}
-
-
-
-/**
+/*
  * Hack -- special buffer to hold the action of the current keymap
  */
 static struct keypress request_command_buffer[256];
 
 
-/**
+/*
  * Request a command from the user.
  *
  * Note that "caret" ("^") is treated specially, and is used to
@@ -1683,159 +1475,137 @@ static struct keypress request_command_buffer[256];
  * on the Macintosh to request "Control-Caret".
  *
  * Note that "backslash" is treated specially, and is used to bypass any
- * keymap entry for the following character.  This is useful for macros.
+ * keymap entry for the following character.  This is useful for keymaps.
  */
-ui_event textui_get_command(int *count)
+ui_event textui_get_command(void)
 {
-	int mode = OPT(player, rogue_like_commands) ? KEYMAP_MODE_ROGUE : KEYMAP_MODE_ORIG;
+    int mode = (OPT(player, rogue_like_commands)? KEYMAP_MODE_ROGUE: KEYMAP_MODE_ORIG);
+    ui_event ke = EVENT_EMPTY;
+    const struct keypress *act = NULL;
 
-	struct keypress tmp[2] = { KEYPRESS_NULL, KEYPRESS_NULL };
+    /* Reset command */
+    ui_event ke0 = EVENT_EMPTY;
 
-	ui_event ke = EVENT_EMPTY;
+    /* Activate "command mode" */
+    inkey_flag = true;
 
-	const struct keypress *act = NULL;
+    /* Activate "scan mode" */
+    inkey_scan = SCAN_INSTANT;
 
+    /* Get a command */
+    ke = inkey_ex();
 
+    /* Paranoia */
+    if ((ke.type == EVT_NONE) || ((ke.type == EVT_KBRD) && (ke.key.code == '\0')))
+        return ke0;
 
-	/* Get command */
-	while (1) {
-		/* Hack -- no flush needed */
-		msg_flag = false;
+    /* Flush messages */
+    c_msg_print(NULL);
 
-		/* Activate "command mode" */
-		inkey_flag = true;
+    if (ke.type == EVT_KBRD)
+    {
+        /* PWMAngband: bypass keymaps during setup phase */
+        bool keymap_ok = Setup.ready;
 
-		/* Toggle on cursor if requested */
-		if (OPT(player, highlight_player)) {
-			Term_set_cursor(true);
-			move_cursor_relative(player->grid.y, player->grid.x);
-		}
+        switch (ke.key.code)
+        {
+            /* Allow "keymaps" to be bypassed */
+            case '\\':
+            {
+                get_com_ex("Command: ", &ke);
+                keymap_ok = false;
+                break;
+            }
 
-		/* Get a command */
-		ke = inkey_ex();
+            /* Allow "control chars" to be entered */
+            case '^':
+            {
+                if (get_com("Control: ", &ke.key)) ke.key.code = KTRL(ke.key.code);
+                break;
+            }
+        }
 
-		/* Toggle off cursor */
-		if (OPT(player, highlight_player)) {
-			Term_set_cursor(false);
-		}
+        /* Find any relevant keymap */
+        if (keymap_ok) act = keymap_find(mode, ke.key);
+    }
 
-		if (ke.type == EVT_KBRD) {
-			bool keymap_ok = true;
-			switch (ke.key.code) {
-				case '0': {
-					if(ke.key.mods & KC_MOD_KEYPAD) break;
+    /* Erase the message line */
+    prt("", 0, 0);
 
-					int c = textui_get_count();
+    /* Apply keymap if not inside a keymap already */
+    if (ke.key.code && act && !inkey_next)
+    {
+        size_t n = 0;
 
-					if (c == -1 || !get_com_ex("Command: ", &ke))
-						continue;
-					else
-						*count = c;
-					break;
-				}
+        while (act[n].type) n++;
 
-				case '\\': {
-					/* Allow keymaps to be bypassed */
-					(void)get_com_ex("Command: ", &ke);
-					keymap_ok = false;
-					break;
-				}
+        /* Make room for the terminator */
+        n += 1;
 
-				case '^': {
-					char ch;
-					/* Allow "control chars" to be entered */
-					if (get_com("Control: ", &ch))
-						ke.key.code = KTRL(ch);
-					break;
-				}
-			}
+        /* Install the keymap */
+        memcpy(request_command_buffer, act, n * sizeof(struct keypress));
 
-			/* Find any relevant keymap */
-			if (keymap_ok)
-				act = keymap_find(mode, ke.key);
-		}
+        /* Start using the buffer */
+        inkey_next = request_command_buffer;
 
-		/* Erase the message line */
-		prt("", 0, 0);
+        /* Continue */
+        return ke0;
+    }
 
-		if (ke.type == EVT_BUTTON) {
-			/* Buttons are always specified in standard keyset */
-			act = tmp;
-			tmp[0] = ke.key;
-		}
+    /* Paranoia */
+    if ((ke.type == EVT_KBRD) && !ke.key.code) ke.key.code = ESCAPE;
 
-		/* Apply keymap if not inside a keymap already */
-		if (ke.key.code && act && !inkey_next) {
-			size_t n = 0;
-			while (act[n].type)
-				n++;
-
-			/* Make room for the terminator */
-			n += 1;
-
-			/* Install the keymap */
-			memcpy(request_command_buffer, act, n * sizeof(struct keypress));
-
-			/* Start using the buffer */
-			inkey_next = request_command_buffer;
-
-			/* Continue */
-			continue;
-		}
-
-		/* Done */
-		break;
-	}
-
-	return ke;
-}
-
-/**
- * Check no currently worn items are stopping the action 'c'
- */
-bool key_confirm_command(unsigned char c)
-{
-	int i;
-
-	/* Hack -- Scan equipment */
-	for (i = 0; i < player->body.count; ++i) {
-		char verify_inscrip[] = "^*";
-		unsigned n;
-
-		struct object *obj = slot_object(player, i);
-		if (!obj) continue;
-
-		/* Set up string to look for, e.g. "^d" */
-		verify_inscrip[1] = c;
-
-		/* Verify command */
-		n = check_for_inscrip(obj, "^*") +
-				check_for_inscrip(obj, verify_inscrip);
-		while (n--) {
-			if (!get_check("Are you sure? "))
-				return false;
-		}
-	}
-
-	return true;
+    return ke;
 }
 
 
-/**
+/*
  * Process a textui keypress.
  */
-bool textui_process_key(struct keypress kp, unsigned char *c, int count)
+bool textui_process_key(struct keypress kp, unsigned char *c)
 {
-	keycode_t key = kp.code;
+    keycode_t key = kp.code;
 
-	/* Null command */
-	if (key == '\0' || key == ESCAPE || key == ' ' || key == '\a')
-		return true;
+    if (key == ' ') msg_flush();
 
-	/* Invalid keypress */
-	if (key > UCHAR_MAX)
-		return false;
+    /* Process escape key */
+    if (key == ESCAPE)
+    {
+        if (inkey_next)
+        {
+            Send_clear(ES_BEGIN_MACRO);
+            first_escape = true;
+        }
+        else
+            Send_clear(ES_KEY);
+    }
 
-	*c = key;
-	return true;
+    /* Null command */
+    if ((key == '\0') || (key == ESCAPE) || (key == ' ') || (key == '\a')) return true;
+
+    /* Invalid keypress */
+    if (key > UCHAR_MAX) return false;
+
+    *c = key;
+    return true;
+}
+
+
+/*
+ * Flush the output before displaying for emphasis
+ */
+void bell_message(game_event_type unused, game_event_data *data, void *user)
+{
+    /* Flush the output */
+    Term_fresh();
+
+    /* Window stuff */
+    player->upkeep->redraw |= (PR_MESSAGE);
+    redraw_stuff();
+
+    /* Make a bell noise (if allowed) */
+    sound(MSG_BELL);
+
+    /* Flush the input */
+    flush(unused, data, user);
 }

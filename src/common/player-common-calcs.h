@@ -3,7 +3,7 @@
  * Purpose: Player temporary status structures.
  */
 
-#ifndef INCLUDED_PLAYER_COMMON_CALCS_H
+#if !defined(SPClient) && !defined(INCLUDED_PLAYER_COMMON_CALCS_H)
 #define INCLUDED_PLAYER_COMMON_CALCS_H
 
 /*

@@ -1,19 +1,6 @@
-/**
- * \file player-quest.h
- * \brief Quest-related variables and functions
- *
- * Copyright (c) 2013 Angband developers
- *
- * This work is free software; you can redistribute it and/or modify it
- * under the terms of either:
- *
- * a) the GNU General Public License as published by the Free Software
- *    Foundation, version 2, or
- *
- * b) the "Angband licence":
- *    This software may be copied and distributed for educational, research,
- *    and not for profit purposes provided that this copyright and statement
- *    are included in all such copies.  Other copyrights may also apply.
+/*
+ * File: player-quest.h
+ * Purpose: All quest-related code
  */
 
 #ifndef QUEST_H
@@ -23,11 +10,13 @@
 extern struct quest *quests;
 
 /* Functions */
-bool is_quest(struct player *p, int level);
-void player_quests_reset(struct player *p);
-void player_quests_free(struct player *p);
-bool quest_check(struct player *p, const struct monster *m);
-extern struct file_parser quests_parser;
+extern bool is_quest(int level);
+extern int quest_check(struct player *p, struct chunk *c, const struct monster *m);
+extern bool is_quest_active(struct player *p, int level);
+extern void start_quest(struct player *p);
+extern void process_quest(struct player *p);
+extern void end_quest(struct player *p, struct chunk *c, const struct monster *m);
 
+extern struct file_parser quests_parser;
 
 #endif /* QUEST_H */

@@ -1,136 +1,130 @@
-/**
- * \file savefile.h
- * \brief Savefile loading and saving main routines
- *
- * Copyright (c) 2009 Andi Sidwell <andi@takkaria.org>
- *
- * This work is free software; you can redistribute it and/or modify it
- * under the terms of either:
- *
- * a) the GNU General Public License as published by the Free Software
- *    Foundation, version 2, or
- *
- * b) the "Angband licence":
- *    This software may be copied and distributed for educational, research,
- *    and not for profit purposes provided that this copyright and statement
- *    are included in all such copies.  Other copyrights may also apply.
+/*
+ * File: savefile.h
+ * Purpose: Savefile loading and saving main routines
  */
+
 #ifndef INCLUDED_SAVEFILE_H
 #define INCLUDED_SAVEFILE_H
 
+/*
+ * Define this to replace indices with strings in savefiles.
+ *
+ * This method is more robust, but greatly increases the size of savefiles and therefore
+ * could induce server lag when the server state is autosaving (every SERVER_SAVE minutes).
+ */
+/*#define SAVE_AS_STRINGS*/
+
 #define FINISHED_CODE 255
-#define ITEM_VERSION	5
-#define EGO_ART_KNOWN 0xffffffff
-
-/**
- * ------------------------------------------------------------------------
- * Savefile API
- * ------------------------------------------------------------------------ */
-
-/**
- * Global "we've just saved" variable
- */
-extern bool character_saved;
-
-/**
- * Save to the given location.  Returns true on success, false otherwise.
- */
-bool savefile_save(const char *path);
-
-/**
- * Load the savefile given.  Returns true on succcess, false otherwise.
- */
-bool savefile_load(const char *path, bool cheat_death);
-
-/**
- * Try to get a description for this savefile.
- */
-const char *savefile_get_description(const char *path);
-
-/**
- * Fill the given buffer with the panic save equivalent for a savefile.
- */
-void savefile_get_panic_name(char *buffer, size_t len, const char *path);
-
-
-/**
- * ------------------------------------------------------------------------
- * Detailed saving and loading functions
- * ------------------------------------------------------------------------ */
-
-
-/* Utility */
-void note(const char *msg);
+#define ITEM_VERSION 1
+#define EGO_ART_KNOWN 0xFFFF
 
 /* Writing bits */
-void wr_byte(uint8_t v);
-void wr_u16b(uint16_t v);
-void wr_s16b(int16_t v);
-void wr_u32b(uint32_t v);
-void wr_s32b(int32_t v);
-void wr_string(const char *str);
-void pad_bytes(int n);
+extern void wr_byte(uint8_t v);
+extern void wr_u16b(uint16_t v);
+extern void wr_s16b(int16_t v);
+extern void wr_u32b(uint32_t v);
+extern void wr_s32b(int32_t v);
+extern void wr_hturn(hturn* pv);
+extern void wr_loc(struct loc *l);
+extern void wr_string(const char *str);
+extern void wr_quark(quark_t v);
 
 /* Reading bits */
-void rd_byte(uint8_t *ip);
-void rd_u16b(uint16_t *ip);
-void rd_s16b(int16_t *ip);
-void rd_u32b(uint32_t *ip);
-void rd_s32b(int32_t *ip);
-void rd_string(char *str, int max);
-void strip_bytes(int n);
-
-
+extern void rd_byte(uint8_t *ip);
+extern void rd_bool(bool *ip);
+extern void rd_u16b(uint16_t *ip);
+extern void rd_s16b(int16_t *ip);
+extern void rd_u32b(uint32_t *ip);
+extern void rd_s32b(int32_t *ip);
+extern void rd_hturn(hturn *ip);
+extern void rd_loc(struct loc *l);
+extern void rd_string(char *str, int max);
+extern void rd_quark(quark_t *ip);
+extern void strip_bytes(int n);
+extern void strip_string(int max);
 
 /* load.c */
-int rd_randomizer(void);
-int rd_options(void);
-int rd_messages(void);
-int rd_monster_memory(void);
-int rd_object_memory(void);
-int rd_quests(void);
-int rd_artifacts(void);
-int rd_player(void);
-int rd_ignore(void);
-int rd_misc(void);
-int rd_player_hp(void);
-int rd_player_spells(void);
-int rd_gear(void);
-int rd_stores(void);
-int rd_dungeon(void);
-int rd_chunks(void);
-int rd_objects(void);
-int rd_monsters(void);
-int rd_monster_groups(void);
-int rd_history(void);
-int rd_traps(void);
-int rd_null(void);
+extern int rd_monster_memory(struct player *p);
+extern int rd_object_memory(struct player *p);
+extern int rd_player(struct player *p);
+extern int rd_ignore(struct player *p);
+extern int rd_player_misc(struct player *p);
+extern int rd_misc(struct player *unused);
+extern int rd_player_artifacts(struct player *p);
+extern int rd_artifacts(struct player *unused);
+extern int rd_player_hp(struct player *p);
+extern int rd_player_spells(struct player *p);
+extern int rd_gear(struct player *p);
+extern int rd_stores(struct player *unused);
+extern int rd_player_dungeon(struct player *p);
+extern int rd_level(struct player *unused);
+extern int rd_dungeon(struct player *unused);
+extern int rd_player_objects(struct player *p);
+extern int rd_objects(struct player *unused);
+extern int rd_monsters(struct player *unused);
+extern int rd_player_traps(struct player *p);
+extern int rd_traps(struct player *unused);
+extern int rd_history(struct player *p);
+extern int rd_null(struct player *unused);
+extern int rd_header(struct player *p);
+extern int rd_wild_map(struct player *p);
+extern int rd_home(struct player *p);
+extern int rd_parties(struct player *unused);
+extern int rd_houses(struct player *unused);
+extern int rd_arenas(struct player *unused);
+extern int rd_wilderness(struct player *unused);
+extern int rd_player_names(struct player *unused);
 
 /* save.c */
-void wr_description(void);
-void wr_randomizer(void);
-void wr_options(void);
-void wr_messages(void);
-void wr_monster_memory(void);
-void wr_object_memory(void);
-void wr_quests(void);
-void wr_artifacts(void);
-void wr_player(void);
-void wr_ignore(void);
-void wr_misc(void);
-void wr_player_hp(void);
-void wr_player_spells(void);
-void wr_randarts(void);
-void wr_gear(void);
-void wr_stores(void);
-void wr_dungeon(void);
-void wr_chunks(void);
-void wr_objects(void);
-void wr_monsters(void);
-void wr_monster_groups(void);
-void wr_ghost(void);
-void wr_history(void);
-void wr_traps(void);
+extern void wr_description(void *data);
+extern void wr_monster_memory(void *data);
+extern void wr_object_memory(void *data);
+extern void wr_player_artifacts(void *data);
+extern void wr_artifacts(void *unused);
+extern void wr_player(void *data);
+extern void wr_ignore(void *data);
+extern void wr_player_misc(void *data);
+extern void wr_misc(void *unused);
+extern void wr_player_hp(void *data);
+extern void wr_player_spells(void *data);
+extern void wr_gear(void *data);
+extern void wr_stores(void *unused);
+extern void wr_player_dungeon(void *data);
+extern void wr_level(void *data);
+extern void wr_dungeon(void *unused);
+extern void wr_player_objects(void *data);
+extern void wr_objects(void *unused);
+extern void wr_monsters(void *unused);
+extern void wr_player_traps(void *data);
+extern void wr_traps(void *unused);
+extern void wr_history(void *data);
+extern void wr_header(void *data);
+extern void wr_wild_map(void *data);
+extern void wr_home(void *data);
+extern void wr_parties(void *unused);
+extern void wr_houses(void *unused);
+extern void wr_arenas(void *unused);
+extern void wr_wilderness(void *unused);
+extern void wr_player_names(void *unused);
 
+/*
+ * Try to get a description for this savefile.
+ */
+extern const char *savefile_get_description(const char *path);
+
+extern bool save_player(struct player *p, bool panic);
+extern void save_dungeon_special(struct worldpos *wpos, bool town);
+extern bool save_server_info(bool panic);
+extern bool save_account_info(bool panic);
+extern bool load_player(struct player *p, const char *loadpath);
+extern int scoop_player(char *nick, char *pass, uint8_t *pridx, uint8_t *pcidx, uint8_t *psex);
+extern bool load_server_info(void);
+extern bool load_account_info(void);
+extern bool special_level(struct worldpos *wpos);
+extern bool special_town(struct worldpos *wpos);
+extern bool forbid_special(struct worldpos *wpos);
+extern bool forbid_town(struct worldpos *wpos);
+extern bool random_level(struct worldpos *wpos);
+extern bool dynamic_town(struct worldpos *wpos);
 
 #endif /* INCLUDED_SAVEFILE_H */

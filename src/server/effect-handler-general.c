@@ -18,37 +18,8 @@
  *    are included in all such copies.  Other copyrights may also apply.
  */
 
-#include "cave.h"
-#include "effect-handler.h"
-#include "..\client\game-input.h"
-#include "game-world.h"
-#include "generate.h"
-#include "init.h"
-#include "mon-desc.h"
-#include "mon-lore.h"
-#include "mon-make.h"
-#include "mon-predicate.h"
-#include "mon-summon.h"
-#include "mon-util.h"
-#include "obj-chest.h"
-#include "obj-curse.h"
-#include "obj-desc.h"
-#include "obj-gear.h"
-#include "obj-ignore.h"
-#include "obj-knowledge.h"
-#include "obj-make.h"
-#include "obj-pile.h"
-#include "obj-tval.h"
-#include "player-calcs.h"
-#include "player-history.h"
-#include "player-quest.h"
-#include "player-timed.h"
-#include "player-util.h"
-#include "project.h"
-#include "source.h"
-#include "target.h"
-#include "trap.h"
-//#include "s-angband.h"
+
+#include "s-angband.h"
 
 
 int effect_calculate_value(effect_handler_context_t *context, bool use_boost)

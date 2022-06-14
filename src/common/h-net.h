@@ -2,7 +2,8 @@
  * File: h-net.h
  * Purpose: This file includes all the needed networking stuff
  */
-
+#if !defined(SPClient) && !defined(TANG_H-NET_H)
+#define TANG_H-NET_H
 /* Include the socket buffer library */
 #include "sockbuf.h"
 
@@ -15,3 +16,4 @@
 
 /* Include some bit-manipulation functions used in the networking code */
 #include "bit.h"
+#endif

@@ -391,4 +391,3 @@ MSG(CHAT, NULL)
 
 /* Max message index (message) */
 MSG(MAX_PARSE, NULL)
-

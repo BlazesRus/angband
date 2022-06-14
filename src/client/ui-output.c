@@ -1,8 +1,9 @@
-/**
- * \file ui-output.c
- * \brief Putting text on the screen, screen saving and loading, panel handling
+/*
+ * File: ui-output.c
+ * Purpose: Putting text on the screen, screen saving and loading, panel handling
  *
  * Copyright (c) 2007 Pete Mack and others.
+ * Copyright (c) 2022 MAngband and PWMAngband Developers
  *
  * This work is free software; you can redistribute it and/or modify it
  * under the terms of either:
@@ -15,225 +16,76 @@
  *    and not for profit purposes provided that this copyright and statement
  *    are included in all such copies.  Other copyrights may also apply.
  */
-#include "angband.h"
-#include "cave.h"
-#include "player-calcs.h"
-#include "ui-input.h"
-#include "ui-output.h"
-#include "z-textblock.h"
 
-int16_t screen_save_depth;
 
-/**
- * ------------------------------------------------------------------------
+//#include "c-angband.h"
+
+
+/* Hack -- icky screen */
+bool full_icky_screen;
+bool target_icky_screen;
+
+
+const region SCREEN_REGION = {0, 0, 0, 0};
+
+
+/*
  * Regions
- * ------------------------------------------------------------------------ */
+ */
 
-/**
- * These functions are used for manipulating regions on the screen, used 
+
+/*
+ * These functions are used for manipulating regions on the screen, used
  * mostly (but not exclusively) by the menu functions.
  */
 
+
 region region_calculate(region loc)
 {
-	int w, h;
-	Term_get_size(&w, &h);
+    int w, h;
 
-	if (loc.col < 0)
-		loc.col += w;
-	if (loc.row < 0)
-		loc.row += h;
-	if (loc.width <= 0)
-		loc.width += w - loc.col;
-	if (loc.page_rows <= 0)
-		loc.page_rows += h - loc.row;
+    Term_get_size(&w, &h);
 
-	return loc;
+    if (loc.col < 0) loc.col += w;
+    if (loc.row < 0) loc.row += h;
+    if (loc.width <= 0) loc.width += w - loc.col;
+    if (loc.page_rows <= 0) loc.page_rows += h - loc.row;
+
+    return loc;
 }
+
 
 void region_erase_bordered(const region *loc)
 {
-	region calc = region_calculate(*loc);
-	int i = 0;
+    region calc = region_calculate(*loc);
+    int i;
 
-	calc.col = MAX(calc.col - 1, 0);
-	calc.row = MAX(calc.row - 1, 0);
-	calc.width += 2;
-	calc.page_rows += 2;
+    calc.col = MAX(calc.col - 1, 0);
+    calc.row = MAX(calc.row - 1, 0);
+    calc.width += 2;
+    calc.page_rows += 2;
 
-	for (i = 0; i < calc.page_rows; i++)
-		Term_erase(calc.col, calc.row + i, calc.width);
+    for (i = 0; i < calc.page_rows; i++)
+        Term_erase(calc.col, calc.row + i, calc.width);
 }
+
 
 void region_erase(const region *loc)
 {
-	region calc = region_calculate(*loc);
-	int i = 0;
+    region calc = region_calculate(*loc);
+    int i;
 
-	for (i = 0; i < calc.page_rows; i++)
-		Term_erase(calc.col, calc.row + i, calc.width);
-}
-
-bool region_inside(const region *loc, const ui_event *key)
-{
-	if ((loc->col > key->mouse.x) || (loc->col + loc->width <= key->mouse.x))
-		return false;
-
-	if ((loc->row > key->mouse.y) ||
-		(loc->row + loc->page_rows <= key->mouse.y))
-		return false;
-
-	return true;
+    for (i = 0; i < calc.page_rows; i++)
+        Term_erase(calc.col, calc.row + i, calc.width);
 }
 
 
-/**
- * ------------------------------------------------------------------------
- * Text display
- * ------------------------------------------------------------------------ */
-
-/**
- * These functions are designed to display large blocks of text on the screen
- * all at once.  They are the ui-term specific layer on top of the z-textblock.c
- * functions.
- */
-
-/**
- * Utility function
- */
-static void display_area(const wchar_t *text, const uint8_t *attrs,
-		size_t *line_starts, size_t *line_lengths,
-		size_t n_lines,
-		region area, size_t line_from)
-{
-	size_t i, j;
-
-	n_lines = MIN(n_lines, (size_t) area.page_rows);
-
-	for (i = 0; i < n_lines; ++i) {
-		Term_erase(area.col, area.row + i, area.width);
-		for (j = 0; j < line_lengths[line_from + i]; j++) {
-			Term_putch(area.col + j, area.row + i,
-					attrs[line_starts[line_from + i] + j],
-					text[line_starts[line_from + i] + j]);
-		}
-	}
-}
-
-/**
- * Plonk a textblock on the screen in a certain bounding box.
- */
-void textui_textblock_place(textblock *tb, region orig_area, const char *header)
-{
-	/* xxx on resize this should be recalculated */
-	region area = region_calculate(orig_area);
-
-	size_t *line_starts = NULL, *line_lengths = NULL;
-	size_t n_lines;
-
-	n_lines = textblock_calculate_lines(tb,
-			&line_starts, &line_lengths, area.width);
-
-	if (header != NULL) {
-		++area.page_rows;
-		c_prt(COLOUR_L_BLUE, header, area.row, area.col);
-		++area.row;
-	}
-
-	if (n_lines > (size_t) area.page_rows)
-		n_lines = area.page_rows;
-
-	display_area(textblock_text(tb), textblock_attrs(tb), line_starts,
-	             line_lengths, n_lines, area, 0);
-
-	mem_free(line_starts);
-	mem_free(line_lengths);
-}
-
-/**
- * Show a textblock interactively
- */
-struct keypress textui_textblock_show(textblock *tb, region orig_area, const char *header)
-{
-	/* xxx on resize this should be recalculated */
-	region area = region_calculate(orig_area);
-
-	size_t *line_starts = NULL, *line_lengths = NULL;
-	size_t n_lines;
-
-	struct keypress ch = KEYPRESS_NULL;
-
-	n_lines = textblock_calculate_lines(tb,
-			&line_starts, &line_lengths, area.width);
-
-	screen_save();
-
-	/* make room for the footer */
-	area.page_rows -= 2;
-
-	if (header != NULL) {
-		area.page_rows--;
-		c_prt(COLOUR_L_BLUE, header, area.row, area.col);
-		++area.row;
-	}
-
-	if (n_lines > (size_t) area.page_rows) {
-		int start_line = 0;
-
-		c_prt(COLOUR_WHITE, "", area.row + area.page_rows, area.col);
-		c_prt(COLOUR_L_BLUE, "(Up/down or ESCAPE to exit.)",
-				area.row + area.page_rows + 1, area.col);
-
-		/* Pager mode */
-		while (1) {			
-
-			display_area(textblock_text(tb), textblock_attrs(tb), line_starts,
-					line_lengths, n_lines, area, start_line);
-
-			ch = inkey();
-			if (ch.code == ARROW_UP)
-				start_line--;
-			else if (ch.code == ESCAPE || ch.code == 'q' || ch.code == 'x')
-				break;
-			else if (ch.code == ']' || ch.code == '[')
-				/* Special case to deal with monster and object lists -
-				 * see bug #2120 */
-				break;
-			else if (ch.code == ARROW_DOWN)
-				++start_line;
-			else if (ch.code == ' ')
-				start_line += area.page_rows;
-
-			if (start_line < 0)
-				start_line = 0;
-			if (start_line + (size_t) area.page_rows > n_lines)
-				start_line = n_lines - area.page_rows;
-		}
-	} else {
-		display_area(textblock_text(tb), textblock_attrs(tb), line_starts,
-				line_lengths, n_lines, area, 0);
-
-		c_prt(COLOUR_WHITE, "", area.row + n_lines, area.col);
-		c_prt(COLOUR_L_BLUE, "(Press any key to continue.)",
-				area.row + n_lines + 1, area.col);
-		ch = inkey();
-	}
-
-	mem_free(line_starts);
-	mem_free(line_lengths);
-
-	screen_load();
-
-	return (ch);
-}
-
-
-/**
- * ------------------------------------------------------------------------
+/*
  * text_out hook for screen display
- * ------------------------------------------------------------------------ */
+ */
 
-/**
+
+/*
  * Print some (colored) text to the screen at the current cursor position,
  * automatically "wrapping" existing text (at spaces) when necessary to
  * avoid placing any text into the last column, and clearing every line
@@ -249,441 +101,470 @@ struct keypress textui_textblock_show(textblock *tb, region orig_area, const cha
  */
 void text_out_to_screen(uint8_t a, const char *str)
 {
-	int x, y;
+    int text_out_wrap = 0, text_out_indent, text_out_pad = 1;
+    int x, y;
+    int wid, h;
+    int wrap;
+    const char *s;
+    char buf[MSG_LEN];
 
-	int wid, h;
+    /* Obtain the size */
+    Term_get_size(&wid, &h);
 
-	int wrap;
+    /* Obtain the cursor */
+    Term_locate(&x, &y);
+    text_out_indent = x - 1;
 
-	const wchar_t *s;
-	wchar_t buf[1024];
+    /* Copy to a rewriteable string */
+    my_strcpy(buf, str, MSG_LEN);
 
-	/* Obtain the size */
-	(void)Term_get_size(&wid, &h);
+    /* Use special wrapping boundary? */
+    if ((text_out_wrap > 0) && (text_out_wrap < wid))
+        wrap = text_out_wrap;
+    else
+        wrap = wid;
 
-	/* Obtain the cursor */
-	(void)Term_locate(&x, &y);
+    /* Process the string */
+    for (s = buf; *s; s++)
+    {
+        char ch;
 
-	/* Copy to a rewriteable string */
-	text_mbstowcs(buf, str, 1024);
-	
-	/* Use special wrapping boundary? */
-	if ((text_out_wrap > 0) && (text_out_wrap < wid))
-		wrap = text_out_wrap;
-	else
-		wrap = wid;
+        /* Force wrap */
+        if (*s == '\n')
+        {
+            /* Wrap */
+            x = text_out_indent;
+            y++;
 
-	/* Process the string */
-	for (s = buf; *s; s++) {
-		wchar_t ch;
+            /* Clear line, move cursor */
+            Term_erase(x, y, 255);
 
-		/* Force wrap */
-		if (*s == L'\n') {
-			/* Wrap */
-			x = text_out_indent;
-			++y;
+            x += text_out_pad;
+            Term_gotoxy(x, y);
 
-			/* Clear line, move cursor */
-			Term_erase(x, y, 255);
+            continue;
+        }
 
-			x += text_out_pad;
-			Term_gotoxy(x, y);
+        /* Clean up the char */
+        ch = (isprint((unsigned char)*s)? *s: ' ');
 
-			continue;
-		}
+        /* Wrap words as needed */
+        if ((x >= wrap - 1) && (ch != ' '))
+        {
+            int i, n = 0;
+            uint16_t av[256];
+            char cv[256];
 
-		/* Clean up the char */
-		ch = (text_iswprint(*s) ? *s : L' ');
+            /* Wrap word */
+            if (x < wrap)
+            {
+                /* Scan existing text */
+                for (i = wrap - 2; i >= 0; i--)
+                {
+                    /* Grab existing attr/char */
+                    Term_what(i, y, &av[i], &cv[i]);
 
-		/* Wrap words as needed */
-		if ((x >= wrap - 1) && (ch != L' ')) {
-			int i, n = 0;
+                    /* Break on space */
+                    if (cv[i] == ' ') break;
 
-			int av[256];
-			wchar_t cv[256];
+                    /* Track current word */
+                    n = i;
+                }
+            }
 
-			/* Wrap word */
-			if (x < wrap) {
-				/* Scan existing text */
-				for (i = wrap - 2; i >= 0; --i) {
-					/* Grab existing attr/char */
-					Term_what(i, y, &av[i], &cv[i]);
+            /* Special case */
+            if (n == 0) n = wrap;
 
-					/* Break on space */
-					if (cv[i] == L' ') break;
+            /* Clear line */
+            Term_erase(n, y, 255);
 
-					/* Track current word */
-					n = i;
-				}
-			}
+            /* Wrap */
+            x = text_out_indent;
+            y++;
 
-			/* Special case */
-			if (n == 0) n = wrap;
+            /* Clear line, move cursor */
+            Term_erase(x, y, 255);
 
-			/* Clear line */
-			Term_erase(n, y, 255);
+            x += text_out_pad;
+            Term_gotoxy(x, y);
 
-			/* Wrap */
-			x = text_out_indent;
-			++y;
+            /* Wrap the word (if any) */
+            for (i = n; i < wrap - 1; i++)
+            {
+                /* Dump */
+                Term_addch(av[i], cv[i]);
 
-			/* Clear line, move cursor */
-			Term_erase(x, y, 255);
+                /* Advance (no wrap) */
+                if (++x > wrap) x = wrap;
+            }
+        }
 
-			x += text_out_pad;
-			Term_gotoxy(x, y);
+        /* Dump */
+        Term_addch(a, ch);
 
-			/* Wrap the word (if any) */
-			for (i = n; i < wrap - 1; ++i) {
-				/* Dump */
-				Term_addch(av[i], cv[i]);
-
-				/* Advance (no wrap) */
-				if (++x > wrap) x = wrap;
-			}
-		}
-
-		/* Dump */
-		Term_addch(a, ch);
-
-		/* Advance */
-		if (++x > wrap) x = wrap;
-	}
+        /* Advance */
+        if (++x > wrap) x = wrap;
+    }
 }
 
 
-/**
- * ------------------------------------------------------------------------
+/*
  * Simple text display
- * ------------------------------------------------------------------------ */
+ */
 
-/**
+
+/*
  * Display a string on the screen using an attribute.
  *
  * At the given location, using the given attribute, if allowed,
- * add the given string.  Do not clear the line.
+ * add the given string. Do not clear the line.
  */
-void c_put_str(uint8_t attr, const char *str, int row, int col) {
-	/* Position cursor, Dump the attr/text */
-	Term_putstr(col, row, -1, attr, str);
+void c_put_str(uint8_t attr, const char *str, int row, int col)
+{
+    /* Position cursor, Dump the attr/text */
+    Term_putstr(col, row, -1, attr, str);
 }
 
 
-/**
- * As above, but in white
+/*
+ * As above, but in "white"
  */
-void put_str(const char *str, int row, int col) {
-	c_put_str(COLOUR_WHITE, str, row, col);
-}
-
-/**
- * Display a string on the screen using an attribute, and clear to the
- * end of the line.
- */
-void c_prt(uint8_t attr, const char *str, int row, int col) {
-	/* Clear line, position cursor */
-	Term_erase(col, row, 255);
-
-	/* Dump the attr/text */
-	Term_addstr(-1, attr, str);
-}
-
-/**
- * As above, but in white
- */
-void prt(const char *str, int row, int col) {
-	c_prt(COLOUR_WHITE, str, row, col);
+void put_str(const char *str, int row, int col)
+{
+    /* Spawn */
+    Term_putstr(col, row, -1, COLOUR_WHITE, str);
 }
 
 
+/*
+ * Display a string on the screen using an attribute, and clear
+ * to the end of the line.
+ */
+void c_prt(uint8_t attr, const char *str, int row, int col)
+{
+    /* Clear line, position cursor */
+    Term_erase(col, row, 255);
 
-/**
- * ------------------------------------------------------------------------
+    /* Dump the attr/text */
+    Term_addstr(-1, attr, str);
+}
+
+
+/*
+ * As above, but in "white"
+ */
+void prt(const char *str, int row, int col)
+{
+    /* Spawn */
+    c_prt(COLOUR_WHITE, str, row, col);
+}
+
+
+/*
+ * Call Term_putstr multiple times, word-wraping the "msg".
+ * "sx" and "sy" are the coordinates we start at.
+ * "n" is maximum "msg" len, if -1 is passed, strlen(msg) will be used.
+ * "m" is maximum lines we have left. If passed as a negative number,
+ * "prt_multi" will draw from bottom to top.
+ *
+ * Returns number of lines printed. No actual changes should be seen
+ * until Term_fresh().
+ */
+int prt_multi(int sx, int sy, int n, int m, int attr, const char *msg)
+{
+    char *t;
+    char buf[MSG_LEN];
+    char *line_ptr[256];
+    size_t line_end[256];
+    int lines = 0, i;
+    bool reverse = false;
+    int maxcol = Term->wid - sx;
+
+    /* If "m" is passed as negative, assume reverse mode */
+    if (m < 0)
+    {
+        m = 0 - m;
+        reverse = true;
+    }
+
+    /* Analyze the buffer */
+    my_strcpy(buf, msg, MSG_LEN);
+    t = buf;
+    n = ((n < 0)? strlen(buf): MIN(n, MSG_LEN));
+
+    /* Split message */
+    while (n > maxcol)
+    {
+        int check, split;
+
+        /* Default split */
+        split = maxcol;
+
+        /* Find the "best" split point */
+        for (check = 40; check < maxcol; check++)
+        {
+            /* Found a valid split point */
+            if (t[check] == ' ') split = check;
+        }
+
+        /* Save part of the message */
+        line_ptr[lines] = t;
+        line_end[lines] = split;
+        lines++;
+
+        /* Prepare to recurse on the rest of "buf" */
+        t += split; n -= split;
+    }
+
+    /* Save the tail of the message */
+    line_ptr[lines] = t;
+    line_end[lines] = n;
+    lines++;
+
+    /* Draw lines */
+    for (i = 0; i < lines; i++)
+    {
+        int x, y;
+        int l = (reverse? lines - 1 - i: i);
+        int d = (reverse? -1: 1);
+
+        Term_putstr(sx, sy + i * d, line_end[l], attr, line_ptr[l]);
+        Term_locate(&x, &y);
+        Term_erase(x, y, 255);
+        if (m - i <= 0) break;
+    }
+
+    return i;
+}
+
+
+/*
  * Screen loading/saving
- * ------------------------------------------------------------------------ */
+ */
 
-/**
+
+/*
  * Screen loading and saving can be done to an arbitrary depth but it's
  * important that every call to screen_save() is balanced by a call to
- * screen_load() later on.  'screen_save_depth' is used by the game to keep
- * track of whether it should try to update the map and sidebar or not,
- * so if you miss out a screen_load you will not get proper game updates.
- *
- * Term_save() / Term_load() do all the heavy lifting here.
+ * screen_load() later on.
  */
 
-/**
- * Depth of the screen_save() stack
- */
-int16_t screen_save_depth;
 
-/**
+/*
  * Save the screen, and increase the "icky" depth.
+ *
+ * This function must match exactly one call to "screen_load()".
  */
 void screen_save(void)
 {
-	player->upkeep->redraw |= PR_MAP;
-	redraw_stuff(player);
-	event_signal(EVENT_MESSAGE_FLUSH);
-	Term_save();
-	++screen_save_depth;
+    /* Increase "icky" depth */
+    player->screen_save_depth++;
+    Send_icky();
+
+    /* Save the screen (if legal) */
+    Term_save();
 }
 
-/**
+
+/*
  * Load the screen, and decrease the "icky" depth.
+ *
+ * This function must match exactly one call to "screen_save()".
  */
-void screen_load(void)
+void screen_load(bool flush)
 {
-	event_signal(EVENT_MESSAGE_FLUSH);
-	Term_load();
-	screen_save_depth--;
+    /* Load the screen (if legal) */
+    Term_load();
+
+    /* Decrease "icky" depth */
+    player->screen_save_depth--;
+    Send_icky();
+
+    /* Flush any queued events */
+    if (flush) Flush_queue();
+
+    /* Redraw distorted graphics */
+    if (!player->screen_save_depth && (tile_distorted || full_icky_screen)) Term_redraw();
 }
 
-bool textui_map_is_visible(void)
-{
-	return (screen_save_depth == 0);
-}
 
-/**
- * ------------------------------------------------------------------------
+/*
  * Miscellaneous things
- * ------------------------------------------------------------------------ */
+ */
 
-/**
+
+/*
  * A Hengband-like 'window' function, that draws a surround box in ASCII art.
  */
 void window_make(int origin_x, int origin_y, int end_x, int end_y)
 {
-	int n;
-	region to_clear;
+    int n;
+    region to_clear;
 
-	to_clear.col = origin_x;
-	to_clear.row = origin_y;
-	to_clear.width = end_x - origin_x;
-	to_clear.page_rows = end_y - origin_y;
+    to_clear.col = origin_x;
+    to_clear.row = origin_y;
+    to_clear.width = end_x - origin_x;
+    to_clear.page_rows = end_y - origin_y;
 
-	region_erase(&to_clear);
+    region_erase(&to_clear);
 
-	Term_putch(origin_x, origin_y, COLOUR_WHITE, L'+');
-	Term_putch(end_x, origin_y, COLOUR_WHITE, L'+');
-	Term_putch(origin_x, end_y, COLOUR_WHITE, L'+');
-	Term_putch(end_x, end_y, COLOUR_WHITE, L'+');
+    Term_putch(origin_x, origin_y, COLOUR_WHITE, '+');
+    Term_putch(end_x, origin_y, COLOUR_WHITE, '+');
+    Term_putch(origin_x, end_y, COLOUR_WHITE, '+');
+    Term_putch(end_x, end_y, COLOUR_WHITE, '+');
 
-	for (n = 1; n < (end_x - origin_x); n++) {
-		Term_putch(origin_x + n, origin_y, COLOUR_WHITE, L'-');
-		Term_putch(origin_x + n, end_y, COLOUR_WHITE, L'-');
-	}
+    for (n = 1; n < (end_x - origin_x); n++)
+    {
+        Term_putch(origin_x + n, origin_y, COLOUR_WHITE, '-');
+        Term_putch(origin_x + n, end_y, COLOUR_WHITE, '-');
+    }
 
-	for (n = 1; n < (end_y - origin_y); n++) {
-		Term_putch(origin_x, origin_y + n, COLOUR_WHITE, L'|');
-		Term_putch(end_x, origin_y + n, COLOUR_WHITE, L'|');
-	}
+    for (n = 1; n < (end_y - origin_y); n++)
+    {
+        Term_putch(origin_x, origin_y + n, COLOUR_WHITE, '|');
+        Term_putch(end_x, origin_y + n, COLOUR_WHITE, '|');
+    }
 }
 
-bool panel_should_modify(term *t, int wy, int wx)
-{
-	int dungeon_hgt = cave->height;
-	int dungeon_wid = cave->width;
-	int screen_hgt = (t == angband_term[0]) ?
-		SCREEN_HGT : t->hgt / tile_height;
-	int screen_wid = (t == angband_term[0]) ?
-		SCREEN_WID : t->wid / tile_width;
 
-	/* Verify wy, adjust if needed */
-	if (wy > dungeon_hgt - screen_hgt) wy = dungeon_hgt - screen_hgt;
-	if (wy < 0) wy = 0;
-
-	/* Verify wx, adjust if needed */
-	if (wx > dungeon_wid - screen_wid) wx = dungeon_wid - screen_wid;
-	if (wx < 0) wx = 0;
-
-	/* Needs changes? */
-	return ((t->offset_y != wy) || (t->offset_x != wx));
-}
-
-/**
- * Modify the current panel to the given coordinates, adjusting only to
- * ensure the coordinates are legal, and return true if anything done.
+/*
+ * Given a "formatted" chunk of text (i.e. one including tags like {red}{/})
+ * in 'source', with starting point 'init', this finds the next section of
+ * text and any tag that goes with it, return true if it finds something to
+ * print.
  *
- * The town should never be scrolled around.
+ * If it returns true, then it also fills 'text' with a pointer to the start
+ * of the next printable section of text, and 'len' with the length of that
+ * text, and 'end' with a pointer to the start of the next section.  This
+ * may differ from "text + len" because of the presence of tags.  If a tag
+ * applies to the section of text, it returns a pointer to the start of that
+ * tag in 'tag' and the length in 'taglen'.  Otherwise, 'tag' is filled with
+ * NULL.
  *
- * Note that monsters are no longer affected in any way by panel changes.
- *
- * As a total hack, whenever the current panel changes, we assume that
- * the "overhead view" window should be updated.
+ * See text_out_e for an example of its use.
  */
-bool modify_panel(term *t, int wy, int wx)
+static bool next_section(const char *source, size_t init, const char **text,
+    size_t *len, const char **tag, size_t *taglen, const char **end)
 {
-	int dungeon_hgt = cave->height;
-	int dungeon_wid = cave->width;
-	int screen_hgt = (t == angband_term[0]) ?
-		SCREEN_HGT : t->hgt / tile_height;
-	int screen_wid = (t == angband_term[0]) ?
-		SCREEN_WID : t->wid / tile_width;
+    const char *next;
 
-	/* Verify wy, adjust if needed */
-	if (wy > dungeon_hgt - screen_hgt) wy = dungeon_hgt - screen_hgt;
-	if (wy < 0) wy = 0;
+    *tag = NULL;
+    *text = source + init;
+    if (*text[0] == '\0') return false;
 
-	/* Verify wx, adjust if needed */
-	if (wx > dungeon_wid - screen_wid) wx = dungeon_wid - screen_wid;
-	if (wx < 0) wx = 0;
+    next = strchr(*text, '{');
+    while (next)
+    {
+        const char *s = next + 1;
 
-	/* React to changes */
-	if (panel_should_modify(t, wy, wx)) {
-		/* Save wy, wx */
-		t->offset_y = wy;
-		t->offset_x = wx;
+        while (*s && (isalpha((unsigned char)*s) || isspace((unsigned char)*s))) s++;
 
-		/* Redraw map */
-		player->upkeep->redraw |= (PR_MAP);
+        /* Woo!  valid opening tag thing */
+        if (*s == '}')
+        {
+            const char *close = strstr(s, "{/}");
 
-		/* Changed */
-		return (true);
-	}
+            /* There's a closing thing, so it's valid. */
+            if (close)
+            {
+                /* If this tag is at the start of the fragment */
+                if (next == *text)
+                {
+                    *tag = *text + 1;
+                    *taglen = s - *text - 1;
+                    *text = s + 1;
+                    *len = close - *text;
+                    *end = close + 3;
+                    return true;
+                }
 
-	/* No change */
-	return (false);
+                /* Otherwise return the chunk up to this */
+                else
+                {
+                    *len = next - *text;
+                    *end = *text + *len;
+                    return true;
+                }
+            }
+
+            /* No closing thing, therefore all one lump of text. */
+            else
+            {
+                *len = strlen(*text);
+                *end = *text + *len;
+                return true;
+            }
+        }
+
+        /* End of the string, that's fine. */
+        else if (*s == '\0')
+        {
+            *len = strlen(*text);
+            *end = *text + *len;
+            return true;
+        }
+
+        /* An invalid tag, skip it. */
+        else
+            next = next + 1;
+
+        next = strchr(next, '{');
+    }
+
+    /* Default to the rest of the string */
+    *len = strlen(*text);
+    *end = *text + *len;
+
+    return true;
 }
 
-static void verify_panel_int(bool centered)
-{
-	int wy, wx;
-	int screen_hgt, screen_wid;
 
-	int panel_wid, panel_hgt;
-
-	int py = player->grid.y;
-	int px = player->grid.x;
-
-	int j;
-
-	/* Scan windows */
-	for (j = 0; j < ANGBAND_TERM_MAX; j++) {
-		term *t = angband_term[j];
-
-		/* No window */
-		if (!t) continue;
-
-		/* No relevant flags */
-		if ((j > 0) && !(window_flag[j] & (PW_OVERHEAD))) continue;
-
-		wy = t->offset_y;
-		wx = t->offset_x;
-
-		screen_hgt = (j == 0) ? SCREEN_HGT : t->hgt / tile_height;
-		screen_wid = (j == 0) ? SCREEN_WID : t->wid / tile_width;
-
-		panel_wid = screen_wid / 2;
-		panel_hgt = screen_hgt / 2;
-
-
-		/* Scroll screen vertically when off-center */
-		if (centered && !player->upkeep->running && (py != wy + panel_hgt))
-			wy = py - panel_hgt;
-
-		/* Scroll screen vertically when 3 grids from top/bottom edge */
-		else if ((py < wy + 3) || (py >= wy + screen_hgt - 3))
-			wy = py - panel_hgt;
-
-
-		/* Scroll screen horizontally when off-center */
-		if (centered && !player->upkeep->running && (px != wx + panel_wid))
-			wx = px - panel_wid;
-
-		/* Scroll screen horizontally when 3 grids from left/right edge */
-		else if ((px < wx + 3) || (px >= wx + screen_wid - 3))
-			wx = px - panel_wid;
-
-
-		/* Scroll if needed */
-		modify_panel(t, wy, wx);
-	}
-}
-
-/**
- * Change the current panel to the panel lying in the given direction.
+/*
+ * Output text to the screen or to a file depending on the
+ * selected hook. Takes strings with "embedded formatting",
+ * such that something within {red}{/} will be printed in red.
  *
- * Return true if the panel was changed.
+ * Note that such formatting will be treated as a "breakpoint"
+ * for the printing, so if used within words may lead to part of the
+ * word being moved to the next line.
  */
-bool change_panel(int dir)
+void text_out_e(const char *buf, int y, int xoffset)
 {
-	bool changed = false;
-	int j;
+    char smallbuf[MSG_LEN];
+    const char *start;
+    const char *next, *text, *tag;
+    size_t textlen, taglen = 0;
+    int x = 0;
 
-	/* Scan windows */
-	for (j = 0; j < ANGBAND_TERM_MAX; j++) {
-		int screen_hgt, screen_wid;
-		int wx, wy;
+    start = buf;
+    while (next_section(start, 0, &text, &textlen, &tag, &taglen, &next))
+    {
+        int a = -1;
 
-		term *t = angband_term[j];
+        memcpy(smallbuf, text, textlen);
+        smallbuf[textlen] = 0;
 
-		/* No window */
-		if (!t) continue;
+        if (tag)
+        {
+            char tagbuffer[16];
 
-		/* No relevant flags */
-		if ((j > 0) && !(window_flag[j] & PW_OVERHEAD)) continue;
+            /* Colour names are less than 16 characters long. */
+            assert(taglen < 16);
 
-		screen_hgt = (j == 0) ? SCREEN_HGT : t->hgt / tile_height;
-		screen_wid = (j == 0) ? SCREEN_WID : t->wid / tile_width;
+            memcpy(tagbuffer, tag, taglen);
+            tagbuffer[taglen] = '\0';
 
-		/* Shift by half a panel */
-		wy = t->offset_y + ddy[dir] * screen_hgt / 2;
-		wx = t->offset_x + ddx[dir] * screen_wid / 2;
+            a = color_text_to_attr(tagbuffer);
+        }
 
-		/* Use "modify_panel" */
-		if (modify_panel(t, wy, wx)) changed = true;
-	}
+        if (a == -1) a = COLOUR_WHITE;
 
-	return (changed);
-}
+        /* Output now */
+        c_put_str(a, smallbuf, y, x + xoffset);
 
+        /* Advance */
+        x += strlen(smallbuf);
 
-/**
- * Verify the current panel (relative to the player location).
- *
- * By default, when the player gets "too close" to the edge of the current
- * panel, the map scrolls one panel in that direction so that the player
- * is no longer so close to the edge.
- *
- * The "OPT(player, center_player)" option allows the current panel to always be
- * centered around the player, which is very expensive, and also has some
- * interesting gameplay ramifications.
- */
-void verify_panel(void)
-{
-	verify_panel_int(OPT(player, center_player));
-}
-
-void center_panel(void)
-{
-	verify_panel_int(true);
-}
-
-void textui_get_panel(int *min_y, int *min_x, int *max_y, int *max_x)
-{
-	term *t = term_screen;
-
-	if (!t) return;
-
-	*min_y = t->offset_y;
-	*min_x = t->offset_x;
-	*max_y = t->offset_y + SCREEN_HGT;
-	*max_x = t->offset_x + SCREEN_WID;
-}
-
-bool textui_panel_contains(unsigned int y, unsigned int x)
-{
-	unsigned int hgt;
-	unsigned int wid;
-	if (!Term)
-		return true;
-	if (Term == term_screen) {
-		hgt = SCREEN_HGT;
-		wid = SCREEN_WID;
-	} else {
-		hgt = Term->hgt / tile_height;
-		wid = Term->wid / tile_width;
-	}
-	return (y - Term->offset_y) < hgt && (x - Term->offset_x) < wid;
+        start = next;
+    }
 }

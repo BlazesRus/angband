@@ -1,9 +1,10 @@
-/**
- * \file cmd-pickup.c
- * \brief Pickup code
+/*
+ * File: cmd-pickup.c
+ * Purpose: Pickup code
  *
- * Copyright (c) 1997 Ben Harrison, James E. Wilson, Robert A. Koeneke,
+ * Copyright (c) 1997 Ben Harrison, James E. Wilson, Robert A. Koeneke
  * Copyright (c) 2007 Leon Marrick
+ * Copyright (c) 2022 MAngband and PWMAngband Developers
  *
  * This work is free software; you can redistribute it and/or modify it
  * under the terms of either:
@@ -17,275 +18,528 @@
  *    are included in all such copies.  Other copyrights may also apply.
  */
 
-#include "angband.h"
-#include "cave.h"
-#include "cmds.h"
-#include "..\client\game-event.h"
-#include "..\client\game-input.h"
-#include "generate.h"
-#include "init.h"
-#include "mon-lore.h"
-#include "mon-timed.h"
-#include "mon-util.h"
-#include "obj-desc.h"
-#include "obj-gear.h"
-#include "obj-ignore.h"
-#include "obj-pile.h"
-#include "obj-tval.h"
-#include "obj-util.h"
-#include "player-attack.h"
-#include "player-calcs.h"
-#include "player-history.h"
-#include "player-util.h"
-#include "trap.h"
 
-/**
+#include "s-angband.h"
+
+
+/*
  * Pick up all gold at the player's current location.
  */
-static void player_pickup_gold(struct player *p)
+static void player_pickup_gold(struct player *p, struct chunk *c)
 {
-	int32_t total_gold = 0L;
-	char name[30] = "";
+    int32_t total_gold = 0L;
+    char name[30] = "";
+    int sound_msg;
+    bool at_most_one = true;
+    struct object *obj = square_object(c, &p->grid), *next;
 
-	struct object *obj = square_object(cave, p->grid), *next;
+    /* Pick up all the ordinary gold objects */
+    while (obj)
+    {
+        struct object_kind *kind = NULL;
 
-	int sound_msg;
-	bool verbal = false;
-	bool at_most_one = true;
+        /* Get next object */
+        next = obj->next;
 
-	/* Pick up all the ordinary gold objects */
-	while (obj) {
-		struct object_kind *kind = NULL;
+        /* Ignore if not legal treasure */
+        kind = lookup_kind(obj->tval, obj->sval);
+        if (!tval_is_money(obj) || !kind)
+        {
+            obj = next;
+            continue;
+        }
 
-		/* Get next object */
-		next = obj->next;
+        /* Cannot carry infinite gold */
+        if ((p->au + total_gold) > PY_MAX_GOLD)
+        {
+            msg(p, "Your purse is full!");
+            obj = next;
+            continue;
+        }
 
-		/* Ignore if not legal treasure */
-		kind = lookup_kind(obj->tval, obj->sval);
-		if (!tval_is_money(obj) || !kind) {
-			obj = next;
-			continue;
-		}
+        /* Restricted by choice */
+        if (!is_owner(p, obj))
+        {
+            msg(p, "This pile of gold belongs to someone else!");
+            obj = next;
+            continue;
+        }
 
-		/* Multiple types if we have a second name, otherwise record the name */
-		if (total_gold && !streq(kind->name, name))
-			at_most_one = false;
-		else
-			my_strcpy(name, kind->name, sizeof(name));
+        /* Multiple types if we have a second name, otherwise record the name */
+        if (total_gold && !streq(kind->name, name))
+            at_most_one = false;
+        else
+            my_strcpy(name, kind->name, sizeof(name));
 
-		/* Remember whether feedback message is in order */
-		if (!ignore_item_ok(p, obj))
-			verbal = true;
+        /* Increment total value */
+        total_gold += (int32_t)obj->pval;
 
-		/* Increment total value */
-		total_gold += (int32_t)obj->pval;
+        /* Pile of gold is now owned */
+        object_own(p, obj);
 
-		/* Delete the gold */
-		if (obj->known) {
-			square_delete_object(p->cave, p->grid, obj->known, false, false);
-		}
-		square_delete_object(cave, p->grid, obj, false, false);
-		obj = next;
-	}
+        /* Delete the gold */
+        square_delete_object(c, &p->grid, obj, false, false);
+        obj = next;
+    }
 
-	/* Pick up the gold, if present */
-	if (total_gold) {
-		char buf[100];
+    /* Pick up the gold, if present */
+    if (total_gold)
+    {
+        char buf[100];
 
-		/* Build a message */
-		(void)strnfmt(buf, sizeof(buf),
-					  "You have found %d gold pieces worth of ", total_gold);
+        /* Disturb */
+        disturb(p, 0);
 
-		/* One treasure type.. */
-		if (at_most_one)
-			my_strcat(buf, name, sizeof(buf));
-		/* ... or more */
-		else
-			my_strcat(buf, "treasures", sizeof(buf));
-		my_strcat(buf, ".", sizeof(buf));
+        /* Build a message */
+        strnfmt(buf, sizeof(buf), "You have found %d gold piece%s worth of ", total_gold,
+            PLURAL(total_gold));
 
-		/* Determine which sound to play */
-		if      (total_gold < 200) sound_msg = MSG_MONEY1;
-		else if (total_gold < 600) sound_msg = MSG_MONEY2;
-		else                       sound_msg = MSG_MONEY3;
+        /* One treasure type.. */
+        if (at_most_one) my_strcat(buf, name, sizeof(buf));
 
-		/* Display the message */
-		if (verbal)
-			msgt(sound_msg, "%s", buf);
+        /* ... or more */
+        else my_strcat(buf, "treasures", sizeof(buf));
 
-		/* Add gold to purse */
-		p->au += total_gold;
+        my_strcat(buf, ".", sizeof(buf));
 
-		/* Redraw gold */
-		p->upkeep->redraw |= (PR_GOLD);
-	}
+        /* Determine which sound to play */
+        if (total_gold < 35) sound_msg = MSG_GOLD_1;
+        else if (total_gold < 100) sound_msg = MSG_GOLD_2;
+        else if (total_gold < 250) sound_msg = MSG_MONEY1;
+        else if (total_gold < 600) sound_msg = MSG_GOLD_3;
+        else if (total_gold < 1100) sound_msg = MSG_MONEY2;
+        else sound_msg = MSG_MONEY3;
+
+        /* Display the message */
+        msgt(p, sound_msg, buf);
+
+        /* Add gold to purse */
+        p->au += total_gold;
+
+        /* Redraw gold */
+        p->upkeep->redraw |= (PR_GOLD);
+    }
 }
 
 
-/**
+/*
+ * Looks if "inscrip" is present on the given object.
+ */
+static unsigned check_for_inscrip(const struct object *obj, const char *inscrip)
+{
+    unsigned i = 0;
+    const char *s;
+
+    if (!obj->note) return 0;
+
+    s = quark_str(obj->note);
+    if (!s) return 0;
+
+    do
+    {
+        s = strstr(s, inscrip);
+        if (!s) break;
+
+        i++;
+        s++;
+    }
+    while (s);
+
+    return i;
+}
+
+
+/*
+ * Looks if "inscrip" immediately followed by a decimal integer without a
+ * leading sign character is present on the given object. Returns the number
+ * of times such an inscription occurs and, if that value is at least one,
+ * sets *ival to the value of the integer that followed the first such
+ * inscription.
+ */
+static unsigned check_for_inscrip_with_int(const struct object *obj, const char *inscrip, int* ival)
+{
+    unsigned i = 0;
+    size_t inlen = strlen(inscrip);
+    const char *s;
+
+    if (!obj->note) return 0;
+
+    s = quark_str(obj->note);
+    if (!s) return 0;
+
+    do
+    {
+        s = strstr(s, inscrip);
+        if (!s) break;
+        if (isdigit(s[inlen]))
+        {
+            if (i == 0)
+            {
+                long inarg = strtol(s + inlen, 0, 10);
+
+                *ival = ((inarg < INT_MAX)? (int)inarg: INT_MAX);
+            }
+            i++;
+        }
+        s++;
+    }
+    while (s);
+
+    return i;
+}
+
+
+/*
  * Find the specified object in the inventory (not equipment)
  */
-static const struct object *find_stack_object_in_inventory(const struct object *obj, const struct object *start)
+static const struct object *find_stack_object_in_inventory(struct player *p,
+    const struct object *obj, const struct object *start)
 {
-	const struct object *gear_obj;
-	for (gear_obj = (start) ? start : player->gear; gear_obj; gear_obj = gear_obj->next) {
-		if (!object_is_equipped(player->body, gear_obj) &&
-				object_similar(gear_obj, obj, OSTACK_PACK)) {
-			/* We found the object */
-			return gear_obj;
-		}
-	}
+    const struct object *gear_obj;
 
-	return NULL;
+    for (gear_obj = (start? start: p->gear); gear_obj; gear_obj = gear_obj->next)
+    {
+        if (!object_is_equipped(p->body, gear_obj) &&
+            object_similar(p, gear_obj, obj, OSTACK_PACK))
+        {
+            /* We found the object */
+            return gear_obj;
+        }
+    }
+
+    return NULL;
 }
 
 
-/**
+/*
  * Determine if an object can be picked up automatically and return the
  * number to pick up.
  */
-static int auto_pickup_okay(const struct object *obj)
+static int auto_pickup_okay(struct player *p, struct object *obj)
 {
-        /*
-	 * Use the following inscriptions to guide pickup with the last one
-	 * borrowed from Unangband:
-	 *
-	 * !g     don't pickup
-	 * =g     pickup
-	 * =g<n>  (i.e. =g5) pick up if have less than n
-	 *
-	 * !g takes precedence over any of the others if an object is
-	 * inscribed with it and any of the others.  =g with no value takes
-	 * precedence over =g<n> if an object is inscribed with both.  In
-	 * general, inscriptions on the item on the floor are examined first
-	 * and the ones on a matching item in the pack will only come into
-	 * consideration if those on the item on the floor do not force or
-	 * reject pickup.  When examining inscriptions in the pack, only
-	 * use those on the first stack.
-	 *
-	 * The player option to always pick up overrides all of those
-	 * inscriptions.  The player option to pickup if in the inventory
-	 * honors those inscriptions.
-	 */
-	int num = inven_carry_num(player, obj);
-	unsigned obj_has_auto, obj_has_maxauto;
-	int obj_maxauto;
+    int num = inven_carry_num(p, obj);
+    unsigned obj_has_auto, obj_has_maxauto;
+    int obj_maxauto;
 
-	if (!num) return 0;
+    /*** Negative checks ***/
 
-	if (OPT(player, pickup_always)) return num;
-	if (check_for_inscrip(obj, "!g")) return 0;
+    /* Winners cannot pickup artifacts except the Crown and Grond */
+    if (true_artifact_p(obj) && restrict_winner(p, obj))
+        return 0;
 
-	obj_has_auto = check_for_inscrip(obj, "=g");
-	obj_maxauto = INT_MAX;
-	obj_has_maxauto = check_for_inscrip_with_int(obj, "=g", &obj_maxauto);
-	if (obj_has_auto > obj_has_maxauto) return num;
+    /* Restricted by choice */
+    if (obj->artifact && (cfg_no_artifacts || OPT(p, birth_no_artifacts)))
+        return 0;
 
-	if (OPT(player, pickup_inven) || obj_has_maxauto) {
-		const struct object *gear_obj = find_stack_object_in_inventory(obj, NULL);
-		if (!gear_obj) {
-			if (obj_has_maxauto) {
-				return (num < obj_maxauto) ? num : obj_maxauto;
-			}
-			return 0;
-		}
-		if (!check_for_inscrip(gear_obj, "!g")) {
-			unsigned int gear_has_auto = check_for_inscrip(gear_obj, "=g");
-			unsigned int gear_has_maxauto;
-			int gear_maxauto;
+    /* It can't be carried */
+    if (!num) return 0;
 
-			gear_has_maxauto = check_for_inscrip_with_int(gear_obj, "=g", &gear_maxauto);
-			if (gear_has_auto > gear_has_maxauto) {
-				return num;
-			}
-			if (obj_has_maxauto || gear_has_maxauto) {
-				/* Use the pack inscription if have both. */
-				int max_num = (gear_has_maxauto) ?
-					gear_maxauto : obj_maxauto;
-				/* Determine the total number in the pack. */
-				int pack_num = gear_obj->number;
+    /* Note that the pack is too heavy */
+    if (!weight_okay(p, obj)) return 0;
 
-				while (1) {
-					if (!gear_obj->next) {
-						break;
-					}
-					gear_obj = find_stack_object_in_inventory(obj, gear_obj->next);
-					if (!gear_obj) {
-						break;
-					}
-					pack_num += gear_obj->number;
-				}
-				if (pack_num >= max_num) {
-					return 0;
-				}
-				return (num < max_num - pack_num) ?
-					num : max_num - pack_num;
-			}
-			return num;
-		}
-	}
+    /* Restricted by choice */
+    if (!is_owner(p, obj)) return 0;
 
-	return 0;
+    /* Must meet level requirement */
+    if (!has_level_req(p, obj)) return 0;
+
+    /* Ignore ignored items */
+    if (ignore_item_ok(p, obj)) return 0;
+
+    /* Check preventive inscription '!g' */
+    if (protected_p(p, obj, INSCRIPTION_PICKUP, false)) return 0;
+
+    /*** Positive checks ***/
+
+    /* Vacuum up everything if requested */
+    if (OPT(p, pickup_always)) return num;
+
+    /* Check inscription */
+    obj_has_auto = check_for_inscrip(obj, "=g");
+    obj_maxauto = INT_MAX;
+    obj_has_maxauto = check_for_inscrip_with_int(obj, "=g", &obj_maxauto);
+    if (obj_has_auto > obj_has_maxauto) return num;
+
+    /* Pickup if it matches the inventory */
+    if (OPT(p, pickup_inven) || obj_has_maxauto)
+    {
+        const struct object *gear_obj = find_stack_object_in_inventory(p, obj, NULL);
+
+        if (!gear_obj)
+        {
+            if (obj_has_maxauto) return ((num < obj_maxauto)? num: obj_maxauto);
+            return 0;
+        }
+        if (!check_for_inscrip(gear_obj, "!g"))
+        {
+            unsigned int gear_has_auto = check_for_inscrip(gear_obj, "=g");
+            int gear_maxauto = INT_MAX;
+            unsigned int gear_has_maxauto;
+
+            gear_has_maxauto = check_for_inscrip_with_int(gear_obj, "=g", &gear_maxauto);
+            if (gear_has_auto > gear_has_maxauto) return num;
+            if (obj_has_maxauto || gear_has_maxauto)
+            {
+                /* Use the pack inscription if have both */
+                int max_num = (gear_has_maxauto? gear_maxauto: obj_maxauto);
+
+                /* Determine the total number in the pack */
+                int pack_num = gear_obj->number;
+
+                while (1)
+                {
+                    if (!gear_obj->next) break;
+                    gear_obj = find_stack_object_in_inventory(p, obj, gear_obj->next);
+                    if (!gear_obj) break;
+                    pack_num += gear_obj->number;
+                }
+                if (pack_num >= max_num) return 0;
+                return ((num < max_num - pack_num)? num: max_num - pack_num);
+            }
+            return num;
+        }
+    }
+
+    /* Don't auto pickup */
+    return 0;
 }
 
 
-/**
+/*
  * Move an object from a floor pile to the player's gear, checking first
  * whether partial pickup is needed
  */
-static void player_pickup_aux(struct player *p, struct object *obj,
-							  int auto_max, bool domsg)
+static void player_pickup_aux(struct player *p, struct chunk *c, struct object *obj, int auto_max,
+    bool domsg)
 {
-	int max = inven_carry_num(p, obj);
+    int max = inven_carry_num(p, obj);
 
-	/* Confirm at least some of the object can be picked up */
-	if (max == 0)
-		quit_fmt("Failed pickup of %s", obj->kind->name);
+    /* Confirm at least some of the object can be picked up */
+    if (!max) quit_fmt("Failed pickup of %s", obj->kind->name);
 
-	/* Set ignore status */
-	p->upkeep->notice |= PN_IGNORE;
+    /* Auto-ignore */
+    if (p->ignore)
+    {
+        /* Set ignore status as appropriate */
+        p->upkeep->notice |= PN_IGNORE;
+    }
+    else
+    {
+        /* Bypass auto-ignore */
+        obj->ignore_protect = 1;
+    }
 
-	/* Allow auto-pickup to limit the number if it wants to */
-	if (auto_max && max > auto_max) {
-		max = auto_max;
-	}
+    /* Allow auto-pickup to limit the number if it wants to */
+    if (auto_max && max > auto_max) max = auto_max;
 
-	/* Carry the object, prompting for number if necessary */
-	if (max == obj->number) {
-		if (obj->known) {
-			square_excise_object(p->cave, p->grid, obj->known);
-			delist_object(p->cave, obj->known);
-		}
-		square_excise_object(cave, p->grid, obj);
-		delist_object(cave, obj);
-		inven_carry(p, obj, true, domsg);
-	} else {
-		int num;
-		bool dummy;
-		struct object *picked_up;
+    /* Carry the object, prompting for number if necessary */
+    if (max == obj->number)
+    {
+        square_excise_object(c, &p->grid, obj);
+        inven_carry(p, obj, true, domsg);
+    }
+    else
+    {
+        int num;
+        bool dummy;
+        struct object *picked_up;
 
-		if (auto_max)
-			num = auto_max;
-		else
-			num = get_quantity(NULL, max);
-		if (!num) return;
-		picked_up = floor_object_for_use(p, obj, num, false, &dummy);
-		inven_carry(p, picked_up, true, domsg);
-	}
+        if (auto_max) num = auto_max;
+        else num = max;
+        if (!num) return;
+        picked_up = floor_object_for_use(p, c, obj, num, false, &dummy);
+        inven_carry(p, picked_up, true, domsg);
+    }
 }
 
-/**
- * Pick up objects and treasure on the floor.  -LM-
+
+static bool allow_pickup_object(struct player *p, struct object *obj)
+{
+    /* Winners cannot pick up artifacts except the Crown and Grond */
+    if (true_artifact_p(obj) && restrict_winner(p, obj))
+        return false;
+
+    /* Restricted by choice */
+    if (obj->artifact && (cfg_no_artifacts || OPT(p, birth_no_artifacts)))
+        return false;
+
+    /* Restricted by choice */
+    if (!is_owner(p, obj)) return false;
+
+    /* Must meet level requirement */
+    if (!has_level_req(p, obj)) return false;
+
+    return true;
+}
+
+
+static int see_floor_items(struct player *p, struct chunk *c, int pickup,
+    struct object **floor_list, int floor_max)
+{
+    size_t floor_num = 0;
+    bool blind = (p->timed[TMD_BLIND] || no_light(p));
+    const char *prompt = "see";
+    bool can_pickup = false, can_lift = false, allow_pickup = false;
+    size_t i;
+    char o_name[NORMAL_WID];
+
+    /* Scan all visible, sensed objects in the grid */
+    floor_num = scan_floor(p, c, floor_list, floor_max, OFLOOR_VISIBLE, NULL);
+    if (floor_num == 0) return 0;
+
+    /* Can we pick any up? */
+    for (i = 0; i < floor_num; i++)
+    {
+        if (inven_carry_okay(p, floor_list[i])) can_pickup = true;
+        if (weight_okay(p, floor_list[i])) can_lift = true;
+        if (allow_pickup_object(p, floor_list[i])) allow_pickup = true;
+    }
+
+    /* Mention the objects if player is not picking them up. */
+    if ((pickup >= 2) && can_pickup && can_lift && allow_pickup) return floor_num;
+
+    if (pickup < 2) {if (blind) prompt = "feel";}
+    else if (!can_pickup) prompt = "have no room for";
+    else if (!can_lift) prompt = "are already too burdened to pick up";
+    else if (!allow_pickup) prompt = "are not allowed to pick up";
+
+    /* Describe the top object. Less detail if blind. */
+    if (blind)
+        object_desc(p, o_name, sizeof(o_name), floor_list[0], ODESC_PREFIX | ODESC_BASE);
+    else
+        object_desc(p, o_name, sizeof(o_name), floor_list[0], ODESC_PREFIX | ODESC_FULL);
+
+    /* Message */
+    if (floor_num == 1)
+        msg(p, "You %s %s.", prompt, o_name);
+    else
+        msg(p, "You %s %s (on a pile).", prompt, o_name);
+
+    /* Done */
+    return 0;
+}
+
+
+static bool floor_purchase(struct player *p, struct chunk *c, int pickup, struct object *obj)
+{
+    char o_name[NORMAL_WID];
+
+    /* Hack -- allow purchase from floor */
+    if (protected_p(p, obj, INSCRIPTION_PICKUP, false))
+    {
+        int i;
+        struct player *q;
+        bool okay = false;
+        struct object *full = object_new();
+        int32_t price;
+        char buf[NORMAL_WID];
+
+        /* Get item owner */
+        for (i = 1; i <= NumPlayers; i++)
+        {
+            q = player_get(i);
+            if (q->id == obj->owner)
+            {
+                okay = player_is_in_view(p, i);
+                break;
+            }
+        }
+        if (!okay)
+        {
+            msg(p, "Item owner must be nearby!");
+            return false;
+        }
+
+        /* Get a copy of the object */
+        object_copy(full, obj);
+
+        /* Identify object to get real price */
+        object_notice_everything_aux(p, full, true, false);
+
+        /* Get the price */
+        price = player_price_item(p, full);
+        object_delete(&full);
+        if (price < 0)
+        {
+            msg(p, "The item's inscription prevents it.");
+            return false;
+        }
+        if (p->au < price)
+        {
+            msg(p, "You do not have enough gold.");
+            return false;
+        }
+
+        /* Tell the client about the price */
+        if (pickup < 4)
+        {
+            p->current_value = obj->oidx;
+            Send_store_sell(p, price, false);
+            return false;
+        }
+
+        /* Bypass auto-ignore */
+        obj->ignore_protect = 1;
+
+        /* Perform the transaction */
+        p->au -= price;
+        p->upkeep->redraw |= PR_GOLD;
+        q->au += price;
+        q->upkeep->redraw |= PR_GOLD;
+
+        /* Know original object */
+        object_notice_everything(p, obj);
+
+        /* Describe the object (short name) */
+        object_desc(p, o_name, sizeof(o_name), obj, ODESC_PREFIX | ODESC_FULL | ODESC_SALE);
+
+        /* Combine the pack (later) and update gear */
+        p->upkeep->notice |= (PN_COMBINE);
+        p->upkeep->update |= (PU_INVEN);
+
+        /* Message */
+        msg(p, "You bought %s for %d gold.", o_name, price);
+        msg(q, "You sold %s for %d gold.", o_name, price);
+
+        /* Erase the inscription */
+        obj->note = 0;
+
+        /* Set origin */
+        set_origin(obj, ORIGIN_PLAYER, p->wpos.depth, NULL);
+
+        /* Mark artifact as sold */
+        set_artifact_info(q, obj, ARTS_SOLD);
+
+        /* Audit */
+        strnfmt(buf, sizeof(buf), "PS %s-%d | %s-%d $ %d", p->name, (int)p->id,
+            q->name, (int)q->id, price);
+        audit(buf);
+        audit("PS+gold");
+    }
+
+    return true;
+}
+
+
+/*
+ * Pick up objects and treasure on the floor.
  *
- * Scan the list of objects in that floor grid. Pick up gold automatically.
+ * Called with pickup:
+ * 0 to pickup gold and describe other objects (when running)
+ * 1 to act according to the player's settings (auto-pickup check when walking)
+ * 2 to quickly pickup single objects or present a menu for more (pickup command)
+ * 3 to force a menu for any number of objects (recursive call)
+ * 4 to purchase an item from the floor
+ *
+ * Scan the list of objects in that floor grid. Pick up gold automatically
  * Pick up objects automatically until backpack space is full if
  * auto-pickup option is on, otherwise, store objects on
  * floor in an array, and tally both how many there are and can be picked up.
  *
- * If not picking up anything, indicate objects on the floor.  Do the same
+ * If not picking up anything, indicate objects on the floor. Do the same
  * thing if we don't have room for anything.
  *
- * Pick up multiple objects using Tim Baker's menu system.   Recursively
+ * Pick up multiple objects using Tim Baker's menu system. Recursively
  * call this function (forcing menus for any number of objects) until
  * objects are gone, backpack is full, or player is satisfied.
  *
@@ -295,192 +549,313 @@ static void player_pickup_aux(struct player *p, struct object *obj,
  * automated move or a no-cost part of the stay still or 'g'et command.
  *
  * Note the lack of chance for the character to be disturbed by unmarked
- * objects.  They are truly "unknown".
+ * objects. They are truly "unknown".
  *
- * \param obj is the object to pick up.
- * \param menu is whether to present a menu to the player
+ * obj is the floor item to pick up.
  */
-static uint8_t player_pickup_item(struct player *p, struct object *obj, bool menu)
+uint8_t player_pickup_item(struct player *p, struct chunk *c, int pickup, struct object *o)
 {
-	struct object *current = NULL;
+    struct object *current = NULL;
+    int floor_max = z_info->floor_size;
+    struct object **floor_list = mem_zalloc(floor_max * sizeof(*floor_list));
+    int floor_num = 0;
+    bool call_function_again = false;
+    bool domsg = true;
 
-	int floor_max = z_info->floor_size + 1;
-	struct object **floor_list = mem_zalloc(floor_max * sizeof(*floor_list));
-	int floor_num = 0;
+    /* Objects picked up */
+    uint8_t objs_picked_up = 0;
 
-	int i;
-	int can_pickup = 0;
-	bool call_function_again = false;
+    /* Nothing else to pick up -- return */
+    if (!square_object(c, &p->grid))
+    {
+        mem_free(floor_list);
+        return 0;
+    }
 
-	bool domsg = true;
+    /* Normal ghosts cannot pick things up */
+    if (p->ghost && !(p->dm_flags & DM_GHOST_BODY))
+    {
+        mem_free(floor_list);
+        return 0;
+    }
 
-	/* Objects picked up.  Used to determine time cost of command. */
-	uint8_t objs_picked_up = 0;
+    /* Tally objects that can be at least partially picked up.*/
+    floor_num = see_floor_items(p, c, pickup, floor_list, floor_max);
+    if (!floor_num)
+    {
+        mem_free(floor_list);
+        return objs_picked_up;
+    }
 
-	/* Always know what's on the floor */
-	square_know_pile(cave, p->grid);
+    /* Use the item that we are given, if defined (pickup command from context menu) */
+    if (o) current = o;
 
-	/* Always pickup gold, effortlessly */
-	player_pickup_gold(p);
+    /* Use a menu interface for multiple objects, or pickup single objects */
+    if ((pickup == 2) && !current)
+    {
+        if (floor_num > 1) pickup = 3;
+        else current = floor_list[0];
+    }
 
-	/* Nothing else to pick up -- return */
-	if (!square_object(cave, p->grid)) {
-		mem_free(floor_list);
-		return objs_picked_up;
-	}
+    /* Display a list if requested. */
+    if ((pickup == 3) && !current)
+    {
+        struct object *obj;
 
-	/* We're given an object - pick it up */
-	if (obj) {
-		player_pickup_aux(p, obj, 0, domsg);
-		objs_picked_up = 1;
-		mem_free(floor_list);
-		return objs_picked_up;
-	}
+        /* No item -> get one */
+        if (p->current_value == ITEM_REQUEST)
+        {
+            /* Update the floor on the client, force response */
+            display_floor(p, c, floor_list, floor_num, true);
+            mem_free(floor_list);
+            return objs_picked_up;
+        }
 
-	/* Tally objects that can be at least partially picked up.*/
-	floor_num = scan_floor(floor_list, floor_max, p, OFLOOR_VISIBLE, NULL);
-	for (i = 0; i < floor_num; i++)
-	    if (inven_carry_num(p, floor_list[i]) > 0)
-			can_pickup++;
+        /* Use current */
+        obj = object_from_index(p, p->current_value, true, true);
 
-	if (!can_pickup) {
-	    event_signal(EVENT_SEEFLOOR);
-		mem_free(floor_list);
-	    return objs_picked_up;
-	}
+        /* Paranoia: requires an item */
+        if (!obj)
+        {
+            mem_free(floor_list);
+            return objs_picked_up;
+        }
 
-	/* Use a menu interface for multiple objects, or pickup single objects */
-	if (!menu && !current) {
-		if (floor_num > 1)
-			menu = true;
-		else
-			current = floor_list[0];
-	}
+        /* Some checks */
+        if (!object_is_carried(p, obj))
+        {
+            /* Winners cannot pick up artifacts except the Crown and Grond */
+            if (true_artifact_p(obj) && restrict_winner(p, obj))
+            {
+                msg(p, "You cannot pick up that item anymore.");
+                mem_free(floor_list);
+                return objs_picked_up;
+            }
 
-	/* Display a list if requested. */
-	if (menu && !current) {
-		const char *q, *s;
-		struct object *obj_local = NULL;
+            /* Restricted by choice */
+            if (obj->artifact && (cfg_no_artifacts || OPT(p, birth_no_artifacts)))
+            {
+                msg(p, "You cannot pick up that item.");
+                mem_free(floor_list);
+                return objs_picked_up;
+            }
 
-		/* Get an object or exit. */
-		q = "Get which item?";
-		s = "You see nothing there.";
-		if (!get_item(&obj_local, q, s, CMD_PICKUP, inven_carry_okay, USE_FLOOR)) {
-			mem_free(floor_list);
-			return (objs_picked_up);
-		}
+            /* Restricted by choice */
+            if (!is_owner(p, obj))
+            {
+                msg(p, "This item belongs to someone else!");
+                mem_free(floor_list);
+                return objs_picked_up;
+            }
 
-		current = obj_local;
-		call_function_again = true;
+            /* Must meet level requirement */
+            if (!has_level_req(p, obj))
+            {
+                msg(p, "You don't have the required level!");
+                mem_free(floor_list);
+                return objs_picked_up;
+            }
+        }
 
-		/* With a list, we do not need explicit pickup messages */
-		domsg = true;
-	}
+        /* Use current */
+        current = obj;
+        call_function_again = true;
 
-	/* Pick up object, if legal */
-	if (current) {
-		/* Pick up the object */
-		player_pickup_aux(p, current, 0, domsg);
+        /* With a list, we do not need explicit pickup messages */
+        domsg = false;
+    }
 
-		/* Indicate an object picked up. */
-		objs_picked_up = 1;
-	}
+    /* Hack -- allow purchase from floor */
+    if (pickup == 4)
+    {
+        /* Use current */
+        struct object *obj = object_from_index(p, p->current_value, true, true);
 
-	/*
-	 * If requested, call this function recursively.  Count objects picked
-	 * up.  Force the display of a menu in all cases.
-	 */
-	if (call_function_again)
-		objs_picked_up += player_pickup_item(p, NULL, true);
+        /* Paranoia: requires an item */
+        if (!obj)
+        {
+            mem_free(floor_list);
+            return objs_picked_up;
+        }
 
-	mem_free(floor_list);
+        /* Use current */
+        current = obj;
+        call_function_again = true;
 
-	/* Indicate how many objects have been picked up. */
-	return (objs_picked_up);
+        /* No explicit pickup message */
+        domsg = false;
+    }
+
+    /* Pick up object, if legal */
+    if (current)
+    {
+        /* Hack -- allow purchase from floor */
+        if (!floor_purchase(p, c, pickup, current))
+        {
+            mem_free(floor_list);
+            return objs_picked_up;
+        }
+
+        /* Pick up the object */
+        player_pickup_aux(p, c, current, 0, domsg);
+
+        /* Indicate an object picked up. */
+        objs_picked_up = 1;
+    }
+
+    /*
+     * If requested, call this function recursively. Count objects picked up.
+     * Force the display of a menu in all cases.
+     */
+    if (call_function_again)
+    {
+        current_clear(p);
+        objs_picked_up += player_pickup_item(p, c, 3, NULL);
+    }
+
+    mem_free(floor_list);
+
+    /* Indicate how many objects have been picked up. */
+    return objs_picked_up;
 }
 
-/**
+
+/*
  * Pick up everything on the floor that requires no player action
  */
-int do_autopickup(struct player *p)
+uint8_t do_autopickup(struct player *p, struct chunk *c, int pickup)
 {
-	struct object *obj, *next;
-	uint8_t objs_picked_up = 0;
+    struct object *obj, *next;
+    uint8_t objs_picked_up = 0;
 
-	/* Nothing to pick up -- return */
-	if (!square_object(cave, p->grid))
-		return 0;
+    /* Nothing to pick up -- return */
+    if (!square_object(c, &p->grid)) return 0;
 
-	/* Always pickup gold, effortlessly */
-	player_pickup_gold(p);
+    /* Normal ghosts cannot pick things up */
+    if (p->ghost && !(p->dm_flags & DM_GHOST_BODY)) return 0;
 
-	/* Scan the remaining objects */
-	obj = square_object(cave, p->grid);
-	while (obj) {
-		next = obj->next;
+    /* Always pickup gold, effortlessly */
+    /* Hack -- ghosts don't pick up gold automatically */
+    if (!(p->ghost && (pickup < 2))) player_pickup_gold(p, c);
 
-		/* Ignore all hidden objects and non-objects */
-		if (!ignore_item_ok(p, obj)) {
-			int auto_num;
+    /* Scan the remaining objects */
+    obj = square_object(c, &p->grid);
+    while (obj)
+    {
+        next = obj->next;
 
-			/* Hack -- disturb */
-			disturb(p);
+        /* Ignore all hidden objects */
+        if (!ignore_item_ok(p, obj))
+        {
+            bool auto_pickup;
 
-			/* Automatically pick up items into the backpack */
-			auto_num = auto_pickup_okay(obj);
-			if (auto_num) {
-				/* Pick up the object (as much as possible) with message */
-				player_pickup_aux(p, obj, auto_num, true);
-				objs_picked_up++;
-			}
-		}
-		obj = next;
-	}
+            /* Hack -- disturb */
+            if (!p->ghost) disturb(p, 0);
 
-	return objs_picked_up;
+            /* Hack -- ghosts don't pick up gold automatically */
+            auto_pickup = (pickup? true: false);
+            if (tval_is_money(obj) && p->ghost && (pickup < 2))
+                auto_pickup = false;
+
+            /* Automatically pick up items into the backpack */
+            if (auto_pickup)
+            {
+                int auto_num = auto_pickup_okay(p, obj);
+
+                /* Pick up the object (as much as possible) with message */
+                if (auto_num)
+                {
+                    player_pickup_aux(p, c, obj, auto_num, true);
+                    objs_picked_up++;
+                }
+            }
+        }
+
+        obj = next;
+    }
+
+    return objs_picked_up;
 }
 
-/**
+
+/*
  * Pick up objects at the player's request
  */
-void do_cmd_pickup(struct command *cmd)
+void do_cmd_pickup(struct player *p, int item)
 {
-	int energy_cost = 0;
-	struct object *obj = NULL;
+    struct chunk *c = chunk_get(&p->wpos);
+    struct object *obj;
 
-	/* See if we have an item already */
-	(void) cmd_get_arg_item(cmd, "item", &obj);
+    /* Check item (on the floor) */
+    for (obj = square_object(c, &p->grid); obj; obj = obj->next)
+    {
+        if (obj->oidx == item) break;
+    }
 
-	/* Pick up floor objects with a menu for multiple objects */
-	energy_cost += player_pickup_item(player, obj, false)
-		* z_info->move_energy / 10;
+    /* Autopickup first */
+    do_autopickup(p, c, 2);
 
-	/* Limit */
-	if (energy_cost > z_info->move_energy) energy_cost = z_info->move_energy;
-
-	/* Charge this amount of energy. */
-	player->upkeep->energy_use = energy_cost;
-
-	/* Redraw the object list using the upkeep flag so that the update can be
-	 * somewhat coalesced. Use event_signal(EVENT_ITEMLIST to force update. */
-	player->upkeep->redraw |= (PR_ITEMLIST);
+    /* Pick up floor objects with a menu for multiple objects */
+    current_clear(p);
+    player_pickup_item(p, c, 2, obj);
 }
 
-/**
+
+/*
  * Pick up or look at objects on a square when the player steps onto it
  */
-void do_cmd_autopickup(struct command *cmd)
+void do_cmd_autopickup(struct player *p)
 {
-	/* Get the obvious things */
-	player->upkeep->energy_use = do_autopickup(player)
-		* z_info->move_energy / 10;
-	if (player->upkeep->energy_use > z_info->move_energy)
-		player->upkeep->energy_use = z_info->move_energy;
+    do_autopickup(p, chunk_get(&p->wpos), 2);
+}
 
-	/* Look at or feel what's left */
-	event_signal(EVENT_SEEFLOOR);
 
-	/* Redraw the object list using the upkeep flag so that the update can be
-	 * somewhat coalesced. Use event_signal(EVENT_ITEMLIST to force update. */
-	player->upkeep->redraw |= (PR_ITEMLIST);
+void leave_depth(struct player *p, struct chunk *c)
+{
+    int i;
+    struct monster *mon;
+
+    /* One less player here */
+    chunk_decrease_player_count(&p->wpos);
+
+    /* Free monsters from slavery */
+    for (i = 1; i < cave_monster_max(c); i++)
+    {
+        mon = cave_monster(c, i);
+
+        /* Skip dead monsters */
+        if (!mon->race) continue;
+
+        /* Skip non slaves */
+        if (p->id != mon->master) continue;
+
+        /* Free monster from slavery */
+        monster_set_master(mon, NULL, MSTATUS_HOSTILE);
+    }
+    p->slaves = 0;
+}
+
+
+bool weight_okay(struct player *p, struct object *obj)
+{
+    int wgt;
+
+    wgt = p->upkeep->total_weight + obj->weight * obj->number;
+    return (wgt <= weight_limit(&p->state) * 6);
+}
+
+
+/*
+ * Stay still. Search. Pick up.
+ */
+void do_cmd_hold(struct player *p, int item)
+{
+    /* Take a turn */
+    use_energy(p);
+
+    /* Searching XXX */
+    search(p, chunk_get(&p->wpos));
+
+    /* Pick things up, not using extra energy */
+    do_cmd_pickup(p, item);
 }

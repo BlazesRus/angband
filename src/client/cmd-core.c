@@ -1,6 +1,6 @@
 /*
  * File: cmd-core.c
- * Purpose: Handles the queueing of game commands.
+ * Purpose: Handles the queueing of game commands
  *
  * Copyright (c) 2008-9 Antony Sidwell
  * Copyright (c) 2014 Andi Sidwell
@@ -426,4 +426,3 @@ int cmd_get_target(struct command *cmd, const char *arg, int *target)
 
     return CMD_ARG_ABORTED;
 }
-

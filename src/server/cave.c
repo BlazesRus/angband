@@ -1,4 +1,4 @@
-/**
+/*
  * File: cave.c
  * Purpose: Chunk allocation and utility functions
  *
@@ -17,23 +17,9 @@
  *    are included in all such copies.  Other copyrights may also apply.
  */
 
-#include "angband.h"
-#include "cave.h"
-#include "cmds.h"
-#include "..\client\cmd-core.h"
-#include "..\client\game-event.h"
-#include "game-world.h"
-#include "init.h"
-#include "mon-group.h"
-#include "monster.h"
-#include "obj-ignore.h"
-#include "obj-pile.h"
-#include "obj-tval.h"
-#include "obj-util.h"
-#include "object.h"
-#include "player-timed.h"
-#include "trap.h"
-//#include "s-angband.h"
+
+#include "s-angband.h"
+
 
 int FEAT_NONE;
 int FEAT_FLOOR;

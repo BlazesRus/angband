@@ -1,133 +1,107 @@
-/**
- * \file cmds.h
- * \brief Header for game command files
- *
- * Copyright (c) 1997 Ben Harrison, James E. Wilson, Robert A. Koeneke
- * Copyright (c) 2007-9 Andi Sidwell, Chris Carr, Ed Graham, Erik Osheim
- *
- * This work is free software; you can redistribute it and/or modify it
- * under the terms of either:
- *
- * a) the GNU General Public License as published by the Free Software
- *    Foundation, version 2, or
- *
- * b) the "Angband licence":
- *    This software may be copied and distributed for educational, research,
- *    and not for profit purposes provided that this copyright and statement
- *    are included in all such copies.  Other copyrights may also apply.
+/*
+ * File: cmds.h
+ * Purpose: Header for game command files
  */
 
 #ifndef INCLUDED_CMDS_H
 #define INCLUDED_CMDS_H
 
-#include "cave.h"
-#include "..\client\cmd-core.h"
+/* channel.c */
+extern void do_cmd_message(struct player *p, char *message);
+extern void do_cmd_chat(struct player *p, char *buf);
 
 /* cmd-cave.c */
-void do_cmd_go_up(struct command *cmd);
-void do_cmd_go_down(struct command *cmd);
-void do_cmd_open(struct command *cmd);
-void do_cmd_close(struct command *cmd);
-void do_cmd_tunnel(struct command *cmd);
-void do_cmd_disarm(struct command *cmd);
-void do_cmd_alter(struct command *cmd);
-void do_cmd_steal(struct command *cmd);
-void move_player(int dir, bool disarm);
-void do_cmd_walk(struct command *cmd);
-void do_cmd_jump(struct command *cmd);
-void do_cmd_run(struct command *cmd);
-void do_cmd_pathfind(struct command *cmd);
-void do_cmd_hold(struct command *cmd);
-void do_cmd_rest(struct command *cmd);
-void do_cmd_sleep(struct command *cmd);
-void display_feeling(bool obj_only);
-void do_cmd_feeling(void);
-void do_cmd_mon_command(struct command *cmd);
+extern void do_cmd_go_up(struct player *p);
+extern void do_cmd_go_down(struct player *p);
+extern void do_cmd_toggle_stealth(struct player *p);
+extern void do_cmd_open(struct player *p, int dir, bool easy);
+extern void do_cmd_close(struct player *p, int dir, bool easy);
+extern bool do_cmd_tunnel(struct player *p);
+extern void do_cmd_disarm(struct player *p, int dir, bool easy);
+extern void do_cmd_alter(struct player *p, int dir);
+extern void move_player(struct player *p, struct chunk *c, int dir, bool disarm, bool check_pickup,
+    bool force, int delayed, bool can_attack);
+extern bool do_cmd_walk(struct player *p, int dir);
+extern bool do_cmd_jump(struct player *p, int dir);
+extern bool do_cmd_run(struct player *p, int dir);
+extern bool do_cmd_rest(struct player *p, int16_t resting);
+extern void do_cmd_sleep(struct player *p);
+extern void display_feeling(struct player *p, bool obj_only);
+extern void do_cmd_purchase_house(struct player *p, int dir);
+extern int wielding_cut(struct player *p);
+extern bool create_house(struct player *p, int house_variant);
+extern bool build_house(struct player *p);
+extern void display_time(struct player *p);
+
+/* cmd-innate.c */
+extern void do_cmd_ghost(struct player *p, int ability, int dir);
+extern void do_cmd_breath(struct player *p, int dir);
+extern void do_cmd_mimic(struct player *p, int page, int spell_index, int dir);
 
 /* cmd-misc.c */
-void do_cmd_wizard(void);
-void do_cmd_suicide(struct command *cmd);
-void do_cmd_note(void);
+extern void do_cmd_suicide(struct player *p);
 
 /* cmd-obj.c */
-void do_cmd_uninscribe(struct command *cmd);
-void do_cmd_inscribe(struct command *cmd);
-void do_cmd_autoinscribe(struct command *cmd);
-void do_cmd_takeoff(struct command *cmd);
-void do_cmd_wield(struct command *cmd);
-void do_cmd_drop(struct command *cmd);
-void do_cmd_read_scroll(struct command *cmd);
-void do_cmd_use_staff(struct command *cmd);
-void do_cmd_aim_wand(struct command *cmd);
-void do_cmd_zap_rod(struct command *cmd);
-void do_cmd_activate(struct command *cmd);
-void do_cmd_eat_food(struct command *cmd);
-void do_cmd_quaff_potion(struct command *cmd);
-void do_cmd_use(struct command *cmd);
-void do_cmd_refill(struct command *cmd);
-void do_cmd_cast(struct command *cmd);
-void do_cmd_study_spell(struct command *cmd);
-void do_cmd_study_book(struct command *cmd);
-void do_cmd_study(struct command *cmd);
+extern void do_cmd_uninscribe(struct player *p, int item);
+extern void do_cmd_inscribe(struct player *p, int item, const char *inscription);
+extern void do_cmd_observe(struct player *p, int item);
+extern void do_cmd_takeoff(struct player *p, int item);
+extern void do_cmd_wield(struct player *p, int item, int slot);
+extern void do_cmd_drop(struct player *p, int item, int quantity);
+extern void do_cmd_destroy_aux(struct player *p, struct object *obj, bool des);
+extern void do_cmd_destroy(struct player *p, int item, bool des);
+extern void do_cmd_study(struct player *p, int book_index, int spell_index);
+extern bool do_cmd_cast(struct player *p, int book_index, int spell_index, int dir);
+extern bool execute_effect(struct player *p, struct object **obj_address, struct effect *effect,
+    int dir, const char *inscription, bool *ident, bool *used, bool *notice);
+extern void do_cmd_use_staff(struct player *p, int item, int dir);
+extern void do_cmd_aim_wand(struct player *p, int item, int dir);
+extern void do_cmd_zap_rod(struct player *p, int item, int dir);
+extern void do_cmd_activate(struct player *p, int item, int dir);
+extern void do_cmd_eat_food(struct player *p, int item);
+extern void do_cmd_quaff_potion(struct player *p, int item, int dir);
+extern void do_cmd_read_scroll(struct player *p, int item, int dir);
+extern void do_cmd_use_any(struct player *p, int item, int dir);
+extern void do_cmd_refill(struct player *p, int item);
+extern bool do_cmd_read_scroll_end(struct player *p, struct object *obj, bool ident, bool used);
+extern void do_cmd_use_staff_discharge(struct player *p, struct object *obj, bool ident, bool used);
+extern void do_cmd_zap_rod_end(struct player *p, struct object *obj, bool ident, bool used);
+extern void do_cmd_activate_end(struct player *p, struct object *obj, bool ident, bool used);
 
 /* cmd-pickup.c */
-int do_autopickup(struct player *p);
-void do_cmd_pickup(struct command *cmd);
-void do_cmd_autopickup(struct command *cmd);
+extern uint8_t player_pickup_item(struct player *p, struct chunk *c, int pickup, struct object *o);
+extern uint8_t do_autopickup(struct player *p, struct chunk *c, int pickup);
+extern void do_cmd_pickup(struct player *p, int item);
+extern void do_cmd_autopickup(struct player *p);
+extern void leave_depth(struct player *p, struct chunk *c);
+extern bool weight_okay(struct player *p, struct object *obj);
+extern void do_cmd_hold(struct player *p, int item);
 
-/* cmd-spoil.c */
-void do_cmd_spoil_artifact(struct command *cmd);
-void do_cmd_spoil_monster(struct command *cmd);
-void do_cmd_spoil_monster_brief(struct command *cmd);
-void do_cmd_spoil_obj(struct command *cmd);
+/* game-ui.c */
+extern void do_cmd_master(struct player *p, int16_t command, char *buf);
+extern void do_cmd_social(struct player *p, const char *buf, int dir);
 
-/* cmd-wizard.c */
-void do_cmd_wiz_acquire(struct command *cmd);
-void do_cmd_wiz_advance(struct command *cmd);
-void do_cmd_wiz_banish(struct command *cmd);
-void do_cmd_wiz_change_item_quantity(struct command *cmd);
-void do_cmd_wiz_collect_disconnect_stats(struct command *cmd);
-void do_cmd_wiz_collect_obj_mon_stats(struct command *cmd);
-void do_cmd_wiz_collect_pit_stats(struct command *cmd);
-void do_cmd_wiz_create_all_artifact(struct command *cmd);
-void do_cmd_wiz_create_all_artifact_from_tval(struct command *cmd);
-void do_cmd_wiz_create_all_obj(struct command *cmd);
-void do_cmd_wiz_create_all_obj_from_tval(struct command *cmd);
-void do_cmd_wiz_create_artifact(struct command *cmd);
-void do_cmd_wiz_create_obj(struct command *cmd);
-void do_cmd_wiz_create_trap(struct command *cmd);
-void do_cmd_wiz_cure_all(struct command *cmd);
-void do_cmd_wiz_curse_item(struct command *cmd);
-void do_cmd_wiz_detect_all_local(struct command *cmd);
-void do_cmd_wiz_detect_all_monsters(struct command *cmd);
-void do_cmd_wiz_display_keylog(struct command *cmd);
-void do_cmd_wiz_dump_level_map(struct command *cmd);
-void do_cmd_wiz_edit_player_exp(struct command *cmd);
-void do_cmd_wiz_edit_player_gold(struct command *cmd);
-void do_cmd_wiz_edit_player_start(struct command *cmd);
-void do_cmd_wiz_edit_player_stat(struct command *cmd);
-void do_cmd_wiz_hit_all_los(struct command *cmd);
-void do_cmd_wiz_increase_exp(struct command *cmd);
-void do_cmd_wiz_jump_level(struct command *cmd);
-void do_cmd_wiz_learn_object_kinds(struct command *cmd);
-void do_cmd_wiz_magic_map(struct command *cmd);
-void do_cmd_wiz_peek_noise_scent(struct command *cmd);
-void do_cmd_wiz_perform_effect(struct command *cmd);
-void do_cmd_wiz_play_item(struct command *cmd);
-void do_cmd_wiz_push_object(struct command *cmd);
-void do_cmd_wiz_query_feature(struct command *cmd);
-void do_cmd_wiz_query_square_flag(struct command *cmd);
-void do_cmd_wiz_quit_no_save(struct command *cmd);
-void do_cmd_wiz_recall_monster(struct command *cmd);
-void do_cmd_wiz_rerate(struct command *cmd);
-void do_cmd_wiz_reroll_item(struct command *cmd);
-void do_cmd_wiz_stat_item(struct command *cmd);
-void do_cmd_wiz_summon_named(struct command *cmd);
-void do_cmd_wiz_summon_random(struct command *cmd);
-void do_cmd_wiz_teleport_random(struct command *cmd);
-void do_cmd_wiz_teleport_to(struct command *cmd);
-void do_cmd_wiz_tweak_item(struct command *cmd);
-void do_cmd_wiz_wipe_recall(struct command *cmd);
-void do_cmd_wiz_wizard_light(struct command *cmd);
+/* knowledge-ui.c */
+extern void do_cmd_redraw(struct player *p);
+extern void do_cmd_drop_gold(struct player *p, int32_t amt);
+extern void do_cmd_steal(struct player *p, int dir);
+extern void do_cmd_locate(struct player *p, int dir);
+extern void do_cmd_query_symbol(struct player *p, const char *buf);
+extern void do_cmd_describe(struct player *p);
+extern void do_cmd_fountain(struct player *p, int item);
+extern void do_cmd_center_map(struct player *p);
+extern void do_cmd_monlist(struct player *p);
+extern void do_cmd_itemlist(struct player *p);
+extern void do_cmd_knowledge(struct player *p, char type, int line);
+extern void do_cmd_check_players(struct player *p, int line);
+extern void do_cmd_check_other(struct player *p, int line);
+extern void do_cmd_poly(struct player *p, struct monster_race *race, bool check_kills,
+    bool domsg);
+extern void do_cmd_check_poly(struct player *p, int line);
+extern void do_cmd_check_socials(struct player *p, int line);
+extern void do_cmd_interactive(struct player *p, int type, uint32_t query);
+
+/* party.c */
+extern void do_cmd_party(struct player *p, int16_t command, char *buf);
 
 #endif

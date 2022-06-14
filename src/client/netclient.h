@@ -2,7 +2,7 @@
  * File: netclient.h
  * Purpose: The client side of the networking stuff
  */
-#if defined(MBandClient) && !defined(INCLUDED_C_NETCLIENT_H)
+#if (defined(MBandClient)||defined(HybridClient)) && !defined(INCLUDED_C_NETCLIENT_H)
 #define INCLUDED_C_NETCLIENT_H 
 extern bool send_quit;
 extern struct angband_constants z_info_struct;

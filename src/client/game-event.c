@@ -16,11 +16,9 @@
  *    and not for profit purposes provided that this copyright and statement
  *    are included in all such copies.  Other copyrights may also apply.
  */
-#include <assert.h>
-#include "game-event.h"
-#include "object.h"
-#include "z-virt.h"
-//#include "c-angband.h"
+
+
+#include "c-angband.h"
 
 
 typedef struct _event_handler_entry
@@ -146,7 +144,7 @@ void event_signal_point(game_event_type type, int x, int y)
     game_event_dispatch(type, &data);
 }
 
-#ifndef SPClient
+
 void event_signal_type(game_event_type type, int t)
 {
     game_event_data data;
@@ -157,136 +155,3 @@ void event_signal_type(game_event_type type, int t)
 
     game_event_dispatch(type, &data);
 }
-#endif
-
-#ifdef SPClient
-void event_signal_flag(game_event_type type, bool flag)
-{
-	game_event_data data;
-	data.flag = flag;
-
-	game_event_dispatch(type, &data);
-}
-
-void event_signal_string(game_event_type type, const char *s)
-{
-	game_event_data data;
-	data.string = s;
-
-	game_event_dispatch(type, &data);
-}
-
-void event_signal_message(game_event_type type, int t, const char *s)
-{
-	game_event_data data;
-	memset(&data, 0, sizeof data);
-
-	data.message.type = t;
-	data.message.msg = s;
-
-	game_event_dispatch(type, &data);
-}
-
-/**
- * Signal a change or refresh in the point buy for birth stats.
- *
- * \param points points[i] is the number of points already spent to increase
- * the ith stat, i >= 0 and i < STAT_MAX.
- * \param inc_points inc_points[i] is the number of additional points it would
- * take to incrase the ith stat by one, i >= 0 and i < STAT_MAX.
- * \param remaining is the number of poitns that remain to be spent.
- */
-void event_signal_birthpoints(const int *points, const int *inc_points,
-		int remaining)
-{
-	game_event_data data;
-
-	data.birthpoints.points = points;
-	data.birthpoints.inc_points = inc_points;
-	data.birthpoints.remaining = remaining;
-
-	game_event_dispatch(EVENT_BIRTHPOINTS, &data);
-}
-
-void event_signal_blast(game_event_type type,
-						int proj_type,
-						int num_grids,
-						int *distance_to_grid,
-						bool drawing,
-						bool *player_sees_grid,
-						struct loc *blast_grid,
-						struct loc centre)
-{
-	game_event_data data;
-	data.explosion.proj_type = proj_type;
-	data.explosion.num_grids = num_grids;
-	data.explosion.distance_to_grid = distance_to_grid;
-	data.explosion.drawing = drawing;
-	data.explosion.player_sees_grid = player_sees_grid;
-	data.explosion.blast_grid = blast_grid;
-	data.explosion.centre = centre;
-
-	game_event_dispatch(type, &data);
-}
-
-void event_signal_bolt(game_event_type type,
-					   int proj_type,
-					   bool drawing,
-					   bool seen,
-					   bool beam,
-					   int oy,
-					   int ox,
-					   int y,
-					   int x)
-{
-	game_event_data data;
-	data.bolt.proj_type = proj_type;
-	data.bolt.drawing = drawing;
-	data.bolt.seen = seen;
-	data.bolt.beam = beam;
-	data.bolt.oy = oy;
-	data.bolt.ox = ox;
-	data.bolt.y = y;
-	data.bolt.x = x;
-
-	game_event_dispatch(type, &data);
-}
-
-void event_signal_missile(game_event_type type,
-						  struct object *obj,
-						  bool seen,
-						  int y,
-						  int x)
-{
-	game_event_data data;
-	data.missile.obj = obj;
-	data.missile.seen = seen;
-	data.missile.y = y;
-	data.missile.x = x;
-
-	game_event_dispatch(type, &data);
-}
-
-void event_signal_size(game_event_type type, int h, int w)
-{
-	game_event_data data;
-
-	data.size.h = h;
-	data.size.w = w;
-	game_event_dispatch(type, &data);
-}
-
-void event_signal_tunnel(game_event_type type, int nstep, int npierce, int ndug,
-		int dstart, int dend, bool early)
-{
-	game_event_data data;
-
-	data.tunnel.nstep = nstep;
-	data.tunnel.npierce = npierce;
-	data.tunnel.ndug = ndug;
-	data.tunnel.dstart = dstart;
-	data.tunnel.dend = dend;
-	data.tunnel.early = early;
-	game_event_dispatch(type, &data);
-}
-#endif

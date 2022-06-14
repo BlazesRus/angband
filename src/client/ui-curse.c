@@ -1,9 +1,10 @@
-/**
- * \file ui-curse.c
- * \brief Curse selection menu
+/*
+ * File: ui-curse.c
+ * Purpose: Curse selection menu
  *
  * Copyright (c) 1997 Ben Harrison, James E. Wilson, Robert A. Koeneke
  * Copyright (c) 2016 Nick McConnell
+ * Copyright (c) 2022 MAngband and PWMAngband Developers
  *
  * This work is free software; you can redistribute it and/or modify it
  * under the terms of either:
@@ -17,148 +18,159 @@
  *    are included in all such copies.  Other copyrights may also apply.
  */
 
-#include "angband.h"
-#include "init.h"
-#include "obj-curse.h"
-#include "obj-knowledge.h"
-#include "ui-curse.h"
-#include "ui-menu.h"
-#include "ui-output.h"
+
+#include "c-angband.h"
+
 
 static int selection;
 
-struct curse_menu_data {
-	int index;
-	int power;
+
+struct curse_menu_data
+{
+    int index;
+    int power;
 };
 
-/**
+
+/*
  * Display an entry on the item menu
  */
-static void get_curse_display(struct menu *menu, int oid, bool cursor, int row,
-					  int col, int width)
+static void get_curse_display(struct menu *menu, int oid, bool cursor, int row, int col, int width)
 {
-	struct curse_menu_data *choice = menu_priv(menu);
-	int attr = cursor ? COLOUR_L_BLUE : COLOUR_WHITE;
-	char buf[80];
-	int power = choice[oid].power;
-	char *name = curses[choice[oid].index].name;
+    struct curse_menu_data *choice = menu_priv(menu);
+    uint8_t attr = (cursor? COLOUR_L_BLUE: COLOUR_WHITE);
+    char buf[NORMAL_WID];
+    int power = choice[oid].power;
+    char *name = curses[choice[oid].index].name;
 
-	strnfmt(buf, sizeof(buf), "  %s (curse strength %d)", name, power);
-	c_put_str(attr, buf, row, col);
+    strnfmt(buf, sizeof(buf), " %s (curse strength %d)", name, power);
+    c_put_str(attr, buf, row, col);
 }
 
-/**
- * Deal with events on the get_item menu
+
+/*
+ * Deal with events on the get_curse menu
  */
 static bool get_curse_action(struct menu *menu, const ui_event *event, int oid)
 {
-	struct curse_menu_data *choice = menu_priv(menu);
-	if (event->type == EVT_SELECT) {
-		selection = choice[oid].index;
-	}
+    struct curse_menu_data *choice = menu_priv(menu);
 
-	return false;
+    if (event->type == EVT_SELECT) selection = choice[oid].index;
+
+    return false;
 }
 
-/**
- * Show spell long description when browsing
+
+/*
+ * Show curse long description when browsing
  */
 static void curse_menu_browser(int oid, void *data, const region *loc)
 {
-	struct curse_menu_data *choice = data;
-	char buf[80];
+    struct curse_menu_data *choice = data;
+    char desc[MSG_LEN];
 
-	/* Redirect output to the screen */
-	text_out_hook = text_out_to_screen;
-	text_out_wrap = 0;
-	text_out_indent = loc->col - 1;
-	text_out_pad = 1;
-
-	Term_gotoxy(loc->col, loc->row + loc->page_rows);
-	my_strcpy(buf, curses[choice[oid].index].desc, sizeof(buf));
-	my_strcap(buf);
-	text_out(" %s.\n", buf);
-
-	/* XXX */
-	text_out_pad = 0;
-	text_out_indent = 0;
+    /* Redirect output to the screen */
+    Term_gotoxy(loc->col, loc->row + loc->page_rows);
+    strnfmt(desc, sizeof(desc), "%s.\n", curses[choice[oid].index].desc);
+    text_out_to_screen(COLOUR_WHITE, desc);
 }
 
-/**
+
+/*
  * Display list of curses to choose from
  */
 static int curse_menu(struct object *obj, char *dice_string)
 {
-	menu_iter menu_f = { 0, 0, get_curse_display, get_curse_action, 0 };
-	struct menu *m = menu_new(MN_SKIN_SCROLL, &menu_f);
-	char header[80];
-	int row;
-	unsigned int length = 0;
-	int i, count = 0;
-	size_t array_size = z_info->curse_max * sizeof(struct curse_menu_data);
-	struct curse_menu_data *available = mem_zalloc(array_size);
-	static region area = { 20, 1, -1, -2 };
+    menu_iter menu_f = {NULL, NULL, get_curse_display, get_curse_action, NULL};
+    struct menu *m = menu_new(MN_SKIN_SCROLL, &menu_f);
+    int row;
+    unsigned int length = 0;
+    int count = 0;
+    struct curse_menu_data *available;
+    static region area = { 20, 1, -1, -2 };
+    char *s, *t;
 
-	/* Count and then list the curses */
-	for (i = 1; i < z_info->curse_max; ++i) {
-		if ((obj->known->curses[i].power > 0) &&
-			(obj->known->curses[i].power < 100) &&
-			player_knows_curse(player, i)) {
-			available[count].index = i;
-			available[count].power = obj->curses[i].power;
-			length = MAX(length, strlen(curses[i].name) + 13);
-			count++;
-		}
-	}
-	if (!count) {
-		mem_free(available);
-		return 0;
-	}
+    /* Count and then list the curses */
+    s = string_make(obj->info_xtra.name_curse);
+    t = strtok(s, "|");
+    while (t)
+    {
+        count++;
+        t = strtok(NULL, "|");
+    }
+    string_free(s);
+    if (!count) return -1;
+    available = mem_zalloc(count * sizeof(struct curse_menu_data));
+    count = 0;
+    s = string_make(obj->info_xtra.name_curse);
+    t = strtok(s, "|");
+    while (t)
+    {
+        int index = atoi(t);
 
-	/* Set up the menu */
-	menu_setpriv(m, count, available);
-	my_strcpy(header,
-			  format(" Remove which curse (spell strength %s)?", dice_string),
-			  sizeof(header));
-	m->header = header;
-	m->selections = all_letters_nohjkl;
-	m->flags = (MN_PVT_TAGS);
-	m->browse_hook = curse_menu_browser;
+        available[count++].index = index;
+        length = MAX(length, strlen(curses[index].name) + 13);
+        t = strtok(NULL, "|");
+    }
+    string_free(s);
+    count = 0;
+    s = string_make(obj->info_xtra.name_power);
+    t = strtok(s, "|");
+    while (t)
+    {
+        int power = atoi(t);
 
-	/* Set up the item list variables */
-	selection = 0;
+        available[count++].power = power;
+        t = strtok(NULL, "|");
+    }
+    string_free(s);
 
-	/* Set up the menu region */
-	area.page_rows = m->count + 2;
-	area.row = 1;
-	area.col = (Term->wid - 1 - length) / 2;
-	if (area.col <= 3)
-		area.col = 0;
-	area.width = MAX(length + 1, strlen(m->header));
+    screen_save();
 
-	for (row = area.row; row < area.row + area.page_rows; row++)
-		prt("", row, MAX(0, area.col - 1));
+    /* Set up the menu */
+    menu_setpriv(m, count, available);
+    m->header = format("Remove which curse (spell strength %s)?", dice_string);
+    m->selections = all_letters_nohjkl;
+    m->flags = MN_PVT_TAGS;
+    m->browse_hook = curse_menu_browser;
 
-	menu_layout(m, &area);
+    /* Set up the item list variables */
+    selection = -1;
 
-	/* Choose */
-	menu_select(m, 0, true);
+    /* Set up the menu region */
+    area.page_rows = m->count + 2;
+    area.row = 1;
+    area.col = (Term->wid - 1 - length) / 2;
+    if (area.col <= 3) area.col = 0;
+    area.width = MAX(length + 1, strlen(m->header));
 
-	/* Clean up */
-	mem_free(available);
-	mem_free(m);
+    for (row = area.row; row <= area.row + area.page_rows; row++)
+        prt("", row, MAX(0, area.col - 1));
 
-	/* Result */
-	return selection;
+    menu_layout(m, &area);
+
+    /* Choose */
+    menu_select(m, 0, true);
+
+    screen_load(true);
+
+    /* Clean up */
+    mem_free(available);
+    mem_free(m);
+
+    /* Result */
+    return selection;
 }
+
 
 bool textui_get_curse(int *choice, struct object *obj, char *dice_string)
 {
-	int curse = curse_menu(obj, dice_string);
-	if (curse) {
-		*choice = curse;
-		return true;
-	}
-	return false;
+    int curse = curse_menu(obj, dice_string);
+
+    if (curse != -1)
+    {
+        *choice = curse;
+        return true;
+    }
+    return false;
 }

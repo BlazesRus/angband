@@ -1,50 +1,36 @@
-/**
- * \file obj-slays.h
- * \brief Structures and functions for dealing with slays and brands
- *
- * Copyright (c) 2014 Chris Carr, Nick McConnell
- *
- * This work is free software; you can redistribute it and/or modify it
- * under the terms of either:
- *
- * a) the GNU General Public License as published by the Free Software
- *    Foundation, version 2, or
- *
- * b) the "Angband licence":
- *    This software may be copied and distributed for educational, research,
- *    and not for profit purposes provided that this copyright and statement
- *    are included in all such copies.  Other copyrights may also apply.
+/*
+ * File: obj-slays.h
+ * Purpose: Structures and functions for dealing with slays and brands
  */
+
 #ifndef OBJECT_SLAYS_H
 #define OBJECT_SLAYS_H
-
-#include "monster.h"
 
 extern struct slay *slays;
 extern struct brand *brands;
 
 /*** Functions ***/
-bool same_monsters_slain(int slay1, int slay2);
-void copy_slays(bool **dest, bool *source);
-void copy_brands(bool **dest, bool *source);
-bool append_random_brand(bool **current, struct brand **brand);
-bool append_random_slay(bool **current, struct slay **slay);
-int brand_count(const bool *brands_on);
-int slay_count(const bool *slays_on);
-bool player_has_temporary_brand(const struct player *p, int idx);
-bool player_has_temporary_slay(const struct player *p, int idx);
-int get_monster_brand_multiplier(const struct monster *mon,
-	const struct brand *b, bool is_o_combat);
-void improve_attack_modifier(struct player *p, struct object *obj,
-	const struct monster *mon, int *brand_used, int *slay_used, char *verb,
-	bool range);
-bool react_to_slay(struct object *obj, const struct monster *mon);
 
-void learn_brand_slay_from_melee(struct player *p, struct object *weapon,
-	const struct monster *mon);
-void learn_brand_slay_from_launch(struct player *p, struct object *missile,
-	struct object *launcher, const struct monster *mon);
-void learn_brand_slay_from_throw(struct player *p, struct object *missile,
-	const struct monster *mon);
+extern bool same_monsters_slain(int slay1, int slay2);
+extern bool append_slay(bool **current, int index);
+extern bool copy_slays(bool **dest, bool *source);
+extern bool append_brand(bool **current, int index);
+extern bool copy_brands(bool **dest, bool *source);
+extern bool append_random_brand(bool **current, struct brand **brand, bool is_ammo);
+extern bool append_random_slay(bool **current, struct slay **slay);
+extern int brand_count(const bool *brands_on);
+extern int slay_count(const bool *slays_on);
+extern bool player_has_temporary_brand(struct player *p, int idx);
+extern bool player_has_temporary_slay(struct player *p, int idx);
+extern void improve_attack_modifier(struct player *p, struct object *obj, struct source *who,
+    int *best_mult, struct side_effects *effects, char *verb, size_t len, bool range);
+extern void player_attack_modifier(struct player *p, struct source *who, int *best_mult,
+    struct side_effects *effects, char *verb, size_t len, bool range, bool ammo);
+extern bool react_to_slay(struct object *obj, const struct monster *mon);
+extern bool brands_are_equal(const struct object *obj1, const struct object *obj2);
+extern bool slays_are_equal(const struct object *obj1, const struct object *obj2);
+extern int get_brand(const char *name, int multiplier);
+extern int get_poly_brand(struct monster_race *race, int method);
+extern int get_bow_brand(struct bow_brand *brand);
 
 #endif /* OBJECT_SLAYS_H */

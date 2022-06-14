@@ -1,8 +1,9 @@
-/**
- * \file player.c
- * \brief Player implementation
+/*
+ * File: player.c
+ * Purpose: Player implementation
  *
  * Copyright (c) 2011 elly+angband@leptoquark.net. See COPYING.
+ * Copyright (c) 2022 MAngband and PWMAngband Developers
  *
  * This work is free software; you can redistribute it and/or modify it
  * under the terms of either:
@@ -16,501 +17,933 @@
  *    are included in all such copies.  Other copyrights may also apply.
  */
 
-#include "effects.h"
-#include "init.h"
-#include "obj-pile.h"
-#include "obj-util.h"
-#include "player-birth.h"
-#include "player-calcs.h"
-#include "player-history.h"
-#include "player-quest.h"
-#include "player-spell.h"
-#include "player-timed.h"
-#include "randname.h"
-#include "z-color.h"
-#include "z-util.h"
 
-/**
- * Pointer to the player struct
- */
-struct player *player = NULL;
+#include "s-angband.h"
 
-struct player_body *bodies;
-struct player_race *races;
-struct player_shape *shapes;
-struct player_class *classes;
-struct player_ability *player_abilities;
-struct magic_realm *realms;
 
-/**
- * Base experience levels, may be adjusted up for race and/or class
- */
-const int32_t player_exp[PY_MAX_LEVEL] =
+static const char *stat_name_list[] =
 {
-	10,
-	25,
-	45,
-	70,
-	100,
-	140,
-	200,
-	280,
-	380,
-	500,
-	650,
-	850,
-	1100,
-	1400,
-	1800,
-	2300,
-	2900,
-	3600,
-	4400,
-	5400,
-	6800,
-	8400,
-	10200,
-	12500,
-	17500,
-	25000,
-	35000L,
-	50000L,
-	75000L,
-	100000L,
-	150000L,
-	200000L,
-	275000L,
-	350000L,
-	450000L,
-	550000L,
-	700000L,
-	850000L,
-	1000000L,
-	1250000L,
-	1500000L,
-	1800000L,
-	2100000L,
-	2400000L,
-	2700000L,
-	3000000L,
-	3500000L,
-	4000000L,
-	4500000L,
-	5000000L
-};
-
-
-static const char *stat_name_list[] = {
-	#define STAT(a) #a,
-	#include "list-stats.h"
-	#undef STAT
-	"MAX",
+    #define STAT(a, b, c) #a,
+    #include "../common/list-stats.h"
+    #undef STAT
     NULL
 };
+
 
 int stat_name_to_idx(const char *name)
 {
     int i;
-    for (i = 0; stat_name_list[i]; ++i) {
-        if (!my_stricmp(name, stat_name_list[i]))
-            return i;
+
+    for (i = 0; stat_name_list[i]; i++)
+    {
+        if (!my_stricmp(name, stat_name_list[i])) return i;
     }
 
     return -1;
 }
 
+
 const char *stat_idx_to_name(int type)
 {
-    assert(type >= 0);
-    assert(type < STAT_MAX);
+    my_assert(type >= 0);
+    my_assert(type < STAT_MAX);
 
     return stat_name_list[type];
 }
 
-const struct magic_realm *lookup_realm(const char *name)
-{
-	struct magic_realm *realm = realms;
-	while (realm) {
-		if (!my_stricmp(name, realm->name)) {
-			return realm;
-		}
-		realm = realm->next;
-	}
 
-	/* Fail horribly */
-	quit_fmt("Failed to find %s magic realm", name);
-	return realm;
-}
-
+/*
+ * Increases a stat
+ */
 bool player_stat_inc(struct player *p, int stat)
 {
-	int v = p->stat_cur[stat];
+    int v = p->stat_cur[stat];
 
-	if (v >= 18 + 100)
-		return false;
-	if (v < 18) {
-		p->stat_cur[stat]++;
-	} else if (v < 18 + 90) {
-		int gain = (((18 + 100) - v) / 2 + 3) / 2;
-		if (gain < 1)
-			gain = 1;
-		p->stat_cur[stat] += randint1(gain) + gain / 2;
-		if (p->stat_cur[stat] > 18 + 99)
-			p->stat_cur[stat] = 18 + 99;
-	} else {
-		p->stat_cur[stat] = 18 + 100;
-	}
+    /* Cannot go above 18/100 */
+    if (v >= 18+100) return false;
 
-	if (p->stat_cur[stat] > p->stat_max[stat])
-		p->stat_max[stat] = p->stat_cur[stat];
-	
-	p->upkeep->update |= PU_BONUS;
-	return true;
+    /* Increase linearly */
+    if (v < 18) p->stat_cur[stat]++;
+    else if (v < 18+90)
+    {
+        int gain = (((18+100) - v) / 2 + 3) / 2;
+
+        /* Paranoia */
+        if (gain < 1) gain = 1;
+
+        /* Apply the bonus */
+        p->stat_cur[stat] += randint1(gain) + gain / 2;
+
+        /* Maximal value */
+        if (p->stat_cur[stat] > 18+99) p->stat_cur[stat] = 18+99;
+    }
+    else p->stat_cur[stat] = 18+100;
+
+    /* Bring up the maximum too */
+    if (p->stat_cur[stat] > p->stat_max[stat]) p->stat_max[stat] = p->stat_cur[stat];
+
+    /* Recalculate bonuses */
+    p->upkeep->update |= (PU_BONUS);
+
+    return true;
 }
 
+
+/*
+ * Decreases a stat
+ */
 bool player_stat_dec(struct player *p, int stat, bool permanent)
 {
-	int cur, max, res = false;
+    int cur, max, res;
 
-	cur = p->stat_cur[stat];
-	max = p->stat_max[stat];
+    cur = p->stat_cur[stat];
+    max = p->stat_max[stat];
 
-	if (cur > 18+10)
-		cur -= 10;
-	else if (cur > 18)
-		cur = 18;
-	else if (cur > 3)
-		cur -= 1;
+    /* Damage "current" value */
+    if (cur > 18+10) cur -= 10;
+    else if (cur > 18) cur = 18;
+    else if (cur > 3) cur -= 1;
 
-	res = (cur != p->stat_cur[stat]);
+    res = (cur != p->stat_cur[stat]);
 
-	if (permanent) {
-		if (max > 18+10)
-			max -= 10;
-		else if (max > 18)
-			max = 18;
-		else if (max > 3)
-			max -= 1;
+    /* Damage "max" value */
+    if (permanent)
+    {
+        if (max > 18+10) max -= 10;
+        else if (max > 18) max = 18;
+        else if (max > 3) max -= 1;
 
-		res = (max != p->stat_max[stat]);
-	}
+        res = (max != p->stat_max[stat]);
+    }
 
-	if (res) {
-		p->stat_cur[stat] = cur;
-		p->stat_max[stat] = max;
-		p->upkeep->update |= (PU_BONUS);
-		p->upkeep->redraw |= (PR_STATS);
-	}
+    /* Apply changes */
+    if (res)
+    {
+        p->stat_cur[stat] = cur;
+        p->stat_max[stat] = max;
+        p->upkeep->update |= (PU_BONUS);
+        p->upkeep->redraw |= (PR_STATS);
+    }
 
-	return res;
+    return res;
 }
 
-static void adjust_level(struct player *p, bool verbose)
+
+/*
+ * Advance experience levels and print experience
+ */
+static void adjust_level(struct player *p)
 {
-	if (p->exp < 0)
-		p->exp = 0;
+    char buf[NORMAL_WID];
+    bool redraw = false;
 
-	if (p->max_exp < 0)
-		p->max_exp = 0;
+    /* Hack -- lower limit */
+    if (p->exp < 0) p->exp = 0;
 
-	if (p->exp > PY_MAX_EXP)
-		p->exp = PY_MAX_EXP;
+    /* Hack -- lower limit */
+    if (p->max_exp < 0) p->max_exp = 0;
 
-	if (p->max_exp > PY_MAX_EXP)
-		p->max_exp = PY_MAX_EXP;
+    /* Hack -- upper limit */
+    if (p->exp > PY_MAX_EXP) p->exp = PY_MAX_EXP;
 
-	if (p->exp > p->max_exp)
-		p->max_exp = p->exp;
+    /* Hack -- upper limit */
+    if (p->max_exp > PY_MAX_EXP) p->max_exp = PY_MAX_EXP;
 
-	p->upkeep->redraw |= PR_EXP;
+    /* Hack -- maintain "max" experience */
+    if (p->exp > p->max_exp) p->max_exp = p->exp;
 
-	handle_stuff(p);
+    /* Redraw experience */
+    p->upkeep->redraw |= (PR_EXP);
 
-	while ((p->lev > 1) &&
-	       (p->exp < (player_exp[p->lev-2] * p->expfact / 100L)))
-		p->lev--;
+    /* Update stuff */
+    update_stuff(p, chunk_get(&p->wpos));
 
+    /* Lose levels while possible */
+    while ((p->lev > 1) && (p->exp < adv_exp(p->lev - 1, p->expfact)))
+    {
+        /* Lose a level */
+        p->lev--;
 
-	while ((p->lev < PY_MAX_LEVEL) &&
-	       (p->exp >= (player_exp[p->lev-1] * p->expfact / 100L))) {
-		char buf[80];
+        /* Permanently polymorphed characters */
+        if (player_has(p, PF_PERM_SHAPE))
+        {
+            if (player_has(p, PF_DRAGON)) poly_dragon(p, true);
+            else poly_shape(p, true);
+        }
 
-		p->lev++;
+        /* Redraw */
+        redraw = true;
+    }
 
-		/* Save the highest level */
-		if (p->lev > p->max_lev)
-			p->max_lev = p->lev;
+    /* Gain levels while possible */
+    while ((p->lev < PY_MAX_LEVEL) && (p->exp >= adv_exp(p->lev, p->expfact)))
+    {
+        /* Gain a level */
+        p->lev++;
 
-		if (verbose) {
-			/* Log level updates */
-			strnfmt(buf, sizeof(buf), "Reached level %d", p->lev);
-			history_add(p, buf, HIST_GAIN_LEVEL);
+        /* Permanently polymorphed characters */
+        if (player_has(p, PF_PERM_SHAPE))
+        {
+            if (player_has(p, PF_DRAGON)) poly_dragon(p, true);
+            else poly_shape(p, true);
+        }
 
-			/* Message */
-			msgt(MSG_LEVEL, "Welcome to level %d.",	p->lev);
-		}
+        /* Save the highest level */
+        if (p->lev > p->max_lev)
+        {
+            struct source who_body;
+            struct source *who = &who_body;
 
-		effect_simple(EF_RESTORE_STAT, source_none(), "0", STAT_STR, 0, 0, 0, 0, NULL);
-		effect_simple(EF_RESTORE_STAT, source_none(), "0", STAT_INT, 0, 0, 0, 0, NULL);
-		effect_simple(EF_RESTORE_STAT, source_none(), "0", STAT_WIS, 0, 0, 0, 0, NULL);
-		effect_simple(EF_RESTORE_STAT, source_none(), "0", STAT_DEX, 0, 0, 0, 0, NULL);
-		effect_simple(EF_RESTORE_STAT, source_none(), "0", STAT_CON, 0, 0, 0, 0, NULL);
-	}
+            p->max_lev = p->lev;
 
-	while ((p->max_lev < PY_MAX_LEVEL) &&
-	       (p->max_exp >= (player_exp[p->max_lev-1] * p->expfact / 100L)))
-		p->max_lev++;
+            // account score when gain lvls
+            // it's in rotation with mon-util.c (killing uniques)
 
-	p->upkeep->update |= (PU_BONUS | PU_HP | PU_SPELLS);
-	p->upkeep->redraw |= (PR_LEV | PR_TITLE | PR_EXP | PR_STATS);
-	handle_stuff(p);
+            if (p->account_score == 0 && p->max_lev == 3)
+            {
+                p->account_score++;
+                msgt(p, MSG_FANFARE, "You've earned 1 account point! These points preserve even after death.");
+                msg(p, "To earn account points - earn levels and defeat unique monsters.");
+                msg(p, "Account points allows to buy bigger houses, increase storage space,");
+                msg(p, "give access to more races/classes and provide other advantages.");
+                msg(p, "You will get next account points every 5 levels.");
+            }
+            else if (p->account_score <= 5 && !(p->max_lev % 5))
+            {
+                p->account_score++;
+                msgt(p, MSG_FANFARE, "You've earned account point! Now you have %lu account points.", p->account_score);
+                msg(p, "For now you will get next account points every 5 levels,");
+                msg(p, "but later on it will be every 10 levels or even more.");
+                msg(p, "(more points you have - harder to get new ones).");
+            }
+            // only at even score
+            else if (!(p->account_score % 2))
+            {
+                if (p->account_score <= 10 && !(p->max_lev % 10))
+                {
+                    p->account_score++;
+                    msgt(p, MSG_FANFARE, "You've earned account point! Now you have %lu points.", p->account_score);
+                    msg(p, "You will get even/odd account point for levels and");
+                    msg(p, "for defeating unique monster.");
+                }
+                else if (p->account_score < 50 && one_in_(51 - p->max_lev))
+                {
+                    p->account_score++;
+                    msgt(p, MSG_FANFARE, "You've earned account point! You have %lu points.", p->account_score);
+                }
+                else if (p->account_score < 100 && p->max_lev >= 10 && one_in_(51 - p->max_lev))
+                {
+                    p->account_score++;
+                    msgt(p, MSG_FANFARE, "You've earned account point! You have %lu points.", p->account_score);
+                }
+                else if (p->account_score < 200 && p->max_lev >= 20 && one_in_(100 - p->max_lev))
+                {
+                    p->account_score++;
+                    msgt(p, MSG_FANFARE, "You've earned account point! You have %lu points.", p->account_score);
+                }
+                else if (p->account_score < 500 && p->max_lev >= 30 && one_in_(150 - p->max_lev))
+                {
+                    p->account_score++;
+                    msgt(p, MSG_FANFARE, "You've earned account point! You have %lu points.", p->account_score);
+                }
+                else if (p->account_score < 999 && p->max_lev >= 40 && one_in_(200 - p->max_lev))
+                {
+                    p->account_score++;
+                    msgt(p, MSG_FANFARE, "You've earned account point! You have %lu points.", p->account_score);
+                }
+            }
+
+            /* Message */
+            if (p->max_lev == 50)
+                msgt(p, MSG_FANFARE, "Ding! Welcome to level %d.", p->lev);
+            else
+                msgt(p, MSG_LEVEL, "Welcome to level %d.", p->lev);
+            strnfmt(buf, sizeof(buf), "%s has attained level %d.", p->name, p->lev);
+            msg_broadcast(p, buf, MSG_BROADCAST_LEVEL);
+
+            /* Restore stats */
+            source_player(who, get_player_index(get_connection(p->conn)), p);
+            effect_simple(EF_RESTORE_STAT, who, "0", STAT_STR, 0, 0, 0, 0, NULL);
+            effect_simple(EF_RESTORE_STAT, who, "0", STAT_INT, 0, 0, 0, 0, NULL);
+            effect_simple(EF_RESTORE_STAT, who, "0", STAT_WIS, 0, 0, 0, 0, NULL);
+            effect_simple(EF_RESTORE_STAT, who, "0", STAT_DEX, 0, 0, 0, 0, NULL);
+            effect_simple(EF_RESTORE_STAT, who, "0", STAT_CON, 0, 0, 0, 0, NULL);
+            effect_simple(EF_RESTORE_STAT, who, "0", STAT_CHR, 0, 0, 0, 0, NULL);
+
+            /* Record this event in the character history */
+            if (!(p->lev % 5))
+            {
+                strnfmt(buf, sizeof(buf), "Reached level %d", p->lev);
+                history_add_unique(p, buf, HIST_GAIN_LEVEL);
+            }
+
+            /* Player learns innate runes */
+            player_learn_innate(p);
+        }
+
+        /* Redraw */
+        redraw = true;
+    }
+
+    /* Redraw - Do it only once to avoid socket buffer overflow */
+    if (redraw)
+    {
+        /* Update some stuff */
+        p->upkeep->update |= (PU_BONUS | PU_SPELLS | PU_MONSTERS);
+
+        /* Redraw some stuff */
+        p->upkeep->redraw |= (PR_LEV | PR_TITLE | PR_EXP | PR_STATS | PR_SPELL | PR_PLUSSES);
+        set_redraw_equip(p, NULL);
+    }
+
+    /* Update stuff */
+    update_stuff(p, chunk_get(&p->wpos));
 }
 
+
+/*
+ * Gain experience
+ */
 void player_exp_gain(struct player *p, int32_t amount)
 {
-	p->exp += amount;
-	if (p->exp < p->max_exp)
-		p->max_exp += amount / 10;
-	adjust_level(p, true);
+    // Rogue class get exp faster (which make gameplay a bit harder)
+    if (streq(p->clazz->name, "Rogue") && p->lev < 50)
+        amount = (amount * 10) / 9;
+
+    // Endgame exp factors
+    if (p->lev > 48 && amount > 10)
+    {
+        // ... races:
+        if      (streq(p->race->name, "Titan") || streq(p->race->name, "Djinn") ||
+                 streq(p->race->name, "Dragon"))
+            amount /= 4;
+        else if (streq(p->race->name, "Ent") || streq(p->race->name, "Maiar") ||
+                 streq(p->race->name, "Beholder") || streq(p->race->name, "Wisp") ||
+                 streq(p->race->name, "Wraith"))
+            amount /= 3;
+        else if (streq(p->race->name, "High-Elf") || streq(p->race->name, "Thunderlord") ||
+                 streq(p->race->name, "Troll") || streq(p->race->name, "Naga") ||
+                 streq(p->race->name, "Balrog") || streq(p->race->name, "Half-Giant") ||
+                 streq(p->race->name, "Gargoyle") || streq(p->race->name, "Golem"))
+            amount /= 2;
+        else if (streq(p->race->name, "Hydra") || streq(p->race->name, "Minotaur") ||
+                 streq(p->race->name, "Half-Troll") || streq(p->race->name, "Vampire"))
+            amount = (amount * 2) / 3;
+        else if (streq(p->race->name, "Black Numenorean") || streq(p->race->name, "Dunadan") ||
+                 streq(p->race->name, "Dark Elf") || streq(p->race->name, "Draconian"))
+            amount = (amount * 3) / 4;
+        // buff
+        else if (streq(p->race->name, "Human"))
+            amount = (amount * 3) / 2;
+
+        // ... classes:
+        if (streq(p->clazz->name, "Warrior") || streq(p->clazz->name, "Monk") ||
+                 streq(p->clazz->name, "Shapechanger") || streq(p->clazz->name, "Unbeliever"))
+            amount /= 2;
+        else if (streq(p->clazz->name, "Rogue") || streq(p->clazz->name, "Paladin") ||
+                 streq(p->clazz->name, "Blackguard") || streq(p->clazz->name, "Archer"))
+            amount = (amount * 2) / 3;
+        else if (streq(p->clazz->name, "Mage") || streq(p->clazz->name, "Sorceror") ||
+                 streq(p->clazz->name, "Tamer") || streq(p->clazz->name, "Necromancer") ||
+                 streq(p->clazz->name, "Wizard"))
+            amount = (amount * 3) / 4;
+    }
+
+    /* Gain some experience */
+    p->exp += amount;
+
+    /* Slowly recover from experience drainage */
+    if (p->exp < p->max_exp)
+    {
+        /* Gain max experience (10%) */
+        p->max_exp += amount / 10;
+    }
+
+    /* Adjust experience levels */
+    adjust_level(p);
 }
 
+
+/*
+ * Lose experience
+ */
 void player_exp_lose(struct player *p, int32_t amount, bool permanent)
 {
-	if (p->exp < amount)
-		amount = p->exp;
-	p->exp -= amount;
-	if (permanent)
-		p->max_exp -= amount;
-	adjust_level(p, true);
+    /* Never drop below zero experience */
+    if (amount > p->exp) amount = p->exp;
+
+    /* Lose some experience */
+    p->exp -= amount;
+    if (permanent) p->max_exp -= amount;
+
+    // loose some satiation too
+    if (p->lev < 50)
+        player_dec_timed(p, TMD_FOOD, 20, false);
+
+    /* Adjust experience levels */
+    adjust_level(p);
 }
 
-/**
- * Obtain object flags for the player
+
+/*
+ * Obtain the "flags" for the player as if he was an item
  */
 void player_flags(struct player *p, bitflag f[OF_SIZE])
 {
-	/* Add racial flags */
-	memcpy(f, p->race->flags, sizeof(p->race->flags));
-	of_union(f, p->class->flags);
+    int i;
 
-	/* Some classes become immune to fear at a certain plevel */
-	if (player_has(p, PF_BRAVERY_30) && p->lev >= 30) {
-		of_on(f, OF_PROT_FEAR);
-	}
+    /* Unencumbered monks get nice abilities */
+    bool restrict_ = (player_has(p, PF_MARTIAL_ARTS) && !monk_armor_ok(p));
+
+    /* Clear */
+    of_wipe(f);
+
+    /* Add racial/class flags */
+    for (i = 1; i < OF_MAX; i++)
+    {
+        if (of_has(p->race->flags, i) && (p->lev >= p->race->flvl[i])) of_on(f, i);
+        if (of_has(p->clazz->flags, i) && (p->lev >= p->clazz->flvl[i]) && !restrict_) of_on(f, i);
+    }
+
+    /* Ghost */
+    if (p->ghost)
+    {
+        of_on(f, OF_SEE_INVIS);
+        of_on(f, OF_HOLD_LIFE);
+        of_on(f, OF_FREE_ACT);
+        of_on(f, OF_PROT_FEAR);
+
+        /* PWMAngband */
+        of_on(f, OF_PROT_BLIND);
+        of_on(f, OF_PROT_CONF);
+        of_on(f, OF_PROT_STUN);
+        of_on(f, OF_FEATHER);
+        of_on(f, OF_SUST_STR);
+        of_on(f, OF_SUST_INT);
+        of_on(f, OF_SUST_WIS);
+        of_on(f, OF_SUST_DEX);
+        of_on(f, OF_SUST_CON);
+        of_on(f, OF_SUST_CHR);
+    }
+
+    /* Handle polymorphed players */
+    if (p->poly_race)
+    {
+        int m;
+
+        for (m = 0; m < z_info->mon_blows_max; m++)
+        {
+            /* Skip non-attacks */
+            if (!p->poly_race->blow[m].method) continue;
+
+            if (streq(p->poly_race->blow[m].effect->name, "EXP_10")) of_on(f, OF_HOLD_LIFE);
+            if (streq(p->poly_race->blow[m].effect->name, "EXP_20")) of_on(f, OF_HOLD_LIFE);
+            if (streq(p->poly_race->blow[m].effect->name, "EXP_40")) of_on(f, OF_HOLD_LIFE);
+            if (streq(p->poly_race->blow[m].effect->name, "EXP_80")) of_on(f, OF_HOLD_LIFE);
+        }
+
+        /* Monster race flags */
+        if (rf_has(p->poly_race->flags, RF_REGENERATE)) of_on(f, OF_REGEN);
+        if (rf_has(p->poly_race->flags, RF_FRIGHTENED)) of_on(f, OF_AFRAID);
+        if (rf_has(p->poly_race->flags, RF_IM_NETHER)) of_on(f, OF_HOLD_LIFE);
+        if (rf_has(p->poly_race->flags, RF_IM_WATER))
+        {
+            of_on(f, OF_PROT_CONF);
+            of_on(f, OF_PROT_STUN);
+        }
+        if (rf_has(p->poly_race->flags, RF_IM_PLASMA)) of_on(f, OF_PROT_STUN);
+        if (rf_has(p->poly_race->flags, RF_NO_FEAR)) of_on(f, OF_PROT_FEAR);
+        if (rf_has(p->poly_race->flags, RF_NO_STUN)) of_on(f, OF_PROT_STUN);
+        if (rf_has(p->poly_race->flags, RF_NO_CONF)) of_on(f, OF_PROT_CONF);
+        if (rf_has(p->poly_race->flags, RF_NO_SLEEP)) of_on(f, OF_FREE_ACT);
+        if (rf_has(p->poly_race->flags, RF_LEVITATE)) of_on(f, OF_FEATHER);
+
+        /* Monster spell flags */
+        if (rsf_has(p->poly_race->spell_flags, RSF_BR_NETH)) of_on(f, OF_HOLD_LIFE);
+        if (rsf_has(p->poly_race->spell_flags, RSF_BR_LIGHT)) of_on(f, OF_PROT_BLIND);
+        if (rsf_has(p->poly_race->spell_flags, RSF_BR_DARK)) of_on(f, OF_PROT_BLIND);
+        if (rsf_has(p->poly_race->spell_flags, RSF_BR_SOUN)) of_on(f, OF_PROT_STUN);
+        if (rsf_has(p->poly_race->spell_flags, RSF_BR_CHAO)) of_on(f, OF_PROT_CONF);
+        if (rsf_has(p->poly_race->spell_flags, RSF_BR_INER)) of_on(f, OF_FREE_ACT);
+        if (rsf_has(p->poly_race->spell_flags, RSF_BR_GRAV))
+        {
+            of_on(f, OF_FEATHER);
+            of_on(f, OF_PROT_STUN);
+        }
+        if (rsf_has(p->poly_race->spell_flags, RSF_BR_PLAS)) of_on(f, OF_PROT_STUN);
+        if (rsf_has(p->poly_race->spell_flags, RSF_BR_WALL)) of_on(f, OF_PROT_STUN);
+        if (rsf_has(p->poly_race->spell_flags, RSF_BR_WATE))
+        {
+            of_on(f, OF_PROT_CONF);
+            of_on(f, OF_PROT_STUN);
+        }
+    }
 }
 
 
-/**
+/*
  * Combine any flags due to timed effects on the player into those in f.
  */
 void player_flags_timed(struct player *p, bitflag f[OF_SIZE])
 {
-	if (p->timed[TMD_BOLD] || p->timed[TMD_HERO] || p->timed[TMD_SHERO]) {
-		of_on(f, OF_PROT_FEAR);
-	}
-	if (p->timed[TMD_TELEPATHY]) {
-		of_on(f, OF_TELEPATHY);
-	}
-	if (p->timed[TMD_SINVIS]) {
-		of_on(f, OF_SEE_INVIS);
-	}
-	if (p->timed[TMD_FREE_ACT]) {
-		of_on(f, OF_FREE_ACT);
-	}
-	if (p->timed[TMD_AFRAID] || p->timed[TMD_TERROR]) {
-		of_on(f, OF_AFRAID);
-	}
-	if (p->timed[TMD_OPP_CONF]) {
-		of_on(f, OF_PROT_CONF);
-	}
+    if (p->timed[TMD_BOLD]) of_on(f, OF_PROT_FEAR);
+    if (p->timed[TMD_HOLD_LIFE]) of_on(f, OF_HOLD_LIFE);
+    if (p->timed[TMD_FLIGHT]) of_on(f, OF_FEATHER);
+    if (p->timed[TMD_ESP]) of_on(f, OF_ESP_ALL);
+    if (p->timed[TMD_SINVIS]) of_on(f, OF_SEE_INVIS);
+    if (p->timed[TMD_FREE_ACT]) of_on(f, OF_FREE_ACT);
+    if (p->timed[TMD_AFRAID] || p->timed[TMD_TERROR]) of_on(f, OF_AFRAID);
+    if (p->timed[TMD_OPP_CONF]) of_on(f, OF_PROT_CONF);
+    if (p->timed[TMD_OPP_AMNESIA]) of_on(f, OF_PROT_AMNESIA);
 }
 
 
-uint8_t player_hp_attr(struct player *p)
-{
-	uint8_t attr;
-	
-	if (p->chp >= p->mhp)
-		attr = COLOUR_L_GREEN;
-	else if (p->chp > (p->mhp * p->opts.hitpoint_warn) / 10)
-		attr = COLOUR_YELLOW;
-	else
-		attr = COLOUR_RED;
-	
-	return attr;
-}
-
-uint8_t player_sp_attr(struct player *p)
-{
-	uint8_t attr;
-	
-	if (p->csp >= p->msp)
-		attr = COLOUR_L_GREEN;
-	else if (p->csp > (p->msp * p->opts.hitpoint_warn) / 10)
-		attr = COLOUR_YELLOW;
-	else
-		attr = COLOUR_RED;
-	
-	return attr;
-}
-
-bool player_restore_mana(struct player *p, int amt) {
-	int old_csp = p->csp;
-
-	p->csp += amt;
-	if (p->csp > p->msp) {
-		p->csp = p->msp;
-	}
-	p->upkeep->redraw |= PR_MANA;
-
-	msg("You feel some of your energies returning.");
-
-	return p->csp != old_csp;
-}
-
-/**
- * Construct a random player name appropriate for the setting.
- *
- * \param buf is the buffer to contain the name.  Must have space for at
- * least buflen characters.
- * \param buflen is the maximum number of character that can be written to
- * buf.
- * \return the number of characters, excluding the terminating null, written
- * to the buffer
+/*
+ * Number of connected players
  */
-size_t player_random_name(char *buf, size_t buflen)
-{
-	size_t result = randname_make(RANDNAME_TOLKIEN, 4, 8, buf, buflen,
-		name_sections);
+int NumPlayers;
 
-	my_strcap(buf);
-	return result;
+
+/*
+ * An array for player structures
+ *
+ * Player index is in [1..NumPlayers]
+ */
+static struct player **Players;
+
+
+void init_players(void)
+{
+    Players = mem_zalloc(MAX_PLAYERS * sizeof(struct player*));
 }
 
-/**
+
+void free_players(void)
+{
+    mem_free(Players);
+}
+
+
+struct player *player_get(int id)
+{
+    return (((id > 0) && (id < MAX_PLAYERS))? Players[id]: NULL);
+}
+
+
+void player_set(int id, struct player *p)
+{
+    if ((id > 0) && (id < MAX_PLAYERS)) Players[id] = p;
+}
+
+
+/*
+ * Record the original (pre-ghost) cause of death
+ */
+void player_death_info(struct player *p, const char *died_from)
+{
+    my_strcpy(p->death_info.title, get_title(p), sizeof(p->death_info.title));
+    p->death_info.max_lev = p->max_lev;
+    p->death_info.lev = p->lev;
+    p->death_info.max_exp = p->max_exp;
+    p->death_info.exp = p->exp;
+    p->death_info.au = p->au;
+    p->death_info.max_depth = p->max_depth;
+    memcpy(&p->death_info.wpos, &p->wpos, sizeof(struct worldpos));
+    my_strcpy(p->death_info.died_from, died_from, sizeof(p->death_info.died_from));
+    time(&p->death_info.time);
+    my_strcpy(p->death_info.ctime, ctime(&p->death_info.time), sizeof(p->death_info.ctime));
+}
+
+
+/*
  * Return a version of the player's name safe for use in filesystems.
- *
- * XXX This does not belong here.
  */
-void player_safe_name(char *safe, size_t safelen, const char *name, bool strip_suffix)
+void player_safe_name(char *safe, size_t safelen, const char *name)
 {
-	size_t i;
-	size_t limit = 0;
+    size_t i;
+    size_t limit = 0;
 
-	if (name) {
-		char *suffix = find_roman_suffix_start(name);
+    if (name) limit = strlen(name);
 
-		if (suffix) {
-			limit = suffix - name - 1; /* -1 for preceding space */
-		} else {
-			limit = strlen(name);
-		}
-	}
+    /* Limit to maximum size of safename buffer */
+    limit = MIN(limit, safelen);
 
-	/* Limit to maximum size of safename buffer */
-	limit = MIN(limit, safelen);
+    for (i = 0; i < limit; i++)
+    {
+        char c = name[i];
 
-	for (i = 0; i < limit; ++i) {
-		char c = name[i];
+        /* Convert all non-alphanumeric symbols */
+        if (!isalpha((unsigned char)c) && !isdigit((unsigned char)c)) c = '_';
 
-		/* Convert all non-alphanumeric symbols */
-		if (!isalpha((unsigned char)c) && !isdigit((unsigned char)c))
-			c = '_';
+        /* Build "base_name" */
+        safe[i] = c;
+    }
 
-		/* Build "base_name" */
-		safe[i] = c;
-	}
+    /* Terminate */
+    safe[i] = '\0';
 
-	/* Terminate */
-	safe[i] = '\0';
-
-	/* Require a "base" name */
-	if (!safe[0])
-		my_strcpy(safe, "PLAYER", safelen);
+    /* Require a "base" name */
+    if (!safe[0]) my_strcpy(safe, "PLAYER", safelen);
 }
 
 
-/**
- * Release resources allocated for fields in the player structure.
- */
-void player_cleanup_members(struct player *p)
+void player_cave_new(struct player *p, int height, int width)
 {
-	/* Free the history */
-	history_clear(p);
+    struct loc grid;
 
-	/* Free the things that are always initialised */
-	if (p->obj_k) {
-		object_free(p->obj_k);
-	}
-	mem_free(p->timed);
-	if (p->upkeep) {
-		mem_free(p->upkeep->quiver);
-		mem_free(p->upkeep->inven);
-		mem_free(p->upkeep);
-		p->upkeep = NULL;
-	}
+    if (p->cave->allocated) player_cave_free(p);
 
-	/* Free the things that are only sometimes initialised */
-	if (p->quests) {
-		player_quests_free(p);
-	}
-	if (p->spell_flags) {
-		player_spells_free(p);
-	}
-	if (p->gear) {
-		object_pile_free(NULL, NULL, p->gear);
-		object_pile_free(NULL, NULL, p->gear_k);
-	}
-	if (p->body.slots) {
-		for (int i = 0; i < p->body.count; i++)
-			string_free(p->body.slots[i].name);
-		mem_free(p->body.slots);
-	}
-	string_free(p->body.name);
-	string_free(p->history);
-	if (p->cave) {
-		cave_free(p->cave);
-		p->cave = NULL;
-	}
+    p->cave->height = height;
+    p->cave->width = width;
+
+    p->cave->squares = mem_zalloc(p->cave->height * sizeof(struct player_square*));
+    p->cave->noise.grids = mem_zalloc(p->cave->height * sizeof(uint16_t*));
+    p->cave->scent.grids = mem_zalloc(p->cave->height * sizeof(uint16_t*));
+    for (grid.y = 0; grid.y < p->cave->height; grid.y++)
+    {
+        p->cave->squares[grid.y] = mem_zalloc(p->cave->width * sizeof(struct player_square));
+        for (grid.x = 0; grid.x < p->cave->width; grid.x++)
+            square_p(p, &grid)->info = mem_zalloc(SQUARE_SIZE * sizeof(bitflag));
+        p->cave->noise.grids[grid.y] = mem_zalloc(p->cave->width * sizeof(uint16_t));
+        p->cave->scent.grids[grid.y] = mem_zalloc(p->cave->width * sizeof(uint16_t));
+    }
+    p->cave->allocated = true;
 }
 
 
-/**
- * Initialise player struct
+/*
+ * Initialize player struct
  */
-static void init_player(void) {
-	/* Create the player array, initialised with 0 */
-	player = mem_zalloc(sizeof *player);
+void init_player(struct player *p, int conn, bool old_history, bool no_recall)
+{
+    int i;
+    char history[N_HIST_LINES][N_HIST_WRAP];
+    connection_t *connp = get_connection(conn);
 
-	/* Allocate player sub-structs */
-	player->upkeep = mem_zalloc(sizeof(struct player_upkeep));
-	player->upkeep->inven = mem_zalloc((z_info->pack_size + 1) * sizeof(struct object *));
-	player->upkeep->quiver = mem_zalloc(z_info->quiver_size * sizeof(struct object *));
-	player->timed = mem_zalloc(TMD_MAX * sizeof(int16_t));
-	player->obj_k = object_new();
-	player->obj_k->brands = mem_zalloc(z_info->brand_max * sizeof(bool));
-	player->obj_k->slays = mem_zalloc(z_info->slay_max * sizeof(bool));
-	player->obj_k->curses = mem_zalloc(z_info->curse_max *
-									   sizeof(struct curse_data));
+    /* Free player structure */
+    cleanup_player(p);
 
-	options_init_defaults(&player->opts);
+    /* Wipe the player */
+    if (old_history) memcpy(history, p->history, N_HIST_LINES * N_HIST_WRAP);
+    memset(p, 0, sizeof(struct player));
+    if (old_history) memcpy(p->history, history, N_HIST_LINES * N_HIST_WRAP);
+
+    p->scr_info = mem_zalloc((z_info->dungeon_hgt + ROW_MAP + 1) * sizeof(cave_view_type*));
+    p->trn_info = mem_zalloc((z_info->dungeon_hgt + ROW_MAP + 1) * sizeof(cave_view_type*));
+    for (i = 0; i < z_info->dungeon_hgt + ROW_MAP + 1; i++)
+    {
+        p->scr_info[i] = mem_zalloc((z_info->dungeon_wid + COL_MAP) * sizeof(cave_view_type));
+        p->trn_info[i] = mem_zalloc((z_info->dungeon_wid + COL_MAP) * sizeof(cave_view_type));
+    }
+
+    /* Allocate player sub-structs */
+    p->upkeep = mem_zalloc(sizeof(struct player_upkeep));
+    p->upkeep->inven = mem_zalloc((z_info->pack_size + 1) * sizeof(struct object *));
+    p->upkeep->quiver = mem_zalloc(z_info->quiver_size * sizeof(struct object *));
+    p->timed = mem_zalloc(TMD_MAX * sizeof(int16_t));
+    p->obj_k = object_new();
+    p->obj_k->brands = mem_zalloc(z_info->brand_max * sizeof(bool));
+    p->obj_k->slays = mem_zalloc(z_info->slay_max * sizeof(bool));
+    p->obj_k->curses = mem_zalloc(z_info->curse_max * sizeof(struct curse_data));
+
+    /* Allocate memory for lore array */
+    p->lore = mem_zalloc(z_info->r_max * sizeof(struct monster_lore));
+    for (i = 0; i < z_info->r_max; i++)
+    {
+        p->lore[i].blows = mem_zalloc(z_info->mon_blows_max * sizeof(uint8_t));
+        p->lore[i].blow_known = mem_zalloc(z_info->mon_blows_max * sizeof(bool));
+    }
+    p->current_lore.blows = mem_zalloc(z_info->mon_blows_max * sizeof(uint8_t));
+    p->current_lore.blow_known = mem_zalloc(z_info->mon_blows_max * sizeof(uint8_t));
+
+    /* Allocate memory for artifact array */
+    p->art_info = mem_zalloc(z_info->a_max * sizeof(uint8_t));
+
+    /* Allocate memory for randart arrays */
+    p->randart_info = mem_zalloc((z_info->a_max + 9) * sizeof(uint8_t));
+    p->randart_created = mem_zalloc((z_info->a_max + 9) * sizeof(uint8_t));
+
+    /* Allocate memory for dungeon flags array */
+    p->kind_aware = mem_zalloc(z_info->k_max * sizeof(bool));
+    p->note_aware = mem_zalloc(z_info->k_max * sizeof(quark_t));
+    p->kind_tried = mem_zalloc(z_info->k_max * sizeof(bool));
+    p->kind_ignore = mem_zalloc(z_info->k_max * sizeof(uint8_t));
+    p->kind_everseen = mem_zalloc(z_info->k_max * sizeof(uint8_t));
+    p->ego_ignore_types = mem_zalloc(z_info->e_max * sizeof(uint8_t*));
+    for (i = 0; i < z_info->e_max; i++)
+        p->ego_ignore_types[i] = mem_zalloc(ITYPE_MAX * sizeof(uint8_t));
+    p->ego_everseen = mem_zalloc(z_info->e_max * sizeof(uint8_t));
+
+    /* Allocate memory for visuals */
+    p->f_attr = mem_zalloc(z_info->f_max * sizeof(byte_lit));
+    p->f_char = mem_zalloc(z_info->f_max * sizeof(char_lit));
+    p->t_attr = mem_zalloc(z_info->trap_max * sizeof(byte_lit));
+    p->t_char = mem_zalloc(z_info->trap_max * sizeof(char_lit));
+    p->k_attr = mem_zalloc(z_info->k_max * sizeof(uint8_t));
+    p->k_char = mem_zalloc(z_info->k_max * sizeof(char));
+    p->d_attr = mem_zalloc(z_info->k_max * sizeof(uint8_t));
+    p->d_char = mem_zalloc(z_info->k_max * sizeof(char));
+    p->r_attr = mem_zalloc(z_info->r_max * sizeof(uint8_t));
+    p->r_char = mem_zalloc(z_info->r_max * sizeof(char));
+
+    /* Allocate memory for object and monster lists */
+    p->mflag = mem_zalloc(z_info->level_monster_max * MFLAG_SIZE * sizeof(bitflag));
+    p->mon_det = mem_zalloc(z_info->level_monster_max * sizeof(uint8_t));
+
+    /* Allocate memory for current cave grid info */
+    p->cave = mem_zalloc(sizeof(struct player_cave));
+
+    /* Allocate memory for wilderness knowledge */
+    p->wild_map = mem_zalloc((2 * radius_wild + 1) * sizeof(uint8_t *));
+    for (i = 0; i <= 2 * radius_wild; i++)
+        p->wild_map[i] = mem_zalloc((2 * radius_wild + 1) * sizeof(uint8_t));
+
+    /* Allocate memory for home storage */
+    p->home = mem_zalloc(sizeof(struct store));
+    memcpy(p->home, &stores[store_max - 2], sizeof(struct store));
+    p->home->stock = NULL;
+
+    /* Analyze every object */
+    for (i = 0; i < z_info->k_max; i++)
+    {
+        struct object_kind *kind = &k_info[i];
+
+        /* Skip "empty" objects */
+        if (!kind->name) continue;
+
+        /* No flavor yields aware */
+        if (!kind->flavor) p->kind_aware[i] = true;
+    }
+
+    /* Always start with a well fed player */
+    p->timed[TMD_FOOD] = PY_FOOD_FULL - 2000;
+
+    /* Assume no feeling */
+    p->feeling = -1;
+
+    /* Update the wilderness map */
+    if ((cfg_diving_mode > 1) || no_recall)
+        wild_set_explored(p, base_wpos());
+    else
+    {
+        wild_set_explored(p, start_wpos());
+
+        /* On "fast" wilderness servers, we also know the location of the base town */
+        if (cfg_diving_mode == 1) wild_set_explored(p, base_wpos());
+    }
+
+    /* Copy channels pointer */
+    p->on_channel = Conn_get_console_channels(conn);
+
+    /* Clear old channels */
+    for (i = 0; i < MAX_CHANNELS; i++)
+        p->on_channel[i] = 0;
+
+    /* Listen on the default chat channel */
+    p->on_channel[0] |= UCM_EAR;
+
+    /* Copy his connection info */
+    p->conn = conn;
+
+    /* Default to the first race/class in the edit file */
+    p->race = player_id2race(0);
+    p->clazz = player_id2class(0);
+
+    monmsg_init(p);
+    monster_list_init(p);
+    object_list_init(p);
+
+    /* Initialize extra parameters */
+    for (i = ITYPE_NONE; i < ITYPE_MAX; i++) p->opts.ignore_lvl[i] = IGNORE_BAD;
+
+    for (i = 0; i < z_info->k_max; i++)
+        add_autoinscription(p, i, connp->Client_setup.note_aware[i]);
+
+    p->cancel_firing = true;
 }
 
-/**
+
+/*
  * Free player struct
  */
-static void cleanup_player(void) {
-	if (!player) return;
+void cleanup_player(struct player *p)
+{
+    int i;
 
-	player_cleanup_members(player);
+    if (!p) return;
 
-	/* Free the basic player struct */
-	mem_free(player);
-	player = NULL;
+    /* Free the things that are always initialised */
+    if (p->obj_k) object_free(p->obj_k);
+    mem_free(p->timed);
+    if (p->upkeep)
+    {
+        mem_free(p->upkeep->inven);
+        mem_free(p->upkeep->quiver);
+    }
+    mem_free(p->upkeep);
+    p->upkeep = NULL;
+
+    /* Free the things that are only sometimes initialised */
+    player_spells_free(p);
+    object_pile_free(p->gear);
+    mem_free(p->body.slots);
+
+    /* Stop all file perusal and interactivity */
+    string_free(p->interactive_file);
+
+    /* PWMAngband */
+    for (i = 0; p->scr_info && (i < z_info->dungeon_hgt + ROW_MAP + 1); i++)
+    {
+        mem_free(p->scr_info[i]);
+        mem_free(p->trn_info[i]);
+    }
+    mem_free(p->scr_info);
+    mem_free(p->trn_info);
+    for (i = 0; i < N_HISTORY_FLAGS; i++)
+        mem_free(p->hist_flags[i]);
+    for (i = 0; p->lore && (i < z_info->r_max); i++)
+    {
+        mem_free(p->lore[i].blows);
+        mem_free(p->lore[i].blow_known);
+    }
+    mem_free(p->lore);
+    mem_free(p->current_lore.blows);
+    mem_free(p->current_lore.blow_known);
+    mem_free(p->art_info);
+    mem_free(p->randart_info);
+    mem_free(p->randart_created);
+    mem_free(p->kind_aware);
+    mem_free(p->note_aware);
+    mem_free(p->kind_tried);
+    mem_free(p->kind_ignore);
+    mem_free(p->kind_everseen);
+    for (i = 0; p->ego_ignore_types && (i < z_info->e_max); i++)
+        mem_free(p->ego_ignore_types[i]);
+    mem_free(p->ego_ignore_types);
+    mem_free(p->ego_everseen);
+    mem_free(p->f_attr);
+    mem_free(p->f_char);
+    mem_free(p->t_attr);
+    mem_free(p->t_char);
+    mem_free(p->k_attr);
+    mem_free(p->k_char);
+    mem_free(p->d_attr);
+    mem_free(p->d_char);
+    mem_free(p->r_attr);
+    mem_free(p->r_char);
+    mem_free(p->mflag);
+    mem_free(p->mon_det);
+    for (i = 0; p->wild_map && (i <= 2 * radius_wild); i++)
+        mem_free(p->wild_map[i]);
+    mem_free(p->wild_map);
+    if (p->home) object_pile_free(p->home->stock);
+    mem_free(p->home);
+
+    /* Free the history */
+    history_clear(p);
+
+    /* Free the cave */
+    if (p->cave)
+    {
+        player_cave_free(p);
+        mem_free(p->cave);
+    }
+
+    monmsg_cleanup(p);
+    monster_list_finalize(p);
+    object_list_finalize(p);
 }
 
-struct init_module player_module = {
-	.name = "player",
-	.init = init_player,
-	.cleanup = cleanup_player
-};
+
+void player_cave_free(struct player *p)
+{
+    struct loc grid;
+
+    if (!p->cave->allocated) return;
+
+    for (grid.y = 0; grid.y < p->cave->height; grid.y++)
+    {
+        for (grid.x = 0; grid.x < p->cave->width; grid.x++)
+        {
+            mem_free(square_p(p, &grid)->info);
+            square_forget_pile(p, &grid);
+            square_forget_trap(p, &grid);
+        }
+        mem_free(p->cave->squares[grid.y]);
+        mem_free(p->cave->noise.grids[grid.y]);
+        mem_free(p->cave->scent.grids[grid.y]);
+    }
+    mem_free(p->cave->squares);
+    mem_free(p->cave->noise.grids);
+    mem_free(p->cave->scent.grids);
+    p->cave->allocated = false;
+}
+
+
+/*
+ * Clear the flags for each cave grid
+ */
+void player_cave_clear(struct player *p, bool full)
+{
+    struct loc begin, end;
+    struct loc_iterator iter;
+
+    /* Assume no feeling */
+    if (full) p->feeling = -1;
+
+    /* Reset number of feeling squares */
+    if (full) p->cave->feeling_squares = 0;
+
+    loc_init(&begin, 0, 0);
+    loc_init(&end, p->cave->width, p->cave->height);
+    loc_iterator_first(&iter, &begin, &end);
+
+    /* Clear flags and flow information. */
+    do
+    {
+        /* Erase feat */
+        square_forget(p, &iter.cur);
+
+        /* Erase object */
+        square_forget_pile(p, &iter.cur);
+
+        /* Erase trap */
+        square_forget_trap(p, &iter.cur);
+
+        /* Erase flags */
+        if (full)
+            sqinfo_wipe(square_p(p, &iter.cur)->info);
+        else
+        {
+            /* Erase flags (no bounds checking) */
+            sqinfo_off(square_p(p, &iter.cur)->info, SQUARE_SEEN);
+            sqinfo_off(square_p(p, &iter.cur)->info, SQUARE_VIEW);
+            sqinfo_off(square_p(p, &iter.cur)->info, SQUARE_DTRAP);
+        }
+
+        /* Erase flow */
+        if (full)
+        {
+            p->cave->noise.grids[iter.cur.y][iter.cur.x] = 0;
+            p->cave->scent.grids[iter.cur.y][iter.cur.x] = 0;
+        }
+    }
+    while (loc_iterator_next_strict(&iter));
+
+    /* Memorize the content of owned houses */
+    memorize_houses(p);
+}
+
+
+bool player_square_in_bounds(struct player *p, struct loc *grid)
+{
+    return ((grid->x >= 0) && (grid->x < p->cave->width) &&
+        (grid->y >= 0) && (grid->y < p->cave->height));
+}
+
+
+bool player_square_in_bounds_fully(struct player *p, struct loc *grid)
+{
+    return ((grid->x > 0) && (grid->x < p->cave->width - 1) &&
+        (grid->y > 0) && (grid->y < p->cave->height - 1));
+}

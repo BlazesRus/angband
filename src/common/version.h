@@ -21,7 +21,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#ifndef	VERSION_H
+#if !defined(SPClient) && !defined(VERSION_H)
 #define	VERSION_H
 
 #if defined(__hpux)

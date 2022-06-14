@@ -1,8 +1,9 @@
-/**
- * \file obj-curse.c
- * \brief functions to deal with object curses
+/*
+ * File: obj-curse.c
+ * Purpose: Functions to deal with object curses
  *
  * Copyright (c) 2016 Nick McConnell
+ * Copyright (c) 2022 MAngband and PWMAngband Developers
  *
  * This work is free software; you can redistribute it and/or modify it
  * under the terms of either:
@@ -15,342 +16,468 @@
  *    and not for profit purposes provided that this copyright and statement
  *    are included in all such copies.  Other copyrights may also apply.
  */
-#include "angband.h"
-#include "effects.h"
-#include "init.h"
-#include "obj-curse.h"
-#include "obj-gear.h"
-#include "obj-knowledge.h"
-#include "obj-pile.h"
-#include "obj-util.h"
-#include "player-timed.h"
-#include "player-util.h"
 
-struct curse *curses;
 
-/**
+#include "s-angband.h"
+
+
+/*
  * Return the index of the curse with the given name
  */
 int lookup_curse(const char *name)
 {
-	int i;
+    int i;
 
-	for (i = 1; i < z_info->curse_max; ++i) {
-		struct curse *curse = &curses[i];
-		if (curse->name && streq(name, curse->name))
-			return i;
-	}
-	return 0;
+    for (i = 0; i < z_info->curse_max; i++)
+    {
+        struct curse *curse = &curses[i];
+
+        if (curse->name && streq(name, curse->name)) return i;
+    }
+
+    return -1;
 }
 
-/**
+
+static void randomize_curse(struct curse_data *curse, struct curse *c)
+{
+    int i;
+
+    if (c->obj->to_h)
+        curse->to_h = SGN(c->obj->to_h) * randint1(ABS(c->obj->to_h));
+    if (c->obj->to_d)
+        curse->to_d = SGN(c->obj->to_d) * randint1(ABS(c->obj->to_d));
+    if (c->obj->to_a)
+        curse->to_a = SGN(c->obj->to_a) * randint1(ABS(c->obj->to_a));
+    for (i = 0; i < OBJ_MOD_MAX; i++)
+    {
+        if (c->obj->modifiers[i])
+            curse->modifiers[i] = SGN(c->obj->modifiers[i]) * randint1(ABS(c->obj->modifiers[i]));
+    }
+}
+
+
+/*
  * Copy all the curses from a template to an actual object.
  *
- * \param obj the object the curses are being attached to
- * \param source the curses being copied
+ * obj the object the curses are being attached to
+ * source the curses being copied
  */
 void copy_curses(struct object *obj, int *source)
 {
-	int i;
+    int i;
 
-	if (!source) return;
+    if (!source) return;
 
-	if (!obj->curses) {
-		obj->curses = mem_zalloc(z_info->curse_max * sizeof(struct curse_data));
-	}
+    if (!obj->curses)
+        obj->curses = mem_zalloc(z_info->curse_max * sizeof(struct curse_data));
 
-	for (i = 0; i < z_info->curse_max; ++i) {
-		if (!source[i]) continue;
-		obj->curses[i].power = source[i];
+    for (i = 0; i < z_info->curse_max; i++)
+    {
+        if (!source[i]) continue;
+        obj->curses[i].power = source[i];
 
-		/* Timeouts need to be set for new objects */
-		obj->curses[i].timeout = randcalc(curses[i].obj->time, 0, RANDOMISE);
-	}
+        /* Timeouts need to be set for new objects */
+        obj->curses[i].timeout = randcalc(curses[i].obj->time, 0, RANDOMISE);
+
+        /*
+         * Because struct object doesn't allow random values, generic curse
+         * objects represent these by fixed values to be randomised on
+         * application to an actual object
+         */
+        randomize_curse(&obj->curses[i], &curses[i]);
+    }
 }
 
-/**
+
+/*
  * Check whether two objects have the exact same curses
  *
- * \param obj1 the first object
- * \param obj2 the second object
+ * obj1 the first object
+ * obj2 the second object
  */
 bool curses_are_equal(const struct object *obj1, const struct object *obj2)
 {
-	int i;
+    int i;
 
-	if (!obj1->curses && !obj2->curses) return true;
-	if (obj1->curses && !obj2->curses) return false;
-	if (!obj1->curses && obj2->curses) return false;
+    if (!obj1->curses && !obj2->curses) return true;
+    if (obj1->curses && !obj2->curses) return false;
+    if (!obj1->curses && obj2->curses) return false;
 
-	for (i = 0; i < z_info->curse_max; ++i) {
-		if (obj1->curses[i].power != obj2->curses[i].power) return false;
-	}
+    for (i = 0; i < z_info->curse_max; i++)
+    {
+        if (obj1->curses[i].power != obj2->curses[i].power) return false;
+    }
 
-	return true;
+    return true;
 }
 
-/**
+
+/*
  * Detect if a curse is in the conflict list of another curse
  */
 static bool curses_conflict(int first, int second)
 {
-	struct curse *c = &curses[first];
-	char buf[80] = "|";
+    struct curse *c = &curses[first];
+    char buf[NORMAL_WID];
 
-	/* First curse has no conflicts */
-	if (!c->conflict) {
-		return false;
-	}
+    /* First curse has no conflicts */
+    if (!c->conflict) return false;
 
-	/* Build the conflict strong and search for it */
-	my_strcat(buf, curses[second].name, sizeof(buf));
-	my_strcat(buf, "|", sizeof(buf));
-	if (strstr(c->conflict, buf)) {
-		return true;
-	}
+    /* Build the conflict string and search for it */
+    strnfmt(buf, sizeof(buf), "|%s|", curses[second].name);
+    if (strstr(c->conflict, buf)) return true;
 
-	return false;
+    return false;
 }
 
-/**
- * Check an object for active curses, and remove the "curses" field if
- * none is found
+
+/*
+ * Check an object for active curses, and remove the "curses" field if none is found
  */
 static void check_object_curses(struct object *obj)
 {
-	int i;
+    int i;
 
-	/* Look for a valid curse, return if one found */
-	for (i = 0; i < z_info->curse_max; ++i) {
-		if (obj->curses[i].power) {
-			return;
-		}
-	}
+    /* Look for a valid curse, return if one found */
+    for (i = 0; i < z_info->curse_max; i++)
+    {
+        if (obj->curses[i].power) return;
+    }
 
-	/* Free the curse structure */
-	mem_free(obj->curses);
-	obj->curses = NULL;
+    /* Free the curse structure */
+    mem_free(obj->curses);
+    obj->curses = NULL;
 }
 
 
-/**
+static bool object_curse_conflicts(struct object *obj, int pick)
+{
+    struct curse *c = &curses[pick];
+
+    /* Reject curses with effects foiled by an existing object property */
+    if (c->obj->effect && (c->obj->effect->index == effect_lookup("TIMED_INC")))
+    {
+        int idx = c->obj->effect->subtype;
+        struct timed_effect_data *status;
+
+        my_assert(idx >= 0);
+        my_assert(idx < TMD_MAX);
+
+        status = &timed_effects[idx];
+        if ((status->fail_code == TMD_FAIL_FLAG_OBJECT) && of_has(obj->flags, status->fail))
+            return true;
+        if ((status->fail_code == TMD_FAIL_FLAG_RESIST) && (obj->el_info[status->fail].res_level > 0))
+            return true;
+        if ((status->fail_code == TMD_FAIL_FLAG_VULN) && (obj->el_info[status->fail].res_level < 0))
+            return true;
+    }
+
+    return false;
+}
+
+
+/*
  * Append a given curse with a given power to an object
  *
- * \param the object to curse
- * \param pick the curse to append
- * \param power the power of the new curse
+ * obj the object to curse
+ * pick the curse to append
+ * power the power of the new curse
  */
-bool append_object_curse(struct object *obj, int pick, int power)
+static bool append_object_curse_aux(struct object *obj, int pick, int power)
 {
-	struct curse *c = &curses[pick];
-	int i;
+    struct curse *c = &curses[pick];
+    int i;
 
-	if (!obj->curses)
-		obj->curses = mem_zalloc(z_info->curse_max * sizeof(struct curse_data));
+    if (!obj->curses)
+        obj->curses = mem_zalloc(z_info->curse_max * sizeof(struct curse_data));
 
-	/* Reject conflicting curses */
-	for (i = 0; i < z_info->curse_max; ++i) {
-		if (obj->curses[i].power && curses_conflict(i, pick)) {
-			check_object_curses(obj);
-			return false;
-		}
-	}
+    /* Reject conflicting curses */
+    for (i = 0; i < z_info->curse_max; i++)
+    {
+        if (obj->curses[i].power && curses_conflict(i, pick))
+        {
+            check_object_curses(obj);
+            return false;
+        }
+    }
 
-	/* Reject curses with effects foiled by an existing object property */
-	if (c->obj->effect && c->obj->effect->index == effect_lookup("TIMED_INC")) {
-		int idx = c->obj->effect->subtype;
-		struct timed_effect_data *status;
-		assert(idx < TMD_MAX);
-		status = &timed_effects[idx];
-		if (status->fail_code == TMD_FAIL_FLAG_OBJECT) {
-			if (of_has(obj->flags, status->fail)) {
-				check_object_curses(obj);
-				return false;
-			}
-		} else if (status->fail_code == TMD_FAIL_FLAG_RESIST) {
-			if (obj->el_info[status->fail].res_level > 0) {
-				check_object_curses(obj);
-				return false;
-			}
-		} else if (status->fail_code == TMD_FAIL_FLAG_VULN) {
-			if (obj->el_info[status->fail].res_level < 0) {
-				check_object_curses(obj);
-				return false;
-			}
-		}
-	}
+    /* Reject curses with effects foiled by an existing object property */
+    if (object_curse_conflicts(obj, pick))
+    {
+        check_object_curses(obj);
+        return false;
+    }
 
-	/* Reject curses which explicitly conflict with an object property */
-	for (i = of_next(c->conflict_flags, FLAG_START); i != FLAG_END;
-		 i = of_next(c->conflict_flags, i + 1)) {
-		if (of_has(obj->flags, i)) {
-			check_object_curses(obj);
-			return false;
-		}
-	}
+    /* Reject curses which explicitly conflict with an object property */
+    if (of_is_inter(obj->flags, c->conflict_flags))
+    {
+        check_object_curses(obj);
+        return false;
+    }
 
-	/* Adjust power if our pick is a duplicate */
-	if (power > obj->curses[pick].power) {
-		obj->curses[pick].power = power;
-		obj->curses[pick].timeout = randcalc(c->obj->time, 0, RANDOMISE);
-		return true;
-	}
+    /* Check for existence */
+    if (obj->curses[pick].power)
+    {
+        /* Same power or smaller, fail */
+        if (power <= obj->curses[pick].power)
+        {
+            check_object_curses(obj);
+            return false;
+        }
 
-	check_object_curses(obj);
-	return false;
+        /* Greater power, increase and accept */
+        obj->curses[pick].power = power;
+        return true;
+    }
+
+    /* Add curse */
+    obj->curses[pick].power = power;
+    obj->curses[pick].timeout = randcalc(c->obj->time, 0, RANDOMISE);
+    randomize_curse(&obj->curses[pick], c);
+    return true;
 }
 
-/**
- * Remove a curse from an object.
- *
- * \param obj is the object to manipulate
- * \param pick is the index of the curse to be removed
- * \param message if true, causes a message to be displayed if a curse was
- * removed
- * \return true if the object had the given curse; otherwise, return false
- */
-bool remove_object_curse(struct object *obj, int pick, bool message)
-{
-	struct curse_data *c = &obj->curses[pick];
-	bool result;
 
-	if (c->power > 0) {
-		result = true;
-		c->power = 0;
-		c->timeout = 0;
-		/* Remove the curses array if that was the last curse. */
-		check_object_curses(obj);
-		if (message) {
-			msg("The %s curse is removed!", curses[pick].name);
-		}
-	} else {
-		result = false;
-	}
-	return result;
+int append_object_curse(struct object *obj, int lev, int tval)
+{
+    int max_curses = randint1(4);
+    int power = randint1(9) + 10 * m_bonus(9, lev);
+    int new_lev = lev;
+
+    /* Blessed objects are immune */
+    if (of_has(obj->flags, OF_BLESSED)) return lev;
+
+    while (max_curses--)
+    {
+        int tries = 3;
+
+        /* Try to curse it */
+        while (tries--)
+        {
+            int pick = randint0(z_info->curse_max);
+
+            if (curses[pick].poss && curses[pick].poss[tval])
+            {
+                if (append_object_curse_aux(obj, pick, power))
+                    new_lev += randint1(1 + power / 10);
+                break;
+            }
+        }
+    }
+
+    return new_lev;
 }
 
-/**
+
+/*
+ * Removes an individual curse from an object.
+ */
+void remove_object_curse(struct player *p, struct object *obj, int index, bool message)
+{
+    struct curse_data *c = &obj->curses[index];
+    char *name = curses[index].name;
+    int i;
+
+    memset(c, 0, sizeof(struct curse_data));
+    if (message) msg(p, "The %s curse is removed!", name);
+
+    /* Check to see if that was the last one */
+    for (i = 0; i < z_info->curse_max; i++)
+    {
+        if (obj->curses[i].power) return;
+    }
+
+    mem_free(obj->curses);
+    obj->curses = NULL;
+}
+
+
+/*
  * Check an artifact template for active curses, remove conflicting curses, and
  * remove the "curses" field if no curses remain
  */
-void check_artifact_curses(struct artifact *art)
+static void check_artifact_curses(struct artifact *art)
 {
-	int i;
+    int i;
 
-	/* Look for a valid curse, return if one found */
-	for (i = 0; i < z_info->curse_max; ++i) {
-		if (art->curses && art->curses[i]) {
-			return;
-		}
-	}
+    /* Look for a valid curse, return if one found */
+    for (i = 0; i < z_info->curse_max; i++)
+    {
+        if (art->curses[i]) return;
+    }
 
-	/* Free the curse structure */
-	mem_free(art->curses);
-	art->curses = NULL;
+    /* Free the curse structure */
+    mem_free(art->curses);
+    art->curses = NULL;
 }
 
-/**
- *
- */
-bool artifact_curse_conflicts(struct artifact *art, int pick)
+
+static bool artifact_curse_conflicts(struct artifact *art, int pick)
 {
-	struct curse *c = &curses[pick];
-	int i;
+    struct curse *c = &curses[pick];
 
-	/* Reject curses with effects foiled by an existing artifact property */
-	if (c->obj->effect && c->obj->effect->index == effect_lookup("TIMED_INC")) {
-		int idx = c->obj->effect->subtype;
-		struct timed_effect_data *status;
-		assert(idx < TMD_MAX);
-		status = &timed_effects[idx];
-		if (status->fail_code == TMD_FAIL_FLAG_OBJECT) {
-			if (of_has(art->flags, status->fail)) {
-				check_artifact_curses(art);
-				return true;
-			}
-		} else if (status->fail_code == TMD_FAIL_FLAG_RESIST) {
-			if (art->el_info[status->fail].res_level > 0) {
-				check_artifact_curses(art);
-				return true;
-			}
-		} else if (status->fail_code == TMD_FAIL_FLAG_VULN) {
-			if (art->el_info[status->fail].res_level < 0) {
-				check_artifact_curses(art);
-				return true;
-			}
-		}
-	}
+    /* Reject curses with effects foiled by an existing object property */
+    if (c->obj->effect && c->obj->effect->index == effect_lookup("TIMED_INC"))
+    {
+        int idx = c->obj->effect->subtype;
+        struct timed_effect_data *status;
 
-	/* Reject curses which explicitly conflict with an artifact property */
-	for (i = of_next(c->conflict_flags, FLAG_START); i != FLAG_END;
-		 i = of_next(c->conflict_flags, i + 1)) {
-		if (of_has(art->flags, i)) {
-			check_artifact_curses(art);
-			return true;
-		}
-	}
+        my_assert(idx >= 0);
+        my_assert(idx < TMD_MAX);
 
-	return false;
+        status = &timed_effects[idx];
+        if ((status->fail_code == TMD_FAIL_FLAG_OBJECT) && of_has(art->flags, status->fail))
+            return true;
+        if ((status->fail_code == TMD_FAIL_FLAG_RESIST) && (art->el_info[status->fail].res_level > 0))
+            return true;
+        if ((status->fail_code == TMD_FAIL_FLAG_VULN) && (art->el_info[status->fail].res_level < 0))
+            return true;
+    }
+
+    return false;
 }
 
-/**
+
+/*
  * Append a given curse with a given power to an artifact
  *
- * \param the artifact to curse
- * \param pick the curse to append
- * \param power the power of the new curse
+ * art the artifact to curse
+ * pick the curse to append
+ * power the power of the new curse
  */
-bool append_artifact_curse(struct artifact *art, int pick, int power)
+static bool append_artifact_curse_aux(struct artifact *art, int pick, int power)
 {
-	int i;
+    struct curse *c = &curses[pick];
+    int i;
 
-	if (!art->curses)
-		art->curses = mem_zalloc(z_info->curse_max * sizeof(int));
+    if (!art->curses)
+        art->curses = mem_zalloc(z_info->curse_max * sizeof(int));
 
-	/* Reject conflicting curses */
-	for (i = 0; i < z_info->curse_max; ++i) {
-		if (art->curses[i] && curses_conflict(i, pick)) {
-			check_artifact_curses(art);
-			return false;
-		}
-	}
+    /* Reject conflicting curses */
+    for (i = 0; i < z_info->curse_max; i++)
+    {
+        if (art->curses[i] && curses_conflict(i, pick))
+        {
+            check_artifact_curses(art);
+            return false;
+        }
+    }
 
-	/* Reject curses with effects foiled by an existing artifact property */
-	if (artifact_curse_conflicts(art, pick)) {
-		check_artifact_curses(art);
-		return false;
-	}
+    /* Reject curses with effects foiled by an existing artifact property */
+    if (artifact_curse_conflicts(art, pick))
+    {
+        check_artifact_curses(art);
+        return false;
+    }
 
-	/* Adjust power if our pick is a duplicate */
-	if (power > art->curses[pick]) {
-		art->curses[pick] = power;
-	}
+    /* Reject curses which explicitly conflict with an artifact property */
+    if (of_is_inter(art->flags, c->conflict_flags))
+    {
+        check_artifact_curses(art);
+        return false;
+    }
 
-	check_artifact_curses(art);
-	return true;
+    /* Check for existence */
+    if (art->curses[pick])
+    {
+        /* Same power or smaller, fail */
+        if (power <= art->curses[pick])
+        {
+            check_artifact_curses(art);
+            return false;
+        }
+
+        /* Greater power, increase and accept */
+        art->curses[pick] = power;
+        return true;
+    }
+
+    /* Add curse */
+    art->curses[pick] = power;
+    return true;
 }
 
-/**
+
+int append_artifact_curse(struct artifact *art, int lev, int tval)
+{
+    int max_curses = randint1(4);
+    int power = randint1(9) + 10 * m_bonus(9, lev);
+    int new_lev = lev;
+
+    /* Blessed artifacts are immune */
+    if (of_has(art->flags, OF_BLESSED)) return lev;
+
+    while (max_curses--)
+    {
+        int tries = 3;
+
+        /* Try to curse it */
+        while (tries--)
+        {
+            int pick = randint0(z_info->curse_max);
+
+            if (curses[pick].poss && curses[pick].poss[tval])
+            {
+                if (append_artifact_curse_aux(art, pick, power))
+                    new_lev += randint1(1 + power / 10);
+                break;
+            }
+        }
+    }
+
+    return new_lev;
+}
+
+
+/*
  * Do a curse effect.
  *
- * \param i the index into the curses array
+ * i the index into the curses array
  */
-bool do_curse_effect(int i, struct object *obj)
+bool do_curse_effect(struct player *p, int i)
 {
-	struct curse *curse = &curses[i];
-	struct effect *effect = curse->obj->effect;
-	bool ident = false;
-	bool was_aware = player_knows_curse(player, i);
-	int dir = randint1(8);
+    struct curse *curse = &curses[i];
+    struct effect *effect = curse->obj->effect;
+    bool ident = false;
+    bool was_aware = player_knows_curse(p, i);
+    int dir = randint1(8);
+    struct source who_body;
+    struct source *who = &who_body;
+    int slot = slot_by_name(p, "weapon");
+    struct object *obj = p->body.slots[slot].obj;
 
-	if (dir > 4) {
-		dir++;
-	}
-	if (curse->obj->effect_msg) {
-		msgt(MSG_GENERIC, "%s", curse->obj->effect_msg);
-	}
-	effect_do(effect, source_object(obj), NULL, &ident, was_aware, dir, 0, 0, NULL);
-	curse->obj->known->effect = curse->obj->effect;
-	disturb(player);
-	return !was_aware && ident;
+    if (dir > 4) dir++;
+    if (effect->self_msg) msgt(p, MSG_GENERIC, effect->self_msg);
+    source_obj(who, obj);
+    who->player = p;
+    effect_do(effect, who, &ident, was_aware, dir, NULL, 0, 0, NULL);
+    disturb(p, 0);
+    return !was_aware && ident;
+}
+
+
+bool append_curse(struct object *obj, struct object *source, int i)
+{
+    if (!obj->curses)
+        obj->curses = mem_zalloc(z_info->curse_max * sizeof(struct curse_data));
+
+    /* Check for existence */
+    if (obj->curses[i].power)
+    {
+        /* Same power or smaller, fail */
+        if (source->curses[i].power <= obj->curses[i].power)
+        {
+            check_object_curses(obj);
+            return false;
+        }
+
+        /* Greater power, increase and accept */
+        obj->curses[i].power = source->curses[i].power;
+        return true;
+    }
+
+    /* Add curse */
+    memcpy(&obj->curses[i], &source->curses[i], sizeof(struct curse_data));
+    return true;
 }

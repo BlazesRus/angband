@@ -65,7 +65,7 @@
         <Otherwise>
             <PropertyGroup>
                 <SDLLibraryType>Minimal</SDLLibraryType>
-                <ProjAppType>SPClient</ProjAppType>
+                <ProjAppType>HybridClient</ProjAppType><!--SPClient as optional closer to vanilla code later-->
             </PropertyGroup>
         </Otherwise>
     </Choose>
@@ -110,8 +110,9 @@
         </When>
         <Otherwise>
 			<PropertyGroup Label="RenameBasedOnSDLAndDebug">
-				<TargetName Condition="'$(ConfigurationStyle)'!='Debug'">angband_$(SDLLibraryType)</TargetName>
-				<TargetName Condition="'$(ConfigurationStyle)'=='Debug'">angbandDebug_$(SDLLibraryType)</TargetName>
+				<TargetName Condition="'$(ProjAppType)'=='SPClient' And $(ConfigurationStyle)'!='Debug'">angband_$(SDLLibraryType)</TargetName>
+				<TargetName Condition="'$(ProjAppType)'=='SPClient' And $(ConfigurationStyle)'=='Debug'">angbandDebug_$(SDLLibraryType)</TargetName>
+				<TargetName Condition="'$(ProjAppType)'=='HybridClient'">angband_$(SDLLibraryType)</TargetName>
 			</PropertyGroup>
         </Otherwise>
     </Choose>
@@ -183,7 +184,8 @@
             <PreprocessorDefinitions Condition="'$(ConfigurationStyle)'=='Debug'">%(PreprocessorDefinitions);_DEBUG</PreprocessorDefinitions>
             <PreprocessorDefinitions Condition="'$(ConfigurationStyle)'=='Release'">%(PreprocessorDefinitions);NDEBUG</PreprocessorDefinitions>
             <PreprocessorDefinitions Condition="'$(Platform)'=='x64'">%(PreprocessorDefinitions);_WIN64;WIN64</PreprocessorDefinitions>
-            <PreprocessorDefinitions Condition="'$(ProjAppType)'=='SPClient'">%(PreprocessorDefinitions);SPClient</PreprocessorDefinitions>
+<!--             <PreprocessorDefinitions Condition="'$(ProjAppType)'=='SPClient'">%(PreprocessorDefinitions);SPClient</PreprocessorDefinitions> --><!--SPClient for using mostly non-MBand code and avoiding using MBand specific files if possible-->
+            <PreprocessorDefinitions Condition="'$(ProjAppType)'=='HybridClient'">%(PreprocessorDefinitions);HybridClient</PreprocessorDefinitions><!--Combines uses most of code base as Client code with some server specific code without interfacing with a server-->
             <PreprocessorDefinitions Condition="'$(ProjAppType)'=='Server'">%(PreprocessorDefinitions);MBandServer</PreprocessorDefinitions>
             <PreprocessorDefinitions Condition="'$(ProjAppType)'=='Client'">%(PreprocessorDefinitions);MBandClient</PreprocessorDefinitions>
             <PreprocessorDefinitions>%(PreprocessorDefinitions);SOUND;USE_PRIVATE_PATHS;WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;_CONSOLE;BUILDINGWithVS;WINDOWS</PreprocessorDefinitions>
@@ -351,67 +353,67 @@
     </ItemGroup>
     <ItemGroup Label="SPClientExclusiveHeaders">
         <ClInclude Include="src\debug.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="src\list-ui-entry-renderers.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="src\save-charoutput.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="src\ui-effect.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="src\ui-entry-combiner.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="src\ui-entry-init.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="src\ui-entry-renderers.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="src\ui-entry.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="src\ui-equip-cmp.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="src\ui-help.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="src\ui-map.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="src\ui-history.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="src\ui-mon-list.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="src\ui-mon-lore.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="src\ui-obj-list.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="src\ui-player.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="src\ui-score.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="src\ui-signals.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="src\ui-spoil.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="src\ui-target.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="src\ui-visuals.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="src\ui-wizard.h">
             <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient'">true</ExcludedFromBuild>
@@ -440,58 +442,58 @@
             <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient'">true</ExcludedFromBuild>
         </ClCompile>
         <ClCompile Include="src\save-charoutput.c">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClCompile>
         <ClCompile Include="src\ui-effect.c">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClCompile>
         <ClCompile Include="src\ui-entry-combiner.c">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClCompile>
         <ClCompile Include="src\ui-entry-renderers.c">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClCompile>
         <ClCompile Include="src\ui-entry.c">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClCompile>
         <ClCompile Include="src\ui-equip-cmp.c">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClCompile>
         <ClCompile Include="src\ui-help.c">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClCompile>
         <ClCompile Include="src\ui-history.c">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClCompile>
         <ClCompile Include="src\ui-map.c">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClCompile>
         <ClCompile Include="src\ui-mon-list.c">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClCompile>
         <ClCompile Include="src\ui-mon-lore.c">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClCompile>
         <ClCompile Include="src\ui-obj-list.c">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClCompile>
         <ClCompile Include="src\ui-player.c">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClCompile>
         <ClCompile Include="src\ui-score.c">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClCompile>
         <ClCompile Include="src\ui-signals.c">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClCompile>
         <ClCompile Include="src\ui-spoil.c">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClCompile>
         <ClCompile Include="src\ui-target.c">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClCompile>
         <ClCompile Include="src\ui-visuals.c">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClCompile>
         <ClCompile Include="src\ui-wizard.c">
             <ExcludedFromBuild Condition="'$(ProjAppType)'!='SPClient'">true</ExcludedFromBuild>
@@ -554,73 +556,73 @@
     </ItemGroup>
     <ItemGroup Label="TangariaExCommonHeaders">
         <ClInclude Include="$(CommonRoot)bit.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="$(CommonRoot)display.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="$(CommonRoot)h-net.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="$(CommonRoot)h-quark.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="$(CommonRoot)list-packets.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="$(CommonRoot)md5.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="$(CommonRoot)mon-common.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="$(CommonRoot)net-unix.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="$(CommonRoot)net-win.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="$(CommonRoot)obj-common.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="$(CommonRoot)obj-gear-common.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="$(CommonRoot)pack.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="$(CommonRoot)player-common-calcs.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="$(CommonRoot)player-common.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="$(CommonRoot)player-state.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="$(CommonRoot)sockbuf.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="$(CommonRoot)store-types.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="$(CommonRoot)trap-common.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="$(CommonRoot)util.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="$(CommonRoot)version.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="$(CommonRoot)z-defines.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="$(CommonRoot)z-msg.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="$(CommonRoot)z-spells.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
     </ItemGroup>
     <ItemGroup Label="CommonSrc">
@@ -646,25 +648,25 @@
     </ItemGroup>
     <ItemGroup Label="TangariaExCommonSrc">
         <ClCompile Include="$(CommonRoot)display.c">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClCompile>
         <ClCompile Include="$(CommonRoot)md5.c">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClCompile>
         <ClCompile Include="$(CommonRoot)net-unix.c">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClCompile>
         <ClCompile Include="$(CommonRoot)net-win.c">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClCompile>
         <ClCompile Include="$(CommonRoot)obj-gear-common.c">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClCompile>
         <ClCompile Include="$(CommonRoot)sockbuf.c">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClCompile>
         <ClCompile Include="$(CommonRoot)util.c">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClCompile>
     </ItemGroup>
     <ItemGroup Label="ServerHeaders">
@@ -1022,28 +1024,28 @@
     </ItemGroup>
     <ItemGroup Label="TangariaExClientHeaders">
         <ClInclude Include="$(ClientRoot)mangclient_sdlPCH1.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="$(ClientRoot)c-angband.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="$(ClientRoot)c-cmds.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="$(ClientRoot)c-option.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="$(ClientRoot)c-player.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="$(ClientRoot)conf.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="$(ClientRoot)netclient.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
         <ClInclude Include="$(ClientRoot)ui-message.h">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClInclude>
     </ItemGroup>
     <ItemGroup Label="ClientSrc">
@@ -1081,31 +1083,31 @@
     </ItemGroup>
     <ItemGroup Label="TangariaExClientSrc">
         <ClCompile Include="$(ClientRoot)c-cmd-obj.c">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClCompile>
         <ClCompile Include="$(ClientRoot)c-cmd.c">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClCompile>
         <ClCompile Include="$(ClientRoot)c-option.c">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClCompile>
         <ClCompile Include="$(ClientRoot)c-player.c">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClCompile>
         <ClCompile Include="$(ClientRoot)conf.c">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClCompile>
         <ClCompile Include="$(ClientRoot)netclient.c">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClCompile>
         <ClCompile Include="$(ClientRoot)set_focus.c">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClCompile>
         <ClCompile Include="$(ClientRoot)snd-win.c">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClCompile>
         <ClCompile Include="$(ClientRoot)ui-message.c">
-            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client'">true</ExcludedFromBuild>
+            <ExcludedFromBuild Condition="'$(ProjAppType)'!='Client' Or '$(ProjAppType)'!='HybridClient'">true</ExcludedFromBuild>
         </ClCompile>
     </ItemGroup>
     <ItemGroup Label="MainClientProcessing">

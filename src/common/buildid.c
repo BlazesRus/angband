@@ -1,8 +1,9 @@
-/**
- * \file buildid.c
- * \brief Compile in build details
+/*
+ * File: buildid.c
+ * Purpose: Version strings
  *
  * Copyright (c) 2011 Andi Sidwell
+ * Copyright (c) 2022 MAngband and PWMAngband Developers
  *
  * This work is free software; you can redistribute it and/or modify it
  * under the terms of either:
@@ -16,40 +17,94 @@
  *    are included in all such copies.  Other copyrights may also apply.
  */
 
-#include "buildid.h"
+
+#include "angband.h"
+
 
 /*
- * Allow the build system to generate version.h (and define
- * the HAVE_VERSION_H preprocessor macro) or get the version via the BUILD_ID
- * preprocessor macro.  If neither is available, use a sensible default.
+ * Define for Beta version, undefine for stable build
  */
-#ifdef HAVE_VERSION_H
-#include "version.h"
-#elif defined(BUILD_ID)
-#define STR(x) #x
-#define XSTR(x) STR(x)
-#define VERSION_STRING XSTR(BUILD_ID)
-#endif
-#ifndef VERSION_STRING
-#define VERSION_STRING "4.2.4"
-#endif
+#define VERSION_BETA
 
-const char *buildid = VERSION_NAME " " VERSION_STRING;
-const char *buildver = VERSION_STRING;
 
-/**
- * Hack -- Link a copyright message into the executable
+bool beta_version(void)
+{
+#ifdef VERSION_BETA
+    return true;
+#else
+    return false;
+#endif
+}
+
+
+/*
+ * Current version number of PWMAngband
  */
-const char *copyright =
-	"Copyright (c) 1987-2022 Angband contributors.\n"
-	"\n"
-	"This work is free software; you can redistribute it and/or modify it\n"
-	"under the terms of either:\n"
-	"\n"
-	"a) the GNU General Public License as published by the Free Software\n"
-	"   Foundation, version 2, or\n"
-	"\n"
-	"b) the Angband licence:\n"
-	"   This software may be copied and distributed for educational, research,\n"
-	"   and not for profit purposes provided that this copyright and statement\n"
-	"   are included in all such copies.  Other copyrights may also apply.\n";
+#define VERSION_MAJOR   1
+#define VERSION_MINOR   6
+#define VERSION_PATCH   0
+#define VERSION_EXTRA   0
+#define VERSION_TANGARIA   10
+
+// Note that it's uint16_t, so max version after << operations might be 65535.. 
+// ..which new T version marker will overflow. So for comparison we will use just T version
+uint16_t current_version(void)
+{
+/*
+    return ((VERSION_MAJOR << 16) | (VERSION_MINOR << 12) | (VERSION_PATCH << 8) |
+             VERSION_EXTRA  << 4 | VERSION_TANGARIA);
+*/
+    return VERSION_TANGARIA;
+}
+
+
+/*
+ * Minimum version number of PWMAngband client allowed
+ */
+#define MIN_VERSION_MAJOR   1
+#define MIN_VERSION_MINOR   6
+#define MIN_VERSION_PATCH   0
+#define MIN_VERSION_EXTRA   0
+#define MIN_VERSION_TANGARIA   10
+
+
+uint16_t min_version(void)
+{
+/*
+    return ((MIN_VERSION_MAJOR << 16) | (MIN_VERSION_MINOR << 12) |
+        (MIN_VERSION_PATCH << 8) | MIN_VERSION_EXTRA  << 4 | MIN_VERSION_TANGARIA);
+*/
+    return MIN_VERSION_TANGARIA;
+}
+
+
+static char version[32];
+
+
+char *version_build(const char *label, bool build)
+{
+    if (label && build)
+    {
+        strnfmt(version, sizeof(version), "%s %d.%d.%d (%s %d) T-%d", label, VERSION_MAJOR,
+            VERSION_MINOR, VERSION_PATCH, (beta_version()? "Beta": "Build"), VERSION_EXTRA, VERSION_TANGARIA);
+    }
+    else if (label)
+    {
+        strnfmt(version, sizeof(version), "%s %d.%d.%d T-%d", label, VERSION_MAJOR, VERSION_MINOR,
+            VERSION_PATCH, VERSION_TANGARIA);
+    }
+    else if (build)
+    {
+        strnfmt(version, sizeof(version), "%d.%d.%d (%s %d) T-%d", VERSION_MAJOR, VERSION_MINOR,
+            VERSION_PATCH, (beta_version()? "Beta": "Build"), VERSION_EXTRA, VERSION_TANGARIA);
+    }
+    else
+        strnfmt(version, sizeof(version), "%d.%d.%d T-%d", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH,
+            VERSION_TANGARIA);
+
+    return version;
+}
+
+
+
+

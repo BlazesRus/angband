@@ -3,6 +3,8 @@
  * Purpose: Packet types
  */
 
+#if !defined(SPClient) && !defined(LIST_PACKETS_H)
+#define LIST_PACKETS_H
 /*
  * packet type
  * setup receive method (server)
@@ -163,3 +165,4 @@ PKT(CHANNEL, undefined, channel, undefined, channel)
 PKT(HISTORY, undefined, history, undefined, history)
 PKT(AUTOINSCR, autoinscriptions, undefined, undefined, autoinscriptions)
 PKT(PLAY_SETUP, undefined, undefined, play_setup, undefined)
+#endif

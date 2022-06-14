@@ -1,66 +1,19 @@
-/**
- * \file project.h
- * \brief projection and helpers
+/*
+ * File: project.h
+ * Purpose: The project() function and helpers
  */
 
 #ifndef PROJECT_H
 #define PROJECT_H
 
-#include "source.h"
+#define ATT_SAVE        0x01
+#define ATT_DAMAGE      0x02
+#define ATT_NON_PHYS    0x04
+#define ATT_RAW         0x08
 
-/**
- * Spell types used by project(), and related functions.
- */
-enum
-{
-	#define ELEM(a) PROJ_##a,
-	#include "list-elements.h"
-	#undef ELEM
-	#define PROJ(a) PROJ_##a,
-	#include "list-projections.h"
-	#undef PROJ
-	PROJ_MAX
-};
-
-/**
- * Element struct
- */
-struct projection {
-	int index;
-	char *name;
-	char *type;
-	char *desc;
-	char *player_desc;
-	char *blind_desc;
-	char *lash_desc;
-	int numerator;
-	random_value denominator;
-	int divisor;
-	int damage_cap;
-	int msgt;
-	bool obvious;
-	bool wake;
-	int color;
-	struct projection *next;
-};
-
-extern struct projection *projections;
-
-/**
- * Bolt motion (used in prefs.c, project.c)
- */
-enum
-{
-    BOLT_NO_MOTION,
-    BOLT_0,
-    BOLT_45,
-    BOLT_90,
-    BOLT_135,
-    BOLT_MAX
-};
-
-
-/**
+/*
+ * Bit flags for the "project()" function
+ *
  *   NONE: No flags
  *   JUMP: Jump directly to the target location without following a path
  *   BEAM: Work as a beam weapon (affect every grid passed through)
@@ -73,59 +26,97 @@ enum
  *   AWARE: Effects are already obvious to the player
  *   SAFE: Doesn't affect monsters of the same race as the caster
  *   ARC: Projection is a sector of circle radiating from the caster
- *   PLAY: May affect the player
+ *   PLAY: May affect players
  *   INFO: Use believed map rather than truth for player ui
  *   SHORT: Use one quarter of max_range
- *   SELF: May affect the player, even when cast by the player
+ *   CONST: Effect doesn't decrease with distance
  */
-enum
+#define PROJECT_NONE    0x0000
+#define PROJECT_JUMP    0x0001
+#define PROJECT_BEAM    0x0002
+#define PROJECT_THRU    0x0004
+#define PROJECT_STOP    0x0008
+#define PROJECT_GRID    0x0010
+#define PROJECT_ITEM    0x0020
+#define PROJECT_KILL    0x0040
+#define PROJECT_HIDE    0x0080
+#define PROJECT_AWARE   0x0100
+
+#define PROJECT_SAFE    0x0200
+#define PROJECT_ARC     0x0400
+#define PROJECT_PLAY    0x0800
+#define PROJECT_INFO    0x1000
+#define PROJECT_SHORT   0x2000
+#define PROJECT_CONST   0x4000
+#define PROJECT_ROCK    0x8000
+
+/*
+ * Projection struct
+ */
+struct projection
 {
-	PROJECT_NONE  = 0x0000,
-	PROJECT_JUMP  = 0x0001,
-	PROJECT_BEAM  = 0x0002,
-	PROJECT_THRU  = 0x0004,
-	PROJECT_STOP  = 0x0008,
-	PROJECT_GRID  = 0x0010,
-	PROJECT_ITEM  = 0x0020,
-	PROJECT_KILL  = 0x0040,
-	PROJECT_HIDE  = 0x0080,
-	PROJECT_AWARE = 0x0100,
-	PROJECT_SAFE  = 0x0200,
-	PROJECT_ARC   = 0x0400,
-	PROJECT_PLAY  = 0x0800,
-	PROJECT_INFO  = 0x1000,
-	PROJECT_SHORT = 0x2000,
-	PROJECT_SELF  = 0x4000,
-	PROJECT_ROCK  = 0x8000,
+    int index;
+    char *name;
+    char *type;
+    char *desc;
+    char *blind_desc;
+    char *lash_desc;
+    int numerator;
+    random_value denominator;
+    int divisor;
+    int damage_cap;
+    int msgt;
+    bool obvious;
+    bool wake;
+    int color;
+    uint8_t flags;
+    char *threat;
+    int threat_flag;
+    struct projection *next;
 };
+
+extern struct projection *projections;
 
 /* Display attrs and chars */
 extern uint8_t proj_to_attr[PROJ_MAX][BOLT_MAX];
-extern wchar_t proj_to_char[PROJ_MAX][BOLT_MAX];
+extern char proj_to_char[PROJ_MAX][BOLT_MAX];
 
-void thrust_away(struct loc centre, struct loc target, int grids_away);
-int inven_damage(struct player *p, int type, int cperc);
-int adjust_dam(struct player *p, int type, int dam, aspect dam_aspect,
-			   int resist, bool actual);
+/* project.c */
+extern int proj_name_to_idx(const char *name);
+extern const char *proj_idx_to_name(int type);
+extern int project_path(struct player *p, struct chunk *c, struct loc *gp, int range,
+    struct loc *grid1, struct loc *grid2, int flg);
+extern bool projectable(struct player *p, struct chunk *c, struct loc *grid1, struct loc *grid2,
+    int flg, bool nowall);
+extern uint8_t proj_color(int type);
+extern void origin_get_loc(struct loc *ploc, struct source *origin);
+extern bool project(struct source *origin, int rad, struct chunk *cv, struct loc *finish, int dam,
+    int typ, int flg, int degrees_of_arc, uint8_t diameter_of_source, const char *what);
 
-bool project_f(struct source, int r, struct loc grid, int dam, int typ);
-bool project_o(struct source, int r, struct loc grid, int dam, int typ,
-			   const struct object *protected_obj);
-void project_m(struct source, int r, struct loc grid, int dam, int typ, int flg,
-               bool *did_hit, bool *was_obvious);
-bool project_p(struct source, int r, struct loc grid, int dam, int typ,
-			   int power, bool self);
+/* project-feat.c */
+extern bool project_f(struct source *origin, int r, struct chunk *c, struct loc *grid, int dam,
+    int typ);
 
-int project_path(struct chunk *c, struct loc *gp, int range, struct loc grid1,
-	struct loc grid2, int flg);
-bool projectable(struct chunk *c, struct loc grid1, struct loc grid2, int flg);
-int proj_name_to_idx(const char *name);
-const char *proj_idx_to_name(int type);
+/* project-mon.c */
+extern void thrust_away(struct chunk *c, struct source *origin, struct loc *centre, int grids_away);
+extern bool project_m_monster_attack_aux(struct monster *attacker, struct chunk *c,
+    struct monster *mon, int dam, uint8_t note);
+extern void project_m(struct source *origin, int r, struct chunk *c, struct loc *grid, int dam,
+    int typ, int flg, bool *did_hit, bool *was_obvious, int *newy, int *newx);
+extern void monster_set_master(struct monster *mon, struct player *p, uint8_t status);
+extern bool can_charm_monster(struct player *p, int level, int stat);
+extern int charm_monster(struct player *p, struct monster *mon, int stat);
 
-struct loc origin_get_loc(struct source origin);
+/* project-obj.c */
+extern int inven_damage(struct player *p, int type, int cperc);
+extern struct monster_race *get_race(const char *name);
+extern bool project_o(struct source *origin, int r, struct chunk *c, struct loc *grid, int dam,
+    int typ);
 
-bool project(struct source origin, int rad, struct loc finish, int dam, int typ,
-	int flg, int degrees_of_arc, uint8_t diameter_of_source,
-	const struct object *obj);
+/* project-player.c */
+extern int adjust_dam(struct player *p, int type, int dam, aspect dam_aspect, int resist);
+extern void project_player_time_effects(struct player *p, struct source *who);
+extern void project_p(struct source *origin, int r, struct chunk *c, struct loc *grid, int dam,
+    int typ, int power, const char *what, bool *did_hit, bool *was_obvious, struct loc *newgrid);
 
-#endif /* !PROJECT_H */
+#endif /* PROJECT_H */

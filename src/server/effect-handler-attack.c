@@ -1,3 +1,22 @@
+/*
+ * File: effect-handler-attack.c
+ * Purpose: Handler functions for attack effects
+ *
+ * Copyright (c) 2007 Andi Sidwell
+ * Copyright (c) 2016 Ben Semmler, Nick McConnell
+ * Copyright (c) 2022 MAngband and PWMAngband Developers
+ *
+ * This work is free software; you can redistribute it and/or modify it
+ * under the terms of either:
+ *
+ * a) the GNU General Public License as published by the Free Software
+ *    Foundation, version 2, or
+ *
+ * b) the "Angband licence":
+ *    This software may be copied and distributed for educational, research,
+ *    and not for profit purposes provided that this copyright and statement
+ *    are included in all such copies.  Other copyrights may also apply.
+ */
 
 #include "effect-handler.h"
 #include "..\client\game-input.h"

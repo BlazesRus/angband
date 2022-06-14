@@ -1,9 +1,10 @@
-/**
- * \file z-rand.c
- * \brief A Random Number Generator for Angband
+/*
+ * File: z-rand.c
+ * Purpose: A Random Number Generator for Angband
  *
  * Copyright (c) 1997 Ben Harrison, Randy Hutson
- * 
+ * Copyright (c) 2022 MAngband and PWMAngband Developers
+ *
  * See below for copyright on the WELL random number generator.
  *
  * This work is free software; you can redistribute it and/or modify it
@@ -17,15 +18,18 @@
  *    and not for profit purposes provided that this copyright and statement
  *    are included in all such copies.  Other copyrights may also apply.
  */
-#include "z-rand.h"
 
-/**
+
+#include "angband.h"
+
+
+/*
  * This file provides a pseudo-random number generator.
  *
  * This code provides both a "quick" random number generator (4 bytes of
  * state), and a "complex" random number generator (128 + 4 bytes of state).
  *
- * The complex RNG (used for most game entropy) is provided by the WELL102a
+ * The complex RNG (used for most game entropy) is provided by the WELL1024a
  * algorithm, used with permission. See below for copyright information
  * about the WELL implementation.
  *
@@ -35,12 +39,14 @@
  * "Rand_quick = false". You can also choose a new seed.
  */
 
-/* begin WELL RNG
+/*
+ * WELL RNG
+ *
  * *************************************************************************
  * Copyright:  Francois Panneton and Pierre L'Ecuyer, University of Montreal
  *             Makoto Matsumoto, Hiroshima University                       
  * *************************************************************************
- * Code was modified slightly by Erik Osheim to work on unsigned integers.  
+ * Code was modified slightly by Erik Osheim to work on unsigned integers.
  */
 #define M1 3
 #define M2 24
@@ -51,10 +57,13 @@
 #define Identity(v) (v)
 
 uint32_t state_i = 0;
-uint32_t STATE[RAND_DEG] = {0, 0, 0, 0, 0, 0, 0, 0,
-						0, 0, 0, 0, 0, 0, 0, 0,
-						0, 0, 0, 0, 0, 0, 0, 0,
-						0, 0, 0, 0, 0, 0, 0, 0};
+uint32_t STATE[RAND_DEG] =
+{
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0
+};
 uint32_t z0, z1, z2;
 
 #define V0    STATE[state_i]
@@ -65,351 +74,404 @@ uint32_t z0, z1, z2;
 #define newV0 STATE[(state_i + 31) & 0x0000001fU]
 #define newV1 STATE[state_i]
 
-static uint32_t WELLRNG1024a (void){
-	z0      = VRm1;
-	z1      = Identity(V0) ^ MAT0POS (8, VM1);
-	z2      = MAT0NEG (-19, VM2) ^ MAT0NEG(-14,VM3);
-	newV1   = z1 ^ z2; 
-	newV0   = MAT0NEG (-11,z0) ^ MAT0NEG(-7,z1) ^ MAT0NEG(-13,z2);
-	state_i = (state_i + 31) & 0x0000001fU;
-	return STATE[state_i];
+static uint32_t WELLRNG1024a(void)
+{
+    z0      = VRm1;
+    z1      = Identity(V0) ^ MAT0POS(8, VM1);
+    z2      = MAT0NEG(-19, VM2) ^ MAT0NEG(-14, VM3);
+    newV1   = z1 ^ z2;
+    newV0   = MAT0NEG(-11, z0) ^ MAT0NEG(-7, z1) ^ MAT0NEG(-13, z2);
+    state_i = (state_i + 31) & 0x0000001fU;
+    return STATE[state_i];
 }
-/* end WELL RNG */
 
-/**
- * Simple RNG, implemented with a linear congruent algorithm.
+
+/*
+ * Simple RNG, implemented with a linear congruent algorithm
  */
-#define LCRNG(X) ((X) * 1103515245 + 12345)
+#define LCRNG(X)    ((X) * 1103515245 + 12345)
 
 
-/**
- * Whether to use the simple RNG or not.
+/*
+ * Whether to use the simple RNG or not
  */
 bool Rand_quick = true;
 
-/**
- * The current "seed" of the simple RNG.
+
+/*
+ * The current "seed" of the simple RNG
  */
 uint32_t Rand_value;
 
-static bool rand_fixed = false;
-static uint32_t rand_fixval = 0;
 
-/**
- * Initialize the complex RNG using a new seed.
+/*
+ * Initialize the "complex" RNG using a new seed
  */
 void Rand_state_init(uint32_t seed)
 {
-	int i, j;
+    int i, j;
 
-	/* Seed the table */
-	STATE[0] = seed;
+    /* Seed the table */
+    STATE[0] = seed;
 
-	/* Propagate the seed */
-	for (i = 1; i < RAND_DEG; i++)
-		STATE[i] = LCRNG(STATE[i - 1]);
+    /* Propagate the seed */
+    for (i = 1; i < RAND_DEG; i++) STATE[i] = LCRNG(STATE[i - 1]);
 
-	/* Cycle the table ten times per degree */
-	for (i = 0; i < RAND_DEG * 10; ++i) {
-		/* Acquire the next index */
-		j = (state_i + 1) % RAND_DEG;
+    /* Cycle the table ten times per degree */
+    for (i = 0; i < RAND_DEG * 10; i++)
+    {
+        /* Acquire the next index */
+        j = (state_i + 1) % RAND_DEG;
 
-		/* Update the table, extract an entry */
-		STATE[j] += STATE[state_i];
+        /* Update the table, extract an entry */
+        STATE[j] += STATE[state_i];
 
-		/* Advance the index */
-		state_i = j;
-	}
+        /* Advance the index */
+        state_i = j;
+    }
 }
 
-/**
- * Initialise the RNG
+
+/*
+ * Initialize the RNG
  */
 void Rand_init(void)
 {
-	/* Init RNG */
-	if (Rand_quick) {
-		uint32_t seed;
+    /* Init RNG */
+    if (Rand_quick)
+    {
+        uint32_t seed;
 
-		/* Basic seed */
-		seed = (uint32_t)(time(NULL));
+        /* Basic seed */
+        seed = (time(NULL));
 
-#ifdef UNIX
+        /* Use the complex RNG */
+        Rand_quick = false;
 
-		/* Mutate the seed on Unix machines */
-		seed = ((seed >> 3) * (getpid() << 1));
-
-#endif
-
-		/* Use the complex RNG */
-		Rand_quick = false;
-
-		/* Seed the "complex" RNG */
-		Rand_state_init(seed);
-	}
+        /* Seed the "complex" RNG */
+        Rand_state_init(seed);
+    }
 }
 
 
-/**
- * Extract a "random" number from 0 to m - 1, via division.
+/*
+ * Extract a "random" number from 0 to m - 1, via division
  *
- * This method selects "random" 28-bit numbers, and then uses division to drop
- * those numbers into "m" different partitions, plus a small non-partition to
- * reduce bias, taking as the final value the first "good" partition that a
- * number falls into.
+ * This method selects "random" 28-bit numbers, and then uses
+ * division to drop those numbers into "m" different partitions,
+ * plus a small non-partition to reduce bias, taking as the final
+ * value the first "good" partition that a number falls into.
  *
- * This method has no bias, and is much less affected by patterns in the "low"
- * bits of the underlying RNG's. However, it is potentially non-terminating.
+ * This method has no bias, and is much less affected by patterns
+ * in the "low" bits of the underlying RNG's.
  */
 uint32_t Rand_div(uint32_t m)
 {
-	uint32_t n, r = 0;
+    uint32_t n, r = 0;
 
-	/* Division by zero will result if m is larger than 0x10000000 */
-	assert(m <= 0x10000000);
+    my_assert(m <= 0x10000000);
 
-	/* Hack -- simple case */
-	if (m <= 1) return (0);
+    /* Hack -- simple case */
+    if (m <= 1) return (0);
 
-	if (rand_fixed)
-		return (rand_fixval * 1000 * (m - 1)) / (100 * 1000);
+    /* Partition size */
+    n = (0x10000000 / m);
 
-	/* Partition size */
-	n = (0x10000000 / m);
+    /* Use a simple RNG */
+    if (Rand_quick)
+    {
+        /* Wait for it */
+        while (1)
+        {
+            /* Cycle the generator */
+            r = (Rand_value = LCRNG(Rand_value));
 
-	if (Rand_quick) {
-		/* Use a simple RNG */
-		/* Wait for it */
-		while (1) {
-			/* Cycle the generator */
-			r = (Rand_value = LCRNG(Rand_value));
+            /* Mutate a 28-bit "random" number */
+            r = ((r >> 4) & 0x0FFFFFFF) / n;
 
-			/* Mutate a 28-bit "random" number */
-			r = ((r >> 4) & 0x0FFFFFFF) / n;
+            /* Done */
+            if (r < m) break;
+        }
+    }
 
-			/* Done */
-			if (r < m) break;
-		}
-	} else {
-		/* Use a complex RNG */
-		while (1) {
-			/* Get the next pseudorandom number */
-			r = WELLRNG1024a();
+    /* Use a complex RNG */
+    else
+    {
+        /* Wait for it */
+        while (1)
+        {
+            /* Get the next pseudorandom number */
+            r = WELLRNG1024a();
 
-			/* Mutate a 28-bit "random" number */
-			r = ((r >> 4) & 0x0FFFFFFF) / n;
+            /* Mutate a 28-bit "random" number */
+            r = ((r >> 4) & 0x0FFFFFFF) / n;
 
-			/* Done */
-			if (r < m) break;
-		}
-	}
+            /* Done */
+            if (r < m) break;
+        }
+    }
 
-	/* Use the value */
-	return (r);
+    /* Use the value */
+    return (r);
 }
 
 
-/**
+/*
  * The number of entries in the "Rand_normal_table"
  */
-#define RANDNOR_NUM	256
+#define RANDNOR_NUM 256
 
-/**
+
+/*
  * The standard deviation of the "Rand_normal_table"
  */
-#define RANDNOR_STD	64
+#define RANDNOR_STD 64
 
-/**
+
+/*
  * The normal distribution table for the "Rand_normal()" function (below)
  */
-static int16_t Rand_normal_table[RANDNOR_NUM] = {
-	206,   613,   1022,  1430,  1838,  2245,  2652,  3058,
-	3463,  3867,  4271,  4673,  5075,  5475,  5874,  6271,
-	6667,  7061,  7454,  7845,  8234,  8621,  9006,  9389,
-	9770,  10148, 10524, 10898, 11269,	11638,	12004,	12367,
-	12727, 13085, 13440, 13792, 14140,	14486,	14828,	15168,
-	15504, 15836, 16166, 16492, 16814,	17133,	17449,	17761,
-	18069, 18374, 18675, 18972, 19266,	19556,	19842,	20124,
-	20403, 20678, 20949, 21216, 21479,	21738,	21994,	22245,
+static int16_t Rand_normal_table[RANDNOR_NUM] =
+{
+    206,     613,     1022,    1430,    1838,   2245,    2652,    3058,
+    3463,    3867,    4271,    4673,    5075,   5475,    5874,    6271,
+    6667,    7061,    7454,    7845,    8234,   8621,    9006,    9389,
+    9770,    10148,   10524,   10898,   11269,  11638,   12004,   12367,
+    12727,   13085,   13440,   13792,   14140,  14486,   14828,   15168,
+    15504,   15836,   16166,   16492,   16814,  17133,   17449,   17761,
+    18069,   18374,   18675,   18972,   19266,  19556,   19842,   20124,
+    20403,   20678,   20949,   21216,   21479,  21738,   21994,   22245,
 
-	22493, 22737, 22977, 23213, 23446,	23674,	23899,	24120,
-	24336, 24550, 24759, 24965, 25166,	25365,	25559,	25750,
-	25937, 26120, 26300, 26476, 26649,	26818,	26983,	27146,
-	27304, 27460, 27612, 27760, 27906,	28048,	28187,	28323,
-	28455, 28585, 28711, 28835, 28955,	29073,	29188,	29299,
-	29409, 29515, 29619, 29720, 29818,	29914,	30007,	30098,
-	30186, 30272, 30356, 30437, 30516,	30593,	30668,	30740,
-	30810, 30879, 30945, 31010, 31072,	31133,	31192,	31249,
+    22493,   22737,   22977,   23213,   23446,  23674,   23899,   24120,
+    24336,   24550,   24759,   24965,   25166,  25365,   25559,   25750,
+    25937,   26120,   26300,   26476,   26649,  26818,   26983,   27146,
+    27304,   27460,   27612,   27760,   27906,  28048,   28187,   28323,
+    28455,   28585,   28711,   28835,   28955,  29073,   29188,   29299,
+    29409,   29515,   29619,   29720,   29818,  29914,   30007,   30098,
+    30186,   30272,   30356,   30437,   30516,  30593,   30668,   30740,
+    30810,   30879,   30945,   31010,   31072,  31133,   31192,   31249,
 
-	31304, 31358, 31410, 31460, 31509,	31556,	31601,	31646,
-	31688, 31730, 31770, 31808, 31846,	31882,	31917,	31950,
-	31983, 32014, 32044, 32074, 32102,	32129,	32155,	32180,
-	32205, 32228, 32251, 32273, 32294,	32314,	32333,	32352,
-	32370, 32387, 32404, 32420, 32435,	32450,	32464,	32477,
-	32490, 32503, 32515, 32526, 32537,	32548,	32558,	32568,
-	32577, 32586, 32595, 32603, 32611,	32618,	32625,	32632,
-	32639, 32645, 32651, 32657, 32662,	32667,	32672,	32677,
+    31304,   31358,   31410,   31460,   31509,  31556,   31601,   31646,
+    31688,   31730,   31770,   31808,   31846,  31882,   31917,   31950,
+    31983,   32014,   32044,   32074,   32102,  32129,   32155,   32180,
+    32205,   32228,   32251,   32273,   32294,  32314,   32333,   32352,
+    32370,   32387,   32404,   32420,   32435,  32450,   32464,   32477,
+    32490,   32503,   32515,   32526,   32537,  32548,   32558,   32568,
+    32577,   32586,   32595,   32603,   32611,  32618,   32625,   32632,
+    32639,   32645,   32651,   32657,   32662,  32667,   32672,   32677,
 
-	32682, 32686, 32690, 32694, 32698,	32702,	32705,	32708,
-	32711, 32714, 32717, 32720, 32722,	32725,	32727,	32729,
-	32731, 32733, 32735, 32737, 32739,	32740,	32742,	32743,
-	32745, 32746, 32747, 32748, 32749,	32750,	32751,	32752,
-	32753, 32754, 32755, 32756, 32757,	32757,	32758,	32758,
-	32759, 32760, 32760, 32761, 32761,	32761,	32762,	32762,
-	32763, 32763, 32763, 32764, 32764,	32764,	32764,	32765,
-	32765, 32765, 32765, 32766, 32766, 32766, 32766, 32767,
+    32682,   32686,   32690,   32694,   32698,  32702,   32705,   32708,
+    32711,   32714,   32717,   32720,   32722,  32725,   32727,   32729,
+    32731,   32733,   32735,   32737,   32739,  32740,   32742,   32743,
+    32745,   32746,   32747,   32748,   32749,  32750,   32751,   32752,
+    32753,   32754,   32755,   32756,   32757,  32757,   32758,   32758,
+    32759,   32760,   32760,   32761,   32761,  32761,   32762,   32762,
+    32763,   32763,   32763,   32764,   32764,  32764,   32764,   32765,
+    32765,   32765,   32765,   32766,   32766,  32766,   32766,   32767,
 };
 
 
-/**
+/*
  * Generate a random integer number of NORMAL distribution
  *
- * The table above is used to generate a psuedo-normal distribution, in a
- * manner which is much faster than calling a transcendental function to
- * calculate a true normal distribution.
+ * The table above is used to generate a psuedo-normal distribution,
+ * in a manner which is much faster than calling a transcendental
+ * function to calculate a true normal distribution.
  *
- * Basically, entry 64 * N in the table above represents the number of times
- * out of 32767 that a random variable with normal distribution will fall
- * within N standard deviations of the mean.  That is, about 68 percent of the
- * time for N=1 and 95 percent of the time for N=2.
+ * Basically, entry 64 * N in the table above represents the number of
+ * times out of 32767 that a random variable with normal distribution
+ * will fall within N standard deviations of the mean.  That is, about
+ * 68 percent of the time for N=1 and 95 percent of the time for N=2.
  *
- * The table above contains a "faked" final entry which allows us to pretend
- * that all values in a normal distribution are strictly less than four
- * standard deviations away from the mean.  This results in "conservative"
- * distribution of approximately 1/32768 values.
+ * The table above contains a "faked" final entry which allows us to
+ * pretend that all values in a normal distribution are strictly less
+ * than four standard deviations away from the mean.  This results in
+ * "conservative" distribution of approximately 1/32768 values.
  *
  * Note that the binary search takes up to 16 quick iterations.
  */
 int16_t Rand_normal(int mean, int stand)
 {
-	int16_t tmp, offset;
+    int16_t tmp, offset;
 
-	int16_t low = 0;
-	int16_t high = RANDNOR_NUM;
+    int16_t low = 0;
+    int16_t high = RANDNOR_NUM;
 
-	/* Paranoia */
-	if (stand < 1) return (mean);
+    /* Paranoia */
+    if (stand < 1) return (mean);
 
-	/* Roll for probability */
-	tmp = (int16_t)randint0(32768);
+    /* Roll for probability */
+    tmp = (int16_t)randint0(32768);
 
-	/* Binary Search */
-	while (low < high) {
-		int mid = (low + high) >> 1;
+    /* Binary Search */
+    while (low < high)
+    {
+        int mid = (low + high) >> 1;
 
-		/* Move right if forced */
-		if (Rand_normal_table[mid] < tmp) {
-			low = mid + 1;
-		} else {
-			high = mid;
-		}
-	}
+        /* Move right if forced */
+        if (Rand_normal_table[mid] < tmp)
+            low = mid + 1;
 
-	/* Convert the index into an offset */
-	offset = (int16_t)((long)stand * (long)low / RANDNOR_STD);
+        /* Move left otherwise */
+        else
+            high = mid;
+    }
 
-	/* One half should be negative */
-	if (one_in_(2)) return (mean - offset);
+    /* Convert the index into an offset */
+    offset = (int16_t)((long)stand * (long)low / RANDNOR_STD);
 
-	/* One half should be positive */
-	return (mean + offset);
+    /* One half should be negative */
+    if (one_in_(2)) return (mean - offset);
+
+    /* One half should be positive */
+    return (mean + offset);
 }
 
 
-/**
+/*
  * Choose an integer from a distribution where we know the mean and approximate
  * upper and lower bounds.
  *
  * We divide the imagined distribution into two halves, above and below the
  * mean, and then treat the bounds as if they are the given number of
- * standard deviations from the mean in the appropriate direction.  Note that
- * `stand_u` and `stand_l` are 10 times the number of standart deviations we
+ * standard deviations from the mean in the appropriate direction. Note that
+ * `stand_u` and `stand_l` are 10 times the number of standard deviations we
  * are asking for.
+ *
  * The function chooses an integer from a normal distribution, and then scales
  * it to fit the target distribution.
  */
 int Rand_sample(int mean, int upper, int lower, int stand_u, int stand_l)
 {
-	int pick = Rand_normal(0, 1000);
+    int pick = Rand_normal(0, 1000);
 
-	/* Scale to fit */
-	if (pick > 0) {
-		/* Positive pick, scale up */
-		pick *= (upper - mean);
-		pick /= (100 * stand_u);
-	} else if (pick < 0) {
-		/* Negative pick, scale down */
-		pick *= (mean - lower);
-		pick /= (100 * stand_l);
-	}
+    /* Scale to fit */
+    if (pick > 0)
+    {
+        /* Positive pick, scale up */
+        pick *= (upper - mean);
+        pick /= (100 * stand_u);
+    }
+    else if (pick < 0)
+    {
+        /* Negative pick, scale down */
+        pick *= (mean - lower);
+        pick /= (100 * stand_l);
+    }
 
-	return mean + pick;
+    return mean + pick;
 }
 
-/**
+
+/*
+ * Extract a "random" number from 0 to m - 1, using the "simple" RNG.
+ *
+ * This function should be used when generating random numbers in
+ * "external" program parts like the main-*.c files.  It preserves
+ * the current RNG state to prevent influences on game-play.
+ */
+uint32_t Rand_simple(uint32_t m)
+{
+    static bool initialized = false;
+    static uint32_t simple_rand_value;
+    bool old_rand_quick;
+    uint32_t old_rand_value;
+    uint32_t result;
+
+    /* Save RNG state */
+    old_rand_quick = Rand_quick;
+    old_rand_value = Rand_value;
+
+    /* Use "simple" RNG */
+    Rand_quick = true;
+
+    if (initialized)
+    {
+        /* Use stored seed */
+        Rand_value = simple_rand_value;
+    }
+    else
+    {
+        /* Initialize with new seed */
+        Rand_value = time(NULL);
+        initialized = true;
+    }
+
+    /* Get a random number */
+    result = randint0(m);
+
+    /* Store the new seed */
+    simple_rand_value = Rand_value;
+
+    /* Restore RNG state */
+    Rand_quick = old_rand_quick;
+    Rand_value = old_rand_value;
+
+    /* Use the value */
+    return (result);
+}
+
+
+/*
  * Generates damage for "2d6" style dice rolls
  */
 int damroll(int num, int sides)
 {
-	int i;
-	int sum = 0;
+    int i, sum = 0;
 
-	if (sides <= 0) return 0;
-
-	for (i = 0; i < num; i++)
-		sum += randint1(sides);
-	return sum;
+    if (sides <= 0) return (0);
+    for (i = 0; i < num; i++) sum += randint1(sides);
+    return (sum);
 }
 
 
-
-/**
+/*
  * Calculation helper function for damroll
  */
 int damcalc(int num, int sides, aspect dam_aspect)
 {
-	switch (dam_aspect) {
-		case MAXIMISE:
-		case EXTREMIFY: return num * sides;
-		case RANDOMISE: return damroll(num, sides);
-		case MINIMISE: return num;
-		case AVERAGE: return num * (sides + 1) / 2;
-	}
+    switch (dam_aspect)
+    {
+        case MAXIMISE: return num * sides;
+        case RANDOMISE: return damroll(num, sides);
+        case MINIMISE: return num;
+        case AVERAGE: return num * (sides + 1) / 2;
+    }
 
-	assert(0 && "Should never reach here");
-	return 0;
+    return 0;
 }
 
 
-/**
- * Generates a random signed long integer X where `A` <= X <= `B`.
- * The integer X falls along a uniform distribution.
+/*
+ * Generates a random signed long integer X where "A <= X <= B"
+ * Note that "rand_range(0, N-1)" == "randint0(N)"
  *
- * Note that "rand_range(0, N-1)" == "randint0(N)".
+ * The integer X falls along a uniform distribution.
  */
 int rand_range(int A, int B)
 {
-	if (A == B) return A;
-	assert(A < B);
+    if (A == B) return A;
+    my_assert(A < B);
 
-	return A + (int32_t)Rand_div(1 + B - A);
+    return A + (int32_t)Rand_div(1 + B - A);
 }
 
 
-/**
+/*
  * Perform division, possibly rounding up or down depending on the size of the
  * remainder and chance.
  */
 static int simulate_division(int dividend, int divisor)
 {
-	int quotient  = dividend / divisor;
-	int remainder = dividend % divisor;
-	if (randint0(divisor) < remainder) quotient++;
-	return quotient;
+    int quotient  = dividend / divisor;
+    int remainder = dividend % divisor;
+
+    if (randint0(divisor) < remainder) quotient++;
+    return quotient;
 }
 
 
-/**
+/*
  * Help determine an "enchantment bonus" for an object.
  *
  * To avoid floating point but still provide a smooth distribution of bonuses,
@@ -417,12 +479,12 @@ static int simulate_division(int dividend, int divisor)
  * correct floating point value.
  *
  * This function has been changed.  It uses "Rand_normal()" to choose values
- * from a normal distribution, whose mean moves from zero towards the max as
- * the level increases, and whose standard deviation is equal to 1/4 of the
- * max, and whose values are forced to lie between zero and the max, inclusive.
+ * from a normal distribution, whose mean moves from zero towards the max as the
+ * level increases, and whose standard deviation is equal to 1/4 of the max,
+ * and whose values are forced to lie between zero and the max, inclusive.
  *
  * Since the "level" rarely passes 100 before Morgoth is dead, it is very
- * rare to get the "full" enchantment on an object, even a deep levels.
+ * rare to get the "full" enchantment on an object, even at deep levels.
  *
  * It is always possible (albeit unlikely) to get the "full" enchantment.
  *
@@ -450,135 +512,181 @@ static int simulate_division(int dividend, int divisor)
  */
 int16_t m_bonus(int max, int level)
 {
-	int bonus, stand, value;
+    int bonus, stand, value;
 
-	/* Make sure level is reasonable */
-	if (level >= MAX_RAND_DEPTH) level = MAX_RAND_DEPTH - 1;
+    /* Make sure level is reasonable */
+    if (level >= MAX_RAND_DEPTH) level = MAX_RAND_DEPTH - 1;
 
-	/* The bonus approaches max as level approaches MAX_RAND_DEPTH */
-	bonus = simulate_division(max * level, MAX_RAND_DEPTH);
+    /* The bonus approaches max as level approaches MAX_RAND_DEPTH */
+    bonus = simulate_division(max * level, MAX_RAND_DEPTH);
 
-	/* The standard deviation is 1/4 of the max */
-	stand = simulate_division(max, 4);
+    /* The standard deviation is 1/4 of the max */
+    stand = simulate_division(max, 4);
 
-	/* Choose a value */
-	value = Rand_normal(bonus, stand);
+    /* Choose a value */
+    value = Rand_normal(bonus, stand);
 
-	/* Return, enforcing the min and max values */
-	if (value < 0)
-		return 0;
-	else if (value > max)
-		return max;
-	else
-		return value;
+    /* Return, enforcing the min and max values */
+    if (value < 0) return 0;
+    if (value > max) return max;
+    return value;
 }
 
 
-/**
+/*
  * Calculation helper function for m_bonus
  */
 int16_t m_bonus_calc(int max, int level, aspect bonus_aspect)
 {
-	switch (bonus_aspect) {
-		case EXTREMIFY:
-		case MAXIMISE:  return max;
-		case RANDOMISE: return m_bonus(max, level);
-		case MINIMISE:  return 0;
-		case AVERAGE:   return max * level / MAX_RAND_DEPTH;
-	}
+    switch (bonus_aspect)
+    {
+        case MAXIMISE: return max;
+        case RANDOMISE: return m_bonus(max, level);
+        case MINIMISE: return 0;
+        case AVERAGE: return max * level / MAX_RAND_DEPTH;
+    }
 
-	assert(0 && "Should never reach here");
-	return 0;
+    return 0;
 }
 
 
-/**
+/*
  * Calculation helper function for random_value structs
  */
 int randcalc(random_value v, int level, aspect rand_aspect)
 {
-	if (rand_aspect == EXTREMIFY) {
-		int min = randcalc(v, level, MINIMISE);
-		int max = randcalc(v, level, MAXIMISE);
-		return abs(min) > abs(max) ? min : max;
+    int dmg = damcalc(v.dice, v.sides, rand_aspect);
+    int bonus = m_bonus_calc(v.m_bonus, level, rand_aspect);
 
-	} else {
-		int dmg   = damcalc(v.dice, v.sides, rand_aspect);
-		int bonus = m_bonus_calc(v.m_bonus, level, rand_aspect);
-		return v.base + dmg + bonus;
-	}
+    return v.base + dmg + bonus;
 }
 
 
-/**
+/*
  * Test to see if a value is within a random_value's range
  */
 bool randcalc_valid(random_value v, int test)
 {
-	if (test < randcalc(v, 0, MINIMISE))
-		return false;
-	else if (test > randcalc(v, 0, MAXIMISE))
-		return false;
-	else
-		return true;
+    if (test < randcalc(v, 0, MINIMISE))
+        return false;
+
+    if (test > randcalc(v, 0, MAXIMISE))
+        return false;
+
+    return true;
 }
 
-/**
+
+/*
  * Test to see if a random_value actually varies
  */
 bool randcalc_varies(random_value v)
 {
-	return randcalc(v, 0, MINIMISE) != randcalc(v, 0, MAXIMISE);
+    return randcalc(v, 0, MINIMISE) != randcalc(v, 0, MAXIMISE);
 }
 
-/**
+
+/*
  * Roll on a random chance and check for success.
  *
- * \param c The random_chance to roll on
+ * c The random_chance to roll on
  */
-bool random_chance_check(random_chance c)
+bool random_chance_check(random_chance *c)
 {
-	/* Calculated so that high rolls pass the check */
-	return randint0(c.denominator) >= c.denominator - c.numerator;
+    /* Calculated so that high rolls pass the check */
+    return randint0(c->denominator) >= c->denominator - c->numerator;
 }
 
-/**
+
+/*
  * Scales a random chance to use the denominator provided in the scale argument
  * and returns the appropriate numerator. For example, a chance of 7 / 13 (53.8%)
  * with scale 100 would be 53. For extra integer precision, a scale of 1000 would
  * yield 538.
  *
- * \param c The random_chance to scale
- * \param scale The scale by which the ratio is multiplied
+ * c The random_chance to scale
+ * scale The scale by which the ratio is multiplied
  */
-int random_chance_scaled(random_chance c, int scale)
+int random_chance_scaled(random_chance *c, int scale)
 {
-	return scale * c.numerator / c.denominator;
+    return scale * c->numerator / c->denominator;
 }
 
-/**
- * Cause the output from Rand_div() to be fixed rather than random.
+
+/*
+ * Extract a "random" number from 0 to m - 1, via "modulus"
  *
- * \param val Is the percent of the maximum value that Rand_div() will
- * return.  val should be between 0 and 100, inclusive.
+ * Note that "m" should probably be less than 500000, or the
+ * results may be rather biased towards low values.
  */
-void rand_fix(uint32_t val)
+uint32_t Rand_mod(uint32_t m)
 {
-	rand_fixed = true;
-	rand_fixval = val;
+    uint32_t r;
+
+    /* Hack -- simple case */
+    if (m <= 1) return (0);
+
+    /* Use the "simple" RNG */
+    if (Rand_quick)
+    {
+        /* Cycle the generator */
+        r = (Rand_value = LCRNG(Rand_value));
+
+        /* Mutate a 28-bit "random" number */
+        r = (((r >> 4) & 0x0FFFFFFF) % m);
+    }
+
+    /* Use the "complex" RNG */
+    else
+    {
+        /* Get the next pseudorandom number */
+        r = WELLRNG1024a();
+
+        /* Mutate a 28-bit "random" number */
+        r = (((r >> 4) & 0x0FFFFFFF) % m);
+    }
+
+    /* Use the value */
+    return (r);
 }
 
-int getpid(void);
 
-/**
- * Another simple RNG that does not use any of the above state
- * (so can be used without disturbing the game's RNG state)
+/*
+ * Test the integrity of the RNG
  */
-uint32_t Rand_simple(uint32_t m)
+uint32_t Rand_test(uint32_t seed)
 {
-	static time_t seed;
-	time_t v;
-	v = time(NULL);
-	seed = LCRNG(seed % m) + ((v << 16) ^ v ^ getpid());
-	return (seed % m);
+    int i;
+    uint32_t outcome = 0;
+    bool randquick;
+    uint32_t randvalue, randstate_i, randstate[RAND_DEG];
+
+    /* Preserve current RNG state */
+    randquick = Rand_quick;
+    randvalue = Rand_value;
+    randstate_i = state_i;
+    for (i = 0; i < RAND_DEG; i++) randstate[i] = STATE[i];
+
+    /* Initialize to a known state */
+    Rand_quick = false;
+    Rand_value = 0;
+    state_i = 0;
+    Rand_state_init(seed);
+
+    /* Torture the RNG for a hundred million iterations */
+    for (i = 0; i < 100000000; i++)
+    {
+        /* Flip between the quick and the complex */
+        Rand_quick = (i % 2);
+        outcome ^= Rand_mod(0x0FFFFFFF);
+        outcome ^= Rand_div(0x0FFFFFFF);
+    }
+
+    /* Restore the RNG state */
+    Rand_quick = randquick;
+    Rand_value = randvalue;
+    state_i = randstate_i;
+    for (i = 0; i < RAND_DEG; i++) STATE[i] = randstate[i];
+
+    return outcome;
 }

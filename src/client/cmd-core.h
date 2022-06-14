@@ -1,4 +1,4 @@
-/**
+/*
  * File: cmd-core.h
  * Purpose: Handles the queueing of game commands
  * Copyright (c) 2008-9 Antony Sidwell

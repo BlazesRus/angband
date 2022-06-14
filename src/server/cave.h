@@ -1,13 +1,10 @@
-/**
+/*
  * File: cave.h
  * Purpose: Matters relating to the current dungeon level
  */
 
 #ifndef CAVE_H
 #define CAVE_H
-
-#include "z-type.h"
-#include "z-bitflag.h"
 
 /*
  * Terrain flags
