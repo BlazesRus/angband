@@ -110,8 +110,8 @@
         </When>
         <Otherwise>
 			<PropertyGroup Label="RenameBasedOnSDLAndDebug">
-				<TargetName Condition="'$(ProjAppType)'=='SPClient' And $(ConfigurationStyle)'!='Debug'">angband_$(SDLLibraryType)</TargetName>
-				<TargetName Condition="'$(ProjAppType)'=='SPClient' And $(ConfigurationStyle)'=='Debug'">angbandDebug_$(SDLLibraryType)</TargetName>
+				<TargetName Condition="'$(ProjAppType)'=='SPClient' And '$(ConfigurationStyle)'!='Debug'">angband_$(SDLLibraryType)</TargetName>
+				<TargetName Condition="'$(ProjAppType)'=='SPClient' And '$(ConfigurationStyle)'=='Debug'">angbandDebug_$(SDLLibraryType)</TargetName>
 				<TargetName Condition="'$(ProjAppType)'=='HybridClient'">angband_$(SDLLibraryType)</TargetName>
 			</PropertyGroup>
         </Otherwise>
