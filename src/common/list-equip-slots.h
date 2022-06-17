@@ -26,4 +26,6 @@ EQUIP(HAT,        true,  true,  "On %s",        "",             "wearing on your
 EQUIP(GLOVES,     true,  true,  "On %s",        "",             "wearing on your %s")
 EQUIP(BOOTS,      true,  true,  "On %s",        "",             "wearing on your %s")
 EQUIP(TOOL,       false, false, "Using",        "",             "using to dig")
+//Add book/TOME slot here later
+
 #endif

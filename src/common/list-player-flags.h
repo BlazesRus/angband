@@ -48,4 +48,9 @@ PF(CAN_FARM)
 PF(NO_RECALL)
 PF(RACE_REGEN)
 PF(NO_BOOTS)
+//BlazesRus Branch Added flags
+PF(RACESHIFT_SPELLS)//Monster and class spells access in specific forms listed from race
+PF(CLASSSHIFT_SPELLS)//Monster and class spells access in specific forms listed from class
+//PF(BLUE_MAGE)
+
 #endif
