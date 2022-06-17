@@ -17,12 +17,51 @@
  *    are included in all such copies.  Other copyrights may also apply.
  */
 
+#include "ui-term.h"
+#include "angband.h"
+#include "buildid.h"
+#include "cave.h"
+#include "cmd-core.h"
+#include "cmds.h"
+#include "game-input.h"
+#include "game-world.h"
+#include "init.h"
+#include "monster.h"
+#include "obj-gear.h"
+#include "obj-util.h"
+#include "player-attack.h"
+#include "player-calcs.h"
+#include "player-timed.h"
+#include "player-util.h"
+#include "store.h"
+#include "target.h"
+#include "ui-command.h"
+#include "ui-display.h"
+#include "ui-event.h"
+#include "ui-help.h"
+#include "ui-input.h"
+#include "ui-keymap.h"
+#include "ui-map.h"
+#include "ui-menu.h"
+#include "ui-options.h"
+#include "ui-output.h"
+#include "ui-player.h"
+#include "ui-prefs.h"
+#include "ui-target.h"
+//#include "c-angband.h"
 
-#include "c-angband.h"
 
-
-/*
+/**
  * Redraw the screen
+ *
+ * This command performs various low level updates, clears all the "extra"
+ * windows, does a total redraw of the main window, and requests all of the
+ * interesting updates and redraws that I can think of.
+ *
+ * This command is also used to "instantiate" the results of the user
+ * selecting various things, such as graphics mode, so it must call
+ * the "TERM_XTRA_REACT" hook before redrawing the windows.
+ *
  */
 void do_cmd_redraw(void)
 {

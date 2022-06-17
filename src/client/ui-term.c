@@ -16,10 +16,13 @@
  *    and not for profit purposes provided that this copyright and statement
  *    are included in all such copies.  Other copyrights may also apply.
  */
-
-
-#include "c-angband.h"
-
+#include "buildid.h"
+#include "h-basic.h"
+#include "ui-term.h"
+#include "z-color.h"
+#include "z-util.h"
+#include "z-virt.h"
+//#include "c-angband.h"
 
 /*
  * This file provides a generic, efficient, terminal window package,

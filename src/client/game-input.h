@@ -6,6 +6,9 @@
 #if (defined(MBandClient)||defined(SPClient)||defined(HybridClient)) && !defined(INCLUDED_GAME_INPUT_H)
 #define INCLUDED_GAME_INPUT_H
 
+#include "cmd-core.h"
+#include "player.h"
+
 /*
  * Bit flags for the "get_item" function
  */

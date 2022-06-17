@@ -18,8 +18,53 @@
  *    are included in all such copies.  Other copyrights may also apply.
  */
 
-
-#include "c-angband.h"
+#include "angband.h"
+#include "cmds.h"
+#include "datafile.h"
+#include "game-input.h"
+#include "game-world.h"
+#include "generate.h"
+#include "grafmode.h"
+#include "init.h"
+#include "mon-lore.h"
+#include "mon-make.h"
+#include "obj-knowledge.h"
+#include "obj-util.h"
+#include "player-attack.h"
+#include "player-calcs.h"
+#include "player-path.h"
+#include "player-properties.h"
+#include "player-util.h"
+#include "savefile.h"
+#include "target.h"
+#include "ui-birth.h"
+#include "ui-command.h"
+#include "ui-context.h"
+#include "ui-death.h"
+#include "ui-display.h"
+#include "ui-game.h"
+#include "ui-help.h"
+#include "ui-init.h"
+#include "ui-input.h"
+#include "ui-keymap.h"
+#include "ui-knowledge.h"
+#include "ui-map.h"
+#include "ui-menu.h"
+#include "ui-object.h"
+#include "ui-output.h"
+#include "ui-player.h"
+#include "ui-prefs.h"
+#include "ui-spell.h"
+#include "ui-score.h"
+#include "ui-signals.h"
+#include "ui-spoil.h"
+#include "ui-store.h"
+#include "ui-target.h"
+#include "ui-wizard.h"
+#include "z-file.h"
+#include "z-util.h"
+#include "z-virt.h"
+//#include "c-angband.h"
 
 
 /*
@@ -145,7 +190,7 @@ struct cmd_info cmd_util[] =
     {"Kill character and quit", {'Q'}, CMD_NULL, textui_cmd_suicide, NULL},
     {"Redraw the screen", {KTRL('R')}, CMD_NULL, do_cmd_redraw, NULL},
     {"Save \"screen dump\"", {')'}, CMD_NULL, do_cmd_save_screen, NULL},
-    {"Purchase a house", {'H', '£'}, CMD_NULL, do_cmd_purchase_house, NULL},
+    {"Purchase a house", {'H', 'ï¿½'}, CMD_NULL, do_cmd_purchase_house, NULL},
     {"Take a quest", {KTRL('Q')}, CMD_NULL, do_cmd_quest, NULL},
     {"Socials", {KTRL('S')}, CMD_NULL, do_cmd_social, NULL}
 };

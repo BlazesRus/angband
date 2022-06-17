@@ -17,9 +17,41 @@
  *    and not for profit purposes provided that this copyright and statement
  *    are included in all such copies.  Other copyrights may also apply.
  */
-
-
-#include "c-angband.h"
+#include "angband.h"
+#include "cave.h"
+#include "cmds.h"
+#include "game-event.h"
+#include "game-input.h"
+#include "hint.h"
+#include "init.h"
+#include "monster.h"
+#include "obj-desc.h"
+#include "obj-gear.h"
+#include "obj-ignore.h"
+#include "obj-info.h"
+#include "obj-knowledge.h"
+#include "obj-make.h"
+#include "obj-pile.h"
+#include "obj-tval.h"
+#include "obj-util.h"
+#include "player-calcs.h"
+#include "player-history.h"
+#include "player-util.h"
+#include "store.h"
+#include "target.h"
+#include "ui-display.h"
+#include "ui-input.h"
+#include "ui-menu.h"
+#include "ui-object.h"
+#include "ui-options.h"
+#include "ui-knowledge.h"
+#include "ui-object.h"
+#include "ui-player.h"
+#include "ui-spell.h"
+#include "ui-command.h"
+#include "ui-store.h"
+#include "z-debug.h"
+//#include "c-angband.h"
 
 
 /* State flags */

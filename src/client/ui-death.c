@@ -17,8 +17,24 @@
  *    are included in all such copies.  Other copyrights may also apply.
  */
 
-
-#include "c-angband.h"
+#include "angband.h"
+#include "cmds.h"
+#include "game-input.h"
+#include "init.h"
+#include "obj-desc.h"
+#include "obj-info.h"
+#include "savefile.h"
+#include "store.h"
+#include "ui-death.h"
+#include "ui-history.h"
+#include "ui-input.h"
+#include "ui-knowledge.h"
+#include "ui-menu.h"
+#include "ui-object.h"
+#include "ui-player.h"
+#include "ui-score.h"
+#include "ui-spoil.h"
+//#include "c-angband.h"
 
 
 /*

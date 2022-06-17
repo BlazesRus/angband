@@ -16,9 +16,22 @@
  *    and not for profit purposes provided that this copyright and statement
  *    are included in all such copies.  Other copyrights may also apply.
  */
-
-
-#include "c-angband.h"
+#include "angband.h"
+#include "cave.h"
+#include "cmds.h"
+#include "cmd-core.h"
+#include "effects.h"
+#include "effects-info.h"
+#include "game-input.h"
+#include "obj-tval.h"
+#include "obj-util.h"
+#include "object.h"
+#include "player-calcs.h"
+#include "player-spell.h"
+#include "ui-menu.h"
+#include "ui-output.h"
+#include "ui-spell.h"
+//#include "c-angband.h"
 
 
 /*

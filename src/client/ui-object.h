@@ -6,6 +6,8 @@
 #if (defined(MBandClient)||defined(SPClient)||defined(HybridClient)) && !defined(UI_OBJECT_H)
 #define UI_OBJECT_H
 
+#include "cmd-core.h"
+
 extern struct object **floor_items;
 extern uint8_t floor_num;
 

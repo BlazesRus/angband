@@ -19,8 +19,39 @@
  *    are included in all such copies.  Other copyrights may also apply.
  */
 
-
-#include "c-angband.h"
+#include "angband.h"
+#include "cave.h"
+#include "cmd-core.h"
+#include "cmds.h"
+#include "effects.h"
+#include "game-input.h"
+#include "init.h"
+#include "obj-desc.h"
+#include "obj-gear.h"
+#include "obj-ignore.h"
+#include "obj-info.h"
+#include "obj-knowledge.h"
+#include "obj-make.h"
+#include "obj-pile.h"
+#include "obj-tval.h"
+#include "obj-util.h"
+#include "player-attack.h"
+#include "player-calcs.h"
+#include "player-spell.h"
+#include "player-timed.h"
+#include "player-util.h"
+#include "store.h"
+#include "ui-command.h"
+#include "ui-display.h"
+#include "ui-game.h"
+#include "ui-input.h"
+#include "ui-keymap.h"
+#include "ui-menu.h"
+#include "ui-object.h"
+#include "ui-options.h"
+#include "ui-output.h"
+#include "ui-prefs.h"
+//#include "c-angband.h"
 
 
 /* Floor items */

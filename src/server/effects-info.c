@@ -20,8 +20,18 @@
  *    are included in all such copies.  Other copyrights may also apply.
  */
 
-
-#include "s-angband.h"
+#include "effects-info.h"
+#include "effects.h"
+#include "init.h"
+#include "message.h"
+#include "mon-summon.h"
+#include "obj-info.h"
+#include "player-timed.h"
+#include "project.h"
+#include "z-color.h"
+#include "z-form.h"
+#include "z-util.h"
+//#include "s-angband.h"
 
 
 static struct

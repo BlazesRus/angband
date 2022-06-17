@@ -6,6 +6,9 @@
 #if (defined(MBandServer)||defined(SPClient)||defined(HybridClient)) && !defined(INCLUDED_CMDS_H)
 #define INCLUDED_CMDS_H
 
+#include "cave.h"
+#include "..\client\cmd-core.h"
+
 /* channel.c */
 extern void do_cmd_message(struct player *p, char *message);
 extern void do_cmd_chat(struct player *p, char *buf);

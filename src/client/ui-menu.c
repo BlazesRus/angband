@@ -17,10 +17,13 @@
  *    and not for profit purposes provided that this copyright and statement
  *    are included in all such copies.  Other copyrights may also apply.
  */
-
-
-#include "c-angband.h"
-
+#include "angband.h"
+#include "cave.h"
+#include "ui-target.h"
+#include "ui-event.h"
+#include "ui-input.h"
+#include "ui-menu.h"
+//#include "c-angband.h"
 
 /*
  * Cursor colours

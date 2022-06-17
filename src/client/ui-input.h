@@ -6,6 +6,11 @@
 #if (defined(MBandClient)||defined(SPClient)||defined(HybridClient)) && !defined(INCLUDED_UI_INPUT_H)
 #define INCLUDED_UI_INPUT_H
 
+#include "cmd-core.h"
+#include "game-event.h"
+#include "ui-event.h"
+#include "ui-term.h"
+
 /*
  * Holds a generic command - if cmd is set to other than CMD_NULL
  * it simply pushes that command to the game, otherwise the hook

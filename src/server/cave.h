@@ -6,6 +6,9 @@
 #if (defined(MBandServer)||defined(SPClient)||defined(HybridClient)) && !defined(CAVE_H)
 #define CAVE_H
 
+#include "z-type.h"
+#include "z-bitflag.h"
+
 /*
  * Terrain flags
  */

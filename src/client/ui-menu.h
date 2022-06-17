@@ -6,6 +6,8 @@
 #if (defined(MBandClient)||defined(SPClient)||defined(HybridClient)) && !defined(INCLUDED_UI_MENU_H)
 #define INCLUDED_UI_MENU_H
 
+#include "ui-output.h"
+
 /*** Constants ***/
 
 /* Colors for interactive menus */

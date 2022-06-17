@@ -16,13 +16,38 @@
  *    and not for profit purposes provided that this copyright and statement
  *    are included in all such copies.  Other copyrights may also apply.
  */
-
-
-#include "c-angband.h"
-
-#ifdef BUILDINGWithVS
-    #include "ui-player-properties.h"//unresolved external symbol fix
-#endif
+#include "angband.h"
+#include "cmds.h"
+#include "game-event.h"
+#include "game-input.h"
+#include "game-world.h"
+#include "init.h"
+#include "obj-gear.h"
+#include "obj-util.h"
+#include "player-calcs.h"
+#include "player-path.h"
+#include "savefile.h"
+#include "target.h"
+#include "ui-command.h"
+#include "ui-context.h"
+#include "ui-curse.h"
+#include "ui-display.h"
+#include "ui-effect.h"
+#include "ui-help.h"
+#include "ui-keymap.h"
+#include "ui-knowledge.h"
+#include "ui-map.h"
+#include "ui-menu.h"
+#include "ui-object.h"
+#include "ui-output.h"
+#include "ui-player-properties.h"
+#include "ui-player.h"
+#include "ui-prefs.h"
+#include "ui-signals.h"
+#include "ui-spell.h"
+#include "ui-store.h"
+#include "ui-target.h"
+//#include "c-angband.h"
 
 /* See the "inkey()" function */
 static bool inkey_xtra = false;

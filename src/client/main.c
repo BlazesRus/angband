@@ -24,6 +24,9 @@
 
 
 #include "c-angband.h"
+#ifdef HybridClient
+#include "s-angband.h"
+#endif
 
 #ifdef ON_ANDROID
 #include <SDL.h>

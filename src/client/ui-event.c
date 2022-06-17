@@ -17,8 +17,9 @@
  *    are included in all such copies.  Other copyrights may also apply.
  */
 
-
-#include "c-angband.h"
+#include "ui-event.h"
+#include "angband.h"
+//#include "c-angband.h"
 
 
 /*

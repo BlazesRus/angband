@@ -23,8 +23,21 @@
  * Windows), then it should be placed in the "main-???.c" file.
  */
 
-
-#include "c-angband.h"
+#include "angband.h"
+#include "game-input.h"
+#include "game-event.h"
+#include "init.h"
+#include "ui-display.h"
+#include "ui-game.h"
+#include "ui-init.h"
+#include "ui-input.h"
+#include "ui-keymap.h"
+#include "ui-knowledge.h"
+#include "ui-options.h"
+#include "ui-output.h"
+#include "ui-prefs.h"
+#include "ui-term.h"
+//#include "c-angband.h"
 
 
 struct feature *f_info;
