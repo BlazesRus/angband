@@ -14,4 +14,9 @@ HIST(SLAY_UNIQUE, "Player has slain a unique monster")
 HIST(HELP_UNIQUE, "Player helped to slay a unique monster")
 HIST(PLAYER_REVIVE, "Player has been revived")
 HIST(GAIN_LEVEL, "Player gained a level")
+//From Angband
+HIST(USER_INPUT,		"User-added note")
+HIST(SAVEFILE_IMPORT,	"Added when an older version savefile is imported")
+HIST(GENERIC,			"Anything else not covered here (unused)")
+
 #endif

@@ -111,8 +111,32 @@ static ui_event inkey_aux(char scan_cutoff)
 {
     ui_event ke;
 
+#if !defined(SPClient)&&!defined(HybridClient)
     /* Loop, looking for net input and responding to keypresses */
     ke = Net_loop(Term_inkey, NULL, NULL, scan_cutoff, false);
+#else
+	/* Wait for a keypress */
+	if (scan_cutoff == SCAN_OFF) {
+		(void)(Term_inkey(&ke, true, true));
+	} else {
+		w = 0;
+
+		/* Wait only as long as macro activation would wait */
+		while (Term_inkey(&ke, false, true) != 0) {
+			/* Increase "wait" */
+			w++;
+
+			/* Excessive delay */
+			if (w >= scan_cutoff) {
+				ui_event empty = EVENT_EMPTY;
+				return empty;
+			}
+
+			/* Delay */
+			Term_xtra(TERM_XTRA_DELAY, 10);
+		}
+	}
+#endif
 
     /* Excessive delay */
     if (ke.type == EVT_DELAY)
@@ -179,7 +203,7 @@ ui_event inkey_ex(void)
         inkey_xtra = false;
     }
 
-    /* Hack -- use the "inkey_next" pointer */
+    /* Hack -- Use the "inkey_next" pointer */
     if (inkey_next && inkey_next->code)
     {
         /* Get next character, and advance */
@@ -207,7 +231,7 @@ ui_event inkey_ex(void)
     if (!inkey_scan && (!inkey_flag || player->screen_save_depth))
         Term_set_cursor(true);
 
-    /* Hack -- activate main screen */
+	/* Hack -- Activate main screen */
     Term_activate(term_screen);
 
     /* Get a key */
@@ -265,8 +289,9 @@ struct keypress inkey(void)
 {
     ui_event ke = EVENT_EMPTY;
 
-    /* Only accept a keypress (ignore abort) */
-    while (ke.type != EVT_KBRD)
+    /* Only accept a keypress and mouse events(ignore abort) */
+	while (ke.type != EVT_ESCAPE && ke.type != EVT_KBRD &&
+		   ke.type != EVT_MOUSE && ke.type != EVT_BUTTON)
     {
         /* Get a keypress */
         ke = inkey_ex();
@@ -278,6 +303,20 @@ struct keypress inkey(void)
             ke.key.code = ESCAPE;
             ke.key.mods = 0;
         }
+	    else if (ke.type == EVT_MOUSE)
+        {
+		    if (ke.mouse.button == 1) {
+			    ke.type = EVT_KBRD;
+			    ke.key.code = '\n';
+			    ke.key.mods = 0;
+		    } else {
+			    ke.type = EVT_KBRD;
+			    ke.key.code = ESCAPE;
+			    ke.key.mods = 0;
+		    }
+	    }
+        else if (ke.type == EVT_BUTTON)
+		    ke.type = EVT_KBRD;
     }
 
     return ke.key;
@@ -430,6 +469,32 @@ bool askfor_aux_keypress(char *buf, size_t buflen, size_t *curs, size_t *len,
     return false;
 }
 
+/**
+ * Handle a mouse event during editing of a string.  This is the default mouse
+ * event handler for askfor_aux_ext().
+ *
+ * \param buf is the buffer with the string to be edited.
+ * \param buflen is the maximum number of characters that may be stored in buf.
+ * \param curs is the pointer to the position of the cursor in the buffer.
+ * \param len is the pointer to position of the first null character in the
+ * buffer.
+ * \param mouse is a description of the mouse event to handle.
+ * \param firsttime is whether or not this is the first call to the keypress or
+ * mouse handler in this editing session.
+ * \return zero if the editing session should continue, one if the editing
+ * session should end and the current contents of the buffer be accepted, or
+ * two if the editing session should end and the current contents of the buffer
+ * be rejected.
+ *
+ * askfor_aux_mouse() is very simple.  Any mouse click terminates the editing
+ * session, and if that click is with the second button, the result of the
+ * editing is rejected.
+ */
+int askfor_aux_mouse(char *buf, size_t buflen, size_t *curs, size_t *len,
+		struct mouseclick mouse, bool firsttime)//From Angband
+{
+	return (mouse.button == 2) ? 2 : 1;
+}
 
 /*
  * Get some input at the cursor location.
@@ -458,7 +523,7 @@ bool askfor_aux(char *buf, int len, keypress_handler keypress_h)
     int y, x;
     size_t k = 0;   /* Cursor position */
     size_t nul = 0; /* Position of the null byte in the string */
-    struct keypress ch;
+    struct keypress ch = KEYPRESS_NULL;
     bool done = false;
     bool firsttime = true;
 
@@ -525,6 +590,142 @@ bool askfor_aux(char *buf, int len, keypress_handler keypress_h)
     return (ch.code != ESCAPE);
 }
 
+//From Angband but adjusted to use Tangaria's askfor_aux base code plus mouse stuff
+/**
+ * Act like askfor_aux() but allow customization of what happens with mouse
+ * input.
+ *
+ * \param buf is the buffer with the string to edit.
+ * \param len is the maximum number of characters buf can hold.
+ * \param keypress_h is the function to call to handle a keypress.  It may be
+ * NULL.  In that case, askfor_aux_keypress() is used.  The function takes
+ * six arguments and should return whether or not to end this editing
+ * session.  The first argument is the buffer with the string to be edited.  The
+ * second argument is the maximum number of characters that can be stored in
+ * that buffer.  The third argument is a pointer to the position of the cursor
+ * in the buffer.  The fourth argument is a pointer to the position of the
+ * first null character in the buffer.  The fifth argument is a description of
+ * the keypress to be handled.  The sixth argument is whether or not this is
+ * the first call to the keypress handler or mouse handler in this editing
+ * session.
+ * \param mouse_h is the function to call to handle a mouse click.  It may be
+ * NULL.  In that case, askfor_aux_mouse() is used.  The function takes six
+ * arguments and should either return zero (this editing should session should
+ * continue), one (this editing session should end and the result in the buffer
+ * be accepted), or a non-zero value other than one (this editing session should
+ * end and the result in the buffer should not be accepted).  The first argument
+ * is the buffer with the string to be edited.  The second argument is the
+ * maximum number of characters that can be stored in that buffer.  The third
+ * argument is a pointer to the position of the cursor in the buffer.  The
+ * fourth argument is a pointer to the position of the first null character in
+ * the buffer.  The fifth argument is a description of the keypress to be
+ * handled.  The sixth argument is whether or not this is the first call to the
+ * keypress handler or mouse handler in this editing session.
+ */
+bool askfor_aux_ext(char *buf, size_t len,
+	bool (*keypress_h)(char *, size_t, size_t *, size_t *, struct keypress, bool),
+	int (*mouse_h)(char *, size_t, size_t *, size_t *, struct mouseclick, bool))
+{
+    int y, x;
+    size_t k = 0;   /* Cursor position */
+    size_t nul = 0; /* Position of the null byte in the string */
+    bool done = false;
+    bool firsttime = true;
+    ui_event input;
+
+    if (keypress_h == NULL)
+        keypress_h = askfor_aux_keypress;
+	if (mouse_h == NULL)
+		mouse_h = askfor_aux_mouse;
+
+    /* Locate the cursor */
+    Term_locate(&x, &y);
+
+    /* The top line is "icky" */
+    topline_icky = true;
+
+    /* Paranoia -- check len */
+    if (len < 1) len = 1;
+
+    /* Paranoia -- check column */
+    if ((x < 0) || (x >= NORMAL_WID)) x = 0;
+
+    /* Restrict the length */
+    if (x + len > NORMAL_WID) len = NORMAL_WID - x;
+
+    /* Truncate the default entry */
+    buf[len - 1] = '\0';
+
+    /* Get the position of the null byte */
+    nul = strlen(buf);
+
+    /* Display the default answer */
+    Term_erase(x, y, len);
+    Term_putstr(x, y, -1, COLOUR_YELLOW, buf);
+
+    /* Process input */
+    while (!done)
+    {
+        /* Place cursor */
+        Term_gotoxy(x + k, y);
+
+		/*
+		 * Get input.  Emulate what inkey() does without the coercing
+		 * mouse events to look like keystrokes.
+		 */
+		while (1) {
+			input = inkey_ex();
+			if (input.type == EVT_KBRD || input.type == EVT_MOUSE) {
+				break;
+			}
+			if (input.type == EVT_BUTTON) {
+				input.type = EVT_KBRD;
+				break;
+			}
+			if (input.type == EVT_ESCAPE) {
+				input.type = EVT_KBRD;
+				input.key.code = ESCAPE;
+				input.key.mods = 0;
+				break;
+			}
+		}
+
+		/* Pass on to the appropriate handler. */
+		if (input.type == EVT_KBRD) {
+            /* Evil hack -- pretend quote is Return */
+            if (prompt_quote_hack && (input.code == '"')) input.code = KC_ENTER;
+            /* Let the keypress handler deal with the keypress */
+			done = keypress_h(buf, len, &k, &nul, input.key,
+				firsttime);
+			accepted = (input.key.code != ESCAPE);
+		} else if (input.type == EVT_MOUSE) {
+			int result = mouse_h(buf, len, &k, &nul, in.mouse,
+				firsttime);
+
+			if (result != 0) {
+				done = true;
+				accepted = (result == 1);
+			}
+		}
+
+        /* Update the entry */
+        Term_erase(x, y, len);
+        Term_putstr(x, y, -1, COLOUR_WHITE, buf);
+
+        /* Not the first time round anymore */
+        firsttime = false;
+    }
+
+    /* The top line is OK now */
+    topline_icky = false;
+    Flush_queue();
+
+    /* Reset global flags */
+    prompt_quote_hack = false;
+
+    /* Done */
+    return (input.code != ESCAPE);
+}
 
 /*
  * Ask the user for a masked string
@@ -629,7 +830,7 @@ static bool textui_get_string(const char *prompt, char *buf, int len)
     prt(prompt, 0, 0);
 
     /* Ask the user for a string */
-    res = askfor_aux(buf, len, NULL);
+    res = askfor_aux_ext(buf, buflen, get_name_keypress, handle_name_mouse);//res = askfor_aux(buf, len, NULL);
 
     /* Clear prompt */
     prt("", 0, 0);
@@ -1063,7 +1264,7 @@ static bool textui_get_aim_dir(int *dp)
 
     /* Initialize */
     (*dp) = 0;
-    ke.type = EVT_KBRD;
+    //ke.type = EVT_KBRD;
 
     /* Ask until satisfied */
     while (!dir)
@@ -1080,7 +1281,16 @@ static bool textui_get_aim_dir(int *dp)
         if (!res) break;
 
         /* Analyze */
-        if (ke.type == EVT_KBRD)
+		if (ke.type == EVT_MOUSE) {
+			if (ke.mouse.button == 1) {
+				if (target_set_interactive(TARGET_KILL, KEY_GRID_X(ke),
+										   KEY_GRID_Y(ke)))
+					dir = 5;
+			} else if (ke.mouse.button == 2) {
+				break;
+			}
+		}
+        else if (ke.type == EVT_KBRD)
         {
             switch (ke.key.code)
             {
@@ -1282,7 +1492,7 @@ const char *extract_file_name(const char *s)
     return (p + 1);
 }
 
-
+#if !defined(SPClient)&&!defined(HybridClient)
 /*
  * Loop, looking for net input and responding to keypresses.
  */
@@ -1383,6 +1593,7 @@ ui_event Net_loop(errr (*inkey_handler)(ui_event*, bool, bool),
 
     return ke;
 }
+#endif
 
 
 /* Turn off the num-lock key by toggling it if it's currently on. */

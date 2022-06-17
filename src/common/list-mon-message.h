@@ -96,4 +96,8 @@ MON_MSG(BURN, MSG_KILL, false, "[is|are] burnt up.")
 MON_MSG(DROWN, MSG_KILL, false, "drown[s].")
 MON_MSG(DRAIN, MSG_KILL, false, "[is|are] drained.")
 MON_MSG(SUFFOCATE, MSG_KILL, false, "suffocate[s].")
+//From Angband
+MON_MSG(COMMAND,			MSG_GENERIC,    false,  "falls under your spell!")
+MON_MSG(NOT_COMMAND,		MSG_GENERIC,    false,  "is no longer under your control.")
+
 #endif

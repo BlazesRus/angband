@@ -116,6 +116,282 @@ static void do_cmd_knowledge_monsters(const char *title, int row)
  * ARTIFACTS
  */
 
+#ifdef SPClient
+/**
+ * These are used for all the object sections
+ */
+static const grouper object_text_order[] =
+{
+	{TV_RING,			"Ring"			},
+	{TV_AMULET,			"Amulet"		},
+	{TV_POTION,			"Potion"		},
+	{TV_SCROLL,			"Scroll"		},
+	{TV_WAND,			"Wand"			},
+	{TV_STAFF,			"Staff"			},
+	{TV_ROD,			"Rod"			},
+ 	{TV_FOOD,			"Food"			},
+ 	{TV_MUSHROOM,		"Mushroom"		},
+	{TV_PRAYER_BOOK,	"Priest Book"	},
+	{TV_MAGIC_BOOK,		"Magic Book"	},
+	{TV_NATURE_BOOK,	"Nature Book"	},
+	{TV_SHADOW_BOOK,	"Shadow Book"	},
+	{TV_OTHER_BOOK,		"Mystery Book"	},
+	{TV_LIGHT,			"Light"			},
+	{TV_FLASK,			"Flask"			},
+	{TV_SWORD,			"Sword"			},
+	{TV_POLEARM,		"Polearm"		},
+	{TV_HAFTED,			"Hafted Weapon" },
+	{TV_BOW,			"Bow"			},
+	{TV_ARROW,			"Ammunition"	},
+	{TV_BOLT,			NULL			},
+	{TV_SHOT,			NULL			},
+	{TV_SHIELD,			"Shield"		},
+	{TV_CROWN,			"Crown"			},
+	{TV_HELM,			"Helm"			},
+	{TV_GLOVES,			"Gloves"		},
+	{TV_BOOTS,			"Boots"			},
+	{TV_CLOAK,			"Cloak"			},
+	{TV_DRAG_ARMOR,		"Dragon Scale Mail" },
+	{TV_HARD_ARMOR,		"Hard Armor"	},
+	{TV_SOFT_ARMOR,		"Soft Armor"	},
+	{TV_DIGGING,		"Digger"		},
+	{TV_GOLD,			"Money"			},
+	{0,					NULL			}
+};
+
+static int *obj_group_order = NULL;
+
+static void get_artifact_display_name(char *o_name, size_t namelen, int a_idx)
+{
+	struct object body = OBJECT_NULL, known_body = OBJECT_NULL;
+	struct object *obj = &body, *known_obj = &known_body;
+
+	make_fake_artifact(obj, &a_info[a_idx]);
+	object_wipe(known_obj);
+	object_copy(known_obj, obj);
+	obj->known = known_obj;
+	object_desc(o_name, namelen, obj,
+		ODESC_PREFIX | ODESC_BASE | ODESC_SPOIL, NULL);
+	object_wipe(known_obj);
+	object_wipe(obj);
+}
+
+/**
+ * Display an artifact label
+ */
+static void display_artifact(int col, int row, bool cursor, int oid)
+{
+	uint8_t attr = curs_attrs[CURS_KNOWN][(int)cursor];
+	char o_name[80];
+
+	get_artifact_display_name(o_name, sizeof o_name, oid);
+
+	c_prt(attr, o_name, row, col);
+}
+
+/**
+ * Look for an artifact
+ */
+static struct object *find_artifact(struct artifact *artifact)
+{
+	int y, x, i;
+	struct object *obj;
+
+	/* Ground objects */
+	for (y = 1; y < cave->height; ++y) {
+		for (x = 1; x < cave->width; ++x) {
+			struct loc grid = loc(x, y);
+			for (obj = square_object(cave, grid); obj; obj = obj->next) {
+				if (obj->artifact == artifact) return obj;
+			}
+		}
+	}
+
+	/* Player objects */
+	for (obj = player->gear; obj; obj = obj->next) {
+		if (obj->artifact == artifact) return obj;
+	}
+
+	/* Monster objects */
+	for (i = cave_monster_max(cave) - 1; i >= 1; --i) {
+		struct monster *mon = cave_monster(cave, i);
+		obj = mon ? mon->held_obj : NULL;
+
+		while (obj) {
+			if (obj->artifact == artifact) return obj;
+			obj = obj->next;
+		}
+	}
+
+	/* Store objects */
+	for (i = 0; i < MAX_STORES; ++i) {
+		struct store *s = &stores[i];
+		for (obj = s->stock; obj; obj = obj->next) {
+			if (obj->artifact == artifact) return obj;
+		}
+	}
+
+	/* Stored chunk objects */
+	for (i = 0; i < chunk_list_max; ++i) {
+		struct chunk *c = chunk_list[i];
+		int j;
+		if (strstr(c->name, "known")) continue;
+
+		/* Ground objects */
+		for (y = 1; y < c->height; ++y) {
+			for (x = 1; x < c->width; ++x) {
+				struct loc grid = loc(x, y);
+				for (obj = square_object(c, grid); obj; obj = obj->next) {
+					if (obj->artifact == artifact) return obj;
+				}
+			}
+		}
+
+		/* Monster objects */
+		for (j = cave_monster_max(c) - 1; j >= 1; --j) {
+			struct monster *mon = cave_monster(c, j);
+			obj = mon ? mon->held_obj : NULL;
+
+			while (obj) {
+				if (obj->artifact == artifact) return obj;
+				obj = obj->next;
+			}
+		}
+	}	
+
+	return NULL;
+}
+
+/**
+ * Show artifact lore
+ */
+static void desc_art_fake(int a_idx)
+{
+	struct object *obj, *known_obj = NULL;
+	struct object object_body = OBJECT_NULL, known_object_body = OBJECT_NULL;
+	bool fake = false;
+
+	char header[120];
+
+	textblock *tb;
+	region area = { 0, 0, 0, 0 };
+
+	obj = find_artifact(&a_info[a_idx]);
+
+	/* If it's been lost, make a fake artifact for it */
+	if (!obj) {
+		fake = true;
+		obj = &object_body;
+		known_obj = &known_object_body;
+
+		make_fake_artifact(obj, &a_info[a_idx]);
+		obj->known = known_obj;
+		known_obj->artifact = obj->artifact;
+		known_obj->kind = obj->kind;
+
+		/* Check the history entry, to see if it was fully known before it
+		 * was lost */
+		if (history_is_artifact_known(player, obj->artifact))
+			/* Be very careful not to influence anything but this object */
+			object_copy(known_obj, obj);
+	}
+
+	/* Hack -- Handle stuff */
+	handle_stuff(player);
+
+	tb = object_info(obj, OINFO_NONE);
+	object_desc(header, sizeof(header), obj,
+		ODESC_PREFIX | ODESC_FULL | ODESC_CAPITAL, player);
+	if (fake) {
+		object_wipe(known_obj);
+		object_wipe(obj);
+	}
+
+	textui_textblock_show(tb, area, header);
+	textblock_free(tb);
+}
+
+static int a_cmp_tval(const void *a, const void *b)
+{
+	const int a_val = *(const int *)a;
+	const int b_val = *(const int *)b;
+	const struct artifact *a_a = &a_info[a_val];
+	const struct artifact *a_b = &a_info[b_val];
+
+	/* Group by */
+	int ta = obj_group_order[a_a->tval];
+	int tb = obj_group_order[a_b->tval];
+	int c = ta - tb;
+	if (c) return c;
+
+	/* Order by */
+	c = a_a->sval - a_b->sval;
+	if (c) return c;
+	return strcmp(a_a->name, a_b->name);
+}
+
+static const char *kind_name(int gid)
+{
+	return object_text_order[gid].name;
+}
+
+static int art2gid(int oid)
+{
+	return obj_group_order[a_info[oid].tval];
+}
+
+/**
+ * Check if the given artifact idx is something we should "Know" about
+ */
+static bool artifact_is_known(int a_idx)
+{
+	struct object *obj;
+
+	if (!a_info[a_idx].name)
+		return false;
+
+	if (player->wizard)
+		return true;
+
+	if (!is_artifact_created(&a_info[a_idx]))
+		return false;
+
+	/* Check all objects to see if it exists but hasn't been IDed */
+	obj = find_artifact(&a_info[a_idx]);
+	if (obj && !object_is_known_artifact(obj))
+		return false;
+
+	return true;
+}
+
+
+/**
+ * If 'artifacts' is NULL, it counts the number of known artifacts, otherwise
+ * it collects the list of known artifacts into 'artifacts' as well.
+ */
+static int collect_known_artifacts(int *artifacts, size_t artifacts_len)
+{
+	int a_count = 0;
+	int j;
+
+	if (artifacts)
+		assert(artifacts_len >= z_info->a_max);
+
+	for (j = 0; j < z_info->a_max; ++j) {
+		/* Artifact doesn't exist */
+		if (!a_info[j].name) continue;
+
+		if (OPT(player, cheat_xtra) || artifact_is_known(j)) {
+			if (artifacts)
+				artifacts[a_count++] = j;
+			else
+				++a_count;
+		}
+	}
+
+	return a_count;
+}
+#endif
 
 /*
  * Display known artifacts

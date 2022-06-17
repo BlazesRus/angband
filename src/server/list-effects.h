@@ -153,4 +153,9 @@ EFFECT(WONDER, true, NULL, 0, EFINFO_NONE, "creates random and unpredictable eff
 EFFECT(LOSE_STAT, false, NULL, 1, EFINFO_STAT, "permanently decreases %s")
 EFFECT(WEB_SPIDER, false, NULL, 0, EFINFO_NONE, "creates a web")
 EFFECT(FORGET_LEVEL, false, NULL, 0, EFINFO_NONE, "completely forgets the current level")
+//From Angband
+EFFECT(COMMAND,	true, NULL,	0,	EFINFO_NONE, "takes control of a monster")
+EFFECT(JUMP_AND_BITE, false, NULL, 0, EFINFO_NONE, "jumps the player to the closest living monster and bites it")
+EFFECT(MOVE_ATTACK, true, "blows", 1, EFINFO_DICE,	"moves the player up to 4 spaces and executes up to %d melee blows")
+
 #endif
