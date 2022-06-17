@@ -173,6 +173,10 @@ static void Term_what_hack(int x, int y, uint16_t *a, char *c)
     if (*c == 127) *c = '#';
 }
 
+/**
+ * ------------------------------------------------------------------------
+ * Screenshot loading/saving code
+ * ------------------------------------------------------------------------ */
 
 static void write_html_escape_char(ang_file *fp, char c)
 {
