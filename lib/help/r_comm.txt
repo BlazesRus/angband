@@ -50,7 +50,7 @@ combination and does not pass it on.
   -    Walk into a trap                ^o   Show previous message
   _    Drink/fill an empty bottle      ^p   Show previous messages
   +    Alter grid                      ^q   Get a quest
-  =    Set options                     ^r   Redraw the screen
+  =    Set options                     ^r   Redraw / Show Account Points
   ;    Walk (with pickup)              ^s   Socials
   :    Enter chat mode                 ^t   Dig a tunnel
   '    Target closest monster          ^u   (alter - north east)
@@ -62,5 +62,5 @@ combination and does not pass it on.
   \    (special - bypass keymap)        ~   Check knowledge
   `    (special - escape)               ?   Display help
   /    Identify monster                 |   List contents of quiver
-  £    Buy a house
+  ï¿½    Buy a house
   TAB  Fire default ammo at target     BKS  Describe object

@@ -17,74 +17,6 @@
  */
 
 
-/*
- * This is the server side of the network connection stuff.
- *
- * We try very hard to not let the game be disturbed by
- * players logging in.  Therefore a new connection
- * passes through several states before it is actively
- * playing.
- * First we make a new connection structure available
- * with a new socket to listen on.  This socket port
- * number is told to the client via the pack mechanism.
- * In this state the client has to send a packet to this
- * newly created socket with its name and playing parameters.
- * If this succeeds the connection advances to its second state.
- * In this second state the essential server configuration
- * like the map and so on is transmitted to the client.
- * If the client has acknowledged all this data then it
- * advances to the third state, which is the
- * ready-but-not-playing-yet state.  In this state the client
- * has some time to do its final initializations, like mapping
- * its user interface windows and so on.
- * When the client is ready to accept frame updates and process
- * keyboard events then it sends the start-play packet.
- * This play packet advances the connection state into the
- * actively-playing state.  A player structure is allocated and
- * initialized and the other human players are told about this new player.
- * The newly started client is told about the already playing players and
- * play has begun.
- * Apart from these four states there are also two intermediate states.
- * These intermediate states are entered when the previous state
- * has filled the reliable data buffer and the client has not
- * acknowledged all the data yet that is in this reliable data buffer.
- * They are so called output drain states.  Not doing anything else
- * then waiting until the buffer is empty.
- * The difference between these two intermediate states is tricky.
- * The second intermediate state is entered after the
- * ready-but-not-playing-yet state and before the actively-playing state.
- * The difference being that in this second intermediate state the client
- * is already considered an active player by the rest of the server
- * but should not get frame updates yet until it has acknowledged its last
- * reliable data.
- *
- * Communication between the server and the clients is only done
- * using UDP datagrams.  The first client/serverized version of XPilot
- * was using TCP only, but this was too unplayable across the Internet,
- * because TCP is a data stream always sending the next byte.
- * If a packet gets lost then the server has to wait for a
- * timeout before a retransmission can occur.  This is too slow
- * for a real-time program like this game, which is more interested
- * in recent events than in sequenced/reliable events.
- * Therefore UDP is now used which gives more network control to the
- * program.
- * Because some data is considered crucial, like the names of
- * new players and so on, there also had to be a mechanism which
- * enabled reliable data transmission.  Here this is done by creating
- * a data stream which is piggybacked on top of the unreliable data
- * packets.  The client acknowledges this reliable data by sending
- * its byte position in the reliable data stream.  So if the client gets
- * a new reliable data packet and it has not had this data before and
- * there is also no data packet missing inbetween, then it advances
- * its byte position and acknowledges this new position to the server.
- * Otherwise it discards the packet and sends its old byte position
- * to the server meaning that it detected a packet loss.
- * The server maintains an acknowledgement timeout timer for each
- * connection so that it can retransmit a reliable data packet
- * if the acknowledgement timer expires.
- */
-
-
 #include "s-angband.h"
 
 
@@ -5013,6 +4945,7 @@ static int Receive_redraw(int ind)
         break_mind_link(p);
 
         do_cmd_redraw(p);
+        msg(p, "You have %lu account points.", p->account_score);
     }
 
     return 1;
@@ -6066,6 +5999,36 @@ static void update_graphics(struct player *p, connection_t *connp)
 }
 
 
+static void show_motd(struct player *p)
+{
+    ang_file *fp;
+    char buf[MSG_LEN];
+    bool first = true;
+
+    /* Verify the "motd" file */
+    path_build(buf, sizeof(buf), ANGBAND_DIR_SCREENS, "motd.txt");
+    if (!file_exists(buf)) return;
+
+    /* Open the motd file */
+    fp = file_open(buf, MODE_READ, FTYPE_TEXT);
+    if (!fp) return;
+
+    /* Dump */
+    while (file_getl(fp, buf, sizeof(buf)))
+    {
+        if (first)
+        {
+            msg(p, "  ");
+            msg(p, "   ");
+            first = false;
+        }
+        msg(p, buf);
+    }
+
+    file_close(fp);
+}
+
+
 /*
  * A client has requested to start active play.
  * See if we can allocate a player structure for it
@@ -6240,6 +6203,8 @@ static int Enter_player(int ind)
 
     /* Tell the new player about the version number */
     msgt(p, MSG_VERSION, "Server is running version %s", version_build(NULL, true));
+
+    show_motd(p);
 
     msg(p, "  ");
     msg(p, "   ");
