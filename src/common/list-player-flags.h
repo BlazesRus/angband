@@ -6,7 +6,8 @@
  * symbol - the flag name
  * additional details in player_property.txt
  */
-
+#ifndef INCLUDED_LIST_PLAYER_FLAGS_H
+#define INCLUDED_LIST_PLAYER_FLAGS_H
 /* symbol */
 PF(NONE)
 PF(FAST_SHOT)
@@ -47,3 +48,4 @@ PF(CAN_FARM)
 PF(NO_RECALL)
 PF(RACE_REGEN)
 PF(NO_BOOTS)
+#endif

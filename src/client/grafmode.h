@@ -3,7 +3,7 @@
  * Purpose: Load a list of possible graphics modes.
  */
 
-#ifndef INCLUDED_GRAFMODE_H
+#if (defined(MBandClient)||defined(SPClient)||defined(HybridClient)) && !defined(INCLUDED_GRAFMODE_H)
 #define INCLUDED_GRAFMODE_H
 
 /*

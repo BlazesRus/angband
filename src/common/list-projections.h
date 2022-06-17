@@ -5,6 +5,8 @@
  * ===== NOTICE =====
  * If you add new entries to this file, you must also update lib/gamedata/projection.txt!
  */
+#ifndef INCLUDED_LIST_PROJECTIONS_H
+#define INCLUDED_LIST_PROJECTIONS_H
 PROJ(LIGHT_WEAK)
 PROJ(DARK_WEAK)
 PROJ(KILL_WALL)
@@ -52,3 +54,5 @@ PROJ(CONTROL)
 PROJ(PROJECT)
 PROJ(TREES)
 PROJ(AWAY_ANIMAL)
+
+#endif

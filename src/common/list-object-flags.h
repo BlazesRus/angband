@@ -11,7 +11,8 @@
  * symbol - the flag name
  * birth-descr - description of the flag for use in the birth menus
  */
-
+#ifndef INCLUDED_LIST_OBJECT_FLAGS_H
+#define INCLUDED_LIST_OBJECT_FLAGS_H
 /* symbol  birth-descr */
 OF(NONE, NULL)
 OF(SUST_STR, "Sustains strength")
@@ -74,3 +75,5 @@ OF(NO_DROP, "Forbids dropping item")
 OF(PROT_AMNESIA, "Resists amnesia")
 OF(FLYING, "You can fly")
 OF(CLUMSY, "You become bad at ranged attacks")
+
+#endif

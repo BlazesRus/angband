@@ -3,7 +3,7 @@
  * Purpose: Deal with UI only command processing.
  */
 
-#ifndef UI_COMMAND_H
+#if (defined(MBandClient)||defined(SPClient)||defined(HybridClient)) && !defined(UI_COMMAND_H)
 #define UI_COMMAND_H
 
 extern void do_cmd_redraw(void);

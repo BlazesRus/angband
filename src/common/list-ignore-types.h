@@ -2,7 +2,8 @@
  * File: list-ignore-types.h
  * Purpose: Types of object used for ignoring by quality or ego
  */
-
+#ifndef INCLUDED_LIST_IGNORE_TYPES_H
+#define INCLUDED_LIST_IGNORE_TYPES_H
 /* symbol  type */
 ITYPE(SHARP, "Sharp Melee Weapons")
 ITYPE(BLUNT, "Blunt Melee Weapons")
@@ -33,3 +34,5 @@ ITYPE(TOOL, "Other Tools")
 ITYPE(RING, "Rings")
 ITYPE(AMULET, "Amulets")
 ITYPE(LIGHT, "Lights")
+
+#endif

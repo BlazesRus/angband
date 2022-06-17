@@ -2,7 +2,8 @@
  * File: list-history-types.h
  * Purpose: History message types
  */
-
+#ifndef INCLUDED_LIST_HISTORY_TYPES_H
+#define INCLUDED_LIST_HISTORY_TYPES_H
 HIST(NONE, "")
 HIST(PLAYER_BIRTH, "Player was born")
 HIST(ARTIFACT_UNKNOWN, "Player has generated an artifact")
@@ -13,3 +14,4 @@ HIST(SLAY_UNIQUE, "Player has slain a unique monster")
 HIST(HELP_UNIQUE, "Player helped to slay a unique monster")
 HIST(PLAYER_REVIVE, "Player has been revived")
 HIST(GAIN_LEVEL, "Player gained a level")
+#endif

@@ -3,7 +3,7 @@
  * Purpose: Server-side game UI.
  */
 
-#ifndef INCLUDED_DISPLAY_UI_H
+#if (defined(MBandServer)||defined(HybridClient)) && !defined(INCLUDED_DISPLAY_UI_H)
 #define INCLUDED_DISPLAY_UI_H
 
 struct explosion

@@ -7,7 +7,8 @@
  * type - spell type
  * save - type of saving throw
  */
-
+#ifndef INCLUDED_LIST_MON_SPELLS_H
+#define INCLUDED_LIST_MON_SPELLS_H
 /* name  type  save */
 RSF(NONE, 0, 0)
 RSF(SHRIEK, RST_ANNOY|RST_INNATE, 0)
@@ -107,3 +108,5 @@ RSF(S_UNIQUE, RST_SUMMON, 0)
 RSF(S_ABOMINATION, RST_SUMMON, 0)
 RSF(S_SPIRIT, RST_SUMMON, 0)
 RSF(BO_TEST, RST_BOLT, 0)
+
+#endif

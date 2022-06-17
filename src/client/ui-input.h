@@ -3,7 +3,7 @@
  * Purpose: Some high-level UI functions, inkey()
  */
 
-#ifndef INCLUDED_UI_INPUT_H
+#if (defined(MBandClient)||defined(SPClient)||defined(HybridClient)) && !defined(INCLUDED_UI_INPUT_H)
 #define INCLUDED_UI_INPUT_H
 
 /*

@@ -3,7 +3,7 @@
  * Purpose: Store UI
  */
 
-#ifndef INCLUDED_UI_STORE_H
+#if (defined(MBandClient)||defined(SPClient)||defined(HybridClient)) && !defined(INCLUDED_UI_STORE_H)
 #define INCLUDED_UI_STORE_H
 
 /* Easy names for the elements of the 'scr_places' arrays. */

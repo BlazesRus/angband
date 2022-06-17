@@ -3,7 +3,7 @@
  * Purpose: A generic, efficient, terminal window package
  */
 
-#ifndef INCLUDED_UI_TERM_H
+#if (defined(MBandClient)||defined(SPClient)||defined(HybridClient)) && !defined(INCLUDED_UI_TERM_H)
 #define INCLUDED_UI_TERM_H
 
 /*

@@ -3,7 +3,7 @@
  * Purpose: Sound handling
  */
 
-#ifndef INCLUDED_SOUND_H
+#if (defined(MBandClient)||defined(SPClient)||defined(HybridClient)) && !defined(INCLUDED_SOUND_H)
 #define INCLUDED_SOUND_H
 
 /*

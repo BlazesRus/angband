@@ -3,7 +3,7 @@
  * Purpose: Spell UI handing
  */
 
-#ifndef UI_SPELL_H
+#if (defined(MBandClient)||defined(SPClient)||defined(HybridClient)) && !defined(UI_SPELL_H)
 #define UI_SPELL_H
 
 

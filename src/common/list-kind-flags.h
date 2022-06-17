@@ -5,7 +5,8 @@
  * These are flags that go on object kinds, egos and artifacts, but not on
  * individual objects.
  */
-
+#ifndef INCLUDED_LIST_KIND_FLAGS_H
+#define INCLUDED_LIST_KIND_FLAGS_H
 /* symbol  message */
 KF(NONE, "")
 KF(RAND_HI_RES, "")
@@ -26,3 +27,5 @@ KF(RAND_RES_POWER, "")
 KF(TWO_HANDED, "")
 KF(AMMO_NORMAL, "")
 KF(EPIC, "")
+
+#endif

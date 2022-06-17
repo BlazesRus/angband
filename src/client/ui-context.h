@@ -3,7 +3,7 @@
  * Purpose: Show player and terrain context menus
  */
 
-#ifndef UI_CONTEXT_H
+#if (defined(MBandClient)||defined(SPClient)||defined(HybridClient)) && !defined(UI_CONTEXT_H)
 #define UI_CONTEXT_H
 
 extern int context_menu_object(struct object *obj);

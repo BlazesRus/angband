@@ -2,7 +2,8 @@
  * File: list-mon-temp-flags.h
  * Purpose: Temporary monster flags
  */
-
+#ifndef INCLUDED_LIST_MON_TEMP_FLAGS_H
+#define INCLUDED_LIST_MON_TEMP_FLAGS_H
 MFLAG(NONE, "")
 MFLAG(VIEW, "Monster is in line of sight")                          /* player PoV */
 MFLAG(ACTIVE, "Monster is in active mode")                          /* monster PoV */
@@ -12,3 +13,5 @@ MFLAG(AWARE, "Monster is aware of the player")                      /* monster P
 MFLAG(HANDLED, "Monster has been processed this turn")              /* monster PoV */
 MFLAG(TRACKING, "Monster is tracking the player by sound or scent") /* monster PoV */
 MFLAG(HURT, "Monster is hurt")                                      /* player PoV */
+
+#endif

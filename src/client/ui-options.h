@@ -2,7 +2,7 @@
  * File: ui-options.h
  * Purpose: Text UI options handling code (everything accessible from '=')
  */
-
+#if (defined(MBandClient)||defined(SPClient)||defined(HybridClient)) && !defined(INCLUDED_UI_OPTIONS_H)
 
 #ifndef INCLUDED_UI_OPTIONS_H
 #define INCLUDED_UI_OPTIONS_H

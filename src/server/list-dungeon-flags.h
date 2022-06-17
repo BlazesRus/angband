@@ -2,7 +2,8 @@
  * File: list-dungeon-flags.h
  * Purpose: Dungeon flags
  */
-
+#if (defined(MBandServer)||defined(HybridClient)) && !defined(INCLUDED_LIST_dungeon_flags_H)
+#define INCLUDED_LIST_dungeon_flags_H
 /* symbol descr */
 DF(NONE, "")
 DF(CAVERN, "Cavern levels are generated more often")
@@ -18,3 +19,4 @@ DF(SAND_VEIN, "May have sand streams")
 DF(FAST_SPAWN, "Spawn monsters faster")
 DF(OPEN_SKY, "Dungeon under open sky")
 
+#endif

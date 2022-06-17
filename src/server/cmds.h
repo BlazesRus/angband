@@ -3,7 +3,7 @@
  * Purpose: Header for game command files
  */
 
-#ifndef INCLUDED_CMDS_H
+#if (defined(MBandServer)||defined(SPClient)||defined(HybridClient)) && !defined(INCLUDED_CMDS_H)
 #define INCLUDED_CMDS_H
 
 /* channel.c */

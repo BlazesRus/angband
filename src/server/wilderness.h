@@ -3,7 +3,7 @@
  * Purpose: Wilderness interface
  */
 
-#ifndef WILDERNESS_H
+#if (defined(MBandServer)||defined(HybridClient)) && !defined(WILDERNESS_H)
 #define WILDERNESS_H
 
 /*

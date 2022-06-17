@@ -3,7 +3,7 @@
  * Purpose: Writing level map info to the screen
  */
 
-#ifndef INCLUDED_MAP_UI_H
+#if (defined(MBandServer)||defined(HybridClient)) && !defined(INCLUDED_MAP_UI_H)
 #define INCLUDED_MAP_UI_H
 
 extern void grid_data_as_text(struct player *p, struct chunk *cv, bool server,

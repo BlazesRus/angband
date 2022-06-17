@@ -3,7 +3,7 @@
  * Purpose: Object lists and selection, and other object-related UI functions
  */
 
-#ifndef UI_OBJECT_H
+#if (defined(MBandClient)||defined(SPClient)||defined(HybridClient)) && !defined(UI_OBJECT_H)
 #define UI_OBJECT_H
 
 extern struct object **floor_items;

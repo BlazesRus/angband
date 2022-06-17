@@ -3,7 +3,7 @@
  * Purpose: Putting text on the screen, screen saving and loading, panel handling
  */
 
-#ifndef INCLUDED_UI_OUTPUT_H
+#if (defined(MBandClient)||defined(SPClient)||defined(HybridClient)) && !defined(INCLUDED_UI_OUTPUT_H)
 #define INCLUDED_UI_OUTPUT_H
 
 extern bool full_icky_screen;

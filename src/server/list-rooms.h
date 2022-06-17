@@ -2,7 +2,8 @@
  * File: list-rooms.h
  * Purpose: Matches dungeon room names to their building functions
  */
-
+#ifndef INCLUDED_LIST_ROOMS_H
+#define INCLUDED_LIST_ROOMS_H
 /* name  rows  cols  builder */
 ROOM("simple room", 0, 0, simple)
 ROOM("moria room", 0, 0, moria)
@@ -22,3 +23,5 @@ ROOM("Greater vault", 44, 66, greater_vault)
 ROOM("Lesser vault (new)", 22, 22, lesser_new_vault)
 ROOM("Medium vault (new)", 22, 33, medium_new_vault)
 ROOM("Greater vault (new)", 44, 66, greater_new_vault)
+
+#endif

@@ -7,7 +7,8 @@
  * omit_subject  - true to omit a monster name beforehand (see mon-msg.c)
  * text          - the message text
  */
-
+#ifndef INCLUDED_LIST_MON_MESSAGES_H
+#define INCLUDED_LIST_MON_MESSAGES_H
 /* Dummy action */
 MON_MSG(NONE, MSG_GENERIC, false, "[is|are] hurt.")
 /* From project_m */
@@ -95,3 +96,4 @@ MON_MSG(BURN, MSG_KILL, false, "[is|are] burnt up.")
 MON_MSG(DROWN, MSG_KILL, false, "drown[s].")
 MON_MSG(DRAIN, MSG_KILL, false, "[is|are] drained.")
 MON_MSG(SUFFOCATE, MSG_KILL, false, "suffocate[s].")
+#endif

@@ -5,7 +5,7 @@
  * Copyright (c) 2014 Andi Sidwell
  */
 
-#ifndef INCLUDED_CMD_CORE_H
+#if (defined(MBandClient)||defined(SPClient)||defined(HybridClient)) && !defined(INCLUDED_CMD_CORE_H)
 #define INCLUDED_CMD_CORE_H
 
 #include "object.h"

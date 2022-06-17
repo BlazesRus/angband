@@ -3,7 +3,7 @@
  * Purpose: Game core management of the game world
  */
 
-#ifndef GAME_WORLD_H
+#if (defined(MBandServer)||defined(SPClient)||defined(HybridClient)) && !defined(GAME_WORLD_H)
 #define GAME_WORLD_H
 
 #include "cave.h"

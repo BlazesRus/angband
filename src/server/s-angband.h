@@ -3,7 +3,7 @@
  * Purpose: Main Angband header file (server)
  */
 
-#ifndef INCLUDED_S_ANGBAND_H
+#if defined(MBandServer) && !defined(INCLUDED_S_ANGBAND_H)
 #define INCLUDED_S_ANGBAND_H
 
 /*

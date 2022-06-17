@@ -3,7 +3,7 @@
  * Purpose: Pref file handling code
  */
 
-#ifndef UI_PREFS_H
+#if (defined(MBandClient)||defined(SPClient)||defined(HybridClient)) && !defined(UI_PREFS_H)
 #define UI_PREFS_H
 
 /*

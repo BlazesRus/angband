@@ -3,7 +3,7 @@
  * Purpose: Generic menu interaction functions
  */
 
-#ifndef INCLUDED_UI_MENU_H
+#if (defined(MBandClient)||defined(SPClient)||defined(HybridClient)) && !defined(INCLUDED_UI_MENU_H)
 #define INCLUDED_UI_MENU_H
 
 /*** Constants ***/

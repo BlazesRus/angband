@@ -3,7 +3,7 @@
  * Purpose: Object list UI.
  */
 
-#ifndef OBJECT_LIST_UI_H
+#if (defined(MBandServer)||defined(HybridClient)) && !defined(OBJECT_LIST_UI_H)
 #define OBJECT_LIST_UI_H
 
 extern void object_list_show_subwindow(struct player *p, int height, int width);

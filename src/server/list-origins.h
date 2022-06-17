@@ -2,7 +2,8 @@
  * File: list-origins.h
  * Purpose: List of object origins
  */
-
+#ifndef INCLUDED_LIST_origins_H
+#define INCLUDED_LIST_origins_H
 ORIGIN(NONE, -1, "")
 ORIGIN(FLOOR, 1, "Found lying on the floor %s.")
 ORIGIN(CHEST, 1, "Taken from a chest found %s.")
@@ -31,3 +32,5 @@ ORIGIN(WORTHLESS, 1, "Conjured forth by magic %s.")
 ORIGIN(PLAYER, 1, "Purchased from a player %s.")
 ORIGIN(FOUNTAIN, 1, "Obtained from a fountain %s.")
 ORIGIN(WILD_DWELLING, 1, "Found in an abandoned house %s.")
+
+#endif

@@ -2,7 +2,8 @@
  * File: list-square-flags.h
  * Purpose: Special grid flags
  */
-
+#ifndef INCLUDED_LIST_square_flags_H
+#define INCLUDED_LIST_square_flags_H
 /* symbol descr */
 SQUARE(NONE, "")
 SQUARE(MARK, "memorized feature")                       /* player */
@@ -35,3 +36,5 @@ SQUARE(CUSTOM_WALL, "is a custom wall")                 /* global */
 SQUARE(LIMITED_TELE, "allows limited teleportation")    /* global */
 SQUARE(WASCLOSE, "previously close (during update)")    /* player */
 SQUARE(WASLIT, "previously lit (during update)")        /* player */
+
+#endif

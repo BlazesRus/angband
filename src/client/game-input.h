@@ -3,7 +3,7 @@
  * Purpose: Ask for non-command input from the UI.
  */
 
-#ifndef INCLUDED_GAME_INPUT_H
+#if (defined(MBandClient)||defined(SPClient)||defined(HybridClient)) && !defined(INCLUDED_GAME_INPUT_H)
 #define INCLUDED_GAME_INPUT_H
 
 /*

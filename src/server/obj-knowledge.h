@@ -3,7 +3,7 @@
  * Purpose: Object knowledge
  */
 
-#ifndef OBJECT_KNOWLEDGE_H
+#if (defined(MBandServer)||defined(SPClient)||defined(HybridClient)) && !defined(OBJECT_KNOWLEDGE_H)
 #define OBJECT_KNOWLEDGE_H
 
 enum rune_variety

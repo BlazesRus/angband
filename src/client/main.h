@@ -3,7 +3,7 @@
  * Purpose: Core game initialisation
  */
 
-#ifndef INCLUDED_MAIN_H
+#if (defined(MBandClient)||defined(SPClient)||defined(HybridClient)) && !defined(INCLUDED_MAIN_H)
 #define INCLUDED_MAIN_H
 
 struct module

@@ -2,7 +2,8 @@
  * File: list-attack-effects.h
  * Purpose: List of effects for barehanded attacks
  */
-
+#if (defined(MBandServer)||defined(HybridClient)) && !defined(INCLUDED_LIST_ATTACK_EFFECTS_H)
+#define INCLUDED_LIST_ATTACK_EFFECTS_H
 MA(NONE)
 MA(SIDE)
 MA(DICE)
@@ -14,3 +15,5 @@ MA(CUT)
 MA(JUMP)
 MA(CIRCLE)
 MA(CRUSH)
+
+#endif

@@ -3,7 +3,7 @@
  * Purpose: The server side of the network stuff
  */
 
-#ifndef __Netserver_h
+#if defined(MBandServer) && !defined(__Netserver_h)
 #define __Netserver_h
 
 #define FREE_TIMEOUT    15

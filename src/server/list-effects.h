@@ -2,6 +2,8 @@
  * File: list-effects.h
  * Purpose: List of effects
  */
+#ifndef INCLUDED_LIST_effects_H
+#define INCLUDED_LIST_effects_H
 
 /*
  * name: effect code
@@ -151,3 +153,4 @@ EFFECT(WONDER, true, NULL, 0, EFINFO_NONE, "creates random and unpredictable eff
 EFFECT(LOSE_STAT, false, NULL, 1, EFINFO_STAT, "permanently decreases %s")
 EFFECT(WEB_SPIDER, false, NULL, 0, EFINFO_NONE, "creates a web")
 EFFECT(FORGET_LEVEL, false, NULL, 0, EFINFO_NONE, "completely forgets the current level")
+#endif

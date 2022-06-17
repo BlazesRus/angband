@@ -3,7 +3,7 @@
  * Purpose: Keymap handling
  */
 
-#ifndef UI_KEYMAP_H
+#if (defined(MBandClient)||defined(SPClient)||defined(HybridClient)) && !defined(UI_KEYMAP_H)
 #define UI_KEYMAP_H
 
 /*

@@ -2,7 +2,8 @@
  * File: list-terrain-flags.h
  * Purpose: Terrain flags
  */
-
+#ifndef INCLUDED_LIST_TERRAIN_FLAGS_H
+#define INCLUDED_LIST_TERRAIN_FLAGS_H
 /* symbol descr */
 TF(NONE, "")
 TF(LOS, "Allows line of sight")
@@ -72,3 +73,5 @@ TF(WINDOW, "Is window")
 TF(SHALLOW_WATER, "Is shallow water")
 TF(BAD_WATER, "Is muddy water")
 TF(FOUL_WATER, "Is water.. or even kinda strange liquid with foul smell")
+
+#endif

@@ -10,6 +10,8 @@
  * heavy describe - description for when the slot item is too heavy
  * describe - description for when the slot is described at length
  */
+#ifndef INCLUDED_LIST_EQUIP_SLOTS_H
+#define INCLUDED_LIST_EQUIP_SLOTS_H
 /* slot          acid_v  name   mention         heavy describe  describe */
 EQUIP(NONE,       false, false, "",             "",             "")
 EQUIP(WEAPON,     false, false, "Wielding",     "just lifting", "attacking enemies with")
@@ -24,3 +26,4 @@ EQUIP(HAT,        true,  true,  "On %s",        "",             "wearing on your
 EQUIP(GLOVES,     true,  true,  "On %s",        "",             "wearing on your %s")
 EQUIP(BOOTS,      true,  true,  "On %s",        "",             "wearing on your %s")
 EQUIP(TOOL,       false, false, "Using",        "",             "using to dig")
+#endif

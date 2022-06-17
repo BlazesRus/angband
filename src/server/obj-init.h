@@ -3,8 +3,8 @@
  * Purpose: Object initialization routines
  */
 
-#ifndef OBJECT_INIT_H
-#define OBJECT_INIT_H
+#if (defined(MBandServer)||defined(SPClient)||defined(HybridClient)) && !defined(OBJECT_INIT_H_)
+#define OBJECT_INIT_H_
 
 extern struct object_kind *unknown_item_kind;
 extern struct object_kind *unknown_gold_kind;

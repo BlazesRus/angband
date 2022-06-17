@@ -3,7 +3,7 @@
  * Purpose: Game management for the traditional text UI
  */
 
-#ifndef INCLUDED_UI_GAME_H
+#if (defined(MBandClient)||defined(SPClient)||defined(HybridClient)) && !defined(INCLUDED_UI_GAME_H)
 #define INCLUDED_UI_GAME_H
 
 extern void cmd_init(void);
