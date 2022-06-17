@@ -17,10 +17,24 @@
  *    and not for profit purposes provided that this copyright and statement
  *    are included in all such copies.  Other copyrights may also apply.
  */
-
-
-#include "c-angband.h"
-
+#include "angband.h"
+#include "cmds.h"
+#include "cmd-core.h"
+#include "effects-info.h"
+#include "game-input.h"
+#include "obj-chest.h"
+#include "obj-desc.h"
+#include "obj-tval.h"
+#include "obj-util.h"
+#include "player-attack.h"
+#include "player-birth.h"
+#include "player-calcs.h"
+#include "player-spell.h"
+#include "player-timed.h"
+#include "player-util.h"
+#include "store.h"
+#include "target.h"
+//#include "c-angband.h"
 
 /*
  * Command handlers will take a pointer to the command structure
