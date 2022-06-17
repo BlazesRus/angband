@@ -55,6 +55,7 @@ Angband 4.2.x:
 - Add borders around option menu prompts that don't clear the screen
 - Suppress "You have ..." message for artifact jewelry when all non-curse runes
   are known
+- Modify text when player is aware of a monster via detection or telepathy
 
 MAngband 1.5.x:
 
@@ -67,6 +68,9 @@ PWMAngband:
 - Add /race and /class custom commands to display race and class stats during
   play
 - Clarify message when creating a character with a name that is already taken
+- Revert default ignoring options to "no ignore"
+- MotD shown on login in message window (from motd.txt in /lib/screens)
+- Add slays/brands to character sheet
 
 Gameplay changes
 ----------------
@@ -79,6 +83,8 @@ Angband 4.2.x:
 - Have DETECT_DOORS detect all types of doors, not just secret ones
 - Forget remembered impassable terrain at the player's grid if the player is
   blind
+- Don't disturb the player when a chest trap is detected
+- Factor in player trap immunity for failed attempts to disable chest traps
 
 PWMAngband:
 
@@ -91,6 +97,8 @@ PWMAngband:
 - Buffed The Lost Silmaril of Maglor
 - Take half a turn when taking off/dropping/refilling an item (ported from V)
 - Make pit walls much less likely to be pierced by steamers deep in the dungeon
+- Exclude wearing from !* inscription
+- Implement RAND_100 flag and assign it to goldfishes
 - New class: Villager
 
 Bugs fixed
@@ -104,6 +112,8 @@ Angband 4.2.x:
 - Allow dumping a color with all zero components if in the basic colors
 - Only identify teleport away/scare/dispel/sleep/turn effects if the monster is
   seen
+- Fix Triple diamond room
+- Fix awkward word in the description for Create Arrows
 
 PWMAngband:
 
@@ -134,6 +144,7 @@ PWMAngband:
 - Fix attacking while walking/jumping/running with extra moves not spending
   a full turn of energy
 - Fix READ_MINDS
+- Fix some va_arg argument types in vstrnfmt
 
 Coding changes
 --------------
@@ -184,8 +195,7 @@ Angband 4.2.x:
 - Make ui-player-properties
 - Move logic for bookkeeping after a player's move from move_player() to its
   own function so it can be called in other cases when the player moves
-- Avoid platform-dependent right shift of negative values in
-  player_adjust_hp_precise() and player_adjust_mana_precise()
+- Avoid platform-dependent right shift of negative values
 
 PWMAngband:
 

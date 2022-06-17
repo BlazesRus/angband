@@ -513,7 +513,7 @@ static void blow_side_effects(struct player *p, struct source *target,
             player_inc_timed(target->player, TMD_POISONED, randint1(p->lev) + 5, true, true);
     }
 
-    /* Apply Shadow Touch or life leech */
+    /* Apply life leech */
     // doesn't work on powerful mobs (except for vampire)
     if (streq(p->race->name, "Vampire") && target->monster &&
         monster_is_living(target->monster))
@@ -1374,7 +1374,8 @@ void py_attack(struct player *p, struct chunk *c, struct loc *grid)
     /* Reward blackguards with 5% of max SPs, min 1/2 point */
     if (player_has(p, PF_COMBAT_REGEN))
     {
-        int32_t sp_gain = (int32_t)(MAX(p->msp, 10) << 16) / 20;
+        int32_t sp_gain = (((int32_t)MAX(p->msp, 10)) * 16384) / 5;
+
         player_adjust_mana_precise(p, sp_gain);
     }
 
