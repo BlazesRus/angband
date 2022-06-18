@@ -1,0 +1,1688 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Resource Files\customize">
+      <UniqueIdentifier>{50814ac9-de77-42f7-90e1-c49769a526f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\fonts">
+      <UniqueIdentifier>{f2ce99a0-ec94-4adf-9ed7-876afce2d4d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\gamedata">
+      <UniqueIdentifier>{14f36840-4171-45cc-85c3-1c40b9dbb45f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\help">
+      <UniqueIdentifier>{2f230f9e-eca0-4db4-9b56-71de201fb1c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\icons">
+      <UniqueIdentifier>{baf73d3c-6656-4a0a-99a4-d046b7faf4e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\tiles">
+      <UniqueIdentifier>{bbd5388e-d8be-4c76-be21-2ed6a39a4aa7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\tiles\adam-bolt">
+      <UniqueIdentifier>{02d56a58-137c-46a6-9db2-766f73d55a12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\tiles\gervais">
+      <UniqueIdentifier>{ffcb2da1-8a10-4aeb-bc47-d4bbdf86c25b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\tiles\shockbolt">
+      <UniqueIdentifier>{17f9ff36-5291-48d6-ab97-aa69c0796699}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\tiles\old">
+      <UniqueIdentifier>{73a57601-68d2-48dc-9767-99ebcc71296b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\tiles\nomad">
+      <UniqueIdentifier>{d9cb6d85-e632-4317-8428-5f916f278f2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\sounds">
+      <UniqueIdentifier>{4b4d88d3-5088-4dc2-81c4-151dbacc7987}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\screens">
+      <UniqueIdentifier>{8a54c5c2-3c10-4cf2-b6a8-9588ab62a502}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SDL">
+      <UniqueIdentifier>{b90ce1d6-6cab-46ed-9a41-f38278fcbeb7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Common">
+      <UniqueIdentifier>{1f674a76-c445-4168-aef9-0ad638226e59}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Common">
+      <UniqueIdentifier>{f010b325-5fa6-4095-a377-915bb8c8a0d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Client">
+      <UniqueIdentifier>{07a6a9ca-8d80-481b-9bf4-ed705f0e2021}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Client">
+      <UniqueIdentifier>{a92c48c1-0be0-4fbd-84d8-0ebae1314121}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Server">
+      <UniqueIdentifier>{d185f26b-fa93-4718-8e0f-a122a1318455}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Server">
+      <UniqueIdentifier>{e13bc4c4-31e6-4d1a-b8f6-7643057565be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ZLibPng">
+      <UniqueIdentifier>{7eb31489-8816-4549-9c41-e7a0f497dcca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\SPClientExclusive">
+      <UniqueIdentifier>{265598d3-9d34-409b-8fbe-362e56cc7260}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\SPClientExclusive">
+      <UniqueIdentifier>{fbb1134c-51b1-407e-87bf-319763d5c57e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\TangariaExServer">
+      <UniqueIdentifier>{d185f26b-fa93-4718-8e0f-a122a1318455}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\TangariaExServer">
+      <UniqueIdentifier>{e13bc4c4-31e6-4d1a-b8f6-7643057565be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\TangariaExCommon">
+      <UniqueIdentifier>{f010b325-5fa6-4095-a377-915bb8c8a0d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\TangariaExClient">
+      <UniqueIdentifier>{a92c48c1-0be0-4fbd-84d8-0ebae1314121}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\TangariaExCommon">
+      <UniqueIdentifier>{1f674a76-c445-4168-aef9-0ad638226e59}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\TangariaExClient">
+      <UniqueIdentifier>{07a6a9ca-8d80-481b-9bf4-ed705f0e2021}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ImageAndScreenshotStuff">
+      <UniqueIdentifier>{7db14429-c0c6-4560-a26a-74486b4e99e4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(SDLDir)\SDL.h">
+      <Filter>SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\begin_code.h">
+      <Filter>SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\close_code.h">
+      <Filter>SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_active.h">
+      <Filter>SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_audio.h">
+      <Filter>SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_cdrom.h">
+      <Filter>SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_config.h">
+      <Filter>SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_config_win32.h">
+      <Filter>SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_cpuinfo.h">
+      <Filter>SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_endian.h">
+      <Filter>SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_error.h">
+      <Filter>SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_events.h">
+      <Filter>SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_image.h">
+      <Filter>SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_joystick.h">
+      <Filter>SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_keyboard.h">
+      <Filter>SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_keysym.h">
+      <Filter>SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_loadso.h">
+      <Filter>SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_main.h">
+      <Filter>SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_mixer.h">
+      <Filter>SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_mouse.h">
+      <Filter>SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_mutex.h">
+      <Filter>SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_platform.h">
+      <Filter>SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_quit.h">
+      <Filter>SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_rwops.h">
+      <Filter>SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_stdinc.h">
+      <Filter>SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_thread.h">
+      <Filter>SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_timer.h">
+      <Filter>SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_ttf.h">
+      <Filter>SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_types.h">
+      <Filter>SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_version.h">
+      <Filter>SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(SDLDir)\SDL_video.h">
+      <Filter>SDL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)mon-list-ui.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\win\include\png.h">
+      <Filter>Header Files\ZLibPng</Filter>
+    </ClInclude>
+    <ClInclude Include="src\win\include\zlib.h">
+      <Filter>Header Files\ZLibPng</Filter>
+    </ClInclude>
+    <ClInclude Include="src\win\include\zconf.h">
+      <Filter>Header Files\ZLibPng</Filter>
+    </ClInclude>
+    <ClInclude Include="src\win\win-term.h">
+      <Filter>Header Files\ZLibPng</Filter>
+    </ClInclude>
+    <ClInclude Include="src\win\win-menu.h">
+      <Filter>Header Files\ZLibPng</Filter>
+    </ClInclude>
+    <ClInclude Include="src\win\include\pngconf.h">
+      <Filter>Header Files\ZLibPng</Filter>
+    </ClInclude>
+    <ClInclude Include="src\win\readdib.h">
+      <Filter>Header Files\ZLibPng</Filter>
+    </ClInclude>
+    <ClInclude Include="src\win\resource.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\debug.h">
+      <Filter>Header Files\SPClientExclusive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\list-ui-entry-renderers.h">
+      <Filter>Header Files\SPClientExclusive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\save-charoutput.h">
+      <Filter>Header Files\SPClientExclusive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui-effect.h">
+      <Filter>Header Files\SPClientExclusive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui-entry.h">
+      <Filter>Header Files\SPClientExclusive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui-entry-combiner.h">
+      <Filter>Header Files\SPClientExclusive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui-entry-init.h">
+      <Filter>Header Files\SPClientExclusive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui-entry-renderers.h">
+      <Filter>Header Files\SPClientExclusive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui-equip-cmp.h">
+      <Filter>Header Files\SPClientExclusive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui-help.h">
+      <Filter>Header Files\SPClientExclusive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui-history.h">
+      <Filter>Header Files\SPClientExclusive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui-map.h">
+      <Filter>Header Files\SPClientExclusive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui-mon-list.h">
+      <Filter>Header Files\SPClientExclusive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui-mon-lore.h">
+      <Filter>Header Files\SPClientExclusive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui-obj-list.h">
+      <Filter>Header Files\SPClientExclusive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui-player.h">
+      <Filter>Header Files\SPClientExclusive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui-score.h">
+      <Filter>Header Files\SPClientExclusive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui-signals.h">
+      <Filter>Header Files\SPClientExclusive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui-spoil.h">
+      <Filter>Header Files\SPClientExclusive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui-target.h">
+      <Filter>Header Files\SPClientExclusive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui-visuals.h">
+      <Filter>Header Files\SPClientExclusive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ui-wizard.h">
+      <Filter>Header Files\SPClientExclusive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\wizard.h">
+      <Filter>Header Files\SPClientExclusive</Filter>
+    </ClInclude>
+    <ClInclude Include="src\z-debug.h">
+      <Filter>Header Files\SPClientExclusive</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(CommonRoot)angband.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)buildid.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)config.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)datafile.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)guid.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)h-basic.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)list-elements.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)list-equip-slots.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)list-history-types.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)list-ignore-types.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)list-kind-flags.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)list-message.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)list-mon-message.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)list-mon-race-flags.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)list-mon-spells.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)list-mon-temp-flags.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)list-mon-timed.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)list-object-flags.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)list-object-modifiers.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)list-options.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)list-parser-errors.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)list-player-flags.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)list-player-timed.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)list-projections.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)list-square-flags.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)list-stats.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)list-trap-flags.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)list-tvals.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)obj-tval.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)option.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)parser.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)randname.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)source.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)z-bitflag.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)z-color.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)z-dice.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)z-expression.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)z-file.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)z-form.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)z-rand.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)z-set.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)z-type.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)z-util.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)z-virt.h">
+      <Filter>Header Files\Common</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(CommonRoot)bit.h">
+      <Filter>Header Files\TangariaExCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)display.h">
+      <Filter>Header Files\TangariaExCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)h-net.h">
+      <Filter>Header Files\TangariaExCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)h-quark.h">
+      <Filter>Header Files\TangariaExCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)list-packets.h">
+      <Filter>Header Files\TangariaExCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)md5.h">
+      <Filter>Header Files\TangariaExCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)mon-common.h">
+      <Filter>Header Files\TangariaExCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)net-unix.h">
+      <Filter>Header Files\TangariaExCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)net-win.h">
+      <Filter>Header Files\TangariaExCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)obj-common.h">
+      <Filter>Header Files\TangariaExCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)obj-gear-common.h">
+      <Filter>Header Files\TangariaExCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)pack.h">
+      <Filter>Header Files\TangariaExCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)player-common-calcs.h">
+      <Filter>Header Files\TangariaExCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)player-common.h">
+      <Filter>Header Files\TangariaExCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)player-state.h">
+      <Filter>Header Files\TangariaExCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)sockbuf.h">
+      <Filter>Header Files\TangariaExCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)store-types.h">
+      <Filter>Header Files\TangariaExCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)trap-common.h">
+      <Filter>Header Files\TangariaExCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)util.h">
+      <Filter>Header Files\TangariaExCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)version.h">
+      <Filter>Header Files\TangariaExCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)z-defines.h">
+      <Filter>Header Files\TangariaExCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)z-msg.h">
+      <Filter>Header Files\TangariaExCommon</Filter>
+    </ClInclude>
+    <ClInclude Include="$(CommonRoot)z-spells.h">
+      <Filter>Header Files\TangariaExCommon</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(ClientRoot)ui-term.h">
+      <Filter>Header Files\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ClientRoot)ui-store.h">
+      <Filter>Header Files\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ClientRoot)ui-spell.h">
+      <Filter>Header Files\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ClientRoot)ui-prefs.h">
+      <Filter>Header Files\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ClientRoot)ui-output.h">
+      <Filter>Header Files\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ClientRoot)ui-options.h">
+      <Filter>Header Files\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ClientRoot)ui-object.h">
+      <Filter>Header Files\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ClientRoot)ui-menu.h">
+      <Filter>Header Files\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ClientRoot)ui-knowledge.h">
+      <Filter>Header Files\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ClientRoot)ui-keymap.h">
+      <Filter>Header Files\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ClientRoot)ui-input.h">
+      <Filter>Header Files\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ClientRoot)ui-init.h">
+      <Filter>Header Files\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ClientRoot)ui-game.h">
+      <Filter>Header Files\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ClientRoot)ui-event.h">
+      <Filter>Header Files\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ClientRoot)ui-display.h">
+      <Filter>Header Files\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ClientRoot)ui-death.h">
+      <Filter>Header Files\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ClientRoot)ui-curse.h">
+      <Filter>Header Files\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ClientRoot)ui-context.h">
+      <Filter>Header Files\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ClientRoot)ui-command.h">
+      <Filter>Header Files\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ClientRoot)ui-birth.h">
+      <Filter>Header Files\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ClientRoot)sound.h">
+      <Filter>Header Files\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ClientRoot)snd-win.h">
+      <Filter>Header Files\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ClientRoot)snd-sdl.h">
+      <Filter>Header Files\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ClientRoot)player-properties.h">
+      <Filter>Header Files\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ClientRoot)main.h">
+      <Filter>Header Files\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ClientRoot)grafmode.h">
+      <Filter>Header Files\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ClientRoot)game-input.h">
+      <Filter>Header Files\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ClientRoot)game-event.h">
+      <Filter>Header Files\Client</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ClientRoot)cmd-core.h">
+      <Filter>Header Files\Client</Filter>
+    </ClInclude>
+    <ClCompile Include="$(ClientRoot)ui-player-properties.h">
+      <Filter>Header Files\Client</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(ClientRoot)ui-message.h">
+      <Filter>Header Files\TangariaExClient</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ClientRoot)netclient.h">
+      <Filter>Header Files\TangariaExClient</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ClientRoot)mangclient_sdlPCH1.h">
+      <Filter>Header Files\TangariaExClient</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ClientRoot)c-player.h">
+      <Filter>Header Files\TangariaExClient</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ClientRoot)c-option.h">
+      <Filter>Header Files\TangariaExClient</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ClientRoot)conf.h">
+      <Filter>Header Files\TangariaExClient</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ClientRoot)c-cmds.h">
+      <Filter>Header Files\TangariaExClient</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ClientRoot)c-angband.h">
+      <Filter>Header Files\TangariaExClient</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(ServerRoot)alloc.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)cave.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)cmds.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)effect-handler.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)effects-info.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)effects.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)game-world.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)generate.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)hint.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)init.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)list-dun-profiles.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)list-effects.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)list-origins.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)list-randart-properties.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)list-room-flags.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)list-rooms.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)list-terrain-flags.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)message.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)mon-attack.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)mon-blows.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)mon-desc.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)mon-group.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)mon-init.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)mon-list.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)mon-lore.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)mon-make.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)mon-move.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)mon-msg.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)mon-predicate.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)mon-spell.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)mon-summon.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)mon-timed.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)mon-util.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)monster.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)obj-chest.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)obj-curse.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)obj-desc.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)obj-gear.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)obj-ignore.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)obj-info.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)obj-init.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)obj-knowledge.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)obj-list.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)obj-make.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)obj-pile.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)obj-power.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)obj-properties.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)obj-randart.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)obj-slays.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)obj-util.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)object.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)player-attack.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)player-birth.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)player-calcs.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)player-history.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)player-path.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)player-quest.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)player-spell.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)player-timed.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)player-util.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)player.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)project.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)savefile.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)score.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)store.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)target.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)trap.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)z-quark.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)z-queue.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)z-textblock.h">
+      <Filter>Header Files\Server</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(ServerRoot)s-angband.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)channel.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)display-ui.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)help-ui.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)history-ui.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)house.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)list-attack-effects.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)list-dungeon-flags.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)list-wild-feats.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)mangbandPCH1.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)map-ui.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)metaclient.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)mon-lore-ui.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)netserver.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)obj-inscrip.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)obj-list-ui.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)obj-ui.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)party.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)player-ui.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)prefs-ui.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)s-util.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)sched-win.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)score-ui.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)target-ui.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)visuals-ui.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ServerRoot)wilderness.h">
+      <Filter>Header Files\TangariaExServer</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(ServerRoot)cave-map.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)cave-square.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)cave-view.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)cave.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)cmd-cave.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)cmd-misc.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)cmd-obj.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)cmd-pickup.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)effect-handler-attack.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)effect-handler-general.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)effects-info.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)effects.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)game-world.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)gen-cave.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)gen-chunk.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)gen-monster.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)gen-room.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)gen-util.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)generate.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)init.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)load.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)message.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)mon-attack.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)mon-blows.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)mon-desc.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)mon-group.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)mon-init.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)mon-list.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)mon-lore.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)mon-make.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)mon-move.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)mon-msg.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)mon-predicate.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)mon-spell.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)mon-summon.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)mon-timed.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)mon-util.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)obj-chest.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)obj-curse.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)obj-desc.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)obj-gear.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)obj-ignore.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)obj-info.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)obj-init.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)obj-knowledge.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)obj-list.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)obj-make.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)obj-pile.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)obj-power.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)obj-properties.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)obj-randart.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)obj-slays.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)obj-util.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)player-attack.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)player-birth.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)player-calcs.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)player-history.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)player-path.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)player-quest.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)player-spell.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)player-timed.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)player-util.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)player.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)project-feat.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)project-mon.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)project-obj.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)project-player.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)project.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)save.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)savefile.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)score.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)store.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)target.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)trap.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)z-quark.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)z-queue.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)z-textblock.c">
+      <Filter>Source Files\Server</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)main-gcu.c">
+      <Filter>Source Files\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="src\win\readdib.c">
+      <Filter>Source Files\ImageAndScreenshotStuff</Filter>
+    </ClCompile>
+    <ClCompile Include="src\win\readpng.c">
+      <Filter>Source Files\ImageAndScreenshotStuff</Filter>
+    </ClCompile>
+    <ClCompile Include="src\win\scrnshot.c">
+      <Filter>Source Files\ImageAndScreenshotStuff</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(ServerRoot)account.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)channel.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)cmd-innate.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)control.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)display-ui.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)help-ui.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)history-ui.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)house.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)knowledge-ui.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)main.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)map-ui.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)metaclient.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)mon-list-ui.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)mon-lore-ui.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)netserver.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)obj-inscrip.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)obj-list-ui.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)obj-ui.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)party.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)player-ui.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)prefs-ui.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)s-util.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)sched-unix.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)sched-win.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)score-ui.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)target-ui.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)visuals-ui.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ServerRoot)wilderness.c">
+      <Filter>Source Files\TangariaExServer</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\cmd-spoil.c">
+      <Filter>Source Files\SPClientExclusive</Filter>
+    </ClCompile>
+    <ClCompile Include="src\cmd-wizard.c">
+      <Filter>Source Files\SPClientExclusive</Filter>
+    </ClCompile>
+    <ClCompile Include="src\debug.c">
+      <Filter>Source Files\SPClientExclusive</Filter>
+    </ClCompile>
+    <ClCompile Include="src\player-class.c">
+      <Filter>Source Files\SPClientExclusive</Filter>
+    </ClCompile>
+    <ClCompile Include="src\player-race.c">
+      <Filter>Source Files\SPClientExclusive</Filter>
+    </ClCompile>
+    <ClCompile Include="src\save-charoutput.c">
+      <Filter>Source Files\SPClientExclusive</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui-effect.c">
+      <Filter>Source Files\SPClientExclusive</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui-entry.c">
+      <Filter>Source Files\SPClientExclusive</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui-entry-combiner.c">
+      <Filter>Source Files\SPClientExclusive</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui-entry-renderers.c">
+      <Filter>Source Files\SPClientExclusive</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui-equip-cmp.c">
+      <Filter>Source Files\SPClientExclusive</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui-help.c">
+      <Filter>Source Files\SPClientExclusive</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui-history.c">
+      <Filter>Source Files\SPClientExclusive</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui-map.c">
+      <Filter>Source Files\SPClientExclusive</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui-mon-list.c">
+      <Filter>Source Files\SPClientExclusive</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui-mon-lore.c">
+      <Filter>Source Files\SPClientExclusive</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui-obj-list.c">
+      <Filter>Source Files\SPClientExclusive</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui-player.c">
+      <Filter>Source Files\SPClientExclusive</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui-score.c">
+      <Filter>Source Files\SPClientExclusive</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui-signals.c">
+      <Filter>Source Files\SPClientExclusive</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui-spoil.c">
+      <Filter>Source Files\SPClientExclusive</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui-target.c">
+      <Filter>Source Files\SPClientExclusive</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui-visuals.c">
+      <Filter>Source Files\SPClientExclusive</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ui-wizard.c">
+      <Filter>Source Files\SPClientExclusive</Filter>
+    </ClCompile>
+    <ClCompile Include="src\wiz-debug.c">
+      <Filter>Source Files\SPClientExclusive</Filter>
+    </ClCompile>
+    <ClCompile Include="src\wiz-spoil.c">
+      <Filter>Source Files\SPClientExclusive</Filter>
+    </ClCompile>
+    <ClCompile Include="src\wiz-stats.c">
+      <Filter>Source Files\SPClientExclusive</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(CommonRoot)buildid.c">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="$(CommonRoot)datafile.c">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="$(CommonRoot)guid.c">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="$(CommonRoot)obj-tval.c">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="$(CommonRoot)option.c">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="$(CommonRoot)parser.c">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="$(CommonRoot)randname.c">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="$(CommonRoot)source.c">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="$(CommonRoot)z-bitflag.c">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="$(CommonRoot)z-color.c">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="$(CommonRoot)z-dice.c">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="$(CommonRoot)z-expression.c">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="$(CommonRoot)z-file.c">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="$(CommonRoot)z-form.c">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="$(CommonRoot)z-rand.c">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="$(CommonRoot)z-set.c">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="$(CommonRoot)z-type.c">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="$(CommonRoot)z-util.c">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="$(CommonRoot)z-virt.c">
+      <Filter>Source Files\Common</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(CommonRoot)display.c">
+      <Filter>Source Files\TangariaExCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="$(CommonRoot)md5.c">
+      <Filter>Source Files\TangariaExCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="$(CommonRoot)net-unix.c">
+      <Filter>Source Files\TangariaExCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="$(CommonRoot)net-win.c">
+      <Filter>Source Files\TangariaExCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="$(CommonRoot)obj-gear-common.c">
+      <Filter>Source Files\TangariaExCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="$(CommonRoot)sockbuf.c">
+      <Filter>Source Files\TangariaExCommon</Filter>
+    </ClCompile>
+    <ClCompile Include="$(CommonRoot)util.c">
+      <Filter>Source Files\TangariaExCommon</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(ClientRoot)win-layout.c">
+      <Filter>Source Files\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)ui-term.c">
+      <Filter>Source Files\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)ui-store.c">
+      <Filter>Source Files\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)ui-spell.c">
+      <Filter>Source Files\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)ui-prefs.c">
+      <Filter>Source Files\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)ui-output.c">
+      <Filter>Source Files\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)ui-options.c">
+      <Filter>Source Files\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)ui-object.c">
+      <Filter>Source Files\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)ui-menu.c">
+      <Filter>Source Files\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)ui-knowledge.c">
+      <Filter>Source Files\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)ui-keymap.c">
+      <Filter>Source Files\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)ui-input.c">
+      <Filter>Source Files\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)ui-init.c">
+      <Filter>Source Files\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)ui-game.c">
+      <Filter>Source Files\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)ui-event.c">
+      <Filter>Source Files\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)ui-display.c">
+      <Filter>Source Files\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)ui-death.c">
+      <Filter>Source Files\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)ui-curse.c">
+      <Filter>Source Files\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)ui-context.c">
+      <Filter>Source Files\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)ui-command.c">
+      <Filter>Source Files\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)ui-birth.c">
+      <Filter>Source Files\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)sound-core.c">
+      <Filter>Source Files\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)snd-sdl.c">
+      <Filter>Source Files\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)player-properties.c">
+      <Filter>Source Files\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)main-win.c">
+      <Filter>Source Files\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)main.c">
+      <Filter>Source Files\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)grafmode.c">
+      <Filter>Source Files\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)game-input.c">
+      <Filter>Source Files\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)game-event.c">
+      <Filter>Source Files\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)cmd-core.c">
+      <Filter>Source Files\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)main-sdl2.c">
+      <Filter>Source Files\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)main-sdl.c">
+      <Filter>Source Files\Client</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)ui-player-properties.c">
+      <Filter>Source Files\Client</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(ClientRoot)ui-message.c">
+      <Filter>Source Files\TangariaExClient</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)snd-win.c">
+      <Filter>Source Files\TangariaExClient</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)set_focus.c">
+      <Filter>Source Files\TangariaExClient</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)netclient.c">
+      <Filter>Source Files\TangariaExClient</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)c-player.c">
+      <Filter>Source Files\TangariaExClient</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)c-option.c">
+      <Filter>Source Files\TangariaExClient</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)conf.c">
+      <Filter>Source Files\TangariaExClient</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)c-cmd-obj.c">
+      <Filter>Source Files\TangariaExClient</Filter>
+    </ClCompile>
+    <ClCompile Include="$(ClientRoot)c-cmd.c">
+      <Filter>Source Files\TangariaExClient</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="src\win\angband.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="lib\gamedata\activation.txt">
+      <Filter>Resource Files\gamedata</Filter>
+    </Text>
+    <Text Include="lib\gamedata\artifact.txt">
+      <Filter>Resource Files\gamedata</Filter>
+    </Text>
+    <Text Include="lib\gamedata\blow_effects.txt">
+      <Filter>Resource Files\gamedata</Filter>
+    </Text>
+    <Text Include="lib\gamedata\blow_methods.txt">
+      <Filter>Resource Files\gamedata</Filter>
+    </Text>
+    <Text Include="lib\gamedata\body.txt">
+      <Filter>Resource Files\gamedata</Filter>
+    </Text>
+    <Text Include="lib\gamedata\brand.txt">
+      <Filter>Resource Files\gamedata</Filter>
+    </Text>
+    <Text Include="lib\gamedata\chest_trap.txt">
+      <Filter>Resource Files\gamedata</Filter>
+    </Text>
+    <Text Include="lib\gamedata\class.txt">
+      <Filter>Resource Files\gamedata</Filter>
+    </Text>
+    <Text Include="lib\gamedata\constants.txt">
+      <Filter>Resource Files\gamedata</Filter>
+    </Text>
+    <Text Include="lib\gamedata\curse.txt">
+      <Filter>Resource Files\gamedata</Filter>
+    </Text>
+    <Text Include="lib\gamedata\dungeon_profile.txt">
+      <Filter>Resource Files\gamedata</Filter>
+    </Text>
+    <Text Include="lib\gamedata\ego_item.txt">
+      <Filter>Resource Files\gamedata</Filter>
+    </Text>
+    <Text Include="lib\gamedata\flavor.txt">
+      <Filter>Resource Files\gamedata</Filter>
+    </Text>
+    <Text Include="lib\gamedata\hints.txt">
+      <Filter>Resource Files\gamedata</Filter>
+    </Text>
+    <Text Include="lib\gamedata\history.txt">
+      <Filter>Resource Files\gamedata</Filter>
+    </Text>
+    <Text Include="lib\gamedata\monster.txt">
+      <Filter>Resource Files\gamedata</Filter>
+    </Text>
+    <Text Include="lib\gamedata\monster_base.txt">
+      <Filter>Resource Files\gamedata</Filter>
+    </Text>
+    <Text Include="lib\gamedata\monster_spell.txt">
+      <Filter>Resource Files\gamedata</Filter>
+    </Text>
+    <Text Include="lib\gamedata\names.txt">
+      <Filter>Resource Files\gamedata</Filter>
+    </Text>
+    <Text Include="lib\gamedata\object.txt">
+      <Filter>Resource Files\gamedata</Filter>
+    </Text>
+    <Text Include="lib\gamedata\object_base.txt">
+      <Filter>Resource Files\gamedata</Filter>
+    </Text>
+    <Text Include="lib\gamedata\object_property.txt">
+      <Filter>Resource Files\gamedata</Filter>
+    </Text>
+    <Text Include="lib\gamedata\old_class.txt">
+      <Filter>Resource Files\gamedata</Filter>
+    </Text>
+    <Text Include="lib\gamedata\p_race.txt">
+      <Filter>Resource Files\gamedata</Filter>
+    </Text>
+    <Text Include="lib\gamedata\pain.txt">
+      <Filter>Resource Files\gamedata</Filter>
+    </Text>
+    <Text Include="lib\gamedata\pit.txt">
+      <Filter>Resource Files\gamedata</Filter>
+    </Text>
+    <Text Include="lib\gamedata\player_property.txt">
+      <Filter>Resource Files\gamedata</Filter>
+    </Text>
+    <Text Include="lib\gamedata\player_timed.txt">
+      <Filter>Resource Files\gamedata</Filter>
+    </Text>
+    <Text Include="lib\gamedata\projection.txt">
+      <Filter>Resource Files\gamedata</Filter>
+    </Text>
+    <Text Include="lib\gamedata\quest.txt">
+      <Filter>Resource Files\gamedata</Filter>
+    </Text>
+    <Text Include="lib\gamedata\realm.txt">
+      <Filter>Resource Files\gamedata</Filter>
+    </Text>
+    <Text Include="lib\gamedata\room_template.txt">
+      <Filter>Resource Files\gamedata</Filter>
+    </Text>
+    <Text Include="lib\gamedata\shape.txt">
+      <Filter>Resource Files\gamedata</Filter>
+    </Text>
+    <Text Include="lib\gamedata\slay.txt">
+      <Filter>Resource Files\gamedata</Filter>
+    </Text>
+    <Text Include="lib\gamedata\store.txt">
+      <Filter>Resource Files\gamedata</Filter>
+    </Text>
+    <Text Include="lib\gamedata\summon.txt">
+      <Filter>Resource Files\gamedata</Filter>
+    </Text>
+    <Text Include="lib\gamedata\terrain.txt">
+      <Filter>Resource Files\gamedata</Filter>
+    </Text>
+    <Text Include="lib\gamedata\trap.txt">
+      <Filter>Resource Files\gamedata</Filter>
+    </Text>
+    <Text Include="lib\gamedata\ui_entry.txt">
+      <Filter>Resource Files\gamedata</Filter>
+    </Text>
+    <Text Include="lib\gamedata\ui_entry_base.txt">
+      <Filter>Resource Files\gamedata</Filter>
+    </Text>
+    <Text Include="lib\gamedata\ui_entry_renderer.txt">
+      <Filter>Resource Files\gamedata</Filter>
+    </Text>
+    <Text Include="lib\gamedata\vault.txt">
+      <Filter>Resource Files\gamedata</Filter>
+    </Text>
+    <Text Include="lib\gamedata\visuals.txt">
+      <Filter>Resource Files\gamedata</Filter>
+    </Text>
+    <Text Include="lib\gamedata\world.txt">
+      <Filter>Resource Files\gamedata</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="src\win\angband.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>
