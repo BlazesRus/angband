@@ -5,6 +5,10 @@ VisualStudioVersion = 16.0.29609.76
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Angband", "Angband.vcxproj", "{F9D9B5D4-3694-4705-8651-82EB225E68FA}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AngbandServer", "AngbandServer.vcxproj", "{04C4E420-C76A-4206-B505-CF5058E7606F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AngbandClient", "AngbandClient.vcxproj", "{1304C40B-728A-448C-8EBF-3A8C562B8CAC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -21,6 +25,22 @@ Global
 		{F9D9B5D4-3694-4705-8651-82EB225E68FA}.Release|Win32.Build.0 = Release|Win32
 		{F9D9B5D4-3694-4705-8651-82EB225E68FA}.Release|x64.ActiveCfg = Release|x64
 		{F9D9B5D4-3694-4705-8651-82EB225E68FA}.Release|x64.Build.0 = Release|x64
+		{04C4E420-C76A-4206-B505-CF5058E7606F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{04C4E420-C76A-4206-B505-CF5058E7606F}.Debug|Win32.Build.0 = Debug|Win32
+		{04C4E420-C76A-4206-B505-CF5058E7606F}.Debug|x64.ActiveCfg = Debug|x64
+		{04C4E420-C76A-4206-B505-CF5058E7606F}.Debug|x64.Build.0 = Debug|x64
+		{04C4E420-C76A-4206-B505-CF5058E7606F}.Release|Win32.ActiveCfg = Release|Win32
+		{04C4E420-C76A-4206-B505-CF5058E7606F}.Release|Win32.Build.0 = Release|Win32
+		{04C4E420-C76A-4206-B505-CF5058E7606F}.Release|x64.ActiveCfg = Release|x64
+		{04C4E420-C76A-4206-B505-CF5058E7606F}.Release|x64.Build.0 = Release|x64
+		{1304C40B-728A-448C-8EBF-3A8C562B8CAC}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1304C40B-728A-448C-8EBF-3A8C562B8CAC}.Debug|Win32.Build.0 = Debug|Win32
+		{1304C40B-728A-448C-8EBF-3A8C562B8CAC}.Debug|x64.ActiveCfg = Debug|x64
+		{1304C40B-728A-448C-8EBF-3A8C562B8CAC}.Debug|x64.Build.0 = Debug|x64
+		{1304C40B-728A-448C-8EBF-3A8C562B8CAC}.Release|Win32.ActiveCfg = Release|Win32
+		{1304C40B-728A-448C-8EBF-3A8C562B8CAC}.Release|Win32.Build.0 = Release|Win32
+		{1304C40B-728A-448C-8EBF-3A8C562B8CAC}.Release|x64.ActiveCfg = Release|x64
+		{1304C40B-728A-448C-8EBF-3A8C562B8CAC}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

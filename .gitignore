@@ -57,3 +57,5 @@ src/SDL2/ObjectFiles/
 ObjectFiles/
 
 Angband/
+
+*.user
