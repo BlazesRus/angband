@@ -2,8 +2,7 @@
  * File: list-randart-properties.h
  * Purpose: List of properties used in randart generation
  */
-#ifndef INCLUDED_LIST_randart_properties_H
-#define INCLUDED_LIST_randart_properties_H
+
 /* string                   supercharge */
 ART_IDX(BOW_SHOTS,          false)
 ART_IDX(BOW_MIGHT,          false)
@@ -119,5 +118,3 @@ ART_IDX(MELEE_BLOWS_SUPER,  true)
 ART_IDX(MELEE_AC_SUPER,     true)
 ART_IDX(GEN_AC_SUPER,       true)
 ART_IDX(GEN_HUNGER,         false)
-
-#endif

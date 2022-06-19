@@ -8,8 +8,7 @@
  * birth-imm - description of the flag for use in the birth menus (immunity)
  * birth-vul - description of the flag for use in the birth menus (vulnerability)
  */
-#ifndef INCLUDED_LIST_ELEMENTS_H
-#define INCLUDED_LIST_ELEMENTS_H
+
 /* symbol  birth-res  birth-imm  birth-vul */
 ELEM(ACID, "Resists acid", "Immune to acid", "Vulnerable to acid")
 ELEM(ELEC, "Resists lightning", "Immune to lightning", "Vulnerable to lightning")
@@ -39,5 +38,3 @@ ELEM(SHOT, NULL, NULL, NULL)
 ELEM(ARROW, NULL, NULL, NULL)
 ELEM(BOLT, NULL, NULL, NULL)
 ELEM(BOULDER, NULL, NULL, NULL)
-
-#endif

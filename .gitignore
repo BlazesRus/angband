@@ -59,3 +59,5 @@ ObjectFiles/
 Angband/
 
 *.user
+
+AngbandServer/

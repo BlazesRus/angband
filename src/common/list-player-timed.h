@@ -7,8 +7,7 @@
  * flag_redraw - the things to be redrawn when the effect is set
  * flag_update - the things to be updated when the effect is set
  */
-#ifndef INCLUDED_LIST_PLAYER_TIMED_H
-#define INCLUDED_LIST_PLAYER_TIMED_H
+
 /* symbol  flag_redraw  flag_update */
 TMD(FAST, PR_STATUS, PU_BONUS)
 TMD(SLOW, PR_STATUS, PU_BONUS)
@@ -100,5 +99,3 @@ TMD(DEFENSIVE_STANCE, PR_STATUS, PU_BONUS)
 TMD(OFFENSIVE_STANCE, PR_STATUS, PU_BONUS)
 //From Angband
 TMD(COMMAND, PR_STATUS, PU_BONUS)
-
-#endif

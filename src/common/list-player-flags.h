@@ -6,8 +6,7 @@
  * symbol - the flag name
  * additional details in player_property.txt
  */
-#ifndef INCLUDED_LIST_PLAYER_FLAGS_H
-#define INCLUDED_LIST_PLAYER_FLAGS_H
+
 /* symbol */
 PF(NONE)
 PF(FAST_SHOT)
@@ -51,6 +50,3 @@ PF(NO_BOOTS)
 //BlazesRus Branch Added flags
 PF(RACESHIFT_SPELLS)//Monster and class spells access in specific forms listed from race
 PF(CLASSSHIFT_SPELLS)//Monster and class spells access in specific forms listed from class
-//PF(BLUE_MAGE)
-
-#endif

@@ -4,8 +4,7 @@
  *
  * sound - the name of the entry in sound.prf
  */
-#ifndef INCLUDED_LIST_MESSAGES_H
-#define INCLUDED_LIST_MESSAGES_H
+
 /* id */
 MSG(GENERIC, "")
 MSG(RED_INK, "red_ink") // only text color
@@ -392,5 +391,3 @@ MSG(CHAT, NULL)
 
 /* Max message index (message) */
 MSG(MAX_PARSE, NULL)
-
-#endif

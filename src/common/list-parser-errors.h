@@ -2,8 +2,7 @@
  * File: list-parser-errors.h
  * Purpose: Parse errors and descriptions
  */
-#ifndef INCLUDED_LIST_PARSER_ERRORS_H
-#define INCLUDED_LIST_PARSER_ERRORS_H
+
 PARSE_ERROR(NONE, "(none)")
 PARSE_ERROR(BAD_EXPRESSION_STRING, "bad expression string")
 PARSE_ERROR(ELEMENT_NAME_MISMATCH, "element name mismatch")
@@ -71,5 +70,3 @@ PARSE_ERROR(INVALID_AUTOINSCRIPTION, "invalid autoinscription")
 PARSE_ERROR(INVALID_ENTRY, "invalid entry")
 PARSE_ERROR(MISSING_INNATE_FREQUENCY, "missing innate frequency")
 PARSE_ERROR(MISSING_SPELL_FREQUENCY, "missing spell frequency")
-
-#endif

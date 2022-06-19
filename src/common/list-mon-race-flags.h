@@ -2,8 +2,7 @@
  * File: list-mon-race-flags.h
  * Purpose: Monster race flags
  */
-#ifndef INCLUDED_LIST_MON_RACE_FLAGS_H
-#define INCLUDED_LIST_MON_RACE_FLAGS_H
+
 /* symbol  type  descr */
 RF(NONE, RFT_NONE, "")
 RF(UNIQUE, RFT_OBV, "")
@@ -136,5 +135,3 @@ RF(SWIM_NORM, RFT_NOTE, "can swim")
 RF(RAND_100, RFT_BEHAV, "")
 RF(GOOD, RFT_RACE_A, "good")
 RF(NEUTRAL, RFT_RACE_A, "neutral")
-
-#endif

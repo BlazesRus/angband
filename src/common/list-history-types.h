@@ -2,8 +2,7 @@
  * File: list-history-types.h
  * Purpose: History message types
  */
-#ifndef INCLUDED_LIST_HISTORY_TYPES_H
-#define INCLUDED_LIST_HISTORY_TYPES_H
+
 HIST(NONE, "")
 HIST(PLAYER_BIRTH, "Player was born")
 HIST(ARTIFACT_UNKNOWN, "Player has generated an artifact")
@@ -17,6 +16,4 @@ HIST(GAIN_LEVEL, "Player gained a level")
 //From Angband
 HIST(USER_INPUT,		"User-added note")
 HIST(SAVEFILE_IMPORT,	"Added when an older version savefile is imported")
-HIST(GENERIC,			"Anything else not covered here (unused)")
-
-#endif
+//HIST(GENERIC,			"Anything else not covered here (unused)")

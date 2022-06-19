@@ -1,12 +1,7 @@
 /*
  * File: list-trap-flags.h
  * Purpose: Trap properties
- *
- * Adjusting these flags does not break savefiles. Flags below start from 1
- * on line 13, so a flag's sequence number is its line number minus 12.
  */
-#ifndef INCLUDED_LIST_TRAP_FLAGS_H
-#define INCLUDED_LIST_TRAP_FLAGS_H
 
 /* symbol descr */
 TRF(NONE, "")
@@ -25,5 +20,3 @@ TRF(LOCK, "Is a door lock")
 TRF(DELAY, "Has a delayed effect")
 TRF(FEATHER_TRAP, "You can't avoid trap as you can not fly")
 TRF(FEATHER_SAVE, "Allows a save if flying")
-
-#endif

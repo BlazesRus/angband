@@ -2,8 +2,6 @@
  * File: list-effects.h
  * Purpose: List of effects
  */
-#ifndef INCLUDED_LIST_effects_H
-#define INCLUDED_LIST_effects_H
 
 /*
  * name: effect code
@@ -157,5 +155,3 @@ EFFECT(FORGET_LEVEL, false, NULL, 0, EFINFO_NONE, "completely forgets the curren
 EFFECT(COMMAND,	true, NULL,	0,	EFINFO_NONE, "takes control of a monster")
 EFFECT(JUMP_AND_BITE, false, NULL, 0, EFINFO_NONE, "jumps the player to the closest living monster and bites it")
 EFFECT(MOVE_ATTACK, true, "blows", 1, EFINFO_DICE,	"moves the player up to 4 spaces and executes up to %d melee blows")
-
-#endif

@@ -7,13 +7,12 @@
  * save - does this effect get a saving throw?
  * stack - how does this effect stack? either NO, MAX, or INCR
  * resist_flag - monsters with this monster race flag will resist this effect
- * time - maximum that the timer for this effect can reach(must be below 32767)
+ * time - maximum that the timer for this effect can reach
  * message_begin - the argument to the message code when the effect begins
  * message_end - the argument to the message code when the effect ends
  * message_increase - the argument to the message code when the effect increases
  */
-#ifndef INCLUDED_LIST_MON_TIMED_H
-#define INCLUDED_LIST_MON_TIMED_H
+
 /* name  save  stack  resist_flag  time  message_begin  message_end  message_increase */
 MON_TMD(SLEEP, true, NO, RF_NO_SLEEP, 10000, MON_MSG_FALL_ASLEEP, MON_MSG_WAKES_UP, 0)
 MON_TMD(STUN, false, MAX, RF_NO_STUN, 50, MON_MSG_DAZED, MON_MSG_NOT_DAZED, MON_MSG_MORE_DAZED)
@@ -29,5 +28,3 @@ MON_TMD(CUT, false, MAX, RF_NO_CUT, 10000, MON_MSG_BLEED, MON_MSG_NOT_BLEEDING, 
 MON_TMD(BLIND, false, MAX, RF_NO_SLEEP, 50, MON_MSG_BLIND, MON_MSG_NOT_BLIND, MON_MSG_MORE_BLIND)
 //From Angband
 MON_TMD(COMMAND,false,	MAX,	0,				50,		MON_MSG_COMMAND,		MON_MSG_NOT_COMMAND,	0)
-
-#endif
