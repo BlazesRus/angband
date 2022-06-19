@@ -18,8 +18,8 @@
 
 #include "angband.h"
 #include "cave.h"
-#include "..\client\cmd-core.h"
-#include "..\client\game-input.h"
+#include "cmd-core.h"
+#include "game-input.h"
 #include "game-world.h"
 #include "generate.h"
 #include "init.h"
@@ -1463,8 +1463,11 @@ void player_place(struct chunk *c, struct player *p, struct loc grid)
  * \param p is the player that was moved.
  * \param eval_trap, if true, will cause evaluation (possibly affecting the
  * player) of the traps in the grid.
+ * \param is_involuntary, if true, will do appropriate actions (disturb and
+ * flush the command queue) for a move not expected by the player.
  */
-void player_handle_post_move(struct player *p, bool eval_trap)
+void player_handle_post_move(struct player *p, bool eval_trap,
+		bool is_involuntary=false)
 {
 	/* Handle store doors, or notice objects */
 	if (square_isshop(cave, p->grid)) {
@@ -1475,6 +1478,9 @@ void player_handle_post_move(struct player *p, bool eval_trap)
 			return;
 		}
 		disturb(p);
+		if (is_involuntary) {
+			cmdq_flush();
+		}
 		event_signal(EVENT_ENTER_STORE);
 		event_remove_handler_type(EVENT_ENTER_STORE);
 		event_signal(EVENT_USE_STORE);
@@ -1482,14 +1488,18 @@ void player_handle_post_move(struct player *p, bool eval_trap)
 		event_signal(EVENT_LEAVE_STORE);
 		event_remove_handler_type(EVENT_LEAVE_STORE);
 	} else {
+		if (is_involuntary) {
+			disturb(player);
+			cmdq_flush();
+		}
 		square_know_pile(cave, p->grid);
-		cmdq_push(CMD_AUTOPICKUP);
+		//cmdq_push(CMD_AUTOPICKUP);
 		/*
 		 * The autopickup is a side effect of the move:  whatever
 		 * command triggered the move will be the target for CMD_REPEAT
 		 * rather than repeating the autopickup.
 		 */
-		cmdq_peek()->is_background_command = true;
+		//cmdq_peek()->is_background_command = true;
 	}
 
 	/* Discover invisible traps, set off visible ones */
