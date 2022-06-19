@@ -1467,7 +1467,7 @@ void player_place(struct chunk *c, struct player *p, struct loc grid)
  * flush the command queue) for a move not expected by the player.
  */
 void player_handle_post_move(struct player *p, bool eval_trap,
-		bool is_involuntary=false)
+		bool is_involuntary)
 {
 	/* Handle store doors, or notice objects */
 	if (square_isshop(cave, p->grid)) {
