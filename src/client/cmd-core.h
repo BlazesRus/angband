@@ -60,7 +60,10 @@ typedef enum cmd_code
     CMD_FOUNTAIN,
     CMD_DROP_GOLD,
     CMD_EXAMINE,
-
+//From Angband
+#ifndef DISABLEFeature_CommandEffect
+	CMD_COMMAND_MONSTER,
+#endif
     CMD_MAX
 } cmd_code;
 

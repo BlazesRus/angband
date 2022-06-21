@@ -21,7 +21,7 @@
 #if defined(USE_GCU) || defined(USE_SDL) || defined(USE_SDL2)
 
 /*
- * This is required for large graphical tiles where we cant have an
+ * This is required for large graphical tiles where we can't have an
  * 66x22 tile display except in very high screen resolutions.
  * When the server supports player recentering this can go.
  *

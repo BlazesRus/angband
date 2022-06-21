@@ -79,6 +79,10 @@ static const struct command_info game_cmds[] =
     {CMD_BREATH, "breathe", Send_breath},
     {CMD_PROJECT, "project", cmd_project},
     {CMD_EXAMINE, "examine", Send_observe}
+//From Angband
+#ifndef DISABLEFeature_CommandEffect
+	,{CMD_COMMAND_MONSTER, "make a monster act", do_cmd_mon_command}
+#endif
 };
 
 
@@ -107,7 +111,13 @@ void process_command(cmd_code ctx)
     struct command cmd;
 
     /* If we've got a command to process, do it. */
+#ifndef DISABLEFeature_CommandEffect
+	/* Hack - command a monster */
+	int idx = cmd_idx(player->timed[TMD_COMMAND] ?
+		CMD_COMMAND_MONSTER : cmd->code);
+#else
     int idx = cmd_idx(ctx);
+#endif
 
     if (idx == -1) return;
 

@@ -12,3 +12,7 @@ MFLAG(AWARE, "Monster is aware of the player")                      /* monster P
 MFLAG(HANDLED, "Monster has been processed this turn")              /* monster PoV */
 MFLAG(TRACKING, "Monster is tracking the player by sound or scent") /* monster PoV */
 MFLAG(HURT, "Monster is hurt")                                      /* player PoV */
+//From Angband
+MFLAG(NICE,		"Monster is still being nice")
+MFLAG(SHOW,		"Monster is recently memorized")
+MFLAG(MARK,		"Monster is currently memorized")
