@@ -3,7 +3,7 @@
  * Purpose: Generic input event handling
  */
 
-#if (defined(MBandClient)||defined(SPClient)||defined(HybridClient)) && !defined(INCLUDED_UI_EVENT_H)
+#ifndef INCLUDED_UI_EVENT_H
 #define INCLUDED_UI_EVENT_H
 
 /*

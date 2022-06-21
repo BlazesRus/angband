@@ -19,7 +19,9 @@
  *    and not for profit purposes provided that this copyright and statement
  *    are included in all such copies.  Other copyrights may also apply.
  */
-
+#ifndef REDUCEHEADERSPerFile
+#include "s-angband.h"
+#else
 #include "effects-info.h"
 #include "effects.h"
 #include "init.h"
@@ -31,8 +33,7 @@
 #include "z-color.h"
 #include "z-form.h"
 #include "z-util.h"
-//#include "s-angband.h"
-
+#endif
 
 static struct
 {

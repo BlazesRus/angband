@@ -3,7 +3,7 @@
  * Purpose: Various game initialisation routines
  */
 
-#if (defined(MBandClient)||defined(SPClient)||defined(HybridClient)) && !defined(INCLUDED_UI_INIT_H)
+#ifndef INCLUDED_UI_INIT_H
 #define INCLUDED_UI_INIT_H
 
 /*

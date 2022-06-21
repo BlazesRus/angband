@@ -3,15 +3,8 @@
  * Purpose: Pref file handling code
  */
 
-#if (defined(MBandClient)||defined(SPClient)||defined(HybridClient)) && !defined(UI_PREFS_H)
+#ifndef UI_PREFS_H
 #define UI_PREFS_H
-
-#include "cave.h"
-#include "datafile.h"
-#include "ui-keymap.h"
-#include "ui-term.h"
-#include "option.h"
-#include "z-file.h"
 
 /*
  * Private data for pref file parsing.

@@ -17,10 +17,22 @@
  *    and not for profit purposes provided that this copyright and statement
  *    are included in all such copies.  Other copyrights may also apply.
  */
-
+#ifndef REDUCEHEADERSPerFile 
 
 #include "s-angband.h"
-
+#else
+#include "effects.h"
+#include "effect-handler.h"
+#include "game-input.h"
+#include "init.h"
+#include "mon-summon.h"
+#include "obj-gear.h"
+#include "player-history.h"
+#include "player-timed.h"
+#include "player-util.h"
+#include "project.h"
+#include "trap.h"
+#endif
 
 /*
  * Properties of effects

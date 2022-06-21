@@ -6,7 +6,6 @@
 #ifndef INCLUDED_Z_VIRT_H
 #define INCLUDED_Z_VIRT_H
 
-#include "h-basic.h"
 /*
  * Replacements for malloc() and friends that die on failure.
  */

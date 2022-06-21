@@ -3,7 +3,7 @@
  * Purpose: Spell implementations and helpers
  */
 
-#if !defined(SPClient) && !defined(SPELLS_H)
+#ifndef SPELLS_H
 #define SPELLS_H
 
 /*

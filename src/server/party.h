@@ -3,7 +3,7 @@
  * Purpose: Support for the "party" system
  */
 
-#if defined(MBandServer) && !defined(INCLUDED_PARTY_H)
+#ifndef INCLUDED_PARTY_H
 #define INCLUDED_PARTY_H
 
 /*

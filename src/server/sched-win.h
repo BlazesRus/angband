@@ -3,7 +3,7 @@
  * Purpose: Windows port of sched.c
  */
 
-#if defined(MBandServer) && !defined(SCHED_WIN_H)
+#ifndef SCHED_WIN_H
 #define SCHED_WIN_H
 
 extern void install_timer_tick(void (*func)(void), int freq);

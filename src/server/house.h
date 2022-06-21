@@ -3,7 +3,7 @@
  * Purpose: House code.
  */
 
-#if (defined(MBandServer)||defined(HybridClient)) && !defined(INCLUDED_HOUSE_H)
+#ifndef INCLUDED_HOUSE_H
 #define INCLUDED_HOUSE_H
 
 /* State of a house: 0 = unallocated, 1 = normal, 2 = extended, 3 = custom */

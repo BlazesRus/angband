@@ -3,7 +3,7 @@
  * Purpose: MD5 message-digest algorithm
  */
 
-#if !defined(SPClient) && !defined(INCLUDED_MD5_H)
+#ifndef INCLUDED_MD5_H
 #define INCLUDED_MD5_H
 
 /*

@@ -3,11 +3,8 @@
  * Purpose: Header for game command files
  */
 
-#if (defined(MBandServer)||defined(SPClient)||defined(HybridClient)) && !defined(INCLUDED_CMDS_H)
+#ifndef INCLUDED_CMDS_H
 #define INCLUDED_CMDS_H
-
-#include "cave.h"
-#include "..\client\cmd-core.h"
 
 /* channel.c */
 extern void do_cmd_message(struct player *p, char *message);

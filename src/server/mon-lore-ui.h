@@ -3,7 +3,7 @@
  * Purpose: Monster memory UI
  */
 
-#if (defined(MBandServer)||defined(HybridClient)) && !defined(MONSTER_LORE_UI_H)
+#ifndef MONSTER_LORE_UI_H
 #define MONSTER_LORE_UI_H
 
 extern void lore_description(struct player *p, const struct monster_race *race);

@@ -16,13 +16,15 @@
  *    and not for profit purposes provided that this copyright and statement
  *    are included in all such copies.  Other copyrights may also apply.
  */
-
+#ifndef REDUCEHEADERSPerFile
+#include "s-angband.h"
+#else
+#include "cmd-core.h"
 #include "angband.h"
 #include "buildid.h"
 #include "cave.h"
-#include "..\client\cmd-core.h"
 #include "cmds.h"
-#include "..\client\game-input.h"
+#include "game-input.h"
 #include "init.h"
 #include "mon-lore.h"
 #include "mon-util.h"
@@ -30,8 +32,7 @@
 #include "player-history.h"
 #include "obj-util.h"
 #include "target.h"
-//#include "s-angband.h"
-
+#endif
 
 /*
  * Kill character

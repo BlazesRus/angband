@@ -3,7 +3,7 @@
  * Purpose: Global constants and macro definitions
  */
 
-#if !defined(SPClient) && !defined(INCLUDED_Z_DEFINES_H)
+#ifndef INCLUDED_Z_DEFINES_H
 #define INCLUDED_Z_DEFINES_H
 
 /*

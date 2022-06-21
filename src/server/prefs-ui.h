@@ -3,7 +3,7 @@
  * Purpose: Pref file handling code
  */
 
-#if (defined(MBandServer)||defined(HybridClient)) && !defined(PREFS_UI_H)
+#ifndef PREFS_UI_H
 #define PREFS_UI_H
 
 extern uint8_t *monster_x_attr;

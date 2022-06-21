@@ -3,7 +3,7 @@
  * Purpose: Version file for Network module (Linux)
  */
 
-#if !defined(SPClient) && !defined(VERSION_H)
+#ifndef	VERSION_H
 #define	VERSION_H
 
 #if defined(__hpux)

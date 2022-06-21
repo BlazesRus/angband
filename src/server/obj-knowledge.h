@@ -3,12 +3,8 @@
  * Purpose: Object knowledge
  */
 
-#if (defined(MBandServer)||defined(SPClient)||defined(HybridClient)) && !defined(OBJECT_KNOWLEDGE_H)
+#ifndef OBJECT_KNOWLEDGE_H
 #define OBJECT_KNOWLEDGE_H
-
-#include "angband.h"
-#include "object.h"
-#include "player.h"
 
 enum rune_variety
 {

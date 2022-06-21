@@ -3,12 +3,8 @@
  * Purpose: Putting text on the screen, screen saving and loading, panel handling
  */
 
-#if (defined(MBandClient)||defined(SPClient)||defined(HybridClient)) && !defined(INCLUDED_UI_OUTPUT_H)
+#ifndef INCLUDED_UI_OUTPUT_H
 #define INCLUDED_UI_OUTPUT_H
-
-//#include "ui-event.h"
-//#include "ui-term.h"
-//#include "z-textblock.h"
 
 extern bool full_icky_screen;
 extern bool target_icky_screen;

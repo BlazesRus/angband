@@ -3,7 +3,7 @@
  * Purpose: Chat channels
  */
 
-#if defined(MBandServer) && !defined(CHANNEL_H)
+#ifndef CHANNEL_H
 #define CHANNEL_H
 
 /*

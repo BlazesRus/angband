@@ -6,8 +6,6 @@
 #ifndef EFFECT_SOURCE_H
 #define EFFECT_SOURCE_H
 
-#include "h-basic.h"
-
 /*
  * Structure that tells you where an effect came from
  */

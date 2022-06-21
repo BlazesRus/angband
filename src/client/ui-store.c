@@ -17,41 +17,9 @@
  *    and not for profit purposes provided that this copyright and statement
  *    are included in all such copies.  Other copyrights may also apply.
  */
-#include "angband.h"
-#include "cave.h"
-#include "cmds.h"
-#include "game-event.h"
-#include "game-input.h"
-#include "hint.h"
-#include "init.h"
-#include "monster.h"
-#include "obj-desc.h"
-#include "obj-gear.h"
-#include "obj-ignore.h"
-#include "obj-info.h"
-#include "obj-knowledge.h"
-#include "obj-make.h"
-#include "obj-pile.h"
-#include "obj-tval.h"
-#include "obj-util.h"
-#include "player-calcs.h"
-#include "player-history.h"
-#include "player-util.h"
-#include "store.h"
-#include "target.h"
-#include "ui-display.h"
-#include "ui-input.h"
-#include "ui-menu.h"
-#include "ui-object.h"
-#include "ui-options.h"
-#include "ui-knowledge.h"
-#include "ui-object.h"
-#include "ui-player.h"
-#include "ui-spell.h"
-#include "ui-command.h"
-#include "ui-store.h"
-#include "z-debug.h"
-//#include "c-angband.h"
+
+
+#include "c-angband.h"
 
 
 /* State flags */
@@ -679,6 +647,59 @@ static void store_callback_begin(ui_event *cp)
 
 
 /*
+ * Enum for context menu entries
+ */
+enum
+{
+    ACT_EXAMINE,
+    ACT_DESCRIBE,
+    ACT_BUY
+};
+
+
+/*
+ * Pick the context menu options appropriate for an item available in a store
+ */
+static void context_menu_store_item(struct store_context *ctx, const int oid)
+{
+    struct store *store = ctx->store;
+    bool home = (store->type == STORE_HOME)? true: false;
+    struct menu *m = menu_dynamic_new();
+    struct object *obj = &ctx->list[oid];
+    int selected;
+    char *labels;
+    char header[120];
+
+    my_strcpy(header, store_names[oid], sizeof(header));
+
+    labels = string_make(lower_case);
+    m->selections = labels;
+
+    menu_dynamic_add_label(m, "Examine", 'x', ACT_EXAMINE, labels);
+    menu_dynamic_add_label(m, "Describe", 'D', ACT_DESCRIBE, labels);
+    menu_dynamic_add_label(m, home? "Take": "Buy", 'd', ACT_BUY, labels);
+
+    menu_dynamic_calc_location(m);
+
+    prt(format("(Enter to select, ESC) Command for %s:", header), 0, 0);
+    selected = menu_dynamic_select(m);
+
+    menu_dynamic_free(m);
+    string_free(labels);
+
+    /* Restore the screen */
+    screen_load(false);
+
+    switch (selected)
+    {
+        case ACT_EXAMINE: store_examine(oid, false); break;
+        case ACT_DESCRIBE: store_examine(oid, true); break;
+        case ACT_BUY: store_purchase(ctx, oid); break;
+    }
+}
+
+
+/*
  * Handle store menu input
  */
 static bool store_menu_handle(struct menu *m, const ui_event *event, int oid)
@@ -692,8 +713,17 @@ static bool store_menu_handle(struct menu *m, const ui_event *event, int oid)
 
     if (event->type == EVT_SELECT)
     {
-        /* Nothing for now. */
-        /* In future, maybe we want a display a list of what you can do. */
+        context_menu_store_item(ctx, oid);
+        ctx->flags |= (STORE_FRAME_CHANGE | STORE_GOLD_CHANGE);
+
+        /* Notice and handle stuff */
+        redraw_stuff();
+
+        /* Display the store */
+        store_display_recalc(ctx);
+        store_menu_recalc(m);
+        store_redraw(ctx);
+
         return true;
     }
     else if (event->type == EVT_KBRD)

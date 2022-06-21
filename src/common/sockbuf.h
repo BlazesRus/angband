@@ -3,8 +3,8 @@
  * Purpose: Socket buffer code
  */
 
-#if !defined(SPClient) && !defined(SOCKBUF_NET_H)
-#define SOCKBUF_NET_H
+#ifndef NET_H
+#define NET_H
 
 #define SERVER_RECV_SIZE    (32*1024)
 #define SERVER_SEND_SIZE    (128*1024)

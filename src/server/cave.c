@@ -16,7 +16,9 @@
  *    and not for profit purposes provided that this copyright and statement
  *    are included in all such copies.  Other copyrights may also apply.
  */
-
+#ifndef REDUCEHEADERSPerFile
+#include "s-angband.h"
+#else
 #include "cave.h"
 #include "angband.h"
 #include "cmds.h"
@@ -33,7 +35,7 @@
 #include "object.h"
 #include "player-timed.h"
 #include "trap.h"
-//#include "s-angband.h"
+#endif
 
 
 int FEAT_NONE;
@@ -639,14 +641,14 @@ int count_feats(struct player *p, struct chunk *c, struct loc *grid,
     return count;
 }
 
+
 /*
  * Return the number of matching grids around a location.
  *
- * match: If not NULL, *match is set to the location of the last match.
- * c: Is the chunk to use.
- * grid: Is the location whose neighbors will be tested.
- * test: Is the predicate to use when testing for a match.
- * under: If true, grid is tested as well.
+ * match If not NULL, *match is set to the location of the last match.
+ * grid Is the location whose neighbors will be tested.
+ * test Is the predicate to use when testing for a match.
+ * under If true, grid is tested as well.
  */
 int count_neighbors(struct loc *match, struct chunk *c, struct loc *grid,
     bool (*test)(struct chunk *c, struct loc *grid), bool under)
@@ -685,6 +687,7 @@ struct loc *cave_find_decoy(struct chunk *c)
 {
     return &c->decoy;
 }
+
 
 /*
  * Update the visuals

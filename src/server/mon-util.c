@@ -1154,9 +1154,12 @@ static void player_kill_monster(struct player *p, struct chunk *c, struct source
         soundfx = MSG_KILL_RODENT;
     else if (mon->race->base == lookup_monster_base("insect") ||
              mon->race->base == lookup_monster_base("ant") ||
-             mon->race->base == lookup_monster_base("centipede") ||
-             mon->race->base == lookup_monster_base("killer beetle"))
+             mon->race->base == lookup_monster_base("centipede"))
+    {
+        if (streq(p->race->name, "Lizardmen") && p->wpos.depth > 0 && mon->race->mexp)
+            player_inc_timed(p, TMD_FOOD, 10, false, false);
         soundfx = MSG_KILL_INSECT;
+    }
     else if (mon->race->base == lookup_monster_base("snake"))
         soundfx = MSG_KILL_SNAKE;
     else if (mon->race->base == lookup_monster_base("hydra"))
@@ -1321,18 +1324,25 @@ static void player_kill_monster(struct player *p, struct chunk *c, struct source
     lore_update(mon->race, lore);
     monster_race_track(p->upkeep, who);
 
-    /* Should we absorb its soul? */
-    if (p->timed[TMD_SOUL] && monster_is_living(mon))
+    if (monster_is_living(mon))
     {
-        int drain = 1 + (mon->level / 2) + p->lev * 4 / 5;
-        if (drain > mon->maxhp) drain = mon->maxhp;
-        // good/neutral monsters not slain, but defeated
-        if (rf_has(mon->race->flags, RF_WANDERER) || rf_has(mon->race->flags, RF_GOOD) ||
-            rf_has(mon->race->flags, RF_NEUTRAL))
-            msg(p, "You morale raises by seeing the fleeing opponent.");
-        else
-            msg(p, "You absorb the life of the dying soul.");
-        hp_player_safe(p, 1 + drain / 2);
+        /* Should we absorb its soul? */
+        if (p->timed[TMD_SOUL])
+        {
+            int drain = 1 + (mon->level / 2) + p->lev * 4 / 5;
+            if (drain > mon->maxhp) drain = mon->maxhp;
+            // good/neutral monsters not slain, but defeated
+            if (rf_has(mon->race->flags, RF_WANDERER) || rf_has(mon->race->flags, RF_GOOD) ||
+                rf_has(mon->race->flags, RF_NEUTRAL))
+                msg(p, "You morale raises by seeing the fleeing opponent.");
+            else
+                msg(p, "You absorb the life of the dying soul.");
+            hp_player_safe(p, 1 + drain / 2);
+        }
+        // vampires drink blood from fallen humanoids
+        else if (streq(p->race->name, "Vampire") && p->wpos.depth > 0 &&
+                 is_humanoid(mon->race) && (p->timed[TMD_FOOD] < 6666))
+            player_inc_timed(p, TMD_FOOD, (p->lev * 2), false, false);
     }
 
     /* Cheezy kills give neither xp nor loot! */
@@ -1386,60 +1396,93 @@ static void player_kill_monster(struct player *p, struct chunk *c, struct source
                 {
                     ; // first points goes from leveling
                 }
-                else if (p->account_score < 25 && one_in_(5))
+                else if (p->account_score < 25)
                 {
-                    p->account_score++;
-                    msgt(p, MSG_FANFARE, "You've earned account point! You have %lu points.", p->account_score);
+                    if (one_in_(4))
+                    {
+                        p->account_score++;
+                        msgt(p, MSG_FANFARE, "You've earned account point! You have %lu points.", p->account_score);
+                    }
                 }
-                else if (p->account_score < 40 && one_in_(6))
+                else if (p->account_score < 40)
                 {
-                    p->account_score++;
-                    msgt(p, MSG_FANFARE, "You've earned account point! You have %lu points.", p->account_score);
+                    if (one_in_(5))
+                    {
+                        p->account_score++;
+                        msgt(p, MSG_FANFARE, "You've earned account point! You have %lu points.", p->account_score);
+                    }
                 }
-                else if (p->account_score < 60 && one_in_(7))
+                else if (p->account_score < 60)
                 {
-                    p->account_score++;
-                    msgt(p, MSG_FANFARE, "You've earned account point! You have %lu points.", p->account_score);
+                    if (one_in_(6))
+                    {
+                        p->account_score++;
+                        msgt(p, MSG_FANFARE, "You've earned account point! You have %lu points.", p->account_score);
+                    }
                 }
-                else if (p->account_score < 80 && one_in_(8))
+                else if (p->account_score < 80)
                 {
-                    p->account_score++;
-                    msgt(p, MSG_FANFARE, "You've earned account point! You have %lu points.", p->account_score);
+                    if (one_in_(7))
+                    {
+                        p->account_score++;
+                        msgt(p, MSG_FANFARE, "You've earned account point! You have %lu points.", p->account_score);
+                    }
                 }
-                else if (p->account_score < 100 && one_in_(9))
+                else if (p->account_score < 100)
                 {
-                    p->account_score++;
-                    msgt(p, MSG_FANFARE, "You've earned account point! You have %lu points.", p->account_score);
+                    if (one_in_(8))
+                    {
+                        p->account_score++;
+                        msgt(p, MSG_FANFARE, "You've earned account point! You have %lu points.", p->account_score);
+                    }
                 }
-                else if (p->account_score < 150 && one_in_(10))
+                else if (p->account_score < 150)
                 {
-                    p->account_score++;
-                    msgt(p, MSG_FANFARE, "You've earned account point! You have %lu points.", p->account_score);
+                    if (one_in_(9))
+                    {
+                        p->account_score++;
+                        msgt(p, MSG_FANFARE, "You've earned account point! You have %lu points.", p->account_score);
+                    }
                 }
-                else if (p->account_score < 200 && mon->level > 10 && one_in_(100 - mon->level))
+                else if (p->account_score < 200)
                 {
-                    p->account_score++;
-                    msgt(p, MSG_FANFARE, "You've earned account point! You have %lu points.", p->account_score);
+                    if (mon->level > 10 && one_in_(100 - mon->level))
+                    {
+                        p->account_score++;
+                        msgt(p, MSG_FANFARE, "You've earned account point! You have %lu points.", p->account_score);
+                    }
                 }
-                else if (p->account_score < 300 && mon->level > 20 && one_in_(100 - mon->level))
+                else if (p->account_score < 300)
                 {
-                    p->account_score++;
-                    msgt(p, MSG_FANFARE, "You've earned account point! You have %lu points.", p->account_score);
+                    if (mon->level > 20 && one_in_(100 - mon->level))
+                    {
+                        p->account_score++;
+                        msgt(p, MSG_FANFARE, "You've earned account point! You have %lu points.", p->account_score);
+                    }
                 }
-                else if (p->account_score < 500 && mon->level > 30 && one_in_(100 - mon->level))
+                else if (p->account_score < 500)
                 {
-                    p->account_score++;
-                    msgt(p, MSG_FANFARE, "You've earned account point! You have %lu points.", p->account_score);
+                    if (mon->level > 30 && one_in_(100 - mon->level))
+                    {
+                        p->account_score++;
+                        msgt(p, MSG_FANFARE, "You've earned account point! You have %lu points.", p->account_score);
+                    }
                 }
-                else if (p->account_score < 999 && mon->level > 40 && one_in_(100 - mon->level))
+                else if (p->account_score < 999)
                 {
-                    p->account_score++;
-                    msgt(p, MSG_FANFARE, "You've earned account point! You have %lu points.", p->account_score);
+                    if (mon->level > 40 && one_in_(100 - mon->level))
+                    {
+                        p->account_score++;
+                        msgt(p, MSG_FANFARE, "You've earned account point! You have %lu points.", p->account_score);
+                    }
                 }
-                else if (mon->level > 45 && one_in_(100 - mon->level))
+                else if (mon->level > 45)
                 {
-                    p->account_score++;
-                    msgt(p, MSG_FANFARE, "You've earned account point! You have %lu points.", p->account_score);
+                    if (one_in_(100 - mon->level))
+                    {
+                        p->account_score++;
+                        msgt(p, MSG_FANFARE, "You've earned account point! You have %lu points.", p->account_score);
+                    }
                 }
             }
         }

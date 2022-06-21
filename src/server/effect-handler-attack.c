@@ -18,23 +18,8 @@
  *    are included in all such copies.  Other copyrights may also apply.
  */
 
-#include "effect-handler.h"
-#include "..\client\game-input.h"
-#include "init.h"
-#include "mon-desc.h"
-#include "mon-make.h"
-#include "mon-spell.h"
-#include "mon-util.h"
-#include "obj-desc.h"
-#include "obj-knowledge.h"
-#include "obj-util.h"
-#include "player-calcs.h"
-#include "player-history.h"
-#include "player-timed.h"
-#include "player-util.h"
-#include "project.h"
-#include "trap.h"
-//#include "s-angband.h"
+
+#include "s-angband.h"
 
 
 static void get_target(struct chunk *c, struct source *origin, int dir, struct loc *grid)
@@ -2771,4 +2756,178 @@ bool effect_handler_WONDER(effect_handler_context_t *context)
     effect_simple(EF_HEAL_HP, context->origin, "300", 0, 0, 0, 0, 0, &context->ident);
 
     return true;
+}
+
+//From Angband
+/**
+ * Move up to 4 spaces then do melee blows.
+ * Could vary the length of the move without much work.
+ */
+bool effect_handler_MOVE_ATTACK(effect_handler_context_t *context)
+{
+	int blows = effect_calculate_value(context, false);
+	int moves = 4;
+	int d, i;
+	struct loc target = player->grid;
+	struct loc next_grid, grid_diff;
+	bool fear;
+	struct monster *mon;
+
+	/* Ask for a target */
+	if (context->dir == DIR_TARGET) {
+		target_get(&target);
+	} else {
+		target = loc_sum(player->grid, ddgrid[context->dir]);
+	}
+
+	mon = square_monster(cave, target);
+	if (mon == NULL || !monster_is_obvious(mon)) {
+		msg("This spell must target a monster.");
+		return false;
+	}
+
+	while (distance(player->grid, target) > 1 && moves > 0) {
+		int choice[] = { 0, 1, -1 };
+		bool attack = false;
+		grid_diff = loc_diff(target, player->grid);
+
+		/* Choice of direction simplified by prioritizing diagonals */
+		if (grid_diff.x == 0) {
+			d = (grid_diff.y < 0) ? 0 : 4; /* up : down */
+		} else if (grid_diff.y == 0) {
+			d = (grid_diff.x < 0) ? 6 : 2; /* left : right */
+		} else if (grid_diff.x < 0) {
+			d = (grid_diff.y < 0) ? 7 : 5; /* up-left : down-left */
+		} else {/* grid_diff.x > 0 */
+			d = (grid_diff.y < 0) ? 1 : 3; /* up-right : down-right */
+		}
+
+		/* We'll give up to 3 choices: d, d + 1, d - 1 */
+		for (i = 0; i < 3; ++i) {
+			int d_test = (d + choice[i] + 8) % 8;
+			next_grid = loc_sum(player->grid, clockwise_grid[d_test]);
+			if (square_ispassable(cave, next_grid)) {
+				d = d_test;
+				if (square_monster(cave, next_grid)) attack = true;
+				break;
+			} else if (i == 2) {
+				msg("The way is barred.");
+				return moves != 4;
+			}
+		}
+
+		move_player(clockwise_ddd[d], false);
+		moves--;
+		if (attack) return false;
+	}
+
+	/* Reduce blows based on distance traveled, round to nearest blow */
+	blows = (blows * moves + 2) / 4;
+
+	/* Should return some energy if monster dies early */
+	while (blows-- > 0) {
+		if (py_attack_real(player, target, &fear)) break;
+	}
+
+	return true;
+}
+
+/**
+ * Jump next to a living monster and draw hitpoints and nourishment from it
+ */
+bool effect_handler_JUMP_AND_BITE(effect_handler_context_t *context)
+{
+	int amount = effect_calculate_value(context, false);
+	struct loc victim, grid;
+	int d, first_d = randint0(8);
+	struct monster *mon = NULL;
+	char m_name[80];
+	int drain = 0;
+	bool fear = false;
+	bool dead = false;
+
+	context->ident = true;
+
+	/* Closest living monster */
+	if (!target_set_closest(TARGET_KILL, monster_is_living)) {
+		return false;
+	}
+	target_get(&victim);
+	mon = target_get_monster();
+	monster_desc(m_name, sizeof(m_name), mon, MDESC_TARG);
+
+	/* Look next to the monster */
+	for (d = first_d; d < first_d + 8; d++) {
+		grid = loc_sum(victim, ddgrid_ddd[d % 8]);
+		if (square_isplayertrap(cave, grid)) continue;
+		if (square_iswebbed(cave, grid)) continue;
+		if (square_isopen(cave, grid)) break;
+	}
+
+	/* Needed to be adjacent */
+	if (d == first_d + 8) {
+		msg("Not enough room next to %s!", m_name);
+		return false;
+	}
+
+	/* Sound */
+	sound(MSG_TELEPORT);
+
+	/* Move player */
+	monster_swap(player->grid, grid);
+	player_handle_post_move(player, true, false);
+
+	/* Now bite it */
+	drain = MIN(mon->hp + 1, amount);
+	assert(drain > 0);
+	if (OPT(player, show_damage)) {
+		msg("You bite %s. (%d)", m_name, drain);
+	} else {
+		msg("You bite %s.", m_name);
+	}
+	dead = mon_take_hit(mon, player, amount, &fear, " is drained dry!");
+
+	/* Heal and nourish */
+	effect_simple(EF_HEAL_HP, context->origin, format("%d", drain), 0, 0, 0,
+				  0, 0, NULL);
+	player_inc_timed(player, TMD_FOOD, drain, false, false, false);
+
+	if (dead) {
+		/* Cancel the targeting of the dead creature. */
+		target_set_location(0, 0);
+	} else if (monster_is_visible(mon)) {
+		/* Handle fear for surviving monsters */
+		message_pain(mon, amount);
+		if (fear) {
+			add_monster_message(mon, MON_MSG_FLEE_IN_TERROR, true);
+		}
+	}
+
+	return true;
+}
+
+/**
+ * Project from the player's grid at the player, with full intensity out to
+ * its radius
+ * Affect the player (even when player-cast), grids, objects, and monsters
+ */
+bool effect_handler_SPOT(effect_handler_context_t *context)
+{
+	struct loc pgrid = player->grid;
+	int dam = effect_calculate_value(context, false);
+	int rad = context->radius ? context->radius : 0;
+
+	int flg = PROJECT_STOP | PROJECT_PLAY | PROJECT_GRID | PROJECT_ITEM | PROJECT_KILL | PROJECT_SELF;
+
+	/* Handle increasing radius with player level */
+	if (context->other && context->origin.what == SRC_PLAYER) {
+		rad += player->lev / context->other;
+	}
+
+	/* Aim at the target, explode */
+	if (project(context->origin, rad, pgrid, dam, context->subtype, flg, 0,
+				rad, NULL))
+		context->ident = true;
+
+	return true;
 }

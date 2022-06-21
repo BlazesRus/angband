@@ -18,15 +18,36 @@
  *    and not for profit purposes provided that this copyright and statement
  *    are included in all such copies.  Other copyrights may also apply.
  */
-
-
+#ifndef REDUCEHEADERSPerFile
 #include "s-angband.h"
-
+#else
+#include "mon-blows.h"
+#include "angband.h"
+#include "effects.h"
+#include "init.h"
+#include "monster.h"
+#include "mon-attack.h"
+#include "mon-desc.h"
+#include "mon-lore.h"
+#include "mon-make.h"
+#include "mon-msg.h"
+#include "mon-util.h"
+#include "obj-desc.h"
+#include "obj-gear.h"
+#include "obj-make.h"
+#include "obj-pile.h"
+#include "obj-slays.h"
+#include "obj-tval.h"
+#include "obj-util.h"
+#include "player-calcs.h"
+#include "player-timed.h"
+#include "player-util.h"
+#include "project.h"
+#endif
 
 /*
  * Monster blow methods
  */
-
 
 /*
  * Return a randomly chosen string to append to an INSULT message.

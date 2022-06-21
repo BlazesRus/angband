@@ -24,19 +24,9 @@
 
 
 #include "c-angband.h"
-#ifdef HybridClient
-#include "s-angband.h"
-#endif
 
 #ifdef ON_ANDROID
 #include <SDL.h>
-#endif
-
-#ifdef HybridClient
-/* Daily log file */
-static int tm_mday = 0;
-static ang_file *fp = NULL;
-static bool fp_closed = false;
 #endif
 
 static errr init_error(void)
@@ -89,184 +79,11 @@ static void quit_hook(const char *s)
     cleanup_angband();
     close_sound();
 
-#ifdef HybridClient
-    /* Close the daily log file */
-    if (fp)
-    {
-        file_close(fp);
-        fp_closed = true;
-    }
-#endif
-
 #ifdef WINDOWS
     /* Cleanup WinSock */
     WSACleanup();
 #endif
 }
-
-#ifdef HybridClient_TODO//Not actually  at going to use this part at moment
-/*
- * Initialize and verify the file paths.
- *
- * Use the configured DEFAULT_*_PATH constants. Be sure to
- * set those properly when building...
- *
- * We must ensure that the path ends with "PATH_SEP" if needed,
- * since the "init_file_paths()" function will simply append the
- * relevant "sub-directory names" to the given path.
- */
-static void init_stuff(void)
-{
-    char configpath[MSG_LEN];
-    char libpath[MSG_LEN];
-    char datapath[MSG_LEN];
-#ifndef BUILDINGWithVS
-
-    /* Use default */
-    my_strcpy(configpath, DEFAULT_CONFIG_PATH, sizeof(configpath));
-    my_strcpy(libpath, DEFAULT_LIB_PATH, sizeof(libpath));
-    my_strcpy(datapath, DEFAULT_DATA_PATH, sizeof(datapath));
-
-    /* Hack -- add a path separator (only if needed) */
-    if (!suffix(configpath, PATH_SEP))
-        my_strcat(configpath, PATH_SEP, sizeof(configpath));
-    if (!suffix(libpath, PATH_SEP))
-        my_strcat(libpath, PATH_SEP, sizeof(libpath));
-    if (!suffix(datapath, PATH_SEP))
-        my_strcat(datapath, PATH_SEP, sizeof(datapath));
-#else//Create absolute path
-    char path[MSG_LEN];//Based on https://www.delftstack.com/howto/c/get-current-directory-in-c/
-
-    errno = 0;
-    if (getcwd(path, MSG_LEN) == NULL) {
-        if (errno == ERANGE)
-            printf("[ERROR] pathname length exceeds the buffer size\n");
-        else
-            perror("getcwd");
-        exit(EXIT_FAILURE);
-    }
-#ifdef UsingClangToolset
-    strcat(path, "\\");
-#else
-    strcat(path, PATH_SEP);
-#endif
-#ifdef _DEBUG
-    printf("Current working directory: %s\n", path);
-#endif
-    //Constructing absolute directory for paths
-    #ifdef UsingModernC
-        strcpy(configpath, path); strcat(configpath, DEFAULT_CONFIG_PATH);
-        strcpy(libpath, path); strcat(libpath, DEFAULT_LIB_PATH);
-        strcpy(datapath, path); strcat(datapath, DEFAULT_DATA_PATH);
-    #else
-        strlcpy(configpath, path, 200); strlcat(configpath, DEFAULT_CONFIG_PATH, 200);
-        strlcpy(libpath, path, 200); strlcat(libpath, DEFAULT_LIB_PATH, 200);
-        strlcpy(datapath, path, 200); strlcat(datapath, DEFAULT_DATA_PATH, 200);
-    #endif
-#endif
-
-    /* Initialize */
-    init_file_paths(configpath, libpath, datapath);
-
-    /* Create any missing directories */
-    create_needed_dirs();
-}
-
-
-/*
- * Translate from ISO Latin-1 characters 128+ to 7-bit ASCII.
- *
- * We use this table to maintain compatibility with systems that cannot
- * display 8-bit characters.  We also use it whenever we wish to suppress
- * accents or ensure that a character is 7-bit.
- */
-static const char seven_bit_translation[128] =
-{
-    ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-    ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-    ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-    ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-    ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-    ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-    ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-    ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
-    'A', 'A', 'A', 'A', 'A', 'A', ' ', 'C',
-    'E', 'E', 'E', 'E', 'I', 'I', 'I', 'I',
-    'D', 'N', 'O', 'O', 'O', 'O', 'O', ' ',
-    'O', 'U', 'U', 'U', 'U', 'Y', ' ', ' ',
-    'a', 'a', 'a', 'a', 'a', 'a', ' ', 'c',
-    'e', 'e', 'e', 'e', 'i', 'i', 'i', 'i',
-    'o', 'n', 'o', 'o', 'o', 'o', 'o', ' ',
-    'o', 'u', 'u', 'u', 'u', 'y', ' ', 'y'
-};
-
-
-/*
- * Server logging hook.
- * We should be cautious, as we may be called from a signal handler in a panic.
- */
-static void server_log(const char *str)
-{
-    char buf[16];
-    time_t t;
-    struct tm *local;
-    char path[MSG_LEN];
-    char file[30];
-    char ascii[MSG_LEN];
-    char *s;
-
-    /* Grab the time */
-    time(&t);
-    local = localtime(&t);
-    strftime(buf, 16, "%d%m%y %H%M%S", local);
-
-    /* Translate into ASCII */
-    my_strcpy(ascii, str, sizeof(ascii));
-    for (s = ascii; *s; s++)
-    {
-        if (*s < 0) *s = seven_bit_translation[128 + *s];
-    }
-
-    /* Output the message timestamped */
-    fprintf(stderr, "%s %s\n", buf, ascii);
-
-    /* Paranoia */
-    if (fp_closed) return;
-
-    /* Open the daily log file */
-    if (tm_mday != local->tm_mday)
-    {
-        tm_mday = local->tm_mday;
-
-        /* Close the daily log file */
-        if (fp) file_close(fp);
-
-        /* Open a new daily log file */
-        strftime(file, 30, "pwmangband%d%m%y.log", local);
-        path_build(path, sizeof(path), ANGBAND_DIR_SCORES, file);
-        fp = file_open(path, MODE_APPEND, FTYPE_TEXT);
-        if (fp == NULL)
-        {
-            printf("Unable to open %s for writing!\n", path);
-            return;
-        }
-    }
-
-    /* Output the message to the daily log file */
-    file_putf(fp, "%s %s\n", buf, str);
-    file_flush(fp);
-}
-
-
-static void show_version(void)
-{
-    printf("PWMAngband Server(BlazesRus Branch)%s\n", version_build(NULL, true));
-    puts("Copyright (c) 2007-2022 MAngband and PWMAngband Project Team");
-
-    /* Actually abort the process */
-    quit(NULL);
-}
-#endif
 
 
 static void read_credentials(void)
@@ -363,17 +180,6 @@ int main(int argc, char *argv[])
 
     /* Initialize everything, contact the server, and start the loop */
     client_init(true);
-
-#ifdef HybridClient_TODO//Not actually  at going to use this part at moment
-    /* Load the mangband.cfg options */
-    load_server_cfg();
-
-    /* Initialize the basics */
-    init_angband();
-
-    /* Play the game */
-    play_game();
-#endif
 
     /* Quit */
     quit(NULL);

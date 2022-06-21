@@ -16,11 +16,13 @@
  *    and not for profit purposes provided that this copyright and statement
  *    are included in all such copies.  Other copyrights may also apply.
  */
-
+#ifndef REDUCEHEADERSPerFile
+#include "s-angband.h"
+#else
+#include "game-world.h"
 #include "angband.h"
 #include "cmds.h"
 #include "effects.h"
-#include "game-world.h"
 #include "generate.h"
 #include "init.h"
 #include "mon-make.h"
@@ -39,7 +41,9 @@
 #include "target.h"
 #include "trap.h"
 #include "z-queue.h"
-//#include "s-angband.h"
+#endif
+
+#include "s-angband.h"
 
 
 bool server_generated;      /* The server exists */
@@ -333,8 +337,6 @@ static void play_ambient_sound(struct player *p)
                         if (one_in_(3)) sound(p, MSG_WILD_WAVES); // 1 minute sea
                         else sound(p, MSG_WILD_DEEPWATER); // short sea
                     }
-            else if (p->wpos.grid.x == 0 && p->wpos.grid.y == 4)
-                        sound(p, MSG_WILD_GLACIER);
             else if (p->wpos.grid.x == -2 && p->wpos.grid.y == 2 && one_in_(3))
                         sound(p, MSG_WILD_DESERT);
             else if (p->wpos.grid.x == -1 && p->wpos.grid.y == -2 && one_in_(2))
@@ -356,7 +358,32 @@ static void play_ambient_sound(struct player *p)
                 sound(p, MSG_AMBIENT_NITE);
 
             //// Weather
-            if (p->store_num == -1)
+            if (p->wpos.grid.x == 0 && p->wpos.grid.y == 4) // Helcaraxe
+            {
+                // Snow
+                Send_weather(p, 2, randint1(4), randint1(3));
+
+                if (one_in_(5))
+                {
+                    // Stop weather
+                    Send_weather(p, 256, 0, 0);
+                }
+            }
+            else if (streq(p->locname, "Sandworm Lair"))
+            {
+                if (one_in_(3))
+                {
+                    // Sandstorm
+                    Send_weather(p, 3, randint1(4), randint1(3));
+                }
+                else if (one_in_(5))
+                {
+                    // Stop weather
+                    Send_weather(p, 256, 0, 0);
+                }
+            }
+            // all other locations
+            else if (p->store_num == -1)
             {
                 if ((p->weather_type == 0) || (p->weather_type == 256))
                 {
@@ -418,37 +445,6 @@ static void play_ambient_sound(struct player *p)
         sound(p, MSG_AMBIENT_XAKAZE);
     else
         sound(p, MSG_AMBIENT_MELKOR);
-
-    //// Weather in dungeon
-    if (p->wpos.depth > 0)
-    {
-        if (streq(p->locname, "Helcaraxe"))
-        {
-            if (one_in_(3))
-            {
-                // Snow
-                Send_weather(p, 2, randint1(4), randint1(3));
-            }
-            else if (one_in_(3))
-            {
-                // Stop weather
-                Send_weather(p, 256, 0, 0);
-            }
-        }
-        else if (streq(p->locname, "Sandworm Lair"))
-        {
-            if (one_in_(3))
-            {
-                // Sandstorm
-                Send_weather(p, 3, randint1(4), randint1(3));
-            }
-            else if (one_in_(3))
-            {
-                // Stop weather
-                Send_weather(p, 256, 0, 0);
-            }
-        }
-    }
 }
 
 
@@ -2100,12 +2096,21 @@ static void generate_new_level(struct player *p)
     /* Paranoia */
     if (!chunk_has_players(&p->wpos)) return;
 
-    /* Play ambient sound on change of level. */
+////* Play ambient sound on change of level. */
+    
+    // north areas always got snow
+    if (p->wpos.depth == 0 && p->wpos.grid.x == 0 && p->wpos.grid.y == 4) // Helcaraxe
+    {
+        Send_weather(p, 2, randint1(4), randint1(3));
+        sound(p, MSG_WILD_GLACIER);
+    }
+
     // always play it only while in a dungeon; if outside - sometimes
     if (p->wpos.depth == 0 && one_in_(2))
         ;
     else
         play_ambient_sound(p);
+/////
 
     /* Check "maximum depth" to make sure it's still correct */
     if (p->wpos.depth > p->max_depth) p->max_depth = p->wpos.depth;

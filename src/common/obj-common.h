@@ -3,7 +3,7 @@
  * Purpose: Structures and functions for objects
  */
 
-#if !defined(SPClient) && !defined(INCLUDED_OBJECT_COMMON_H)
+#ifndef INCLUDED_OBJECT_COMMON_H
 #define INCLUDED_OBJECT_COMMON_H
 
 /*** Constants ***/

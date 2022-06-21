@@ -3,7 +3,7 @@
  * Purpose: Class and race abilities
  */
 
-#if (defined(MBandClient)||defined(SPClient)||defined(HybridClient)) && !defined(INCLUDED_PLAYER_PROPERTIES_H)
+#ifndef INCLUDED_PLAYER_PROPERTIES_H
 #define INCLUDED_PLAYER_PROPERTIES_H
 
 enum {

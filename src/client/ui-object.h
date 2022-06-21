@@ -3,10 +3,13 @@
  * Purpose: Object lists and selection, and other object-related UI functions
  */
 
-#if (defined(MBandClient)||defined(SPClient)||defined(HybridClient)) && !defined(UI_OBJECT_H)
+#ifndef UI_OBJECT_H
 #define UI_OBJECT_H
 
+#ifdef EnableExtraHeaderIncludes
+#include "obj-common.h"
 #include "cmd-core.h"
+#endif
 
 extern struct object **floor_items;
 extern uint8_t floor_num;

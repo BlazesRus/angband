@@ -3,7 +3,7 @@
  * Purpose: In-game help
  */
 
-#if (defined(MBandServer)||defined(HybridClient)) && !defined(HELP_UI_H)
+#ifndef HELP_UI_H
 #define HELP_UI_H
 
 extern bool show_file(struct player *p, const char *name, const char *what, int line, int color);

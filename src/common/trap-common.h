@@ -3,7 +3,7 @@
  * Purpose: Flags, structures and variables for traps
  */
 
-#if !defined(SPClient) && !defined(INCLUDED_TRAP_COMMON_H)
+#ifndef INCLUDED_TRAP_COMMON_H
 #define INCLUDED_TRAP_COMMON_H
 
 /*** Trap flags ***/

@@ -6,10 +6,6 @@
 #ifndef INCLUDED_Z_BITFLAG_H
 #define INCLUDED_Z_BITFLAG_H
 
-#include "h-basic.h"
-#include "z-form.h"
-#include "z-virt.h"
-
 /* The basic datatype of bitflags */
 typedef uint8_t bitflag;
 

@@ -6,8 +6,6 @@
 #ifndef INCLUDED_Z_COLOR_H
 #define INCLUDED_Z_COLOR_H
 
-#include "h-basic.h"
-
 /*
  * Angband "attributes" (with symbols, and base (R,G,B) codes)
  *

@@ -3,7 +3,7 @@
  * Purpose: Player interface
  */
 
-#if !defined(SPClient) && !defined(INCLUDED_PLAYER_COMMON_H)
+#ifndef INCLUDED_PLAYER_COMMON_H
 #define INCLUDED_PLAYER_COMMON_H
 
 /* Maximum number of spells per page

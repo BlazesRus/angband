@@ -4,8 +4,8 @@
  */
 
 
-#if !defined(SPClient) && !defined(TANG_OBJECT_GEAR_COMMON_H)
-#define TANG_OBJECT_GEAR_COMMON_H
+#ifndef OBJECT_GEAR_COMMON_H
+#define OBJECT_GEAR_COMMON_H
 
 /*
  * Player equipment slot types

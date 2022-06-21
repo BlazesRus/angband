@@ -2,10 +2,9 @@
  * File: z-form.h
  * Purpose: Low level text formatting
  */
+
 #ifndef INCLUDED_Z_FORM_H
 #define INCLUDED_Z_FORM_H
-
-#include "h-basic.h"
 
 /*
  * This file provides functions very similar to "sprintf()", but which

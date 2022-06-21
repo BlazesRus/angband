@@ -3,10 +3,8 @@
  * Purpose: Game core management of the game world
  */
 
-#if (defined(MBandServer)||defined(SPClient)||defined(HybridClient)) && !defined(GAME_WORLD_H)
+#ifndef GAME_WORLD_H
 #define GAME_WORLD_H
-
-#include "cave.h"
 
 #define SERVER_SAVE     10      /* Minutes between server saves */
 #define SERVER_PURGE    24      /* Hours between server purges */

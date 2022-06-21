@@ -1,12 +1,12 @@
 /*
  * File: z-util.h
- * Purpose: Low-level string handling and other utilities.
+ * Purpose: Low level utilities
  */
 
 #ifndef INCLUDED_Z_UTIL_H
 #define INCLUDED_Z_UTIL_H
 
-#include "h-basic.h"
+
 /*
  * Available variables
  */

@@ -6,11 +6,6 @@
 #ifndef INCLUDED_Z_DICE_H
 #define INCLUDED_Z_DICE_H
 
-#include "h-basic.h"
-
-#include "z-rand.h"
-#include "z-expression.h"
-
 typedef struct dice_s dice_t;
 
 extern dice_t *dice_new(void);

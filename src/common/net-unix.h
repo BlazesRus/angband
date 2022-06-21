@@ -1,4 +1,4 @@
-#if !defined(SPClient) && !defined(UNIX)
+#ifdef UNIX
 /*
  * File: net-unix.h
  * Purpose: Network module (Linux)

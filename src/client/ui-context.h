@@ -3,10 +3,8 @@
  * Purpose: Show player and terrain context menus
  */
 
-#if (defined(MBandClient)||defined(SPClient)||defined(HybridClient)) && !defined(UI_CONTEXT_H)
+#ifndef UI_CONTEXT_H
 #define UI_CONTEXT_H
-
-#include "ui-input.h"
 
 extern int context_menu_object(struct object *obj);
 extern struct cmd_info *textui_action_menu_choose(void);

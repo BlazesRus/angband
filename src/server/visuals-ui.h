@@ -3,7 +3,7 @@
  * Purpose: Appearance for screen elements
  */
 
-#if (defined(MBandServer)||defined(HybridClient)) && !defined(INCLUDED_VISUALS_UI_H)
+#ifndef INCLUDED_VISUALS_UI_H
 #define INCLUDED_VISUALS_UI_H
 
 extern uint8_t visuals_cycler_get_attr_for_frame(const char *group_name, const char *cycle_name,

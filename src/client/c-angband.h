@@ -2,7 +2,8 @@
  * File: c-angband.h
  * Purpose: Main Angband header file (client)
  */
-#if (defined(MBandClient)||defined(HybridClient)) && !defined(INCLUDED_C_ANGBAND_H)
+
+#ifndef INCLUDED_C_ANGBAND_H
 #define INCLUDED_C_ANGBAND_H
 
 /*

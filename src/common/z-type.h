@@ -6,8 +6,6 @@
 #ifndef INCLUDED_ZTYPE_H
 #define INCLUDED_ZTYPE_H
 
-#include "h-basic.h"
-
 /* Defines a rectangle on the screen that is bound to a Panel or subpanel */
 typedef struct
 {

@@ -18,27 +18,9 @@
  *    and not for profit purposes provided that this copyright and statement
  *    are included in all such copies.  Other copyrights may also apply.
  */
-#include "angband.h"
-#include "cave.h"
-#include "game-input.h"
-#include "grafmode.h"
-#include "init.h"
-#include "mon-util.h"
-#include "monster.h"
-#include "obj-ignore.h"
-#include "obj-tval.h"
-#include "obj-util.h"
-#include "object.h"
-#include "project.h"
-#include "player.h"
-#include "trap.h"
-#include "ui-display.h"
-#include "ui-entry-renderers.h"
-#include "ui-keymap.h"
-#include "ui-prefs.h"
-#include "ui-term.h"
-#include "sound.h"
-//#include "c-angband.h"
+
+
+#include "c-angband.h"
 
 
 int use_graphics;   /* The "graphics" mode is enabled */

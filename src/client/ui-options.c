@@ -18,25 +18,9 @@
  *    and not for profit purposes provided that this copyright and statement
  *    are included in all such copies.  Other copyrights may also apply.
  */
-#include "angband.h"
-#include "cmds.h"
-#include "game-input.h"
-#include "init.h"
-#include "obj-desc.h"
-#include "obj-ignore.h"
-#include "obj-tval.h"
-#include "obj-util.h"
-#include "object.h"
-#include "player-calcs.h"
-#include "ui-display.h"
-#include "ui-input.h"
-#include "ui-keymap.h"
-#include "ui-knowledge.h"
-#include "ui-menu.h"
-#include "ui-options.h"
-#include "ui-prefs.h"
-#include "ui-target.h"
-//#include "c-angband.h"
+
+
+#include "c-angband.h"
 
 
 /*

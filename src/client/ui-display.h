@@ -3,7 +3,7 @@
  * Purpose: Handles the setting up updating, and cleaning up of the game display.
  */
 
-#if (defined(MBandClient)||defined(SPClient)||defined(HybridClient)) && !defined(INCLUDED_UI_DISPLAY_H)
+#ifndef INCLUDED_UI_DISPLAY_H
 #define INCLUDED_UI_DISPLAY_H
 
 extern int16_t max_line;

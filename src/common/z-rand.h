@@ -6,7 +6,6 @@
 #ifndef INCLUDED_Z_RAND_H
 #define INCLUDED_Z_RAND_H
 
-#include "h-basic.h"
 /*
  * Assumed maximum dungeon level. This value is used for various
  * calculations involving object and monster creation. It must be at least

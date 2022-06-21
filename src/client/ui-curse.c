@@ -18,14 +18,8 @@
  *    are included in all such copies.  Other copyrights may also apply.
  */
 
-#include "angband.h"
-#include "init.h"
-#include "obj-curse.h"
-#include "obj-knowledge.h"
-#include "ui-curse.h"
-#include "ui-menu.h"
-#include "ui-output.h"
-//#include "c-angband.h"
+
+#include "c-angband.h"
 
 
 static int selection;

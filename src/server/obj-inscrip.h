@@ -3,7 +3,7 @@
  * Purpose: Object inscription code
  */
 
-#if (defined(MBandServer)||defined(HybridClient)) && !defined(OBJECT_INSCRIP_H)
+#ifndef OBJECT_INSCRIP_H
 #define OBJECT_INSCRIP_H
 
 extern bool check_prevent_inscription(struct player *p, int what);

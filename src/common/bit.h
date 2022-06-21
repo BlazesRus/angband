@@ -2,8 +2,9 @@
  * File: bit.h
  * Purpose: Bit handling
  */
-#if !defined(SPClient) && !defined(TANG_BIT_H)
-#define TANG_BIT_H
+
+#ifndef BIT_H
+#define BIT_H
 
 #define SET_BIT(w, bit)     ( (w) |= (bit) )
 #define CLR_BIT(w, bit)     ( (w) &= ~(bit) )

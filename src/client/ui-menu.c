@@ -17,13 +17,10 @@
  *    and not for profit purposes provided that this copyright and statement
  *    are included in all such copies.  Other copyrights may also apply.
  */
-#include "angband.h"
-#include "cave.h"
-#include "ui-target.h"
-#include "ui-event.h"
-#include "ui-input.h"
-#include "ui-menu.h"
-//#include "c-angband.h"
+
+
+#include "c-angband.h"
+
 
 /*
  * Cursor colours
@@ -113,9 +110,7 @@ static bool menu_action_handle(struct menu *m, const ui_event *event, int oid)
             acts[oid].action(acts[oid].name, m->cursor);
             return true;
         }
-	} else if (m->keys_hook && event->type == EVT_KBRD) {//Mouse Key input
-		return m->keys_hook(m, event, oid);
-	}
+    }
 
     return false;
 }
@@ -150,13 +145,6 @@ static void display_string(struct menu *m, int oid, bool cursor, int row, int co
     Term_putstr(col, row, width, color, items[oid]);
 }
 
-static bool handle_string(struct menu *m, const ui_event *event, int oid)
-{
-	if (m->keys_hook && event->type == EVT_KBRD) {
-		return m->keys_hook(m, event, oid);
-	}
-	return false;
-}
 
 /* Virtual function table for displaying arrays of strings */
 static const menu_iter menu_iter_strings =
@@ -164,7 +152,7 @@ static const menu_iter menu_iter_strings =
     NULL,              /* get_tag() */
     NULL,              /* valid_row() */
     display_string,    /* display_row() */
-    handle_string,              /* row_handler() */
+    NULL,              /* row_handler() */
     NULL
 };
 
@@ -673,47 +661,6 @@ void menu_refresh(struct menu *menu, bool reset_screen)
 
 /*** MENU RUNNING AND INPUT HANDLING CODE ***/
 
-/**
- * Handle mouse input in a menu.
- * 
- * Mouse output is either moving, selecting, escaping, or nothing.  Returns
- * true if something changes as a result of the click.
- */
-bool menu_handle_mouse(struct menu *menu, const ui_event *in,
-		ui_event *out)
-{
-	int new_cursor;
-
-	if (in->mouse.button == 2) {
-		out->type = EVT_ESCAPE;
-	} else if (!region_inside(&menu->active, in)) {
-		/* A click to the left of the active region is 'back' */
-		if (!region_inside(&menu->active, in)
-				&& in->mouse.x < menu->active.col) {
-			out->type = EVT_ESCAPE;
-		} else if (menu->context_hook) {
-			return (*menu->context_hook)(menu, in, out);
-		}
-	} else {
-		int count = menu->filter_list ? menu->filter_count : menu->count;
-
-		new_cursor = menu->skin->get_cursor(in->mouse.y, in->mouse.x,
-				count, menu->top, &menu->active);
-	
-		if (is_valid_row(menu, new_cursor)) {
-			if (new_cursor == menu->cursor || !(menu->flags & MN_DBL_TAP))
-				out->type = EVT_SELECT;
-			else
-				out->type = EVT_MOVE;
-
-			menu->cursor = new_cursor;
-		} else if (menu->context_hook) {
-			return (*menu->context_hook)(menu, in, out);
-		}
-	}
-
-	return out->type != EVT_NONE;
-}
 
 /*
  * Handle any menu command keys / SELECT events.
@@ -847,7 +794,7 @@ ui_event menu_select(struct menu *menu, int notify, bool popup)
         menu_refresh(menu, popup);
         in = inkey_ex();
 
-        /* Handle keyboard & mouse commands */
+        /* Handle keyboard commands */
         if (in.type == EVT_KBRD)
         {
             int mode = (OPT(player, rogue_like_commands)? KEYMAP_MODE_ROGUE: KEYMAP_MODE_ORIG);
@@ -875,12 +822,6 @@ ui_event menu_select(struct menu *menu, int notify, bool popup)
             else
                 menu_handle_keypress(menu, &in, &out);
         }
-		else if (in.type == EVT_MOUSE) {
-			if (!no_act && menu_handle_action(menu, &in)) {
-				continue;
-			}
-			menu_handle_mouse(menu, &in, &out);
-		}
         else if (in.type == EVT_RESIZE)
         {
             menu_calc_size(menu);

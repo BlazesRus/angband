@@ -3,7 +3,7 @@
  * Purpose: Utility functions
  */
 
-#if (defined(MBandServer)||defined(HybridClient)) && !defined(S_UTILS_H)
+#ifndef S_UTILS_H
 #define S_UTILS_H
 
 extern char color_attr_to_char(int a);

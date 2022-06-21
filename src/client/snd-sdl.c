@@ -19,14 +19,33 @@
  *    are included in all such copies.  Other copyrights may also apply.
  */
 
-//#include "c-angband.h"
-#include "angband.h"
-#include "init.h"
-#include "snd-sdl.h"
-#include "sound.h"
+#include "c-angband.h"
 
-#include "SDL.h"
-#include "SDL_mixer.h"
+#if defined(BUILDINGWithVS)
+#  include <SDL.h>
+#  include <SDL_mixer.h>
+#elif SOUND_SDL
+# ifdef WINDOWS
+#  include "..\_SDL\SDL.h"
+#  include "..\_SDL\SDL_mixer.h"
+# else
+#  include <SDL/SDL.h>
+#  include <SDL/SDL_mixer.h>
+# endif/* USE_SDL */
+
+#elif defined(SOUND_SDL2)
+# ifdef WINDOWS
+#  include "..\_SDL2\SDL.h"
+#  include "..\_SDL2\SDL_mixer.h"
+# else
+#  include <SDL.h>
+#  include <SDL_mixer.h>
+# endif
+
+#else /* USE_SDL2 */
+#  include <SDL.h>
+#  include <SDL_mixer.h>
+#endif
 
 /* Supported file types */
 enum

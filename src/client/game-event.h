@@ -3,10 +3,8 @@
  * Purpose: Allows the registering of handlers to be told about game events.
  */
 
-#if (defined(MBandClient)||defined(SPClient)||defined(HybridClient)) && !defined(INCLUDED_GAME_EVENT_H)
+#ifndef INCLUDED_GAME_EVENT_H
 #define INCLUDED_GAME_EVENT_H
-
-#include "z-type.h"
 
 /*
  * The various events we can send signals about.

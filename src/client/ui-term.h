@@ -3,11 +3,8 @@
  * Purpose: A generic, efficient, terminal window package
  */
 
-#if (defined(MBandClient)||defined(SPClient)||defined(HybridClient)) && !defined(INCLUDED_UI_TERM_H)
+#ifndef INCLUDED_UI_TERM_H
 #define INCLUDED_UI_TERM_H
-
-#include "h-basic.h"
-#include "ui-event.h"
 
 /*
  * A term_win is a "window" for a Term

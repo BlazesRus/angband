@@ -16,6 +16,12 @@
  *    and not for profit purposes provided that this copyright and statement
  *    are included in all such copies.  Other copyrights may also apply.
  */
+
+#ifndef REDUCEHEADERSPerFile
+#include "c-angband.h"
+#include "ui-player-properties.h"//unresolved external symbol fix
+
+#else
 #include "angband.h"
 #include "cmds.h"
 #include "game-event.h"
@@ -47,7 +53,7 @@
 #include "ui-spell.h"
 #include "ui-store.h"
 #include "ui-target.h"
-//#include "c-angband.h"
+#endif
 
 /* See the "inkey()" function */
 static bool inkey_xtra = false;
@@ -111,32 +117,8 @@ static ui_event inkey_aux(char scan_cutoff)
 {
     ui_event ke;
 
-#if !defined(SPClient)&&!defined(HybridClient)
     /* Loop, looking for net input and responding to keypresses */
     ke = Net_loop(Term_inkey, NULL, NULL, scan_cutoff, false);
-#else
-	/* Wait for a keypress */
-	if (scan_cutoff == SCAN_OFF) {
-		(void)(Term_inkey(&ke, true, true));
-	} else {
-		w = 0;
-
-		/* Wait only as long as macro activation would wait */
-		while (Term_inkey(&ke, false, true) != 0) {
-			/* Increase "wait" */
-			w++;
-
-			/* Excessive delay */
-			if (w >= scan_cutoff) {
-				ui_event empty = EVENT_EMPTY;
-				return empty;
-			}
-
-			/* Delay */
-			Term_xtra(TERM_XTRA_DELAY, 10);
-		}
-	}
-#endif
 
     /* Excessive delay */
     if (ke.type == EVT_DELAY)
@@ -203,7 +185,7 @@ ui_event inkey_ex(void)
         inkey_xtra = false;
     }
 
-    /* Hack -- Use the "inkey_next" pointer */
+    /* Hack -- use the "inkey_next" pointer */
     if (inkey_next && inkey_next->code)
     {
         /* Get next character, and advance */
@@ -231,7 +213,7 @@ ui_event inkey_ex(void)
     if (!inkey_scan && (!inkey_flag || player->screen_save_depth))
         Term_set_cursor(true);
 
-	/* Hack -- Activate main screen */
+    /* Hack -- activate main screen */
     Term_activate(term_screen);
 
     /* Get a key */
@@ -290,8 +272,12 @@ struct keypress inkey(void)
     ui_event ke = EVENT_EMPTY;
 
     /* Only accept a keypress and mouse events(ignore abort) */
+#ifdef DisableMouseEvents//From Angband
+    while (ke.type != EVT_KBRD)
+#else
 	while (ke.type != EVT_ESCAPE && ke.type != EVT_KBRD &&
 		   ke.type != EVT_MOUSE && ke.type != EVT_BUTTON)
+#endif
     {
         /* Get a keypress */
         ke = inkey_ex();
@@ -303,6 +289,7 @@ struct keypress inkey(void)
             ke.key.code = ESCAPE;
             ke.key.mods = 0;
         }
+#ifndef DisableMouseEvents//From Angband
 	    else if (ke.type == EVT_MOUSE)
         {
 		    if (ke.mouse.button == 1) {
@@ -317,6 +304,7 @@ struct keypress inkey(void)
 	    }
         else if (ke.type == EVT_BUTTON)
 		    ke.type = EVT_KBRD;
+#endif
     }
 
     return ke.key;
@@ -469,6 +457,7 @@ bool askfor_aux_keypress(char *buf, size_t buflen, size_t *curs, size_t *len,
     return false;
 }
 
+#ifndef DisableMouseEvents//From Angband
 /**
  * Handle a mouse event during editing of a string.  This is the default mouse
  * event handler for askfor_aux_ext().
@@ -495,6 +484,7 @@ int askfor_aux_mouse(char *buf, size_t buflen, size_t *curs, size_t *len,
 {
 	return (mouse.button == 2) ? 2 : 1;
 }
+#endif
 
 /*
  * Get some input at the cursor location.
@@ -590,7 +580,7 @@ bool askfor_aux(char *buf, int len, keypress_handler keypress_h)
     return (ch.code != ESCAPE);
 }
 
-//From Angband but adjusted to use Tangaria's askfor_aux base code plus mouse stuff
+#ifndef DisableMouseEvents//From Angband but adjusted to use Tangaria's askfor_aux base code plus mouse stuff
 /**
  * Act like askfor_aux() but allow customization of what happens with mouse
  * input.
@@ -726,6 +716,7 @@ bool askfor_aux_ext(char *buf, size_t len,
     /* Done */
     return (input.code != ESCAPE);
 }
+#endif
 
 /*
  * Ask the user for a masked string
@@ -830,7 +821,11 @@ static bool textui_get_string(const char *prompt, char *buf, int len)
     prt(prompt, 0, 0);
 
     /* Ask the user for a string */
-    res = askfor_aux_ext(buf, buflen, get_name_keypress, handle_name_mouse);//res = askfor_aux(buf, len, NULL);
+#ifdef DisableMouseEvents
+    res = askfor_aux(buf, len, NULL);
+#else
+    res = askfor_aux_ext(buf, buflen, get_name_keypress, handle_name_mouse);
+#endif
 
     /* Clear prompt */
     prt("", 0, 0);
@@ -1264,7 +1259,9 @@ static bool textui_get_aim_dir(int *dp)
 
     /* Initialize */
     (*dp) = 0;
-    //ke.type = EVT_KBRD;
+#ifdef DisableMouseEvents
+    ke.type = EVT_KBRD;
+#endif
 
     /* Ask until satisfied */
     while (!dir)
@@ -1281,6 +1278,7 @@ static bool textui_get_aim_dir(int *dp)
         if (!res) break;
 
         /* Analyze */
+#ifndef DisableMouseEvents
 		if (ke.type == EVT_MOUSE) {
 			if (ke.mouse.button == 1) {
 				if (target_set_interactive(TARGET_KILL, KEY_GRID_X(ke),
@@ -1291,6 +1289,9 @@ static bool textui_get_aim_dir(int *dp)
 			}
 		}
         else if (ke.type == EVT_KBRD)
+#else
+        if (ke.type == EVT_KBRD)
+#endif
         {
             switch (ke.key.code)
             {
@@ -1492,7 +1493,7 @@ const char *extract_file_name(const char *s)
     return (p + 1);
 }
 
-#if !defined(SPClient)&&!defined(HybridClient)
+
 /*
  * Loop, looking for net input and responding to keypresses.
  */
@@ -1593,7 +1594,6 @@ ui_event Net_loop(errr (*inkey_handler)(ui_event*, bool, bool),
 
     return ke;
 }
-#endif
 
 
 /* Turn off the num-lock key by toggling it if it's currently on. */

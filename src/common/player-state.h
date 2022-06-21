@@ -3,7 +3,7 @@
  * Purpose: Player state
  */
 
-#if !defined(SPClient) && !defined(INCLUDED_PLAYER_STATE_H)
+#ifndef INCLUDED_PLAYER_STATE_H
 #define INCLUDED_PLAYER_STATE_H
 
 /*

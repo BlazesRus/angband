@@ -6,7 +6,6 @@
 #ifndef Z_SET_H
 #define Z_SET_H
 
-#include "h-basic.h"
 #include <sys/types.h>
 
 struct set;

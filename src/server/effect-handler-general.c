@@ -4178,6 +4178,11 @@ bool effect_handler_MON_TIMED_INC(effect_handler_context_t *context)
 bool effect_handler_NOURISH(effect_handler_context_t *context)
 {
     int amount = effect_calculate_value(context, false);
+    int special_race = 0; // some races has special behaviour
+
+    if (streq(context->origin->player->race->name, "Ent") ||
+        streq(context->origin->player->race->name, "Vempire"))
+        special_race = 1;
 
     if (context->self_msg && !player_undead(context->origin->player))
         msg(context->origin->player, context->self_msg);
@@ -4185,23 +4190,33 @@ bool effect_handler_NOURISH(effect_handler_context_t *context)
     amount *= z_info->food_value;
 
     /* Increase food level by amount */
-    if ((context->subtype == 0) && !streq(context->origin->player->race->name, "Ent"))
+    // NOURISH:INC_BY
+    if (context->subtype == 0 && !special_race)
         player_inc_timed(context->origin->player, TMD_FOOD, MAX(amount, 0), false, false);
 
     /* Decrease food level by amount */
+    // NOURISH:DEC_BY
     else if (context->subtype == 1)
+    {
         player_dec_timed(context->origin->player, TMD_FOOD, MAX(amount, 0), false);
-
+    }
     /* Set food level to amount, vomiting if necessary */
+    // NOURISH:SET_TO
     else if (context->subtype == 2)
     {
         bool message = (context->origin->player->timed[TMD_FOOD] > amount);
 
-        if (message) msg(context->origin->player, "You vomit!");
+        // for special races - don't harm them (eg by traps) too much
+        if (special_race && (amount < 10))
+            amount = 15;
+
         player_set_timed(context->origin->player, TMD_FOOD, MAX(amount, 0), false);
+
+        if (message) msg(context->origin->player, "You vomit!");
     }
 
     /* Increase food level to amount if needed */
+    // NOURISH:INC_TO
     else if ((context->subtype == 3) && (context->origin->player->timed[TMD_FOOD] < amount))
         player_set_timed(context->origin->player, TMD_FOOD, MAX(amount + 1, 0), false);
 
@@ -4427,9 +4442,10 @@ bool effect_handler_RECALL(effect_handler_context_t *context)
     if (!context->origin->player->word_recall)
     {
         /* Ask for confirmation if we try to recall from non-reentrable dungeon */
+        // to prevent ID cheeze - require 15 lvl to work
         if ((context->origin->player->current_value == ITEM_REQUEST) &&
             OPT(context->origin->player, confirm_recall) &&
-            forbid_reentrance(context->origin->player))
+            forbid_reentrance(context->origin->player) && context->origin->player->lev > 14)
         {
             get_item(context->origin->player, HOOK_CONFIRM, "");
             return false;

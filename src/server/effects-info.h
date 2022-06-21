@@ -3,11 +3,9 @@
  * Purpose: Implement interfaces for displaying information about effects
  */
 
-#if (defined(MBandServer)||defined(SPClient)||defined(HybridClient)) && !defined(EFFECTS_INFO_H)
-#define EFFECTS_INFO_H
 
-#include "z-dice.h"
-#include "z-textblock.h"
+#ifndef EFFECTS_INFO_H
+#define EFFECTS_INFO_H
 
 /*
  * Flags for effect descriptions

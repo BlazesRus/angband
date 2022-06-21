@@ -3,11 +3,8 @@
  * Purpose: Matters relating to the current dungeon level
  */
 
-#if (defined(MBandServer)||defined(SPClient)||defined(HybridClient)) && !defined(CAVE_H)
+#ifndef CAVE_H
 #define CAVE_H
-
-#include "z-type.h"
-#include "z-bitflag.h"
 
 /*
  * Terrain flags
@@ -286,6 +283,7 @@ extern void square_light_spot(struct chunk *c, struct loc *grid);
 extern void light_room(struct player *p, struct chunk *c, struct loc *grid, bool light);
 extern void wiz_light(struct player *p, struct chunk *c, int mode);
 extern void wiz_dark(struct player *p, struct chunk *c, bool full);
+extern void wiz_lit(struct player *p, struct chunk *c);
 extern void wiz_unlit(struct player *p, struct chunk *c);
 extern void wiz_forget(struct player *p, struct chunk *c);
 extern void cave_illuminate(struct player *p, struct chunk *c, bool daytime);
@@ -427,6 +425,7 @@ extern bool square_isdecoyed(struct chunk *c, struct loc *grid);
 extern bool square_seemslikewall(struct chunk *c, struct loc *grid);
 extern bool square_isinteresting(struct chunk *c, struct loc *grid);
 extern bool square_islockeddoor(struct chunk *c, struct loc *grid);
+extern bool square_isunlockeddoor(struct chunk *c, struct loc *grid);
 extern bool square_isplayertrap(struct chunk *c, struct loc *grid);
 extern bool square_isvisibletrap(struct chunk *c, struct loc *grid);
 extern bool square_issecrettrap(struct chunk *c, struct loc *grid);
@@ -491,6 +490,7 @@ extern void square_memorize(struct player *p, struct chunk *c, struct loc *grid)
 extern void square_forget(struct player *p, struct loc *grid);
 extern void square_mark(struct player *p, struct loc *grid);
 extern void square_unmark(struct player *p, struct loc *grid);
+extern void square_glow(struct chunk *c, struct loc *grid);
 extern void square_unglow(struct chunk *c, struct loc *grid);
 extern bool square_isnormal(struct chunk *c, struct loc *grid);
 extern void square_destroy_tree(struct chunk *c, struct loc *grid);

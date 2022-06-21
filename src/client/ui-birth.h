@@ -3,7 +3,7 @@
  * Purpose: Text-based user interface for character creation
  */
 
-#if (defined(MBandClient)||defined(SPClient)||defined(HybridClient)) && !defined(INCLUDED_UI_BIRTH_H)
+#ifndef INCLUDED_UI_BIRTH_H
 #define INCLUDED_UI_BIRTH_H
 
 extern void textui_do_birth(void);

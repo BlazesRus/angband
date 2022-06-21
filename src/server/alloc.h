@@ -3,7 +3,7 @@
  * Purpose: Allocation
  */
 
-#if (defined(MBandServer)||defined(SPClient)||defined(HybridClient)) && !defined(INCLUDED_ALLOC_H)
+#ifndef INCLUDED_ALLOC_H
 #define INCLUDED_ALLOC_H
 
 /*

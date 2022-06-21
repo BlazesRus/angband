@@ -3,7 +3,7 @@
  * Purpose: Lists of objects and object pictures
  */
 
-#if (defined(MBandServer)||defined(HybridClient)) && !defined(OBJECT_UI_H)
+#ifndef OBJECT_UI_H
 #define OBJECT_UI_H
 
 extern uint8_t object_kind_attr(struct player *p, const struct object_kind *kind);

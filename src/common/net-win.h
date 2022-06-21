@@ -1,5 +1,4 @@
-#if !defined(SPClient) && !defined(TANG_NET_WIN_H) && defined(WINDOWS)
-#define TANG_NET_WIN_H
+#ifdef WINDOWS
 /*
  * File: net-win.h
  * Purpose: Network module

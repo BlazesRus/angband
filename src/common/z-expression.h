@@ -6,8 +6,6 @@
 #ifndef INCLUDED_Z_EXPRESSION_H
 #define INCLUDED_Z_EXPRESSION_H
 
-#include "h-basic.h"
-
 enum expression_err_e
 {
     EXPRESSION_ERR_GENERIC = -1,

@@ -1,15 +1,15 @@
 /*
  * File: cmd-core.h
  * Purpose: Handles the queueing of game commands
- * Copyright (c) 2008-9 Antony Sidwell
- * Copyright (c) 2014 Andi Sidwell
  */
 
-#if (defined(MBandClient)||defined(SPClient)||defined(HybridClient)) && !defined(INCLUDED_CMD_CORE_H)
+#ifndef INCLUDED_CMD_CORE_H
 #define INCLUDED_CMD_CORE_H
 
+#ifdef EnableExtraHeaderIncludes
 #include "object.h"
 #include "z-type.h"
+#endif
 
 /*
  * All valid game commands.
@@ -65,12 +65,43 @@ typedef enum cmd_code
     CMD_FOUNTAIN,
     CMD_DROP_GOLD,
     CMD_EXAMINE,
-
+//From Angband
+#ifndef DISABLEFeature_CommandEffect
+	CMD_COMMAND_MONSTER,
+#endif
+#ifdef ENABLEFeature_EnableExtraCMDArgs
+	/* 
+	 * Birth commands 
+	 */
+	CMD_BIRTH_INIT,
+	CMD_BIRTH_RESET,
+	CMD_CHOOSE_RACE,
+	CMD_CHOOSE_CLASS,
+	CMD_BUY_STAT,
+	CMD_SELL_STAT,
+	CMD_RESET_STATS,
+	CMD_REFRESH_STATS,
+	CMD_ROLL_STATS,
+	CMD_PREV_STATS,
+	CMD_NAME_CHOICE,
+	CMD_HISTORY_CHOICE,
+	CMD_ACCEPT_CHARACTER,
+#endif
     CMD_MAX
 } cmd_code;
 
 #define DIR_SKIP    -1
 #define DIR_UNKNOWN 0
+
+#ifdef ENABLEFeature_EnableExtraCMDArgs
+typedef enum cmd_context {
+	CTX_INIT,
+	CTX_BIRTH,
+	CTX_GAME,
+	CTX_STORE,
+	CTX_DEATH
+} cmd_context;
+#endif
 
 /*
  * Argument structures
@@ -85,6 +116,10 @@ union cmd_arg_data
     int number;
     struct object *obj;
     int direction;
+#ifdef ENABLEFeature_EnableExtraCMDArgs
+	int choice;
+	struct loc point;
+#endif
 };
 
 /*
@@ -97,6 +132,11 @@ enum cmd_arg_type
     arg_NUMBER,
     arg_ITEM,
     arg_DIRECTION
+#ifdef ENABLEFeature_EnableExtraCMDArgs
+	,arg_CHOICE,
+	arg_TARGET,
+	arg_POINT
+#endif
 };
 
 /*
@@ -129,6 +169,29 @@ struct command
     /* Arguments */
     struct cmd_arg arg[CMD_MAX_ARGS];
 };
+
+#ifdef ENABLEFeature_EnableExtraCMDArgs
+struct commandV2 {
+	/* What context this is happening in */
+	cmd_context context;
+
+	/* A valid command code. */
+	cmd_code code;
+
+	/* Number of times to attempt to repeat command. */
+	int nrepeats;
+
+	/*
+	 * Whether this command should be skipped when looking for CMD_REPEAT's
+	 * target.
+	 */
+	bool is_background_command;
+
+	/* Arguments */
+	struct cmd_arg arg[CMD_MAX_ARGS];
+};
+#endif
+
 
 /*
  * Return codes for cmd_get_arg()
@@ -163,5 +226,62 @@ extern int cmd_get_quantity(struct command *cmd, const char *arg, int *amt, int 
 extern int cmd_get_item(struct command *cmd, const char *arg, struct object **obj,
     const char *prompt, const char *reject, item_tester filter, int mode);
 extern int cmd_get_target(struct command *cmd, const char *arg, int *target);
+
+#ifdef ENABLEFeature_EnableExtraCMDArgs
+/**
+ * ------------------------------------------------------------------------
+ * Command repeat manipulation
+ * ------------------------------------------------------------------------ */
+
+/**
+ * Remove any pending repeats from the current command.
+ */
+void cmd_cancel_repeat(void);
+
+/**
+ * Update the number of repeats pending for the current command.
+ */
+void cmd_set_repeat(int nrepeats);
+
+/**
+ * Call to disallow the current command from being repeated with the
+ * "Repeat last command" command.
+ */
+void cmd_disable_repeat(void);
+
+/**
+ * Disallow current command from being repeated if it used item from
+ * the floor.
+ */
+void cmd_disable_repeat_floor_item(void);
+
+/**
+ * Returns the number of repeats left for the current command.
+ * i.e. zero if not repeating.
+ */
+int cmd_get_nrepeats(void);
+
+void cmd_set_arg_direction(struct command *cmd, const char *arg, int dir);
+void cmd_set_arg_choice(struct command *cmd, const char *arg, int choice);
+void cmd_set_arg_target(struct command *cmd, const char *arg, int target);
+void cmd_set_arg_point(struct command *cmd, const char *arg, struct loc grid);
+
+int cmd_get_arg_direction(struct command *cmd, const char *arg, int *dir);
+int cmd_get_arg_choice(struct command *cmd, const char *arg, int *choice);
+int cmd_get_arg_target(struct command *cmd, const char *arg, int *target);
+int cmd_get_arg_point(struct command *cmd, const char *arg, struct loc *grid);
+
+int cmd_get_direction(struct command *cmd, const char *arg, int *dir,
+					  bool allow_5);
+int cmd_get_target(struct command *cmd, const char *arg, int *target);
+int cmd_get_spell(struct command *cmd, const char *arg, struct player *p,
+	int *spell, const char *verb, item_tester book_filter,
+	const char *book_error,
+	bool (*spell_filter)(const struct player *p, int spell),
+	const char *spell_error);
+int cmd_get_effect_from_list(struct command *cmd, const char *arg, int *choice,
+	const char *prompt, struct effect *effect, int count,
+	bool allow_random);
+#endif
 
 #endif /* INCLUDED_CMD_CORE_H */

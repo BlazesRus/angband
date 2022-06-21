@@ -6,7 +6,6 @@
 #ifndef OBJECT_TVAL_H
 #define OBJECT_TVAL_H
 
-#include "object.h"
 
 /*
  * The values for the "tval" field of various objects.

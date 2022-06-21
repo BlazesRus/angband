@@ -3,10 +3,8 @@
  * Purpose: Keymap handling
  */
 
-#if (defined(MBandClient)||defined(SPClient)||defined(HybridClient)) && !defined(UI_KEYMAP_H)
+#ifndef UI_KEYMAP_H
 #define UI_KEYMAP_H
-
-#include "z-file.h"
 
 /*
  * Maximum number of keypresses a trigger can map to.

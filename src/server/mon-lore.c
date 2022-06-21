@@ -17,9 +17,31 @@
  *    are included in all such copies.  Other copyrights may also apply.
  */
 
-
+#ifndef REDUCEHEADERSPerFile 
 #include "s-angband.h"
 
+#else
+#include "angband.h"
+#include "effects.h"
+#include "game-world.h"
+#include "init.h"
+#include "mon-attack.h"
+#include "mon-blows.h"
+#include "mon-init.h"
+#include "mon-lore.h"
+#include "mon-make.h"
+#include "mon-predicate.h"
+#include "mon-spell.h"
+#include "mon-util.h"
+#include "obj-gear.h"
+#include "obj-tval.h"
+#include "obj-util.h"
+#include "player-attack.h"
+#include "player-calcs.h"
+#include "player-timed.h"
+#include "project.h"
+#include "z-textblock.h"
+#endif
 
 /*
  * Monster genders
@@ -502,6 +524,7 @@ static const char *lore_describe_awareness(int16_t awareness)
         {75,        "pays little attention to"},
         {45,        "tends to overlook"},
         {25,        "takes quite a while to see"},
+		{10,	"takes a while to see"},
         {5,         "is fairly observant of"},
         {3,         "is observant of"},
         {1,         "is very observant of"},
@@ -1671,3 +1694,27 @@ struct monster_lore *get_lore(struct player *p, const struct monster_race *race)
 
     return &p->lore[race->ridx];
 }
+
+#ifdef ENABLEFeature_EnableExtraMonsterLore
+/**
+ * Save the lore to a file in the user directory.
+ *
+ * \param name is the filename
+ *
+ * \returns true on success, false otherwise.
+ */
+bool lore_save(const char *name)
+{
+	char path[1024];
+
+	/* Write to the user directory */
+	path_build(path, sizeof(path), ANGBAND_DIR_USER, name);
+
+	if (text_lines_to_file(path, write_lore_entries)) {
+		msg("Failed to create file %s.new", path);
+		return false;
+	}
+
+	return true;
+}
+#endif

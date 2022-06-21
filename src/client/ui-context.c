@@ -17,40 +17,8 @@
  *    are included in all such copies.  Other copyrights may also apply.
  */
 
-#include "angband.h"
-#include "cave.h"
-#include "cmd-core.h"
-#include "cmds.h"
-#include "game-input.h"
-#include "mon-desc.h"
-#include "mon-lore.h"
-#include "mon-util.h"
-#include "obj-chest.h"
-#include "obj-desc.h"
-#include "obj-gear.h"
-#include "obj-ignore.h"
-#include "obj-info.h"
-#include "obj-tval.h"
-#include "obj-util.h"
-#include "player-calcs.h"
-#include "player-timed.h"
-#include "player-util.h"
-#include "store.h"
-#include "target.h"
-#include "ui-context.h"
-#include "ui-game.h"
-#include "ui-input.h"
-#include "ui-keymap.h"
-#include "ui-knowledge.h"
-#include "ui-menu.h"
-#include "ui-mon-lore.h"
-#include "ui-object.h"
-#include "ui-player.h"
-#include "ui-spell.h"
-#include "ui-store.h"
-#include "ui-target.h"
-#include "wizard.h"
-//#include "c-angband.h"
+
+#include "c-angband.h"
 
 
 #define ADD_LABEL(text, cmd, valid) \

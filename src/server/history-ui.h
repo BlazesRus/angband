@@ -3,7 +3,7 @@
  * Purpose: Character auto-history display
  */
 
-#if (defined(MBandServer)||defined(HybridClient)) && !defined(UI_HISTORY_H)
+#ifndef UI_HISTORY_H
 #define UI_HISTORY_H
 
 extern void get_real_time(hturn *pturn, int* pd, int* ph, int* pm);

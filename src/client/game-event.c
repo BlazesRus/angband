@@ -16,9 +16,15 @@
  *    and not for profit purposes provided that this copyright and statement
  *    are included in all such copies.  Other copyrights may also apply.
  */
-
+#ifndef REDUCEHEADERSPerFile 
 
 #include "c-angband.h"
+#else
+#include <assert.h>
+#include "game-event.h"
+#include "object.h"
+#include "z-virt.h"
+#endif
 
 
 typedef struct _event_handler_entry
@@ -111,8 +117,7 @@ void event_add_handler_set(game_event_type *type, size_t n_types,
 {
     size_t i;
 
-    for (i = 0; i < n_types; i++)
-        event_add_handler(type[i], fn, user);
+    for (i = 0; i < n_types; i++) event_add_handler(type[i], fn, user);
 }
 
 
@@ -121,8 +126,7 @@ void event_remove_handler_set(game_event_type *type, size_t n_types,
 {
     size_t i;
 
-    for (i = 0; i < n_types; i++)
-        event_remove_handler(type[i], fn, user);
+    for (i = 0; i < n_types; i++) event_remove_handler(type[i], fn, user);
 }
 
 

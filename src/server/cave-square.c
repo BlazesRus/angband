@@ -1281,6 +1281,15 @@ bool square_islockeddoor(struct chunk *c, struct loc *grid)
 
 
 /*
+ * True if the square is a closed, unlocked door.
+ */
+bool square_isunlockeddoor(struct chunk *c, struct loc *grid)
+{
+    return (square_basic_iscloseddoor(c, grid) && !square_islockeddoor(c, grid));
+}
+
+
+/*
  * True if there is a player trap (known or unknown) in this square.
  */
 bool square_isplayertrap(struct chunk *c, struct loc *grid)
@@ -2449,6 +2458,12 @@ void square_mark(struct player *p, struct loc *grid)
 void square_unmark(struct player *p, struct loc *grid)
 {
     sqinfo_off(square_p(p, grid)->info, SQUARE_MARK);
+}
+
+
+void square_glow(struct chunk *c, struct loc *grid)
+{
+    sqinfo_on(square(c, grid)->info, SQUARE_GLOW);
 }
 
 

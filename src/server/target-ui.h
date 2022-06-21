@@ -3,7 +3,7 @@
  * Purpose: UI for targeting code
  */
 
-#if (defined(MBandServer)||defined(HybridClient)) && !defined(TARGET_UI_H)
+#ifndef TARGET_UI_H
 #define TARGET_UI_H
 
 extern int draw_path(struct player *p, uint16_t path_n, struct loc *path_g, struct loc *grid);

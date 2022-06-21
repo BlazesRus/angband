@@ -18,11 +18,7 @@
  *    are included in all such copies.  Other copyrights may also apply.
  */
 #include "ui-player-properties.h"//Linking C file to it's header file
-#include "angband.h"
-#include "player-properties.h"
-#include "ui-input.h"
-#include "ui-menu.h"
-//#include "c-angband.h"
+#include "c-angband.h"
 
 
 /*

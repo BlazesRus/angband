@@ -3,7 +3,7 @@
  * Purpose: Knowledge screen
  */
 
-#if (defined(MBandClient)||defined(SPClient)||defined(HybridClient)) && !defined(UI_KNOWLEDGE_H)
+#ifndef UI_KNOWLEDGE_H
 #define UI_KNOWLEDGE_H
 
 extern void textui_browse_knowledge(void);

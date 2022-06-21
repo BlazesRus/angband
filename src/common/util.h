@@ -3,7 +3,7 @@
  * Purpose: Utility functions
  */
 
-#if !defined(SPClient) && !defined(INCLUDED_UTIL_H)
+#ifndef INCLUDED_UTIL_H
 #define INCLUDED_UTIL_H
 
 #define DIR_TARGET  5
