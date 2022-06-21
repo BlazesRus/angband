@@ -151,3 +151,7 @@ EFFECT(WONDER, true, NULL, 0, EFINFO_NONE, "creates random and unpredictable eff
 EFFECT(LOSE_STAT, false, NULL, 1, EFINFO_STAT, "permanently decreases %s")
 EFFECT(WEB_SPIDER, false, NULL, 0, EFINFO_NONE, "creates a web")
 EFFECT(FORGET_LEVEL, false, NULL, 0, EFINFO_NONE, "completely forgets the current level")
+//From Angband
+#ifndef DISABLEFeature_CommandEffect 
+EFFECT(COMMAND,	true, NULL,	0,	EFINFO_NONE, "takes control of a monster")
+#endif
