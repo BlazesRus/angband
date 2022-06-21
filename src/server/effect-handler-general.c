@@ -6248,3 +6248,42 @@ bool effect_handler_WEB(effect_handler_context_t *context)
 
     return true;
 }
+
+//From Angband(but updated to changed in method parameters)
+#ifndef DISABLEFeature_CommandEffect
+/**
+ * Take control of a monster
+ */
+bool effect_handler_COMMAND(effect_handler_context_t *context)
+{
+	int amount = effect_calculate_value(context, false);
+	struct monster *mon = context->origin->monster;
+
+	context->ident = true;
+
+	/* Need to choose a monster, not just point */
+	if (!mon) {
+		msg(context->origin->player, "No monster selected!");
+		return false;
+	}
+
+	/* Wake up, become aware */
+	monster_wake(context->origin->player, mon, false, 100);
+
+	/* Explicit saving throw */
+	if (randint1(context->origin->player->lev) < randint1(mon->race->level)) {
+		char m_name[80];
+		monster_desc(context->origin->player, m_name, sizeof(m_name), mon, MDESC_STANDARD);
+		msg("%s resists your command!", m_name);
+		return false;
+	}
+
+	/* Player is commanding */
+	player_set_timed(context->origin->player, TMD_COMMAND, MAX(amount, 0), false, false);
+
+	/* Monster is commanded */
+    mon_inc_timed(context->origin->player, context->target_mon, MON_TMD_COMMAND, MAX(amount, 0), 0);
+
+	return true;
+}
+#endif
