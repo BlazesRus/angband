@@ -72,6 +72,15 @@ extern void clear_from(int row);
 extern bool askfor_aux_keypress(char *buf, size_t buflen, size_t *curs, size_t *len,
     struct keypress keypress, bool firsttime);
 extern bool askfor_aux(char *buf, int len, keypress_handler keypress_h);
+
+#ifndef DisableMouseEvents//From Angband
+int askfor_aux_mouse(char *buf, size_t buflen, size_t *curs, size_t *len,
+	struct mouseclick mouse, bool firsttime);
+bool askfor_aux_ext(char *buf, size_t len,
+	bool (*keypress_h)(char *, size_t, size_t *, size_t *, struct keypress, bool),
+	int (*mouse_h)(char *, size_t, size_t *, size_t *, struct mouseclick, bool));
+#endif
+
 extern int askfor_ex(char *buf, int len, keypress_handler keypress_h, bool priv);
 extern void textui_input_init(void);
 extern bool (*get_file)(const char *suggested_name, char *path, size_t len);
