@@ -96,14 +96,14 @@ static void init_stuff(void)
     printf("Current working directory: %s\n", path);
 #endif
     //Constructing absolute directory for paths
-    #ifdef UsingModernC
-        strcpy(configpath, path); strcat(configpath, DEFAULT_CONFIG_PATH);
-        strcpy(libpath, path); strcat(libpath, DEFAULT_LIB_PATH);
-        strcpy(datapath, path); strcat(datapath, DEFAULT_DATA_PATH);
-    #else
+    #ifdef UsingClangToolset//OpenBSD Standard instead of C standard
         strlcpy(configpath, path, 200); strlcat(configpath, DEFAULT_CONFIG_PATH, 200);
         strlcpy(libpath, path, 200); strlcat(libpath, DEFAULT_LIB_PATH, 200);
         strlcpy(datapath, path, 200); strlcat(datapath, DEFAULT_DATA_PATH, 200);
+    #else
+        strcpy(configpath, path); strcat(configpath, DEFAULT_CONFIG_PATH);
+        strcpy(libpath, path); strcat(libpath, DEFAULT_LIB_PATH);
+        strcpy(datapath, path); strcat(datapath, DEFAULT_DATA_PATH);
     #endif
 #endif
 
