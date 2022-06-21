@@ -40,6 +40,9 @@ extern void houses_free(void);
 /* Count the number of houses */
 extern int houses_count(void);
 
+// Count house area size (without outer walls)
+extern int house_count_area_size(int house);
+
 /* Determine if the player is inside the house */
 extern bool house_inside(struct player *p, int house);
 
@@ -72,6 +75,9 @@ extern bool level_has_owned_houses(struct worldpos *wpos);
 
 /* Determine if the level contains any houses */
 extern bool level_has_any_houses(struct worldpos *wpos);
+
+/* Wipe old houses on a level */
+extern void wipe_old_houses(struct worldpos *wpos);
 
 /* Wipe custom houses on a level */
 extern void wipe_custom_houses(struct worldpos *wpos);

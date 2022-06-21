@@ -23,7 +23,7 @@
 
 bool server_generated;      /* The server exists */
 bool server_state_loaded;   /* The server state was loaded from a savefile */
-uint32_t seed_flavor;           /* Hack -- consistent object colors */
+uint32_t seed_flavor;       /* Hack -- consistent object colors */
 hturn turn;                 /* Current game turn */
 
 
@@ -102,6 +102,9 @@ void dusk_or_dawn(struct player *p, struct chunk *c, bool dawn)
 
     /* Illuminate */
     cave_illuminate(p, c, dawn);
+
+    // also we will check for old and unowned custom houses
+    wipe_old_houses(&p->wpos);
 }
 
 
@@ -110,7 +113,9 @@ void dusk_or_dawn(struct player *p, struct chunk *c, bool dawn)
  */
 int turn_energy(int speed)
 {
-    return extract_energy[MIN(speed, N_ELEMENTS(extract_energy) - 1)] * z_info->move_energy / 100;
+    int n_energy = N_ELEMENTS(extract_energy);
+
+    return extract_energy[MIN(speed, n_energy - 1)] * z_info->move_energy / 100;
 }
 
 
@@ -122,7 +127,9 @@ int turn_energy(int speed)
  */
 int frame_energy(int speed)
 {
-    return extract_energy[MIN(speed, N_ELEMENTS(extract_energy) - 1)] * 100;
+    int n_energy = N_ELEMENTS(extract_energy);
+
+    return extract_energy[MIN(speed, n_energy - 1)] * 100;
 }
 
 
@@ -256,53 +263,6 @@ static void recharge_objects(struct player *p)
 }
 
 
-//
-// Weather
-//
-static void make_weather(struct player *p)
-{
-    if (p->wpos.depth == 0)
-    {
-        if (one_in_(5))
-        {
-            // thunder
-            if (one_in_(2)) sound(p, MSG_AMBIENT_NITE);
-            Send_weather(p, 1, randint1(4), randint1(3));
-            sound(p, MSG_WILD_RAIN);
-        }
-        else
-        {
-            if (one_in_(5))
-            {
-                // halt playback on all channels
-                sound(p, MSG_SILENT);
-                // Stop weather
-                Send_weather(p, 256, 0, 0);
-            }
-        }
-    }
-    else if (streq(p->locname, "Sandworm Lair"))
-    {
-        if (one_in_(5))
-        {
-            if (p->wpos.depth == 23) Send_weather(p, 3, randint1(4), randint1(3));
-            else if (p->wpos.depth == 24) Send_weather(p, 3, randint1(4), randint1(3));
-            else if (p->wpos.depth == 25) Send_weather(p, 3, randint1(4), randint1(3));
-            else if (p->wpos.depth == 26) Send_weather(p, 3, randint1(4), randint1(3));
-            else if (p->wpos.depth == 27) Send_weather(p, 3, randint1(4), randint1(3));
-            else if (p->wpos.depth == 28) Send_weather(p, 3, randint1(4), 3);
-            else if (p->wpos.depth == 29) Send_weather(p, 3, randint1(4), 3);
-            else if (p->wpos.depth == 30) Send_weather(p, 3, randint1(4), 3);
-        }
-    }
-    else
-    {
-        // Stop weather
-        Send_weather(p, 256, 0, 0);
-    }
-}
-
-
 /*
  * Play an ambient sound dependent on dungeon level, and day or night in towns
  */
@@ -352,8 +312,6 @@ static void play_ambient_sound(struct player *p)
                         if (one_in_(3)) sound(p, MSG_WILD_WAVES); // 1 minute sea
                         else sound(p, MSG_WILD_DEEPWATER); // short sea
                     }
-            else if (p->wpos.grid.x == 0 && p->wpos.grid.y == 4)
-                        sound(p, MSG_WILD_GLACIER);
             else if (p->wpos.grid.x == -2 && p->wpos.grid.y == 2 && one_in_(3))
                         sound(p, MSG_WILD_DESERT);
             else if (p->wpos.grid.x == -1 && p->wpos.grid.y == -2 && one_in_(2))
@@ -370,12 +328,64 @@ static void play_ambient_sound(struct player *p)
                     (p->wpos.grid.x ==  2 && p->wpos.grid.y == 3))
                         sound(p, MSG_WILD_DEEPWATER);
             else if (is_daytime())
-                    {
-                        if (one_in_(5)) sound(p, MSG_WILD_RAIN); // long rain.. TODO: stop when enter to dungeon.
-                        else sound(p, MSG_AMBIENT_DAY); // short rain
-                    }
+                sound(p, MSG_AMBIENT_DAY);
             else
-                        sound(p, MSG_AMBIENT_NITE);
+                sound(p, MSG_AMBIENT_NITE);
+
+            //// Weather
+            if (p->wpos.grid.x == 0 && p->wpos.grid.y == 4) // Helcaraxe
+            {
+                // Snow
+                Send_weather(p, 2, randint1(4), randint1(3));
+
+                if (one_in_(5))
+                {
+                    // Stop weather
+                    Send_weather(p, 256, 0, 0);
+                }
+            }
+            else if (streq(p->locname, "Sandworm Lair"))
+            {
+                if (one_in_(3))
+                {
+                    // Sandstorm
+                    Send_weather(p, 3, randint1(4), randint1(3));
+                }
+                else if (one_in_(5))
+                {
+                    // Stop weather
+                    Send_weather(p, 256, 0, 0);
+                }
+            }
+            // all other locations
+            else if (p->store_num == -1)
+            {
+                if ((p->weather_type == 0) || (p->weather_type == 256))
+                {
+                    if (one_in_(3))
+                    {
+                        // Rain
+                        Send_weather(p, 1, randint1(4), randint1(3));
+                        sound(p, MSG_WILD_RAIN);
+                    }
+                }
+                else
+                {
+                    if (one_in_(3))
+                    {
+                        // empty sound to break sound loop .ogg.0
+                        sound(p, MSG_SILENT0);
+                        // Stop weather
+                        Send_weather(p, 256, 0, 0);
+                    }
+                    // Weather sound
+                    else if (p->weather_intensity == 3)
+                    {
+                        // thunder
+                        sound(p, MSG_WILD_THUNDER);
+                    }
+                }
+            }
         }
         else
             sound(p, wf_info[get_wt_info_at(&p->wpos.grid)->type].sound_idx);
@@ -410,9 +420,6 @@ static void play_ambient_sound(struct player *p)
         sound(p, MSG_AMBIENT_XAKAZE);
     else
         sound(p, MSG_AMBIENT_MELKOR);
-
-    // Weather
-    make_weather(p);
 }
 
 
@@ -1576,10 +1583,12 @@ static void on_leave_level(void)
                 if (!w_ptr->chunk_list[i]) continue;
 
                 /* Don't deallocate special levels */
+                // note: it doesn't count DM! When testing - use regular char
                 if (level_keep_allocated(w_ptr->chunk_list[i])) continue;
 
                 // also exist in admin menu
                 /* Hack -- deallocate custom houses */
+                // ..in T we also do this at dusk_or_dawn() in wipe_old_houses()
                 wipe_custom_houses(&w_ptr->chunk_list[i]->wpos);
 
                 /* Deallocate the level */
@@ -2062,12 +2071,21 @@ static void generate_new_level(struct player *p)
     /* Paranoia */
     if (!chunk_has_players(&p->wpos)) return;
 
-    /* Play ambient sound on change of level. */
+////* Play ambient sound on change of level. */
+    
+    // north areas always got snow
+    if (p->wpos.depth == 0 && p->wpos.grid.x == 0 && p->wpos.grid.y == 4) // Helcaraxe
+    {
+        Send_weather(p, 2, randint1(4), randint1(3));
+        sound(p, MSG_WILD_GLACIER);
+    }
+
     // always play it only while in a dungeon; if outside - sometimes
     if (p->wpos.depth == 0 && one_in_(2))
         ;
     else
         play_ambient_sound(p);
+/////
 
     /* Check "maximum depth" to make sure it's still correct */
     if (p->wpos.depth > p->max_depth) p->max_depth = p->wpos.depth;
@@ -2862,6 +2880,7 @@ void kingly(struct player *p)
 bool level_keep_allocated(struct chunk *c)
 {
     /* Don't deallocate levels which contain players */
+    // note: it doesn't count DM! When testing - use regular char
     if (chunk_has_players(&c->wpos)) return true;
 
     /* Don't deallocate special levels */

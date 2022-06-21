@@ -229,7 +229,7 @@ bool take_hit(struct player *p, int damage, const char *hit_from, bool non_physi
         strcmp(hit_from, "a fatal wound") && strcmp(hit_from, "starvation"))
     {
         /* lose X% of hitpoints get X% of spell points */
-        int32_t sp_gain = (MAX((int32_t)p->msp, 10) << 16) / (int32_t)p->mhp * damage;
+        int32_t sp_gain = (((int32_t)MAX(p->msp, 10)) * 65536) / (int32_t)p->mhp * damage;
 
         player_adjust_mana_precise(p, sp_gain);
     }
@@ -421,7 +421,7 @@ void player_regen_mana(struct player *p)
     sp_gain = player_adjust_mana_precise(p, sp_gain);
 
     /* SP degen heals blackguards at double efficiency vs casting */
-    if (sp_gain < 0 && player_has(p, PF_COMBAT_REGEN)) convert_mana_to_hp(p, -sp_gain << 2);
+    if (sp_gain < 0 && player_has(p, PF_COMBAT_REGEN)) convert_mana_to_hp(p, -sp_gain * 2);
 
     /* Notice changes */
     if (old_csp != p->csp)
@@ -439,33 +439,51 @@ void player_regen_mana(struct player *p)
 
 void player_adjust_hp_precise(struct player *p, int32_t hp_gain)
 {
-	int32_t new_chp;
-	int num, old_chp = p->chp;
+	int16_t old_16 = p->chp;
 
-	/* Load it all into 4 uint8_t format*/
-	new_chp = (int32_t)((p->chp << 16) + p->chp_frac) + hp_gain;
+    /* Load it all into 4 byte format */
+    int32_t old_32 = ((int32_t)old_16) * 65536 + p->chp_frac, new_32;
 
-	/* Check for overflow */
-	if ((new_chp < 0) && (old_chp > 0) && (hp_gain > 0))
-        new_chp = LONG_MAX;
-	else if ((new_chp > 0) && (old_chp < 0) && (hp_gain < 0))
-		new_chp = LONG_MIN;
+    /* Check for overflow */
+    if (hp_gain >= 0)
+        new_32 = (old_32 < LONG_MAX - hp_gain)? old_32 + hp_gain: LONG_MAX;
+    else
+        new_32 = (old_32 > LONG_MIN - hp_gain)? old_32 + hp_gain: LONG_MIN;
 
-	/* Break it back down */
-	p->chp = (int16_t)(new_chp >> 16);   /* div 65536 */
-	p->chp_frac = (uint16_t)(new_chp & 0xFFFF); /* mod 65536 */
+    /* Break it back down */
+    if (new_32 < 0)
+    {
+        /*
+         * Don't use right bitwise shift on negative values: whether
+         * the left bits are zero or one depends on the system.
+         */
+        int32_t remainder = new_32 % 65536;
 
-	/* Fully healed */
+        p->chp = (int16_t)(new_32 / 65536);
+        if (remainder)
+        {
+            my_assert(remainder < 0);
+            p->chp_frac = (uint16_t)(65536 + remainder);
+            my_assert(p->chp > SHRT_MIN);
+            p->chp -= 1;
+        }
+        else
+            p->chp_frac = 0;
+    }
+    else
+    {
+        p->chp = (int16_t)(new_32 >> 16);   /* div 65536 */
+        p->chp_frac = (uint16_t)(new_32 & 0xFFFF);  /* mod 65536 */
+    }
+
+    /* Fully healed */
 	if (p->chp >= p->mhp)
     {
 		p->chp = p->mhp;
 		p->chp_frac = 0;
 	}
 
-	num = p->chp - old_chp;
-	if (num == 0) return;
-
-	p->upkeep->redraw |= (PR_HP);
+	if (p->chp != old_16) p->upkeep->redraw |= (PR_HP);
 }
 
 
@@ -475,30 +493,57 @@ void player_adjust_hp_precise(struct player *p, int32_t hp_gain)
  */
 int32_t player_adjust_mana_precise(struct player *p, int32_t sp_gain)
 {
-	int32_t old_csp_long, new_csp_long;
-	int old_csp_short = p->csp;
+	int16_t old_16 = p->csp;
+
+    /* Load it all into 4 byte format */
+    int32_t old_32 = ((int32_t)p->csp) * 65536 + p->csp_frac, new_32;
 
 	if (sp_gain == 0) return 0;
 
-	/* Load it all into 4 uint8_t format*/
-	old_csp_long = (int32_t)((p->csp << 16) + p->csp_frac);
-	new_csp_long = old_csp_long + sp_gain;
-
 	/* Check for overflow */
-	if ((new_csp_long < 0) && (old_csp_long > 0) && (sp_gain > 0))
+	if (sp_gain > 0)
     {
-		new_csp_long = LONG_MAX;
-		sp_gain = 0;
+		if (old_32 < LONG_MAX - sp_gain)
+            new_32 = old_32 + sp_gain;
+        else
+        {
+            new_32 = LONG_MAX;
+		    sp_gain = 0;
+        }
 	}
-    else if ((new_csp_long > 0) && (old_csp_long < 0) && (sp_gain < 0))
+    else if (old_32 > LONG_MIN - sp_gain)
+        new_32 = old_32 + sp_gain;
+    else
     {
-		new_csp_long = LONG_MIN;
+		new_32 = LONG_MIN;
 		sp_gain = 0;
 	}
 
 	/* Break it back down */
-	p->csp = (int16_t)(new_csp_long >> 16);   /* div 65536 */
-	p->csp_frac = (uint16_t)(new_csp_long & 0xFFFF);    /* mod 65536 */
+    if (new_32 < 0)
+    {
+        /*
+         * Don't use right bitwise shift on negative values: whether
+         * the left bits are zero or one depends on the system.
+         */
+        int32_t remainder = new_32 % 65536;
+
+        p->csp = (int16_t)(new_32 / 65536);
+        if (remainder)
+        {
+            my_assert(remainder < 0);
+            p->csp_frac = (uint16_t)(65536 + remainder);
+            my_assert(p->csp > SHRT_MIN);
+            p->csp -= 1;
+        }
+        else
+            p->csp_frac = 0;
+    }
+    else
+    {
+        p->csp = (int16_t)(new_32 >> 16);   /* div 65536 */
+        p->csp_frac = (uint16_t)(new_32 & 0xFFFF);  /* mod 65536 */
+    }
 
 	/* Max/min SP */
 	if (p->csp >= p->msp)
@@ -515,13 +560,13 @@ int32_t player_adjust_mana_precise(struct player *p, int32_t sp_gain)
 	}
 
 	/* Notice changes */
-	if (old_csp_short != p->csp) p->upkeep->redraw |= (PR_MANA);
+	if (old_16 != p->csp) p->upkeep->redraw |= (PR_MANA);
 
 	if (sp_gain == 0)
     {
 		/* Recalculate */
-		new_csp_long = (int32_t)((p->csp << 16) + p->csp_frac);
-		sp_gain = new_csp_long - old_csp_long;
+		new_32 = ((int32_t)p->csp) * 65536 + p->csp_frac;
+		sp_gain = new_32 - old_32;
 	}
 
 	return sp_gain;
@@ -535,13 +580,13 @@ void convert_mana_to_hp(struct player *p, int32_t sp_long)
 	if (sp_long <= 0 || p->msp == 0 || p->mhp == p->chp) return;
 
 	/* Total HP from max */
-	hp_gain = (int32_t)((p->mhp - p->chp) << 16);
+	hp_gain = ((int32_t)(p->mhp - p->chp)) * 65536;
 	hp_gain -= (int32_t)p->chp_frac;
 
 	/* Spend X% of SP get X/2% of lost HP. E.g., at 50% HP get X/4% */
 	/* Gain stays low at msp < 10 because MP gains are generous at msp < 10 */
 	/* sp_ratio is max sp to spent sp, doubled to suit target rate. */
-	sp_ratio = (MAX(10, (int32_t)p->msp) << 16) * 2 / sp_long;
+	sp_ratio = (((int32_t)MAX(10, (int32_t)p->msp)) * 131072) / sp_long;
 
 	/* Limit max healing to 25% of damage; ergo spending > 50% msp is inefficient */
 	if (sp_ratio < 4) sp_ratio = 4;
@@ -760,11 +805,15 @@ int player_check_terrain_damage(struct player *p, struct chunk *c)
         dam_taken = p->mhp / 100 + randint1(3);
 
         /* Levitation prevents drowning if player able to fly */
-        if (player_of_has(p, OF_FEATHER) && !player_of_has(p, OF_CANT_FLY)) dam_taken = 0;
+        if (player_of_has(p, OF_FEATHER))
+        {
+            if (!player_of_has(p, OF_CANT_FLY))
+                dam_taken = 0;
+            equip_learn_flag(p, OF_FEATHER);
+        }
         
         /* Swimming prevents drowning */
         if (player_has(p, PF_CAN_SWIM)) dam_taken = 0;
-
     }
     else if (square_isnether(c, &p->grid))
     {
@@ -1189,6 +1238,80 @@ void cancel_running(struct player *p)
 
     /* Mark the whole map to be redrawn */
     p->upkeep->redraw |= (PR_MAP);
+}
+
+
+/*
+ * Take care of bookkeeping after moving the player with monster_swap().
+ *
+ * p is the player that was moved.
+ * eval_trap, if true, will cause evaluation (possibly affecting the
+ * player) of the traps in the grid.
+ */
+void player_handle_post_move(struct player *p, struct chunk *c, bool eval_trap, bool check_pickup,
+    int delayed, bool trapsafe)
+{
+    /* Handle store doors, or notice objects */
+    if (!p->ghost && square_isshop(c, &p->grid))
+    {
+        disturb(p, 0);
+
+        /* Hack -- enter store */
+        do_cmd_store(p, -1);
+    }
+    if (square(c, &p->grid)->obj)
+    {
+        p->ignore = 1;
+        player_know_floor(p, c);
+        do_autopickup(p, c, check_pickup);
+        current_clear(p);
+        player_pickup_item(p, c, check_pickup, NULL);
+    }
+
+    /* Handle resurrection */
+    if (p->ghost && square_isshop(c, &p->grid))
+    {
+        struct store *s = &stores[square_shopnum(c, &p->grid)];
+
+        if (s->type == STORE_TEMPLE)
+        {
+            /* Resurrect him */
+            resurrect_player(p, c);
+
+            /* Give him some gold */
+            if (!is_dm_p(p) && !player_can_undead(p) && (p->lev >= 5))
+                p->au = 100 * (p->lev - 4) / p->lives;
+        }
+    }
+
+    /* Discover invisible traps, set off visible ones */
+    if (eval_trap)
+    {
+        if (square_issecrettrap(c, &p->grid))
+        {
+            disturb(p, 0);
+            hit_trap(p, &p->grid, delayed);
+        }
+        else if (square_isdisarmabletrap(c, &p->grid) && !trapsafe)
+        {
+            disturb(p, 0);
+            hit_trap(p, &p->grid, delayed);
+        }
+    }
+
+    /* Mention fountains */
+    if (square_isfountain(c, &p->grid))
+    {
+        disturb(p, 0);
+        msg(p, "A fountain is located at this place.");
+    }
+
+    /* Hack -- we're done if player is gone (trap door) */
+    if (p->upkeep->new_level_method) return;
+
+    /* Update view and search */
+    update_view(p, c);
+    search(p, c);
 }
 
 

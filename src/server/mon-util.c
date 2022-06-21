@@ -1100,6 +1100,7 @@ static void player_kill_monster(struct player *p, struct chunk *c, struct source
     bool cheeze;
     char m_name[NORMAL_WID];
     int desc_mode = MDESC_DEFAULT | (note? MDESC_COMMA: 0);
+    bool unique_monster = false; // T flag for account score and optimization
 
     /* Assume normal death sound */
     int soundfx = MSG_KILL;
@@ -1118,6 +1119,8 @@ static void player_kill_monster(struct player *p, struct chunk *c, struct source
     /* Play a special sound if the monster was unique */
     if (monster_is_unique(mon->race))
     {
+        unique_monster = true;
+
         if (mon->race->base == lookup_monster_base("Morgoth"))
             soundfx = MSG_KILL_KING;
         else if (mon->race->base == lookup_monster_base("wraith")) // BD Wight-King and nazguls
@@ -1151,9 +1154,12 @@ static void player_kill_monster(struct player *p, struct chunk *c, struct source
         soundfx = MSG_KILL_RODENT;
     else if (mon->race->base == lookup_monster_base("insect") ||
              mon->race->base == lookup_monster_base("ant") ||
-             mon->race->base == lookup_monster_base("centipede") ||
-             mon->race->base == lookup_monster_base("killer beetle"))
+             mon->race->base == lookup_monster_base("centipede"))
+    {
+        if (streq(p->race->name, "Lizardmen") && p->wpos.depth > 0 && mon->race->mexp)
+            player_inc_timed(p, TMD_FOOD, 10, false, false);
         soundfx = MSG_KILL_INSECT;
+    }
     else if (mon->race->base == lookup_monster_base("snake"))
         soundfx = MSG_KILL_SNAKE;
     else if (mon->race->base == lookup_monster_base("hydra"))
@@ -1246,7 +1252,7 @@ static void player_kill_monster(struct player *p, struct chunk *c, struct source
     }
 
     /* Take note of the killer (only the first time!) */
-    if (monster_is_unique(mon->race) && !lore->pkills)
+    if (unique_monster && !lore->pkills)
     {
         int type = MSG_BROADCAST_KILL_UNIQUE;
 
@@ -1302,7 +1308,7 @@ static void player_kill_monster(struct player *p, struct chunk *c, struct source
 
     /* Killing an unique multiple times is cheezy! */
     /* Adding clones here to avoid cloning/breeding abuse */
-    cheeze = ((monster_is_unique(mon->race) && lore->pkills) || mon->clone);
+    cheeze = ((unique_monster && lore->pkills) || mon->clone);
 
     /* Take note of the kill */
     if (lore->pkills < SHRT_MAX)
@@ -1318,22 +1324,169 @@ static void player_kill_monster(struct player *p, struct chunk *c, struct source
     lore_update(mon->race, lore);
     monster_race_track(p->upkeep, who);
 
-    /* Should we absorb its soul? */
-    if (p->timed[TMD_SOUL] && monster_is_living(mon))
+    if (monster_is_living(mon))
     {
-        int drain = 1 + (mon->level / 2) + p->lev * 4 / 5;
-        if (drain > mon->maxhp) drain = mon->maxhp;
-        // good/neutral monsters not slain, but defeated
-        if (rf_has(mon->race->flags, RF_WANDERER) || rf_has(mon->race->flags, RF_GOOD) ||
-            rf_has(mon->race->flags, RF_NEUTRAL))
-            msg(p, "You morale raises by seeing the fleeing opponent.");
-        else
-            msg(p, "You absorb the life of the dying soul.");
-        hp_player_safe(p, 1 + drain / 2);
+        /* Should we absorb its soul? */
+        if (p->timed[TMD_SOUL])
+        {
+            int drain = 1 + (mon->level / 2) + p->lev * 4 / 5;
+            if (drain > mon->maxhp) drain = mon->maxhp;
+            // good/neutral monsters not slain, but defeated
+            if (rf_has(mon->race->flags, RF_WANDERER) || rf_has(mon->race->flags, RF_GOOD) ||
+                rf_has(mon->race->flags, RF_NEUTRAL))
+                msg(p, "You morale raises by seeing the fleeing opponent.");
+            else
+                msg(p, "You absorb the life of the dying soul.");
+            hp_player_safe(p, 1 + drain / 2);
+        }
+        // vampires drink blood from fallen humanoids
+        else if (streq(p->race->name, "Vampire") && p->wpos.depth > 0 &&
+                 is_humanoid(mon->race) && (p->timed[TMD_FOOD] < 6666))
+            player_inc_timed(p, TMD_FOOD, (p->lev * 2), false, false);
     }
 
     /* Cheezy kills give neither xp nor loot! */
-    if (!cheeze) monster_death(p, c, mon);
+    if (!cheeze)
+    {
+        monster_death(p, c, mon);
+
+        // also legit kill of some monsters might award account points
+        if (unique_monster)
+        {
+            if (streq(mon->race->name, "Sauron, the Sorcerer"))
+            {
+                p->account_score++;
+                msgt(p, MSG_FANFARE, "You've earned account point! You have %lu points.", p->account_score);
+            }
+            else if (mon->race->base == lookup_monster_base("Morgoth")) // Morgy
+            {
+                p->account_score += 3;
+                msgt(p, MSG_FANFARE, "You've earned 3 account points! You have %lu points.", p->account_score);
+            }
+            else if (streq(mon->race->name, "Tulkas, Champion of the Valar"))
+            {
+                p->account_score += 3;
+                msgt(p, MSG_FANFARE, "You've earned 3 account points! You have %lu points.", p->account_score);
+            }
+            else if (streq(mon->race->name, "Varda, Queen of the Valar"))
+            {
+                p->account_score += 3;
+                msgt(p, MSG_FANFARE, "You've earned 3 account points! You have %lu points.", p->account_score);
+            }
+            else if (streq(mon->race->name, "Manwe, King of the Valar"))
+            {
+                p->account_score += 3;
+                msgt(p, MSG_FANFARE, "You've earned 3 account points! You have %lu points.", p->account_score);
+            }
+            else if (streq(mon->race->name, "Melkor, Lord of Darkness"))
+            {
+                p->account_score += 5;
+                msgt(p, MSG_FANFARE, "You've earned 5 account points! You have %lu points.", p->account_score);
+            }
+            else if (streq(mon->race->name, "Eru Iluvatar"))
+            {
+                p->account_score += 10;
+                msgt(p, MSG_FANFARE, "You've earned 10 account points! You have %lu points.", p->account_score);
+            }
+            // regular uniques - only at odd score
+            else if (mon->level < 99 && p->account_score % 2)
+            {
+                // it's in rotation with player.c (getting lvls)
+                if (p->account_score < 10)
+                {
+                    ; // first points goes from leveling
+                }
+                else if (p->account_score < 25)
+                {
+                    if (one_in_(4))
+                    {
+                        p->account_score++;
+                        msgt(p, MSG_FANFARE, "You've earned account point! You have %lu points.", p->account_score);
+                    }
+                }
+                else if (p->account_score < 40)
+                {
+                    if (one_in_(5))
+                    {
+                        p->account_score++;
+                        msgt(p, MSG_FANFARE, "You've earned account point! You have %lu points.", p->account_score);
+                    }
+                }
+                else if (p->account_score < 60)
+                {
+                    if (one_in_(6))
+                    {
+                        p->account_score++;
+                        msgt(p, MSG_FANFARE, "You've earned account point! You have %lu points.", p->account_score);
+                    }
+                }
+                else if (p->account_score < 80)
+                {
+                    if (one_in_(7))
+                    {
+                        p->account_score++;
+                        msgt(p, MSG_FANFARE, "You've earned account point! You have %lu points.", p->account_score);
+                    }
+                }
+                else if (p->account_score < 100)
+                {
+                    if (one_in_(8))
+                    {
+                        p->account_score++;
+                        msgt(p, MSG_FANFARE, "You've earned account point! You have %lu points.", p->account_score);
+                    }
+                }
+                else if (p->account_score < 150)
+                {
+                    if (one_in_(9))
+                    {
+                        p->account_score++;
+                        msgt(p, MSG_FANFARE, "You've earned account point! You have %lu points.", p->account_score);
+                    }
+                }
+                else if (p->account_score < 200)
+                {
+                    if (mon->level > 10 && one_in_(100 - mon->level))
+                    {
+                        p->account_score++;
+                        msgt(p, MSG_FANFARE, "You've earned account point! You have %lu points.", p->account_score);
+                    }
+                }
+                else if (p->account_score < 300)
+                {
+                    if (mon->level > 20 && one_in_(100 - mon->level))
+                    {
+                        p->account_score++;
+                        msgt(p, MSG_FANFARE, "You've earned account point! You have %lu points.", p->account_score);
+                    }
+                }
+                else if (p->account_score < 500)
+                {
+                    if (mon->level > 30 && one_in_(100 - mon->level))
+                    {
+                        p->account_score++;
+                        msgt(p, MSG_FANFARE, "You've earned account point! You have %lu points.", p->account_score);
+                    }
+                }
+                else if (p->account_score < 999)
+                {
+                    if (mon->level > 40 && one_in_(100 - mon->level))
+                    {
+                        p->account_score++;
+                        msgt(p, MSG_FANFARE, "You've earned account point! You have %lu points.", p->account_score);
+                    }
+                }
+                else if (mon->level > 45)
+                {
+                    if (one_in_(100 - mon->level))
+                    {
+                        p->account_score++;
+                        msgt(p, MSG_FANFARE, "You've earned account point! You have %lu points.", p->account_score);
+                    }
+                }
+            }
+        }
+    }
 
     /* Bloodlust bonus */
     if (p->timed[TMD_BLOODLUST])

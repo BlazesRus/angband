@@ -60,6 +60,19 @@ int houses_count(void)
 }
 
 
+// count house area (as we don't store it in house struct for now... will add it one day)
+// it counts only floors, without walls
+int house_count_area_size(int house)
+{
+    int x, y;
+
+    x = houses[house].grid_2.x - houses[house].grid_1.x - 1;
+    y = houses[house].grid_2.y - houses[house].grid_1.y - 1;
+
+    return x * y;
+}
+
+
 /*  
  * Determine if the player is inside the house
  */
@@ -344,7 +357,53 @@ bool level_has_any_houses(struct worldpos *wpos)
 
 
 /*
+ * Wipe old houses on a level
+  // ... for 'wiped' houses - afterwards house walls needed to be demolished manually
+  // by admin char (!heroism)... /rfe give such possibility to players
+ */
+void wipe_old_houses(struct worldpos *wpos)
+{
+    int house;
+    time_t current_time;
+    time(&current_time);
+
+    for (house = 0; house < houses_count(); house++)
+    {
+        /* Skip houses not on this level */
+        if (!wpos_eq(&houses[house].wpos, wpos)) continue;
+
+        /* Wipe unowned extended and custom houses */
+        if ((houses[house].state >= HOUSE_EXTENDED) && (houses[house].ownerid == 0))
+        {
+            struct loc_iterator iter;
+            struct chunk *c = chunk_get(&houses[house].wpos);
+
+            // 1) Delete walls and the door
+            // remove a rectangular building
+            loc_iterator_first(&iter, &houses[house].grid_1, &houses[house].grid_2);
+            do
+            {
+                square_burn_grass(c, &iter.cur);
+            }
+            while (loc_iterator_next(&iter));
+
+            // 2) Wipe data about house
+            memset(&houses[house], 0, sizeof(struct house_type));
+            num_custom--;
+        }
+
+		// 'reset' non-refreshed house (2 months)
+        if ((houses[house].last_visit_time != 0) &&
+                 (current_time - (houses[house].last_visit_time)) > 5184000)
+                      reset_house(house);
+    }
+}
+
+
+/*
  * Wipe custom houses on a level
+  // in T we use such routine in wipe_old_houses() (above) which happen at dusk_or_dawn()
+  // ... afterwards house walls needed to be demolished manually (see above)
  */
 void wipe_custom_houses(struct worldpos *wpos)
 {
@@ -355,7 +414,7 @@ void wipe_custom_houses(struct worldpos *wpos)
         /* Skip houses not on this level */
         if (!wpos_eq(&houses[house].wpos, wpos)) continue;
 
-        /* Wipe extended and custom houses */
+        /* Wipe unowned extended and custom houses */
         if ((houses[house].state >= HOUSE_EXTENDED) && (houses[house].ownerid == 0))
         {
             memset(&houses[house], 0, sizeof(struct house_type));

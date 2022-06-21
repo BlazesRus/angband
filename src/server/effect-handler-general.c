@@ -1773,8 +1773,19 @@ bool effect_handler_CRAFT(effect_handler_context_t *context)
 
 bool effect_handler_CREATE_HOUSE(effect_handler_context_t *context)
 {
+    // depends on 'dice' value for effect:CREATE_HOUSE in object.txt
     int house_variant = context->value.base;
     context->ident = true;
+
+    // can build only in town or to the west from it
+    if ((context->origin->player->wpos.grid.x == 0 && context->origin->player->wpos.grid.y == 1) ||
+        (context->origin->player->wpos.grid.x == -1 && context->origin->player->wpos.grid.y == 1))
+        ;
+    else
+    {
+        msg(context->origin->player, "You can build house only in Farfest town or its rural areas to the west.");
+        return false;
+    }
 
     /* MAngband house creation */
     return create_house(context->origin->player, house_variant);
@@ -2502,15 +2513,12 @@ bool effect_handler_DETECT_DOORS(effect_handler_context_t *context)
     struct loc begin, end;
     struct loc_iterator iter;
 
-    // Detect works starting with dlvl 20...
-    // ..and player must be good in searching.
-    // On high dlvl detect doors works always.
+    // To detect magically you must be good in searching.
     // (note: mages of good searching races shouldn't have problem)
-    if (context->cave->wpos.depth < 20 ||
-        (context->origin->player->state.skills[SKILL_SEARCH] < context->cave->wpos.depth && 
-        context->cave->wpos.depth < 60))
+    if (context->origin->player->state.skills[SKILL_SEARCH] <
+      (((context->cave->wpos.depth + context->origin->player->lev) / 2) + (10 - context->origin->player->lev / 5)))
     {
-        msg(context->origin->player, "You are not so good in searching yet to detect doors with magic.");
+        msg(context->origin->player, "You are not so good in \"Searching\" yet to detect doors with magic.");
         return false;
     }            
 
@@ -2540,6 +2548,17 @@ bool effect_handler_DETECT_DOORS(effect_handler_context_t *context)
             square_light_spot(context->cave, &iter.cur);
 
             /* Obvious */
+            doors = true;
+
+            redraw = true;
+        }
+
+        /* Detect other types of doors. */
+        else if (square_isdoor(context->cave, &iter.cur) &&
+            square_isnotknown(context->origin->player, context->cave, &iter.cur))
+        {
+            square_memorize(context->origin->player, context->cave, &iter.cur);
+            square_light_spot(context->cave, &iter.cur);
             doors = true;
 
             redraw = true;
@@ -3002,13 +3021,12 @@ bool effect_handler_DETECT_TRAPS(effect_handler_context_t *context)
     struct loc begin, end;
     struct loc_iterator iter;
 
-    // detect traps works starting with 20 lvl and depends on searching skills.
-    // At dlvl 60+ it works for all players alright.
-    if (context->cave->wpos.depth < 20 || 
-       (context->origin->player->state.skills[SKILL_SEARCH] < context->cave->wpos.depth && 
-        context->cave->wpos.depth < 60))
+    // To detect magically you must be good in searching.
+    // (note: mages of good searching races shouldn't have problem)
+    if (context->origin->player->state.skills[SKILL_SEARCH] <
+      (((context->cave->wpos.depth + context->origin->player->lev) / 2) + (10 - context->origin->player->lev / 5)))
     {
-        msg(context->origin->player, "You are not so good in searching to detect traps with magic.");
+        msg(context->origin->player, "You are not so good in \"Searching\" to detect traps with magic.");
         return false;
     }
 
@@ -3066,9 +3084,6 @@ bool effect_handler_DETECT_TRAPS(effect_handler_context_t *context)
                 /* Notice */
                 if (!ignore_item_ok(context->origin->player, obj))
                 {
-                    /* Notice it */
-                    disturb(context->origin->player, 0);
-
                     /* We found something to detect */
                     detect = true;
                 }
@@ -3276,8 +3291,8 @@ bool effect_handler_DISENCHANT(effect_handler_context_t *context)
     if (obj->artifact && magik(60))
     {
         /* Message */
-        msg(context->origin->player, "Your %s (%c) resist%s disenchantment!", o_name, I2A(i),
-        SINGULAR(obj->number));
+        msg(context->origin->player, "Your %s (%c) resist%s disenchantment!", o_name,
+            gear_to_label(context->origin->player, obj), SINGULAR(obj->number));
 
         return true;
     }
@@ -3302,8 +3317,8 @@ bool effect_handler_DISENCHANT(effect_handler_context_t *context)
     }
 
     /* Message */
-    msg(context->origin->player, "Your %s (%c) %s disenchanted!", o_name, I2A(i),
-        ((obj->number != 1)? "were": "was"));
+    msg(context->origin->player, "Your %s (%c) %s disenchanted!", o_name,
+        gear_to_label(context->origin->player, obj), ((obj->number != 1)? "were": "was"));
 
     /* Recalculate bonuses */
     context->origin->player->upkeep->update |= (PU_BONUS);
@@ -4163,6 +4178,11 @@ bool effect_handler_MON_TIMED_INC(effect_handler_context_t *context)
 bool effect_handler_NOURISH(effect_handler_context_t *context)
 {
     int amount = effect_calculate_value(context, false);
+    int special_race = 0; // some races has special behaviour
+
+    if (streq(context->origin->player->race->name, "Ent") ||
+        streq(context->origin->player->race->name, "Vempire"))
+        special_race = 1;
 
     if (context->self_msg && !player_undead(context->origin->player))
         msg(context->origin->player, context->self_msg);
@@ -4170,23 +4190,33 @@ bool effect_handler_NOURISH(effect_handler_context_t *context)
     amount *= z_info->food_value;
 
     /* Increase food level by amount */
-    if ((context->subtype == 0) && !streq(context->origin->player->race->name, "Ent"))
+    // NOURISH:INC_BY
+    if (context->subtype == 0 && !special_race)
         player_inc_timed(context->origin->player, TMD_FOOD, MAX(amount, 0), false, false);
 
     /* Decrease food level by amount */
+    // NOURISH:DEC_BY
     else if (context->subtype == 1)
+    {
         player_dec_timed(context->origin->player, TMD_FOOD, MAX(amount, 0), false);
-
+    }
     /* Set food level to amount, vomiting if necessary */
+    // NOURISH:SET_TO
     else if (context->subtype == 2)
     {
         bool message = (context->origin->player->timed[TMD_FOOD] > amount);
 
-        if (message) msg(context->origin->player, "You vomit!");
+        // for special races - don't harm them (eg by traps) too much
+        if (special_race && (amount < 10))
+            amount = 15;
+
         player_set_timed(context->origin->player, TMD_FOOD, MAX(amount, 0), false);
+
+        if (message) msg(context->origin->player, "You vomit!");
     }
 
     /* Increase food level to amount if needed */
+    // NOURISH:INC_TO
     else if ((context->subtype == 3) && (context->origin->player->timed[TMD_FOOD] < amount))
         player_set_timed(context->origin->player, TMD_FOOD, MAX(amount + 1, 0), false);
 
@@ -4374,10 +4404,9 @@ bool effect_handler_READ_MINDS(effect_handler_context_t *context)
     {
         msg(context->origin->player, "Images form in your mind!");
         context->ident = true;
-        return true;
     }
 
-    return false;
+    return true;
 }
 
 
@@ -4413,9 +4442,10 @@ bool effect_handler_RECALL(effect_handler_context_t *context)
     if (!context->origin->player->word_recall)
     {
         /* Ask for confirmation if we try to recall from non-reentrable dungeon */
+        // to prevent ID cheeze - require 15 lvl to work
         if ((context->origin->player->current_value == ITEM_REQUEST) &&
             OPT(context->origin->player, confirm_recall) &&
-            forbid_reentrance(context->origin->player))
+            forbid_reentrance(context->origin->player) && context->origin->player->lev > 14)
         {
             get_item(context->origin->player, HOOK_CONFIRM, "");
             return false;
@@ -5408,6 +5438,11 @@ bool effect_handler_TELEPORT(effect_handler_context_t *context)
 
     /* Move the target */
     monster_swap(context->cave, &start, &iter.cur);
+    if (is_player)
+    {
+        player_handle_post_move(context->origin->player, context->cave, true, true, 0,
+            player_is_trapsafe(context->origin->player));
+    }
 
     /* Clear any projection marker to prevent double processing */
     sqinfo_off(square(context->cave, &iter.cur)->info, SQUARE_PROJECT);
@@ -5810,6 +5845,11 @@ bool effect_handler_TELEPORT_TO(effect_handler_context_t *context)
 
     /* Move player or monster */
     monster_swap(context->cave, &start, &land);
+    if (is_player)
+    {
+        player_handle_post_move(context->origin->player, context->cave, true, true, 0,
+            player_is_trapsafe(context->origin->player));
+    }
 
     /* Cancel target if necessary */
     if (is_player) target_set_monster(context->origin->player, NULL);

@@ -647,6 +647,59 @@ static void store_callback_begin(ui_event *cp)
 
 
 /*
+ * Enum for context menu entries
+ */
+enum
+{
+    ACT_EXAMINE,
+    ACT_DESCRIBE,
+    ACT_BUY
+};
+
+
+/*
+ * Pick the context menu options appropriate for an item available in a store
+ */
+static void context_menu_store_item(struct store_context *ctx, const int oid)
+{
+    struct store *store = ctx->store;
+    bool home = (store->type == STORE_HOME)? true: false;
+    struct menu *m = menu_dynamic_new();
+    struct object *obj = &ctx->list[oid];
+    int selected;
+    char *labels;
+    char header[120];
+
+    my_strcpy(header, store_names[oid], sizeof(header));
+
+    labels = string_make(lower_case);
+    m->selections = labels;
+
+    menu_dynamic_add_label(m, "Examine", 'x', ACT_EXAMINE, labels);
+    menu_dynamic_add_label(m, "Describe", 'D', ACT_DESCRIBE, labels);
+    menu_dynamic_add_label(m, home? "Take": "Buy", 'd', ACT_BUY, labels);
+
+    menu_dynamic_calc_location(m);
+
+    prt(format("(Enter to select, ESC) Command for %s:", header), 0, 0);
+    selected = menu_dynamic_select(m);
+
+    menu_dynamic_free(m);
+    string_free(labels);
+
+    /* Restore the screen */
+    screen_load(false);
+
+    switch (selected)
+    {
+        case ACT_EXAMINE: store_examine(oid, false); break;
+        case ACT_DESCRIBE: store_examine(oid, true); break;
+        case ACT_BUY: store_purchase(ctx, oid); break;
+    }
+}
+
+
+/*
  * Handle store menu input
  */
 static bool store_menu_handle(struct menu *m, const ui_event *event, int oid)
@@ -660,8 +713,17 @@ static bool store_menu_handle(struct menu *m, const ui_event *event, int oid)
 
     if (event->type == EVT_SELECT)
     {
-        /* Nothing for now. */
-        /* In future, maybe we want a display a list of what you can do. */
+        context_menu_store_item(ctx, oid);
+        ctx->flags |= (STORE_FRAME_CHANGE | STORE_GOLD_CHANGE);
+
+        /* Notice and handle stuff */
+        redraw_stuff();
+
+        /* Display the store */
+        store_display_recalc(ctx);
+        store_menu_recalc(m);
+        store_redraw(ctx);
+
         return true;
     }
     else if (event->type == EVT_KBRD)
@@ -945,7 +1007,7 @@ void store_sell_accept(int32_t price, int16_t reset)
     if (reset)
         my_strcpy(buf, "Do you really want to reset this house? ", sizeof(buf));
     else
-        strnfmt(buf, sizeof(buf), "Price is %ld gold. Proceed? ", price);
+        strnfmt(buf, sizeof(buf), "House price depends on your level. Now it's %ld gold. Sell? ", price);
 
     /* Accept the price, or cancel the wait */
     res = get_check_ex(buf);

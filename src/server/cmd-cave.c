@@ -1726,12 +1726,6 @@ static bool do_cmd_disarm_aux(struct player *p, struct chunk *c, struct loc *gri
 }
 
 
-static bool square_hack_iscloseddoor(struct chunk *c, struct loc *grid)
-{
-    return (square_basic_iscloseddoor(c, grid) && !square_islockeddoor(c, grid));
-}
-
-
 /*
  * Disarms a trap, or chest
  *
@@ -1747,19 +1741,19 @@ void do_cmd_disarm(struct player *p, int dir, bool easy)
     /* Easy Disarm */
     if (easy)
     {
-        int num_doors, n_traps, n_chests;
-
-        /* Hack -- count closed doors (for door locking) */
-        num_doors = count_feats(p, c, &grid, square_hack_iscloseddoor, false);
+        int n_traps, n_chests, n_unldoor;
 
         /* Count visible traps */
-        n_traps = count_feats(p, c, &grid, square_isdisarmabletrap, true);
+        n_traps = count_feats(p, c, &grid, square_isdisarmabletrap, false);
 
         /* Count chests (trapped) */
         n_chests = count_chests(p, c, &grid, CHEST_TRAPPED);
 
+        /* Count closed doors (for door locking) */
+        n_unldoor = count_feats(p, c, &grid, square_isunlockeddoor, false);
+
         /* Use the last target found */
-        if ((num_doors + n_traps + n_chests) >= 1)
+        if ((n_traps + n_chests + n_unldoor) >= 1)
             dir = motion_dir(&p->grid, &grid);
 
         /* If there are trap or chests to open, allow 5 as a direction */
@@ -1974,7 +1968,11 @@ static void do_prob_travel(struct player *p, struct chunk *c, int dir)
         break;
     }
 
-    if (do_move) monster_swap(c, &p->grid, &grid);
+    if (do_move)
+    {
+        monster_swap(c, &p->grid, &grid);
+        player_handle_post_move(p, c, true, true, 0, player_is_trapsafe(p));
+    }
 }
 
 
@@ -2412,68 +2410,12 @@ void move_player(struct player *p, struct chunk *c, int dir, bool disarm, bool c
         player_know_floor(who->player, c);
     }
 
-    /* Handle store doors, or notice objects */
-    if (!p->ghost && square_isshop(c, &grid))
-    {
-        disturb(p, 0);
-
-        /* Hack -- enter store */
-        do_cmd_store(p, -1);
-    }
-    if (square(c, &grid)->obj)
-    {
-        p->ignore = 1;
-        player_know_floor(p, c);
-        do_autopickup(p, c, check_pickup);
-        current_clear(p);
-        player_pickup_item(p, c, check_pickup, NULL);
-    }
-
-    /* Handle resurrection */
-    else if (p->ghost && square_isshop(c, &grid))
-    {
-        struct store *s = &stores[square_shopnum(c, &grid)];
-
-        if (s->type == STORE_TEMPLE)
-        {
-            /* Resurrect him */
-            resurrect_player(p, c);
-
-            /* Give him some gold */
-            if (!is_dm_p(p) && !player_can_undead(p) && (p->lev >= 5))
-                p->au = 100 * (p->lev - 4) / p->lives;
-        }
-    }
-
-    /* Discover invisible traps */
-    else if (square_issecrettrap(c, &grid))
-    {
-        disturb(p, 0);
-        hit_trap(p, &p->grid, delayed);
-    }
-
-    /* Set off a visible trap */
-    else if (square_isdisarmabletrap(c, &grid) && !trapsafe)
-    {
-        disturb(p, 0);
-        hit_trap(p, &p->grid, delayed);
-    }
-
-    /* Mention fountains */
-    else if (square_isfountain(c, &grid))
-    {
-        disturb(p, 0);
-        msg(p, "A fountain is located at this place.");
-    }
+    player_handle_post_move(p, c, true, check_pickup, delayed, trapsafe);
 
     p->upkeep->running_firststep = false;
 
     /* Hack -- we're done if player is gone (trap door) */
     if (p->upkeep->new_level_method) return;
-
-    /* Update view and search */
-    update_view(p, c);
-    search(p, c);
 
     /*
      * Hack -- if we are the dungeon master, and our movement hook
@@ -2522,6 +2464,7 @@ static bool erratic_dir(struct player *p, int *dp)
     {
         if (rf_has(p->poly_race->flags, RF_RAND_25)) erratic += 10;
         if (rf_has(p->poly_race->flags, RF_RAND_50)) erratic += 20;
+        if (rf_has(p->poly_race->flags, RF_RAND_100)) erratic = 40;
     }
 
     /* Apply "erratic movement" */
@@ -2874,8 +2817,8 @@ bool do_cmd_run(struct player *p, int dir)
     /* Handle polymorphed players */
     if (p->poly_race)
     {
-        if (rf_has(p->poly_race->flags, RF_RAND_25) ||
-            rf_has(p->poly_race->flags, RF_RAND_50))
+        if (rf_has(p->poly_race->flags, RF_RAND_25) || rf_has(p->poly_race->flags, RF_RAND_50) ||
+            rf_has(p->poly_race->flags, RF_RAND_100))
         {
             msg(p, "Your nature prevents you from running straight.");
             return true;
@@ -3074,6 +3017,8 @@ void display_feeling(struct player *p, bool obj_only)
     int16_t mon_feeling;
     const char *join;
     uint8_t set = 0;
+    int n_obj_feelings = N_ELEMENTS(obj_feeling_text);
+    int n_mon_feelings = N_ELEMENTS(mon_feeling_text);
 
     /* Don't show feelings for cold-hearted characters */
     // and some races
@@ -3139,8 +3084,7 @@ void display_feeling(struct player *p, bool obj_only)
     }
 
     /* Verify the feeling */
-    if (obj_feeling >= N_ELEMENTS(obj_feeling_text))
-        obj_feeling = N_ELEMENTS(obj_feeling_text) - 1;
+    if (obj_feeling >= n_obj_feelings) obj_feeling = n_obj_feelings - 1;
 
     /* Display only the object feeling when it's first discovered. */
     if (obj_only && (cfg_level_feelings == 3))
@@ -3155,8 +3099,7 @@ void display_feeling(struct player *p, bool obj_only)
     if (obj_only && (cfg_level_feelings == 2)) return;
 
     /* Verify the feeling */
-    if (mon_feeling >= N_ELEMENTS(mon_feeling_text))
-        mon_feeling = N_ELEMENTS(mon_feeling_text) - 1;
+    if (mon_feeling >= n_mon_feelings) mon_feeling = n_mon_feelings - 1;
 
     /* Players automatically get a monster feeling. */
     if (((p->cave->feeling_squares < z_info->feeling_need) && (cfg_level_feelings == 3)) ||
@@ -3237,6 +3180,7 @@ static int can_buy_house(struct player *p, int price)
 void do_cmd_purchase_house(struct player *p, int dir)
 {
     int i, n, check;
+    int house_area_size = 0;
     struct chunk *c = chunk_get(&p->wpos);
 
     /* Ghosts cannot buy houses */
@@ -3290,8 +3234,11 @@ void do_cmd_purchase_house(struct player *p, int dir)
                     msg(p, "You reset your house.");
                 else
                 {
-                    msg(p, "You sell your house for %ld gold.", house->price / 2);
-                    p->au += house->price / 2;
+                    // to prevent cheezing when player sell account's big house for new character
+                    // we make possibility to sell it only for a very little if you are on low lvls
+                    
+                    msg(p, "You sell your house for %ld gold.", house->price / (52 - p->lev));
+                    p->au += house->price / (52 - p->lev);
                 }
 
                 /* House is no longer owned */
@@ -3414,6 +3361,106 @@ void do_cmd_purchase_house(struct player *p, int dir)
         {
             /* Too many houses, message */
             msg(p, "You cannot buy more houses.");
+            return;
+        }
+
+        // check house area_size and find out do we have enough account points to buy it
+        house_area_size = house_count_area_size(i);
+
+        // Compare planned house_area_size and house variant (depends on type of house)
+        if (p->account_score < 15) // cabin
+        {
+            msg(p, "To buy house you need at least 15 account points (press Ctrl+r to check score).");
+            return;
+        }
+        else if (house_area_size >= 2 && p->account_score < 50) // cabin
+        {
+            msg(p, "To buy this house you need at least 50 account points.");
+            return;
+        }
+        else if (house_area_size >= 3 && p->account_score < 100) // cabin
+        {
+            msg(p, "To buy this house you need at least 100 account points.");
+            return;
+        }
+        else if (house_area_size >= 4 && p->account_score < 200) // small house
+        {
+            msg(p, "To buy this house you need at least 200 account points.");
+            return;
+        }
+        else if (house_area_size >= 5 && p->account_score < 500) // small house
+        {
+            msg(p, "To buy this house you need at least 500 account points.");
+            return;
+        }
+        else if (house_area_size >= 6 && p->account_score < 1000) // small house
+        {
+            msg(p, "To buy this house you need at least 1000 account points.");
+            return;
+        }
+        else if (house_area_size >= 7 && p->account_score < 2000) // medium house
+        {
+            msg(p, "To buy this house you need at least 2000 account points.");
+            return;
+        }
+        else if (house_area_size >= 8 && p->account_score < 5000) // medium house
+        {
+            msg(p, "To buy this house you need at least 5000 account points.");
+            return;
+        }
+        else if (house_area_size >= 9 && p->account_score < 10000) // medium house
+        {
+            msg(p, "To buy this house you need at least 10000 account points.");
+            return;
+        }
+        else if (house_area_size >= 15 && p->account_score < 25000) // big house
+        {
+            msg(p, "To buy this house you need at least 25000 account points.");
+            return;
+        }
+        else if (house_area_size >= 20 && p->account_score < 50000) // big house
+        {
+            msg(p, "To buy this house you need at least 50000 account points.");
+            return;
+        }
+        else if (house_area_size >= 25 && p->account_score < 100000) // big house
+        {
+            msg(p, "To buy this house you need at least 100000 account points.");
+            return;
+        }
+        else if (house_area_size >= 32 && p->account_score < 200000) // villa
+        {
+            msg(p, "To buy this house you need at least 200000 account points.");
+            return;
+        }
+        else if (house_area_size >= 44 && p->account_score < 400000) // villa
+        {
+            msg(p, "To buy this house you need at least 400000 account points.");
+            return;
+        }
+        else if (house_area_size >= 64 && p->account_score < 800000) // villa
+        {
+            msg(p, "To buy this house you need at least 800000 account points.");
+            return;
+        }
+        else if (house_area_size >= 100 && p->account_score < 1500000) // estate
+        {
+            msg(p, "To buy this house you need at least 15000000 account points.");
+            return;
+        }
+        else if (house_area_size >= 144 && p->account_score < 3000000) // tower
+        {
+            msg(p, "To buy this house you need at least 3000000 account points.");
+            return;
+        }
+        else if (house_area_size >= 256 && p->account_score < 10000000) // keep
+        {
+            msg(p, "To buy this house you need at least 10000000 account points.");
+            return;
+        }
+        else if (house_area_size >= 324 && p->account_score < 100000000) // castle
+        {
+            msg(p, "To buy this house you need at least 100000000 account points.");
             return;
         }
 
@@ -3737,7 +3784,7 @@ static bool is_valid_foundation(struct player *p, struct chunk *c, struct loc *g
  * the box in each dimension for as long as all points on the perimeter are
  * either foundation stones or walls of houses the player owns.
  *
- * CHANGED BOOL TO INT to calculate price
+ * CHANGED BOOL TO INT to return area size
  */
 static long int get_house_foundation(struct player *p, struct chunk *c, struct loc *grid1,
     struct loc *grid2)
@@ -3745,8 +3792,6 @@ static long int get_house_foundation(struct player *p, struct chunk *c, struct l
     int x, y;
     bool done = false;
     bool n, s, e, w, ne, nw, se, sw;
-    int area, price; // house pricing
-    int i; // to find house deed for <10k houses
 
     /* We must be standing on a house foundation */
     if (!is_valid_foundation(p, c, &p->grid))
@@ -3854,6 +3899,10 @@ static long int get_house_foundation(struct player *p, struct chunk *c, struct l
         done = !(n || s || w || e);
     }
 
+// ATTENTION!
+// location coordinates starts on top left corner of the _map_! so Y coord is vice versa
+// see pics at https://tangaria.com/dev-notes/
+
     /* Paranoia: checks is foundation from one corner to another
     got at least 1 tile in between. So it's always a square;
     not possible to make it unusual form */
@@ -3874,6 +3923,9 @@ static long int get_house_foundation(struct player *p, struct chunk *c, struct l
     }
 
     /* Calculare area size */
+    // ! This returns only floor tiles! Not real house square with walls.
+    // Note: we store real house square with walls later on for houses,
+    // this 'area size' is only for pricing and house scrolls checks
     return (x * y);
 }
 
@@ -3932,27 +3984,111 @@ bool create_house(struct player *p, int house_variant)
 //   }
 
     /* Determine the area of the house foundation AND calculate price */
-    if ((area_size = get_house_foundation(p, c, &begin, &end)) <= 0) return false;
+    area_size = get_house_foundation(p, c, &begin, &end);
+
+    if (area_size <= 0)
+    {
+        msg(p, "Non-valid house foundation size.");
+        return false;
+    }
 
     // Compare planned area_size and house variant (depends on type of house)
-    if (area_size > 3 && house_variant == 1) // cabin
+    if (p->account_score < 15)
+    {
+        msg(p, "You need at least 15 account points to build a house (press Ctrl+r to check it).");
         return false;
-    else if (area_size > 6 && house_variant == 2) // small house
-        return false;
-    else if (area_size > 9 && house_variant == 3) // medium house
-        return false;
-    else if (area_size > 25 && house_variant == 4) // big house
-        return false;
-    else if (area_size > 64 && house_variant == 5) // villa
-        return false;
-    else if (area_size > 100 && house_variant == 6) // estate
-        return false;
-    else if (area_size > 144 && house_variant == 7) // tower
-        return false;
-    else if (area_size > 256 && house_variant == 8) // keep
-        return false;
-    else if (area_size > 324 && house_variant == 9) // castle
-        return false;
+    }
+    else if (house_variant == 1) // cabin
+    {
+        if      (area_size == 1 && p->account_score >= 15) ;
+        else if (area_size == 2 && p->account_score >= 50) ;
+        else if (area_size == 3 && p->account_score >= 100) ;
+        else
+        {
+            msg(p, "You need more account points to build house of such size.");
+            return false;
+        }
+    }
+    else if (house_variant == 2) // small house
+    {
+        if      (area_size == 4 && p->account_score >= 200) ;
+        else if (area_size == 5 && p->account_score >= 500) ;
+        else if (area_size == 6 && p->account_score >= 1000) ;
+        else
+        {
+            msg(p, "You need more account points to build house of such size.");
+            return false;
+        }
+    }
+    else if (house_variant == 3) // medium house
+    {
+        if      (area_size == 7 && p->account_score >= 2000) ;
+        else if (area_size == 8 && p->account_score >= 5000) ;
+        else if (area_size == 9 && p->account_score >= 10000) ;
+        else
+        {
+            msg(p, "You need more account points to build house of such size.");
+            return false;
+        }
+    }
+    else if (house_variant == 4) // big house
+    {
+        if      (area_size <= 15 && p->account_score >= 25000) ;
+        else if (area_size <= 20 && p->account_score >= 50000) ;
+        else if (area_size <= 25 && p->account_score >= 100000) ;
+        else
+        {
+            msg(p, "You need more account points to build house of such size.");
+            return false;
+        }
+    }
+    else if (house_variant == 5) // villa
+    {
+        if      (area_size <= 32 && p->account_score >= 200000) ;
+        else if (area_size <= 44 && p->account_score >= 400000) ;
+        else if (area_size <= 64 && p->account_score >= 800000) ;
+        else
+        {
+            msg(p, "You need more account points to build house of such size.");
+            return false;
+        }
+    }
+    else if (house_variant == 6) // estate
+    {
+        if (area_size <= 100 && p->account_score >= 1500000) ;
+        else
+        {
+            msg(p, "You need at least 1500000 account points to build such house.");
+            return false;
+        }
+    }
+    else if (house_variant == 7) // tower
+    {
+        if (area_size <= 144 && p->account_score >= 3000000) ;
+        else
+        {
+            msg(p, "You need at least 3000000 account points to build such house.");
+            return false;
+        }
+    }
+    else if (house_variant == 8) // keep
+    {
+        if (area_size <= 256 && p->account_score >= 10000000) ;
+        else
+        {
+            msg(p, "You need at least 10000000 account points to build such house.");
+            return false;
+        }
+    }
+    else if (house_variant == 9) // castle
+    {
+        if (area_size <= 324 && p->account_score >= 100000000) ;
+        else
+        {
+            msg(p, "You need at least 100000000 account points to build such house.");
+            return false;
+        }
+    }
 
     /* Calculate price.
     More houses you have - more expensive will be next one */
@@ -3968,7 +4104,7 @@ bool create_house(struct player *p, int house_variant)
 
         if (!obj) continue;
 
-        if (tval_is_deed(obj));
+        if (tval_is_deed(obj))
         {
             price = (price * 9) / 10;
             break;

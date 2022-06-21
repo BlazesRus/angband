@@ -53,13 +53,22 @@ sound:town:ambient/outside/dog_small ambient/outside/bell ambient/outside/cart a
 sound:town_rare:ambient/outside/build_1 ambient/outside/build_2 ambient/outside/build_3 ambient/outside/build_4 ambient/outside/build_5 ambient/outside/build_6
 
 # Town during the day.
-sound:ambient_day:amb_thunder_rain ambient/outside/rain_light ambient_crow ambient_wings ambient_birds ambient_birds_1 ambient_fox ambient_wind_1 ambient_wind_2 ambient_wind_3 ambient_forest_birds
+sound:ambient_day:ambient_crow ambient_wings ambient_birds ambient_birds_1 ambient_fox ambient_wind_1 ambient_wind_2 ambient_wind_3 ambient_forest_birds
 
 # Town during the night.
-sound:ambient_nite:amb_thunder_roll tomenet/weather/thunder/thunder tomenet/weather/thunder/thunder2 tomenet/weather/thunder/thunder3 tomenet/ambient/persistent/watery/crickets tomenet/ambient/timed/owl/owl tomenet/ambient/timed/owl/owl2 ambient_crow ambient_wings ambient_fox ambient_wind_1 ambient_wind_night ambient_wind_night_1 ambient_wind_2 ambient_wind_3
+sound:ambient_nite:tomenet/ambient/persistent/watery/crickets tomenet/ambient/timed/owl/owl tomenet/ambient/timed/owl/owl2 ambient_crow ambient_wings ambient_fox ambient_wind_1 ambient_wind_night ambient_wind_night_1 ambient_wind_2 ambient_wind_3
 
-# Long rain
+# Rain ligth
+sound:wild_rain_light:ambient/outside/rain_light
+
+# Rain
 sound:wild_rain:tomenet/weather/rain/rain
+
+# Thunder light
+sound:wild_thunder_light:amb_thunder_rain
+
+# Thunder
+sound:wild_thunder:amb_thunder_roll tomenet/weather/thunder/thunder tomenet/weather/thunder/thunder2 tomenet/weather/thunder/thunder3
 
 # Waves (1 min. long)
 sound:wild_waves:tomenet/ambient/persistent/ocean/seawaves
@@ -437,7 +446,7 @@ sound:quaff:plm_bottle_clinks plm_cork_pop plm_cork_squeak pls_man_gulp_new tome
 # You zap a rod.
 sound:zap_rod:plm_zap_rod
 
-# You take a step.  (unimplemented)
+# You take a step (unimplemented)
 #sound:walk:
 
 # You teleport someone else away.
@@ -480,7 +489,7 @@ sound:lockpick_fail:plm_click_dry plm_click_switch plm_click_wood plm_door_echol
 sound:lockpick:plm_break_wood plm_cabinet_open plm_chest_unlatch plm_lock_case plm_lock_distant plm_open_case tomenet/player/commands/open_pick/picklock
 
 # open chest (which we've just lockpicked)
-sound:open_chest:player/commands/open/chest/open1 player/commands/open/chest/open2
+sound:open_chest:tomenet/player/commands/open/chest/open1 tomenet/player/commands/open/chest/open2
 
 # You disarm a trap.
 sound:disarm:plm_bang_ceramic plm_chest_latch plm_click_switch3 tomenet/player/commands/disarm/disarm
@@ -498,7 +507,7 @@ sound:act_artifact:plm_aim_wand
 sound:use_staff:plm_use_staff
 
 # An object is destroyed.
-sound:destroy:plm_bang_metal plm_break_canister plm_break_plates   plm_glass_breaking plm_glass_smashing
+sound:destroy:plm_bang_metal plm_break_canister plm_break_plates plm_glass_breaking plm_glass_smashing
 
 # shatter potion (by enemy)
 sound:destroy_potion:plm_break_glass plm_break_glass2 plm_break_shatter plm_break_smash plm_glass_break tomenet/misc/shatter_potion/glass1 tomenet/misc/shatter_potion/glass2 tomenet/misc/shatter_potion/glass3

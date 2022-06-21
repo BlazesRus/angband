@@ -196,6 +196,102 @@ static void adjust_level(struct player *p)
 
             p->max_lev = p->lev;
 
+            // account score when gain lvls
+            // it's in rotation with mon-util.c (killing uniques)
+
+            if (p->account_score == 0 && p->max_lev == 3)
+            {
+                p->account_score++;
+                msgt(p, MSG_FANFARE, "You've earned 1 account point! These points preserve even after death.");
+                msg(p, "To earn account points - earn levels and defeat unique monsters.");
+                msg(p, "Account points allows to buy bigger houses, increase storage space,");
+                msg(p, "give access to more races/classes and provide other advantages.");
+                msg(p, "You will get next account points every 5 levels.");
+            }
+            else if (p->account_score <= 5)
+            {
+                if (!(p->max_lev % 5))
+                {
+                    p->account_score++;
+                    msgt(p, MSG_FANFARE, "You've earned account point! Now you have %lu account points.", p->account_score);
+                    msg(p, "For now you will get next account points every 5 levels,");
+                    msg(p, "but later on it will be every 10 levels or even more.");
+                    msg(p, "(more points you have - harder to get new ones).");
+                }
+            }
+            else if (p->account_score <= 10)
+            {
+                if (!(p->max_lev % 10))
+                {
+                    p->account_score++;
+                    msgt(p, MSG_FANFARE, "You've earned account point! Now you have %lu points.", p->account_score);
+                    msg(p, "You will get even/odd account point for levels and");
+                    msg(p, "for defeating unique monster.");
+                }
+            }
+            // only at even score
+            else if (!(p->account_score % 2))
+            {
+                if (p->account_score < 25)
+                {
+                    if (!(p->max_lev % 10))
+                    {
+                        p->account_score++;
+                        msgt(p, MSG_FANFARE, "You've earned account point! Now you have %lu points.", p->account_score);
+                        msg(p, "You will get even/odd account point for levels and");
+                        msg(p, "for defeating unique monster.");
+                    }
+                }
+                else if (p->account_score < 50)
+                {
+                    if (one_in_(51 - p->max_lev))
+                    {
+                        p->account_score++;
+                        msgt(p, MSG_FANFARE, "You've earned account point! You have %lu points.", p->account_score);
+                    }
+                }
+                else if (p->account_score < 100)
+                {
+                    if (p->max_lev >= 10 && one_in_(51 - p->max_lev))
+                    {
+                        p->account_score++;
+                        msgt(p, MSG_FANFARE, "You've earned account point! You have %lu points.", p->account_score);
+                    }
+                }
+                else if (p->account_score < 200)
+                {
+                    if (p->max_lev >= 15 && one_in_(51 - p->max_lev))
+                    {
+                        p->account_score++;
+                        msgt(p, MSG_FANFARE, "You've earned account point! You have %lu points.", p->account_score);
+                    }
+                }
+                else if (p->account_score < 500)
+                {
+                    if (p->max_lev >= 20 && one_in_(51 - p->max_lev))
+                    {
+                        p->account_score++;
+                        msgt(p, MSG_FANFARE, "You've earned account point! You have %lu points.", p->account_score);
+                    }
+                }
+                else if (p->account_score < 999)
+                {
+                    if (p->max_lev >= 25 && one_in_(51 - p->max_lev))
+                    {
+                        p->account_score++;
+                        msgt(p, MSG_FANFARE, "You've earned account point! You have %lu points.", p->account_score);
+                    }
+                }
+                else if (p->max_lev >= 30)
+                {
+                    if (one_in_(51 - p->max_lev))
+                    {
+                        p->account_score++;
+                        msgt(p, MSG_FANFARE, "You've earned account point! You have %lu points.", p->account_score);
+                    }
+                }
+            }
+
             /* Message */
             if (p->max_lev == 50)
                 msgt(p, MSG_FANFARE, "Ding! Welcome to level %d.", p->lev);
@@ -697,7 +793,7 @@ void init_player(struct player *p, int conn, bool old_history, bool no_recall)
     object_list_init(p);
 
     /* Initialize extra parameters */
-    for (i = ITYPE_NONE; i < ITYPE_MAX; i++) p->opts.ignore_lvl[i] = IGNORE_BAD;
+    for (i = ITYPE_NONE; i < ITYPE_MAX; i++) p->opts.ignore_lvl[i] = IGNORE_NONE;
 
     for (i = 0; i < z_info->k_max; i++)
         add_autoinscription(p, i, connp->Client_setup.note_aware[i]);

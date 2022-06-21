@@ -17,74 +17,6 @@
  */
 
 
-/*
- * This is the server side of the network connection stuff.
- *
- * We try very hard to not let the game be disturbed by
- * players logging in.  Therefore a new connection
- * passes through several states before it is actively
- * playing.
- * First we make a new connection structure available
- * with a new socket to listen on.  This socket port
- * number is told to the client via the pack mechanism.
- * In this state the client has to send a packet to this
- * newly created socket with its name and playing parameters.
- * If this succeeds the connection advances to its second state.
- * In this second state the essential server configuration
- * like the map and so on is transmitted to the client.
- * If the client has acknowledged all this data then it
- * advances to the third state, which is the
- * ready-but-not-playing-yet state.  In this state the client
- * has some time to do its final initializations, like mapping
- * its user interface windows and so on.
- * When the client is ready to accept frame updates and process
- * keyboard events then it sends the start-play packet.
- * This play packet advances the connection state into the
- * actively-playing state.  A player structure is allocated and
- * initialized and the other human players are told about this new player.
- * The newly started client is told about the already playing players and
- * play has begun.
- * Apart from these four states there are also two intermediate states.
- * These intermediate states are entered when the previous state
- * has filled the reliable data buffer and the client has not
- * acknowledged all the data yet that is in this reliable data buffer.
- * They are so called output drain states.  Not doing anything else
- * then waiting until the buffer is empty.
- * The difference between these two intermediate states is tricky.
- * The second intermediate state is entered after the
- * ready-but-not-playing-yet state and before the actively-playing state.
- * The difference being that in this second intermediate state the client
- * is already considered an active player by the rest of the server
- * but should not get frame updates yet until it has acknowledged its last
- * reliable data.
- *
- * Communication between the server and the clients is only done
- * using UDP datagrams.  The first client/serverized version of XPilot
- * was using TCP only, but this was too unplayable across the Internet,
- * because TCP is a data stream always sending the next byte.
- * If a packet gets lost then the server has to wait for a
- * timeout before a retransmission can occur.  This is too slow
- * for a real-time program like this game, which is more interested
- * in recent events than in sequenced/reliable events.
- * Therefore UDP is now used which gives more network control to the
- * program.
- * Because some data is considered crucial, like the names of
- * new players and so on, there also had to be a mechanism which
- * enabled reliable data transmission.  Here this is done by creating
- * a data stream which is piggybacked on top of the unreliable data
- * packets.  The client acknowledges this reliable data by sending
- * its byte position in the reliable data stream.  So if the client gets
- * a new reliable data packet and it has not had this data before and
- * there is also no data packet missing inbetween, then it advances
- * its byte position and acknowledges this new position to the server.
- * Otherwise it discards the packet and sends its old byte position
- * to the server meaning that it detected a packet loss.
- * The server maintains an acknowledgement timeout timer for each
- * connection so that it can retransmit a reliable data packet
- * if the acknowledgement timer expires.
- */
-
-
 #include "s-angband.h"
 
 
@@ -559,7 +491,7 @@ static int Check_names(char *nick_name, char *real_name, char *host_name)
 
     /* The "server", "account" and "players" names are reserved */
     if (!my_stricmp(nick_name, "server") || !my_stricmp(nick_name, "account") ||
-        !my_stricmp(nick_name, "players") || !my_stricmp(nick_name, "ladder"))
+        !my_stricmp(nick_name, "players"))
     {
         return E_INVAL;
     }
@@ -1756,7 +1688,7 @@ int Send_kind_struct_info(int ind)
 {
     connection_t *connp = get_connection(ind);
     uint32_t i;
-    int j;
+    unsigned j;
 
     if (connp->state != CONN_SETUP)
     {
@@ -3325,6 +3257,15 @@ int Send_poly(struct player *p, int race)
 }
 
 
+int Send_poly_race(struct player *p)
+{
+    connection_t *connp = get_connp(p, "poly_race");
+    if (connp == NULL) return 0;
+
+    return Packet_printf(&connp->c, "%b", (unsigned)PKT_POLY_RACE);
+}
+
+
 int Send_store_leave(struct player *p)
 {
     connection_t *connp = get_connp(p, "store leave");
@@ -3403,6 +3344,10 @@ int Send_weather(struct player *p, int weather_type, int weather_wind, int weath
 {
     connection_t *connp = get_connp(p, "weather");
     if (connp == NULL) return 0;
+
+    p->weather_type = weather_type;
+    p->weather_wind = weather_wind;
+    p->weather_intensity = weather_intensity;
 
     return Packet_printf(&connp->c, "%b%hd%hd%hd", (unsigned)PKT_WEATHER, weather_type, weather_wind, weather_intensity);
 }
@@ -3672,9 +3617,12 @@ static int Receive_poly_race(int ind)
 {
     connection_t *connp = get_connection(ind);
     struct player *p;
-    int n;
+    int n, k;
     char buf[NORMAL_WID];
     uint8_t ch;
+    struct monster_race *race;
+    char monster[NORMAL_WID];
+    char *str;
 
     if ((n = Packet_scanf(&connp->r, "%b%s", &ch, buf)) <= 0)
     {
@@ -3686,7 +3634,53 @@ static int Receive_poly_race(int ind)
     {
         p = player_get(get_player_index(connp));
 
+        /* Break mind link */
+        break_mind_link(p);
+
+        /* Non mimics */
+        if (!player_has(p, PF_SHAPECHANGE))
+        {
+            msg(p, "You are too solid.");
+            return 1;
+        }
+
+        /* Not if permanently polymorphed or in fruit bat mode */
+        if (player_has(p, PF_PERM_SHAPE) || OPT(p, birth_fruit_bat))
+        {
+            msg(p, "You are already polymorphed permanently.");
+            return 1;
+        }
+
         my_strcpy(p->tempbuf, buf, sizeof(p->tempbuf));
+
+        /* Lowercase our search string */
+        if (strlen(p->tempbuf) > 1)
+        {
+            for (str = p->tempbuf; *str; str++) *str = tolower((unsigned char)*str);
+        }
+
+        /* Scan the monster races (backwards for easiness of use) */
+        for (k = z_info->r_max - 1; k > 0; k--)
+        {
+            race = &r_info[k];
+
+            /* Skip non-entries */
+            if (!race->name) continue;
+
+            /* Clean up monster name */
+            clean_name(monster, race->name);
+
+            /* Race name: try to polymorph into that race */
+            if (streq(monster, p->tempbuf))
+            {
+                do_cmd_poly(p, &r_info[k], true, true);
+                return 1;
+            }
+        }
+
+        /* Not a race: display a list */
+        Send_poly_race(p);
+        return 1;
     }
 
     return 1;
@@ -5009,6 +5003,7 @@ static int Receive_redraw(int ind)
         break_mind_link(p);
 
         do_cmd_redraw(p);
+        msg(p, "You have %lu account points.", p->account_score);
     }
 
     return 1;
@@ -6062,6 +6057,36 @@ static void update_graphics(struct player *p, connection_t *connp)
 }
 
 
+static void show_motd(struct player *p)
+{
+    ang_file *fp;
+    char buf[MSG_LEN];
+    bool first = true;
+
+    /* Verify the "motd" file */
+    path_build(buf, sizeof(buf), ANGBAND_DIR_SCREENS, "motd.txt");
+    if (!file_exists(buf)) return;
+
+    /* Open the motd file */
+    fp = file_open(buf, MODE_READ, FTYPE_TEXT);
+    if (!fp) return;
+
+    /* Dump */
+    while (file_getl(fp, buf, sizeof(buf)))
+    {
+        if (first)
+        {
+            msg(p, "  ");
+            //msg(p, "   ");
+            first = false;
+        }
+        msg(p, buf);
+    }
+
+    file_close(fp);
+}
+
+
 /*
  * A client has requested to start active play.
  * See if we can allocate a player structure for it
@@ -6237,11 +6262,13 @@ static int Enter_player(int ind)
     /* Tell the new player about the version number */
     msgt(p, MSG_VERSION, "Server is running version %s", version_build(NULL, true));
 
-    msg(p, "  ");
-    msg(p, "   ");
-    msg(p, "====================");
-    msg(p, "  ");
-    msg(p, "   ");
+    show_motd(p);
+
+    //msg(p, "  ");
+    //msg(p, "   ");
+    //msg(p, "====================");
+    //msg(p, "  ");
+    //msg(p, "   ");
 
     /* Report delayed info */
     Send_poly(p, (p->poly_race? p->poly_race->ridx: 0));
@@ -7278,6 +7305,7 @@ static int Receive_store_leave(int ind)
                     dis = dis * 2;
                 }
                 monster_swap(c, &p->grid, &grid);
+                player_handle_post_move(p, c, true, true, 0, player_is_trapsafe(p));
                 handle_stuff(p);
             }
 
@@ -7291,6 +7319,9 @@ static int Receive_store_leave(int ind)
 
             /* Restore music volume */
             sound(p, MSG_SILENT101);
+
+            // Check weather sound
+            if (p->weather_type == 1) sound(p, MSG_WILD_RAIN);
 
             /* Reapply illumination */
             cave_illuminate(p, c, is_daytime());

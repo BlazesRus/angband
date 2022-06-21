@@ -60,6 +60,7 @@ static int conn_state;
 
 /* Keeps track of time in 100ms "ticks" */
 static int ticks = 0, last_sent = 0, last_received = 0;
+static int ticks10 = 0; // 'deci-ticks', counting just 0..9 in 10ms intervals
 static int weather_ticks = 0; // weather ticks
 
 static bool request_redraw;
@@ -134,6 +135,7 @@ static void update_ticks(void)
 
     /* Find the new least significant digit of the ticks */
 	newticks += cur_time.tv_usec / 100000;
+	ticks10 = (cur_time.tv_usec / 10000) % 10;
 
     /* Assume that it has not been more than one second since this function was last called */
 	if (newticks < ticks) newticks += 10;
@@ -166,12 +168,13 @@ void do_keepalive(void)
     // Hack -- Update weather
     if (player->weather_type != 0)
     {
-        // Weather fps - check to see if it has been 100ms
-        if ((ticks - weather_ticks) > 1)
+        // attempt to keep track of 'deci-ticks' (10ms resolution)
+        if (ticks10 != weather_ticks)
         {
+            weather_ticks = ticks10;
+
             //* Weather *//
             do_weather();
-            weather_ticks = ticks;
         }
     }
 }
@@ -4139,6 +4142,29 @@ static int Receive_poly(void)
 
     /* Redraw */
     player->upkeep->redraw |= (PR_OTHER);
+
+    return 1;
+}
+
+
+static int Receive_poly_race(void)
+{
+    int n;
+    uint8_t ch;
+
+    if ((n = Packet_scanf(&rbuf, "%b", &ch)) <= 0)
+        return n;
+
+    /* Set the hook */
+    special_line_type = SPECIAL_FILE_POLY;
+
+    /* Set the header */
+    my_strcpy(special_line_header[NTERM_WIN_OVERHEAD],
+        (player_has(player, PF_MONSTER_SPELLS)? "Killed List": "Forms"),
+        sizeof(special_line_header[0]));
+
+    /* Call the file perusal */
+    peruse_file();
 
     return 1;
 }

@@ -740,6 +740,7 @@ flags:FRIGHTENED | PWMANG_BASE
 flags:RAND_100 | COLD_BLOOD | NO_SLEEP
 desc:A small fish.
 
+
 ### Dungeon level 1 ###
 
 name:blinking dot
@@ -3601,7 +3602,7 @@ desc: with displays of excessive violence.
 name:terrified yeek
 base:yeek
 color:u
-speed:110
+speed:111
 hit-points:18
 hearing:18
 smell:20
@@ -3613,7 +3614,7 @@ weight:80
 experience:11
 flags:DROP_40 | FRIGHTENED | NEVER_BLOW
 flags:DROP_CORPSE
-spell-freq:9
+spell-freq:5
 innate-freq:100
 spells:SHRIEK
 desc:It is a strange small humanoid in a constant state of extreme terror.
@@ -10063,7 +10064,8 @@ depth:25
 rarity:10
 weight:0
 experience:100000
-flags:EMPTY_MIND | MALE | REGENERATE | RAND_50 | GOOD | WANDERER
+# add UNIQUE
+flags:EMPTY_MIND | MALE | REGENERATE | RAND_50 | GOOD | WANDERER | NO_DEATH
 flags:IM_POIS | IM_ACID | IM_FIRE | IM_COLD | IM_ELEC
 flags:IM_NETHER | IM_PLASMA | IM_DISEN
 flags:DROP_1 | DROP_GREAT | ONLY_ITEM
@@ -25772,7 +25774,7 @@ name:Tulkas, Champion of the Valar
 base:ghost
 color:v
 speed:142
-hit-points:18000
+hit-points:25000
 hearing:200
 armor-class:204
 sleepiness:0
@@ -25942,7 +25944,7 @@ name:Varda, Queen of the Valar
 base:ainu
 color:G
 speed:140
-hit-points:24000
+hit-points:30000
 light:2
 hearing:155
 armor-class:210
@@ -25977,7 +25979,7 @@ name:Manwe, King of the Valar
 base:nether
 color:G
 speed:140
-hit-points:30000
+hit-points:35000
 light:2
 hearing:200
 armor-class:240
