@@ -18,33 +18,15 @@
  *    and not for profit purposes provided that this copyright and statement
  *    are included in all such copies.  Other copyrights may also apply.
  */
-
+#if defined(SOUND_SDL)||defined(SOUND_SDL2)
 #include "c-angband.h"
 
-#if defined(BUILDINGWithVS)
-#  include <SDL.h>
-#  include <SDL_mixer.h>
-#elif SOUND_SDL
-# ifdef WINDOWS
-#  include "..\_SDL\SDL.h"
-#  include "..\_SDL\SDL_mixer.h"
-# else
+#ifdef WINDOWS
+#  include "SDL.h"
+#  include "SDL_mixer.h"
+#else
 #  include <SDL/SDL.h>
 #  include <SDL/SDL_mixer.h>
-# endif/* USE_SDL */
-
-#elif defined(SOUND_SDL2)
-# ifdef WINDOWS
-#  include "..\_SDL2\SDL.h"
-#  include "..\_SDL2\SDL_mixer.h"
-# else
-#  include <SDL.h>
-#  include <SDL_mixer.h>
-# endif
-
-#else /* USE_SDL2 */
-#  include <SDL.h>
-#  include <SDL_mixer.h>
 #endif
 
 /* Supported file types */
@@ -564,3 +546,4 @@ errr init_sound_sdl(struct sound_hooks *hooks)
     /* Success */
     return (0);
 }
+#endif
