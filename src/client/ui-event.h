@@ -166,7 +166,7 @@ struct keypress {
 };
 
 /**
- * Null keypress constant, for safe initializtion.
+ * Null keypress constant, for safe initialization.
  */
 static struct keypress const KEYPRESS_NULL = {
 	.type = EVT_NONE,

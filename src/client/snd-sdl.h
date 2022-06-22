@@ -15,7 +15,7 @@
  *    and/or other materials provided with the distribution.
  */
 
-#ifndef INCLUDED_SND_SDL_H
+#if !defined(INCLUDED_SND_SDL_H) && (defined(SOUND_SDL)||defined(SOUND_SDL2))
 #define INCLUDED_SND_SDL_H
 
 struct sound_hooks;
