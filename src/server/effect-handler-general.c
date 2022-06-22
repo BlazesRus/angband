@@ -6274,12 +6274,12 @@ bool effect_handler_COMMAND(effect_handler_context_t *context)
 	if (randint1(context->origin->player->lev) < randint1(mon->race->level)) {
 		char m_name[80];
 		monster_desc(context->origin->player, m_name, sizeof(m_name), mon, MDESC_STANDARD);
-		msg("%s resists your command!", m_name);
+		msg(context->origin->player, "%s resists your command!", m_name);
 		return false;
 	}
 
 	/* Player is commanding */
-	player_set_timed(context->origin->player, TMD_COMMAND, MAX(amount, 0), false, false);
+	player_set_timed(context->origin->player, TMD_COMMAND, MAX(amount, 0), false);
 
 	/* Monster is commanded */
     mon_inc_timed(context->origin->player, context->target_mon, MON_TMD_COMMAND, MAX(amount, 0), 0);
