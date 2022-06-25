@@ -1144,7 +1144,6 @@ static bool pile_has_known(const struct object *obj) {
  * This command will cancel any old target, even if used from
  * inside the "look" command.
  *
- *
  * 'mode' is one of TARGET_LOOK or TARGET_KILL.
  * 'x' and 'y' are the initial position of the target to be highlighted,
  * or -1 if no location is specified.
