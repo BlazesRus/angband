@@ -15,10 +15,9 @@
  *    and not for profit purposes provided that this copyright and statement
  *    are included in all such copies.  Other copyrights may also apply.
  */
+#ifdef USE_SDL2
 
 #include "angband.h"
-
-#ifdef USE_SDL2
 
 #include "SDL.h"
 #include "SDL_image.h"
