@@ -2804,15 +2804,22 @@ bool effect_handler_TELEPORT_LEVEL(effect_handler_context_t *context)
 			down = false;
 	}
 
-	/* Now actually do the level change */
+	/*
+	 * Now actually do the level change; flush the command queue to
+	 * prevent the character from losing an action when first entering
+	 * the new level (for instance, player moves putting an autopickup
+	 * command in the queue and is then hit by a teleport level spell)
+	 */
 	if (up) {
 		msgt(MSG_TPLEVEL, "You rise up through the ceiling.");
+		cmdq_flush();
 		target_depth = dungeon_get_next_level(player,
 			player->depth, -1);
 		dungeon_change_level(player, target_depth);
 	} else if (down) {
 		msgt(MSG_TPLEVEL, "You sink through the floor.");
 
+		cmdq_flush();
 		if (OPT(player, birth_force_descend)) {
 			target_depth = dungeon_get_next_level(player,
 				player->max_depth, 1);

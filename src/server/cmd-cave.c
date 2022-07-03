@@ -18,10 +18,10 @@
 
 #include "angband.h"
 #include "cave.h"
-#include "..\client\cmd-core.h"
+#include "cmd-core.h"
 #include "cmds.h"
-#include "..\client\game-event.h"
-#include "..\client\game-input.h"
+#include "game-event.h"
+#include "game-input.h"
 #include "game-world.h"
 #include "generate.h"
 #include "init.h"
@@ -1117,6 +1117,13 @@ void move_player(int dir, bool disarm)
 			monster_swap(player->grid, grid);
 			player_handle_post_move(player, true, false);
 			cmdq_push(CMD_AUTOPICKUP);
+			/*
+			 * The autopickup is a side effect of the move:
+			 * whatever command triggered the move will be the
+			 * target for CMD_REPEAT rather than repeating the
+			 * autopickup.
+			 */
+			cmdq_peek()->is_background_command = true;
 		}
 	}
 
